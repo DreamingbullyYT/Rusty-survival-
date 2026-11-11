@@ -1,0 +1,30 @@
+[project]
+id = "hnmod"
+name = "HNMod"
+version = "0.1.0"
+description = "A modular native survival, world and environment ecosystem for Horizon"
+
+[compatibility]
+# Pin exact upstream revisions once the native adapter is verified.
+horizon_revision = "UNPINNED"
+horizon_mixins_revision = "UNPINNED"
+
+[[modules]]
+id = "hnmod.core"
+path = "crates/hnmod-core"
+
+[[modules]]
+id = "hnmod.earth"
+path = "modules/earth"
+
+[[modules]]
+id = "hnmod.climate"
+path = "modules/climate"
+
+[[modules]]
+id = "hnmod.weather"
+path = "modules/weather"
+
+[[modules]]
+id = "hnmod.survival"
+path = "modules/survival"
