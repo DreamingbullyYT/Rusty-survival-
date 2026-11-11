@@ -1,0 +1,17 @@
+[package]
+name = "hnmod-core"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+description = "Independent core infrastructure for the HNMod native mod ecosystem"
+
+[lib]
+name = "hnmod_core"
+path = "src/lib.rs"
+
+[dependencies]
+semver = { version = "1.0", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0"
+toml = "0.9"
