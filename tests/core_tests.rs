@@ -8,7 +8,7 @@ version = "0.1.0"
 
 [[modules]]
 id = "hnmod.core"
-path = "crates/hnmod-core"
+path = "."
 
 [[modules]]
 id = "hnmod.earth"
@@ -25,9 +25,9 @@ fn parses_and_validates_project_manifest() {
 
 #[test]
 fn rejects_duplicate_module_ids() {
-    let input = MANIFEST.replace(
-        "path = \"modules/earth\"",
-        "path = \"modules/earth\"\nid = \"hnmod.core\""
+    let input = format!(
+        "{}\n[[modules]]\nid = \"hnmod.core\"\npath = \"duplicate\"\n",
+        MANIFEST
     );
     assert!(ProjectManifest::from_str(&input).is_err());
 }
@@ -42,7 +42,7 @@ fn resolves_dependencies_before_dependents() {
     }).unwrap();
     registry.register(ModuleDescriptor {
         id: "hnmod.core".into(),
-        path: "crates/hnmod-core".into(),
+        path: ".".into(),
         requires: vec![],
     }).unwrap();
 
