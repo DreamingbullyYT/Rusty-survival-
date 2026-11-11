@@ -11,7 +11,7 @@ horizon_mixins_revision = "UNPINNED"
 
 [[modules]]
 id = "hnmod.core"
-path = "crates/hnmod-core"
+path = "."
 
 [[modules]]
 id = "hnmod.earth"
