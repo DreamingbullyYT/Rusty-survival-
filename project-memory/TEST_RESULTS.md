@@ -31,3 +31,11 @@
 - Detectorul nou din acest branch restrânge scope-ul implicit la sursele de producție ale crate-urilor clasificate upstream ca engine; scanarea largă rămâne disponibilă explicit prin `--scope all`.
 - Testele specifice noului scope au fost adăugate, dar nu sunt încă validate de CI pe acest branch.
 - Nu au fost executate harness-urile Java↔Rust și nu se declară nicio paritate completă.
+
+## 2026-11-15 — Prima rulare CI a PR-ului de integrare
+
+- PR #1, GitHub Actions run `43652682189`: FAILURE în etapa de testare generală.
+- Rezultat: 922 teste rulate, 9 skipped, 12 erori și 1 failure. Erorile sunt teste upstream care citesc workflow-uri și template-uri `.github` eliminate intenționat la import pentru a păstra numai workflow-urile proiectului nostru; un test verifică și existența a cel puțin 10 runner jobs upstream.
+- Eșecurile nu indică o problemă în logica detectorului; totuși, rularea generală nu poate fi folosită ca validare a detectorului.
+- Ajustare: workflow-ul `engine-audit.yml` rulează acum numai `tests/test_engine_audit.py`, apoi execută auditul read-only cu `--scope engine`. Testele complete upstream au fost deja rulate în workflow-ul de import înainte de eliminarea workflow-urilor upstream.
+- Rezultatul noii rulări CI rămâne în așteptare; nu declarăm încă detectorul validat.
