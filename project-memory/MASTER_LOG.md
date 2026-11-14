@@ -26,3 +26,14 @@
 - GitHub Actions run #2: SUCCESS (`c1c793c1bfd6aa8b54508cf590c43ef71b65db01`).
 - Arborele curent nu conține încă sursa Horizon; detectorul nu a auditat încă funcții reale din engine.
 - Următorul pas: audit complet upstream Horizon, identificarea commit-ului exact și importul sursei fără a începe refactorul înainte de inventariere.
+
+
+## 2026-11-15 — Inventar preliminar și restrângerea auditului la engine
+
+- În manifestele upstream de la commitul \`bcb7258ad101638c57e8cdd7b1e3da406440bea8\` au fost inspectate descrierile și dependențele locale directe pentru cele 19 crate-uri clasificate ca engine.
+- A fost completat un inventar provizoriu în \`SYSTEM_REGISTRY.md\`. Acesta nu declară ownership final: crate-urile mixte și responsabilitățile interne rămân de verificat în sursă.
+- A fost adăugată o hartă inițială a dependențelor directe declarate în Cargo.toml în \`DEPENDENCIES.md\`; nu este încă un graf transitive complet Cargo.
+- Detectorul \`tools/engine_audit.py\` a fost restrâns implicit la fișierele de producție din \`src/\` și \`build.rs\` ale crate-urilor engine, pe baza \`tools/layers.json\`. Opțiunea \`--scope all\` păstrează scanarea largă la cerere.
+- Au fost adăugate teste pentru selectarea crate-urilor engine și excluderea testelor standalone, exemplelor, benchmark-urilor și fixture-urilor. Testele nu sunt declarate trecute până când CI nu confirmă rularea.
+- Raportul detectorului include acum numărul de fișiere Rust și numărul de funcții scanate.
+- Schimbările sunt pe branch-ul \`audit/engine-only-scope\`; nu au fost integrate în \`main\` și nu au modificat sursa engine-ului.
