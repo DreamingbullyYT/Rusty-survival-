@@ -20,3 +20,11 @@
 
 - Decizie: detectorul raportează candidați; nu șterge, nu mută și nu rescrie cod.
 - Motiv: similitudinea nu dovedește automat duplicarea semantică.
+
+## D-005 — Paritate 1:1 cu Minecraft Java Edition și implementare minimă
+
+- Decizie: obiectivul final este paritate comportamentală 1:1 cu Minecraft: Java Edition; versiunea inițială de referință este 26.3, conform documentației upstream fixate.
+- Decizie: implementarea trebuie să fie cât mai mică posibil, fără a sacrifica paritatea, corectitudinea, mentenabilitatea sau performanța. Optimizările nu pot schimba comportamentul vanilla observabil.
+- Decizie: folosim asset-uri Mojang din surse legitime și în limitele permisiunilor/licenței; asset-urile nu substituie mecanicile și logica jocului.
+- Motiv: utilizatorul cere un engine compact care să reproducă Minecraft Java, nu o implementare aproximativă sau un simplu joc cu aspect similar.
+- Detalii normative: `PROJECT_GOAL_AND_RULES.md`.
