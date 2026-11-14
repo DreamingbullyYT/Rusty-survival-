@@ -19,9 +19,16 @@ def test_shingles_detect_shared_structure():
     assert len(a & b) > 0
 
 
-def test_extracts_function_body():
-    source = "fn example() { let x = 1; if x > 0 { return; } }"
-    found = audit.strip_comments_and_extract_functions(source)
+def test_extracts_function_body_and_ignores_braces_in_strings():
+    source = 'fn example() { let text = "} not a body"; if true { return; } }'
+    found = audit.extract_functions(source)
     assert len(found) == 1
     assert found[0][0] == "example"
     assert "return" in found[0][1]
+
+
+def test_nested_comments_are_ignored():
+    source = "fn example() { /* outer /* inner */ end */ let x = 1; }"
+    found = audit.extract_functions(source)
+    assert len(found) == 1
+    assert "let x" in found[0][1]
