@@ -186,7 +186,8 @@ def simhash(features):
 
 def code_candidates(root: Path, scope: str = "engine"):
     functions = []
-    for path in rust_files(root, scope):
+    source_files = list(rust_files(root, scope))
+    for path in source_files:
         try:
             source = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
@@ -245,7 +246,7 @@ def code_candidates(root: Path, scope: str = "engine"):
                 "right": {"path": right["path"], "function": right["name"]},
             })
     similar.sort(key=lambda item: item["score"], reverse=True)
-    return exact_groups, similar, len(functions)
+    return exact_groups, similar, len(functions), len(source_files)
 
 
 def concept_candidates(root: Path):
@@ -285,10 +286,11 @@ def main():
     parser.add_argument("--markdown", type=Path, default=Path("reports/engine-audit.md"))
     args = parser.parse_args()
     root = args.root.resolve()
-    exact, similar, count = code_candidates(root, args.scope)
+    exact, similar, count, files_count = code_candidates(root, args.scope)
     concepts = concept_candidates(root)
     report = {
         "scope": f"read-only {args.scope} scan; engine scope includes crate src/ and build.rs, excluding standalone tests/examples/benches/fixtures; no source files modified",
+        "rust_files_scanned": files_count,
         "rust_functions_scanned": count,
         "exact_duplicate_groups": exact,
         "structural_similarity_candidates": similar,
@@ -301,6 +303,7 @@ def main():
     lines = [
         "# Engine Duplicate Audit", "",
         f"- Scope: **{args.scope}**",
+        f"- Rust source files scanned: **{files_count}**",
         f"- Rust functions scanned: **{count}**",
         f"- Exact duplicate groups: **{len(exact)}**",
         f"- Structural similarity candidates: **{len(similar)}**",
@@ -326,7 +329,7 @@ def main():
     if not concepts:
         lines.append("- None detected (or registry has no systems yet).")
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"Scanned {count} Rust functions.")
+    print(f"Scanned {files_count} Rust source files and {count} functions.")
     print(f"Exact groups: {len(exact)} | structural candidates: {len(similar)} | conceptual candidates: {len(concepts)}")
     print(f"Reports: {json_path} and {md_path}")
 
