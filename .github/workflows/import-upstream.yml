@@ -112,7 +112,7 @@ jobs:
           EOF
 
           python -m unittest discover -s tests -p "test_*.py"
-          python tools/engine_audit.py --json reports/upstream-bcb7258-audit.json --markdown reports/upstream-bcb7258-audit.md
+          python tools/engine_audit.py --scope engine --json reports/upstream-bcb7258-audit.json --markdown reports/upstream-bcb7258-audit.md
           git add -A
           git commit -m "Import Horizon upstream engine baseline bcb7258"
           git push origin HEAD:main
