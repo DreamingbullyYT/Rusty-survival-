@@ -32,6 +32,12 @@ class EngineAuditTests(unittest.TestCase):
         self.assertEqual(len(found), 1)
         self.assertIn("let x", found[0][1])
 
+    def test_generic_functions_are_detected(self):
+        source = "fn generic<T: Copy>(value: T) { let _copy = value; }"
+        found = audit.extract_functions(source)
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0][0], "generic")
+
 
 if __name__ == "__main__":
     unittest.main()
