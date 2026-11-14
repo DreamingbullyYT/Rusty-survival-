@@ -22,7 +22,7 @@ TOKEN_RE = re.compile(
     r'\b\d+(?:\.\d+)?\b|[A-Za-z_][A-Za-z0-9_]*|'
     r'::|->|=>|==|!=|<=|>=|&&|\|\||\.\.|[^\s]'
 )
-FN_RE = re.compile(r'\bfn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(')
+FN_RE = re.compile(r'\bfn\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?:<[^;{}]*?>)?\s*\(')
 
 
 def rust_files(root: Path):
