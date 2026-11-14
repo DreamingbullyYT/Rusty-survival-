@@ -35,3 +35,13 @@
 - Upstream already provides `tools/layers.json` and `tools/check_layers.py`; these are the canonical dependency-layer checks and will be reused, not reimplemented.
 - Upstream documents engine, platform and Horizon layers. Our code-change scope is the vanilla engine only; launcher and platform/Horizon features are retained as references/build dependencies where needed, not refactor targets.
 - The upstream layer inventory identifies 19 engine crates. This is a starting classification, not a claim that all gameplay has already been cleanly separated.
+
+## 2026-11-15 — Import upstream confirmat și pregătirea auditului engine-only
+
+- Importul snapshot-ului Horizon a fost confirmat prin GitHub Actions run #8 (SUCCESS); `main` a avansat la `e02bf6f8e3b3f2a8725fbd3975c92a192b2456cf`.
+- Logul jobului confirmă fetch-ul upstream pinned `bcb7258ad101638c57e8cdd7b1e3da406440bea8`, rularea testelor, generarea raportului și push-ul commitului de import.
+- Testele din workflow au raportat 967 teste OK și 9 skipped.
+- Scanarea inițială a inclus toate sursele Rust: 41.988 funcții, 835 grupuri exacte și 11.343 candidați structurali. Rezultatele sunt doar candidați euristici și nu au fost folosite pentru ștergeri sau refactor.
+- Branch-ul de integrare pornește din commitul de import și aduce regulile canonice, inventarul preliminar, harta dependențelor, matricea de paritate și detectorul cu scope engine-only.
+- Testele detectorului engine-only și raportul restrâns trebuie confirmate de CI înainte de a folosi rezultatele pentru analiză semantică.
+- Nicio componentă a engine-ului nu a fost încă refactorizată; urmează inventarierea semantică, nu ștergerea de cod.
