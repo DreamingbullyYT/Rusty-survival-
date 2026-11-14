@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -9,6 +11,39 @@ SPEC.loader.exec_module(audit)
 
 
 class EngineAuditTests(unittest.TestCase):
+    def test_engine_scope_uses_upstream_layers_and_excludes_test_trees(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "tools").mkdir()
+            (root / "tools" / "layers.json").write_text(json.dumps({
+                "crates": {"horizon-core": "engine", "horizon-mods": "platform"}
+            }), encoding="utf-8")
+            paths = [
+                "crates/horizon-core/src/lib.rs",
+                "crates/horizon-core/src/tests/inline.rs",
+                "crates/horizon-core/tests/integration.rs",
+                "crates/horizon-core/examples/demo.rs",
+                "crates/horizon-core/build.rs",
+                "crates/horizon-mods/src/lib.rs",
+            ]
+            for name in paths:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("fn sample() {}", encoding="utf-8")
+            found = {p.relative_to(root).as_posix() for p in audit.rust_files(root)}
+            self.assertEqual(found, {
+                "crates/horizon-core/src/lib.rs",
+                "crates/horizon-core/build.rs",
+            })
+
+    def test_all_scope_remains_available(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            path = root / "crates/horizon-mods/src/lib.rs"
+            path.parent.mkdir(parents=True)
+            path.write_text("fn sample() {}", encoding="utf-8")
+            self.assertEqual(list(audit.rust_files(root, "all")), [path])
+
     def test_normalization_ignores_identifier_names(self):
         a = audit.normalized_tokens("fn alpha() { let count = 1; count + 2 }")
         b = audit.normalized_tokens("fn beta() { let total = 9; total + 4 }")
