@@ -1,0 +1,114 @@
+name: Import pinned Horizon upstream source
+
+on:
+  push:
+    paths:
+      - ".github/IMPORT_UPSTREAM.trigger"
+
+permissions:
+  contents: write
+
+jobs:
+  import-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Import upstream snapshot and preserve project memory
+        env:
+          UPSTREAM_SHA: bcb7258ad101638c57e8cdd7b1e3da406440bea8
+          BASE_SHA: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch --no-tags https://github.com/horizon-rust/horizon.git "$UPSTREAM_SHA"
+          git checkout "$UPSTREAM_SHA" -- .
+          git checkout "$BASE_SHA" -- README.md project-memory tools/engine_audit.py tests/test_engine_audit.py .github/workflows/engine-audit.yml .github/workflows/import-upstream.yml .github/IMPORT_UPSTREAM.trigger
+
+          cat > UPSTREAM_BASE.md <<'EOF'
+          # Horizon upstream baseline
+
+          - Repository: https://github.com/horizon-rust/horizon
+          - Branch: main
+          - Imported commit: bcb7258ad101638c57e8cdd7b1e3da406440bea8
+          - Commit message: Merge pull request #16554 — prevent stuck damage immunity after respawning.
+          - Import policy: upstream source snapshot is preserved as the starting point; our changes are limited to the vanilla engine scope documented in project-memory.
+          - The upstream launcher and Horizon/platform crates remain present as reference/build dependencies where required, but are not targets for our refactor.
+          - Existing upstream architecture checks such as tools/check_layers.py and tools/layers.json are reused; do not recreate them.
+          EOF
+
+          cat >> project-memory/MASTER_LOG.md <<'EOF'
+
+          ## 2026-11-14 — Upstream Horizon source imported
+
+          - Upstream baseline pinned to `horizon-rust/horizon` commit `bcb7258ad101638c57e8cdd7b1e3da406440bea8`.
+          - Imported the upstream source snapshot into this repository while preserving project-memory, our duplicate detector, tests and CI.
+          - Upstream tree at the pinned commit contains 7,052 entries and 3,588 Rust source files; the source tree was not yet semantically audited at import time.
+          - Upstream already provides `tools/layers.json` and `tools/check_layers.py`; these are the canonical dependency-layer checks and will be reused, not reimplemented.
+          - Upstream documents engine, platform and Horizon layers. Our code-change scope is the vanilla engine only; launcher and platform/Horizon features are retained as references/build dependencies where needed, not refactor targets.
+          - The upstream layer inventory identifies 19 engine crates. This is a starting classification, not a claim that all gameplay has already been cleanly separated.
+          EOF
+
+          cat >> project-memory/ARCHITECTURE.md <<'EOF'
+
+          ## Upstream architecture discovered
+
+          The pinned upstream already defines engine/platform/Horizon/tool layers in `docs/layers.md`, with dependency rules in `tools/layers.json` and enforcement in `tools/check_layers.py`. Reuse these definitions and checks. Do not create a second layer checker.
+
+          The current upstream classifies 19 crates as engine. Its own documentation notes that some gameplay and platform code is still mixed inside large crates; this must be audited rather than assumed solved. The current classification is evidence for the inventory, not a final target architecture.
+          EOF
+
+          cat >> project-memory/DO_NOT_DUPLICATE.md <<'EOF'
+
+          ## Existing upstream architecture tooling to reuse
+
+          - `tools/layers.json` — canonical crate-layer and dependency policy.
+          - `tools/check_layers.py` — existing layer/dependency checker.
+          - `docs/layers.md` — definitions and intended boundaries for engine/platform/Horizon.
+          Do not implement a competing layer registry or dependency-layer checker. Extend the existing one only if a demonstrated gap requires it.
+          EOF
+
+          cat > project-memory/TASKS.md <<'EOF'
+          # Task Ledger
+
+          ## Finalizate
+          - [x] Confirmat repository-ul și permisiunile de scriere.
+          - [x] Stabilit scope-ul: numai engine; Modding API-ul propriu este ulterior.
+          - [x] Înlocuit scheletul HNMod în branch-ul curent, păstrând istoricul Git.
+          - [x] Creată memoria permanentă și regula append-only pentru MASTER_LOG.
+          - [x] Creat detectorul read-only pentru similitudini exacte/structurale și suprapuneri declarate.
+          - [x] Adăugate teste și CI; rulările detectorului au trecut.
+          - [x] Fixat commit-ul upstream și importat sursa Horizon.
+          - [x] Identificat și păstrat tooling-ul upstream existent pentru verificarea straturilor.
+
+          ## În curs
+          - [ ] Auditul real al celor 19 crate-uri clasificate upstream ca engine.
+          - [ ] Cartografierea funcționalităților care sunt încă amestecate între engine și platform.
+          - [ ] Construirea registrului complet de sisteme și a hărții dependențelor.
+          - [ ] Analiza raportului detectorului și confirmarea manuală a dublurilor.
+
+          ## Mai târziu
+          - [ ] Definirea arhitecturii țintă pe baza auditului.
+          - [ ] Refactor incremental, cu teste de regresie.
+          - [ ] Stabilizarea engine-ului.
+          - [ ] Proiectarea propriului Modding API — numai după stabilizare.
+          EOF
+
+          cat >> project-memory/TEST_RESULTS.md <<'EOF'
+
+          ## 2026-11-14 — Import upstream
+
+          - Baseline upstream fixat la `bcb7258ad101638c57e8cdd7b1e3da406440bea8`.
+          - Înainte de import, tree audit a raportat 7,052 intrări și 3,588 fișiere Rust.
+          - Testele detectorului și scanarea read-only sunt executate în workflow-ul de import înainte de commit.
+          - Rezultatele scanării vor fi consemnate după finalizarea jobului.
+          EOF
+
+          python -m unittest discover -s tests -p "test_*.py"
+          python tools/engine_audit.py --json reports/upstream-bcb7258-audit.json --markdown reports/upstream-bcb7258-audit.md
+          git add -A
+          git commit -m "Import Horizon upstream engine baseline bcb7258"
+          git push origin HEAD:main
