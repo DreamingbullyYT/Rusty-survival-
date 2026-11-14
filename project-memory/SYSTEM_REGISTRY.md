@@ -57,3 +57,31 @@ Fiecare responsabilitate are un singur owner canonic. Aliasurile, fațadele și 
 - Dovezi / commit:
 
 Detectorul conceptual citește intrări [[system]] din project-memory/system_registry.toml. Menține acel fișier în sincron cu acest registru. Intrările automate se adaugă numai după confirmarea semantică a sistemelor; inventarul provizoriu de crate-uri de mai sus nu se transformă automat în ownership.
+
+
+## Hartă de module indicată de AGENTS.md upstream
+
+Sursa: AGENTS.md din commitul bcb7258ad101638c57e8cdd7b1e3da406440bea8. Acestea sunt indicii de ownership documentate upstream; confirmarea finală se face în cod și prin callsites.
+
+| Responsabilitate | Locații declarate upstream | Notă pentru audit |
+|---|---|---|
+| Gameplay loop, tick, frame | horizon-client/src/game.rs și src/game/ | Principalul owner actual al gameplay-ului; nu mutăm înainte de inventariere |
+| Executabil client | horizon-client/src/main.rs și entry.rs | Entry/executable, separat de logica gameplay propriu-zisă |
+| Sisteme client reutilizabile, control și probes | horizon-client-lib; manifestul indică surse existente în horizon-client/src | Atenție la surse partajate prin manifest; nu presupunem duplicate doar pentru că există două crate-uri |
+| Rendering, chunks, meshing, light, streaming, HUD, meniuri | horizon-client-render și modulele re-exportate de horizon-client | Documentația spune explicit că acest crate nu ajunge la gameplay |
+| Date world, NBT, regions, chunks, datafix, worldgen, block ticks/redstone, entity physics | horizon-world | Owner de date și comportamente de world/server-side, fără gameplay loop |
+| Block/item facts și item components | horizon-items | Consumate de gameplay; trebuie urmărit fluxul de date către Game |
+| Command parsing/tree | horizon-command | Separat de dispatch/executarea comenzilor, care rămâne în horizon-client/game |
+| Client bottom layer: text/lang/SNBT/NBT path/scoreboard/bossbar/gamerules/registry/particles | horizon-client-core | Candidate de logică vanilla |
+| Key bindings/mouse/controller/clipboard/window | horizon-client-input | Mixt; izolăm input vanilla de controllere și alte extensii |
+| Protocol codecs/framing/encryption/packets | horizon-protocol | Candidate vanilla; target protocol 777 |
+| Server-side files/config | horizon-server-files | Verificăm separat account lookups și orice comportament Horizon |
+| Version, Java RNG/Math, positions/noise/density/paletted storage | horizon-core | Primitive de simulare ce trebuie să reproducă exact Java |
+| Hook/extension seam pentru crate-urile superioare | horizon-hooks | Înțelegem contractele existente; nu dezvoltăm API nou |
+
+### Consecințe pentru inventar
+
+- horizon-client-lib nu trebuie numărat automat ca o a doua implementare a logicii din horizon-client: manifestul poate indica fișiere sursă aflate în alt crate. Verificăm canonical path și Cargo target înainte de a marca duplicate.
+- Parsing-ul comenzilor și executarea lor sunt responsabilități diferite: horizon-command deține tree/argument parsing; gameplay-ul din horizon-client deține dispatch și efectele comenzilor.
+- horizon-world deține logică world/server-side (inclusiv ticks/redstone), în timp ce horizon-client deține bucla de gameplay și coordonarea client/server. Nu le unim conceptual fără a distinge state ownership și threading.
+- Rendererul este separat de gameplay; un sistem vizual care citește starea jocului nu devine automat owner al regulilor de simulare.
