@@ -20,3 +20,18 @@
 
 - Decizie: detectorul raportează candidați; nu șterge, nu mută și nu rescrie cod.
 - Motiv: similitudinea nu dovedește automat duplicarea semantică.
+
+## D-005 — Paritate 1:1 cu Minecraft Java Edition și implementare minimă
+
+- Decizie: obiectivul final este paritate comportamentală 1:1 cu Minecraft: Java Edition; versiunea inițială de referință este 26.3, conform documentației upstream fixate.
+- Decizie: implementarea trebuie să fie cât mai mică posibil, fără a sacrifica paritatea, corectitudinea, mentenabilitatea sau performanța. Optimizările nu pot schimba comportamentul vanilla observabil.
+- Decizie: folosim asset-uri Mojang din surse legitime și în limitele permisiunilor/licenței; asset-urile nu substituie mecanicile și logica jocului.
+- Motiv: utilizatorul cere un engine compact care să reproducă Minecraft Java, nu o implementare aproximativă sau un simplu joc cu aspect similar.
+- Detalii normative: `PROJECT_GOAL_AND_RULES.md`.
+
+
+## D-006 — Mojang game files remain local
+
+- Decizie: nu comitem în repository jar-uri Minecraft, assets Mojang, surse decompilate sau resurse pregătite/exportate din joc. Le folosim local din instalarea legitimă a utilizatorului sau din altă sursă autorizată, în mod normal sub .local/.
+- Motiv: folosirea asset-urilor pentru referință și teste nu implică drept de redistribuire. Regula upstream AGENTS.md interzice explicit comiterea fișierelor Mojang.
+- Excepție: numai o permisiune/licență aplicabilă, verificată explicit, poate permite redistribuirea unui fișier anume.
