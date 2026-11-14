@@ -45,3 +45,10 @@
 - Branch-ul de integrare pornește din commitul de import și aduce regulile canonice, inventarul preliminar, harta dependențelor, matricea de paritate și detectorul cu scope engine-only.
 - Testele detectorului engine-only și raportul restrâns trebuie confirmate de CI înainte de a folosi rezultatele pentru analiză semantică.
 - Nicio componentă a engine-ului nu a fost încă refactorizată; urmează inventarierea semantică, nu ștergerea de cod.
+
+## 2026-11-15 — Izolarea testelor de audit față de fixture-urile CI upstream
+
+- PR #1 run `43652682189` a eșuat deoarece `unittest discover` a inclus teste upstream care presupun prezența workflow-urilor și template-urilor `.github` originale, pe care importul le-a eliminat intenționat pentru a păstra configurația CI a repository-ului nostru.
+- Logul confirmă 922 teste, 9 skipped, 12 erori și 1 failure; problemele observate sunt fișiere workflow/template lipsă și un test care așteaptă cel puțin 10 runner jobs upstream.
+- Suite-ul complet upstream a trecut înainte de curățarea `.github` în import run #8 (967 OK, 9 skipped). Pentru CI-ul proiectului, workflow-ul de audit a fost restrâns la testele dedicate `test_engine_audit.py`, urmate de scanarea read-only engine-only.
+- Nicio modificare a engine-ului și nicio ștergere de cod nu a rezultat din această problemă.
