@@ -37,3 +37,11 @@
 - Au fost adăugate teste pentru selectarea crate-urilor engine și excluderea testelor standalone, exemplelor, benchmark-urilor și fixture-urilor. Testele nu sunt declarate trecute până când CI nu confirmă rularea.
 - Raportul detectorului include acum numărul de fișiere Rust și numărul de funcții scanate.
 - Schimbările sunt pe branch-ul \`audit/engine-only-scope\`; nu au fost integrate în \`main\` și nu au modificat sursa engine-ului.
+
+
+## 2026-11-15 — Confirmarea hărții de module upstream
+
+- AGENTS.md din commitul upstream fixat documentează ownership-ul principal pentru gameplay, rendering, world, commands, input, protocol și sistemele client.
+- A fost adăugată în SYSTEM_REGISTRY.md o hartă preliminară de module, fără a declara ownership final pentru responsabilități care necesită verificarea callsite-urilor.
+- A fost clarificat că horizon-client-lib poate folosi surse aflate fizic în crates/horizon-client; existența a două crate-uri nu demonstrează două implementări.
+- S-a notat separarea dintre command parsing (horizon-command) și dispatch/efecte (horizon-client), precum și dintre world/server-side logic (horizon-world) și gameplay loop (horizon-client).
