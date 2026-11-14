@@ -1,47 +1,30 @@
-# HNMod — Native Survival & Environment Ecosystem
+# Horizon Engine Refactor
 
-HNMod is an independent, modular Rust project intended to extend Horizon with a cohesive world, climate, weather and survival simulation.
+Acest repository este spațiul de lucru pentru auditarea și refacerea engine-ului Horizon.
 
-The project is kept separate from the Horizon source repository. Engine integration will be isolated behind a dedicated adapter so the core systems can be developed and tested without patching Horizon internals.
+**Scope:** numai engine-ul. Launcherul și Modding API-ul propriu sunt în afara etapei curente. Modding API-ul va fi proiectat după ce arhitectura engine-ului este stabilizată.
 
-## Project layout
+## Reguli obligatorii
 
-- `hnmod.project.toml` — HNMod development workspace descriptor. This is not the final Horizon .hnmod bundle manifest.
-- `src/` — initial engine-independent core library.
-- `tests/` — core behavior tests.
-- `.github/workflows/ci.yml` — formatting, test and Clippy checks.
+1. Înainte de orice modificare, căutăm dacă funcționalitatea există deja.
+2. Nu adăugăm o a doua implementare pentru o responsabilitate existentă.
+3. Nu duplicăm concepte doar pentru că au nume sau forme diferite.
+4. Nicio ștergere sau rescriere automată a codului detectat ca duplicat.
+5. După fiecare activitate, actualizăm memoria proiectului.
+6. `project-memory/MASTER_LOG.md` este append-only: numai intrări noi la final; niciodată nu ștergem sau rescriem istoricul.
+7. Orice refactor trebuie justificat, testat și consemnat.
 
-## Planned modules
+## Memoria proiectului
 
-1. **HNMod Core** — module metadata, dependency validation, deterministic load ordering and compatibility policy.
-2. **HN Earth** — geographic projection, elevation, land/ocean masks and terrain data.
-3. **HN Climate** — climate zones, temperature, seasons and vegetation response.
-4. **HN Weather** — clouds, precipitation, storms and scalable atmospheric effects.
-5. **HN Survival** — thirst, body temperature and environmental player effects.
+Citește mai întâi `project-memory/START_HERE.md` la fiecare sesiune nouă.
 
-## Development status
+## Audit
 
-The first Core scaffold is in place. Horizon and horizon-mixins revisions are intentionally marked UNPINNED until the current upstream APIs and the native-mod template are verified together. Do not treat this scaffold as a loadable .hnmod mod yet.
+Detectorul inițial este `tools/engine_audit.py`. El caută similitudini de cod și suprapuneri declarate în registrul de sisteme. Rezultatele sunt indicii pentru analiză umană, nu autorizații de ștergere.
 
-## Build and test
+## Sursa upstream
 
-Requires a current stable Rust toolchain.
+Repository upstream: https://github.com/horizon-rust/horizon  
+Branch de referință: `main`
 
-```sh
-cargo fmt --all -- --check
-cargo test --all-targets
-cargo clippy --all-targets -- -D warnings
-```
-
-## Design principles
-
-- Keep the engine-independent simulation separate from Horizon-specific hooks.
-- Avoid broad or invasive Horizon patches.
-- Pin exact upstream revisions before writing the native adapter.
-- Make module dependencies explicit and deterministic.
-- Keep data acquisition and expensive work off world-generation worker threads.
-- Design for desktop first, with Android/ARM64 compatibility as a later validation target.
-
-## License
-
-MIT for the original HNMod code in this repository. Third-party datasets and upstream integration components may have separate licenses and attribution requirements.
+Sursa engine-ului nu a fost încă importată în acest repository. Primul pas tehnic după fundația de memorie este inventarierea și importul controlat al sursei upstream, cu commit-ul exact consemnat.
