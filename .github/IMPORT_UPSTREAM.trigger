@@ -6,3 +6,4 @@ bcb7258ad101638c57e8cdd7b1e3da406440bea8
 # trigger revision 5 — delete upstream .github before restoring repository workflows
 # trigger revision 6 — retain upstream workflows for tests, restore ours before commit
 # trigger revision 7 — restart stale import with a 30-minute job timeout
+# trigger revision 8 — isolate from stale Actions concurrency slot
