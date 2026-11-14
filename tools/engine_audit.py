@@ -11,7 +11,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SKIP_DIRS = {".git", "target", "vendor", "build", "dist", "node_modules"}
+SKIP_DIRS = {".git", "target", "vendor", "third_party", "build", "dist", "node_modules", "launcher", "xtask"}
 KEYWORDS = set("""
 as async await break const continue crate dyn else enum extern false fn for if impl in
 let loop match mod move mut pub ref return self Self static struct super trait true type
