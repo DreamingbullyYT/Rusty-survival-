@@ -7,7 +7,7 @@ import hashlib
 import json
 import re
 import tomllib
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,6 +73,14 @@ def mask_rust(source: str, mask_literals: bool):
                     i += 1
             blank(start, i)
             continue
+        if source[i] == "'":
+            char_literal = re.match(r"'(?:\\.|[^'\\])'", source[i:])
+            if char_literal:
+                start = i
+                i += len(char_literal.group(0))
+                if mask_literals:
+                    blank(start, i)
+                continue
         if source[i] == '"':
             start = i
             i += 1
