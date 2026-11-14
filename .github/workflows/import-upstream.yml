@@ -5,6 +5,10 @@ on:
     paths:
       - ".github/IMPORT_UPSTREAM.trigger"
 
+concurrency:
+  group: horizon-upstream-import
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -26,7 +30,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags https://github.com/horizon-rust/horizon.git "$UPSTREAM_SHA"
           git checkout "$UPSTREAM_SHA" -- .
-          git checkout "$BASE_SHA" -- README.md project-memory tools/engine_audit.py tests/test_engine_audit.py .github/workflows/engine-audit.yml .github/workflows/import-upstream.yml .github/IMPORT_UPSTREAM.trigger
+          git checkout "$BASE_SHA" -- PROJECT_SCOPE.md project-memory tools/engine_audit.py tests/test_engine_audit.py .github/workflows/engine-audit.yml .github/workflows/import-upstream.yml .github/IMPORT_UPSTREAM.trigger
 
           cat > UPSTREAM_BASE.md <<'EOF'
           # Horizon upstream baseline
