@@ -20,4 +20,4 @@ jobs:
       - name: Run audit tool tests
         run: python -m unittest discover -s tests -p "test_*.py"
       - name: Run read-only engine audit
-        run: python tools/engine_audit.py
+        run: python tools/engine_audit.py --scope engine
