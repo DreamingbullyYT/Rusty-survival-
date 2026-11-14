@@ -43,10 +43,7 @@ def mask_rust(source: str, mask_literals: bool):
 
     while i < n:
         # Raw strings: r"...", r#"..."#, br#"..."#
-        if raw:
-            # The expression above intentionally does not match ordinary raw
-            # strings with no space; handle the actual delimiter below.
-            raw = re.match(r'(?:br|r)(#*)"', source[i:])
+        raw = re.match(r'(?:br|r)(#*)"', source[i:])
         if raw:
             hashes = raw.group(1)
             start = i
