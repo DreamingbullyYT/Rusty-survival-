@@ -13,7 +13,7 @@
 - [x] Integrate în acest branch regulile canonice, deciziile D-005/D-006 și documentele de audit.
 
 ## În curs
-- [ ] Rularea CI pe acest branch/PR pentru detectorul engine-only și testele sale.
+- [ ] Re-rularea CI pe PR după izolarea testelor detectorului de fixture-urile .github upstream.
 - [ ] Verificarea raportului engine-only după ce CI rulează; candidații de similitudine necesită triere manuală.
 - [ ] Inventarierea semantică a sistemelor din crate-urile mixte, cu module, callsites, dataflow și teste.
 - [ ] Confirmarea grafului complet de dependențe Cargo, inclusiv dependențe transitive și feature gates.
