@@ -6,7 +6,7 @@ on:
       - ".github/IMPORT_UPSTREAM.trigger"
 
 concurrency:
-  group: horizon-upstream-import
+  group: horizon-upstream-import-v2
   cancel-in-progress: true
 
 permissions:
