@@ -53,3 +53,10 @@
 - Matricea nu dublează port ledger-ul sau statusul individual al harness-urilor; trimite către tools/parity.py, tools/port_ledger.py și oracle-urile Java existente.
 - În arborele upstream fixat au fost verificate 678 harness-uri parity, 397 fișiere Java oracle și 115 fișiere TSV de port map.
 - Niciun domeniu nu este marcat complet. Harness-urile nu au fost executate în această etapă, iar jar-urile/resursele Mojang nu sunt comise în repository.
+
+
+## 2026-11-15 — Verificarea sursei partajate client/client-lib
+
+- A fost verificat direct manifestul crates/horizon-client-lib/Cargo.toml: targetul [lib] indică ../horizon-client/src/client_lib.rs, iar crate-ul horizon-client-lib nu are propriul arbore src.
+- Aceasta este o singură sursă expusă printr-un target Cargo separat, nu două implementări independente; detectorul trebuie să numere sursa o singură dată.
+- A fost corectată harta dependențelor pentru muchia directă horizon-client-lib -> horizon-bench.
