@@ -45,3 +45,11 @@
 - A fost adăugată în SYSTEM_REGISTRY.md o hartă preliminară de module, fără a declara ownership final pentru responsabilități care necesită verificarea callsite-urilor.
 - A fost clarificat că horizon-client-lib poate folosi surse aflate fizic în crates/horizon-client; existența a două crate-uri nu demonstrează două implementări.
 - S-a notat separarea dintre command parsing (horizon-command) și dispatch/efecte (horizon-client), precum și dintre world/server-side logic (horizon-world) și gameplay loop (horizon-client).
+
+
+## 2026-11-15 — Matrice de paritate vanilla
+
+- A fost creat project-memory/PARITY_MATRIX.md ca matrice la nivel de domeniu, folosind harta de module din AGENTS.md și sursele canonice docs/rust-parity.md / docs/port-ledger.md.
+- Matricea nu dublează port ledger-ul sau statusul individual al harness-urilor; trimite către tools/parity.py, tools/port_ledger.py și oracle-urile Java existente.
+- În arborele upstream fixat au fost verificate 678 harness-uri parity, 397 fișiere Java oracle și 115 fișiere TSV de port map.
+- Niciun domeniu nu este marcat complet. Harness-urile nu au fost executate în această etapă, iar jar-urile/resursele Mojang nu sunt comise în repository.
