@@ -38,6 +38,8 @@ Keep the codebase as small as reasonably possible **while preserving 1:1 behavio
 
 Use the corresponding Mojang/Minecraft Java Edition assets as the visual/audio/data reference and reuse them where legally permitted and available from a legitimate Minecraft installation or other authorized source. Do not assume that possessing or referencing assets grants redistribution rights; do not commit proprietary assets into this repository unless the applicable license/permission clearly allows it.
 
+For this repository, do not commit Mojang game jars, assets, decompiled source or prepared game resources. Use files from the user's legitimate installation or another authorized source locally (for example under .local/), and keep them out of Git unless an explicit applicable license/permission clearly allows redistribution.
+
 Assets do not implement game logic. Matching textures, models, sounds or names is not evidence of behavioral parity.
 
 ## Scope and sequencing
