@@ -26,3 +26,13 @@
 - GitHub Actions run #2: SUCCESS (`c1c793c1bfd6aa8b54508cf590c43ef71b65db01`).
 - Arborele curent nu conține încă sursa Horizon; detectorul nu a auditat încă funcții reale din engine.
 - Următorul pas: audit complet upstream Horizon, identificarea commit-ului exact și importul sursei fără a începe refactorul înainte de inventariere.
+
+## 2026-11-14 — Obiectivul de paritate și regulile canonice
+
+- Utilizatorul a stabilit cerința suplimentară: codul să fie cât mai mic posibil, dar să păstreze paritate 1:1 cu Minecraft: Java Edition.
+- A fost fixat ca baseline inițial Java Edition 26.3, versiunea menționată explicit de documentația upstream `docs/layers.md` la commit-ul de referință planificat.
+- Paritatea înseamnă comportament observabil vanilla, nu copierea codului Java linie cu linie și nu doar asemănare vizuală.
+- Asset-urile Mojang vor fi reutilizate din surse legitime și numai în limitele permisiunilor/licenței; folosirea asset-urilor nu substituie logica și mecanicile jocului.
+- Optimizările și reducerea codului sunt permise numai dacă nu schimbă comportamentul vanilla. Nu se acceptă code-golf, scurtături nesigure sau eliminarea validărilor necesare.
+- A fost creat `PROJECT_GOAL_AND_RULES.md` ca document canonic; `project-memory/START_HERE.md` îl cere la începutul fiecărei sesiuni, iar `project-memory/DECISIONS.md` înregistrează decizia D-005.
+- Aceste schimbări sunt pe branch-ul `project-rules/parity-goal`; trebuie integrate în `main` după rezolvarea importului upstream aflat în desfășurare. Nu se declară încă prezente pe `main`.
