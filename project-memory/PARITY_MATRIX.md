@@ -7,7 +7,7 @@
 Sursele canonice existente la commitul upstream fixat bcb7258ad101638c57e8cdd7b1e3da406440bea8:
 
 - docs/rust-parity.md — starea generală și sursele live pentru paritate.
-- docs/port-ledger.md și tools/port_ledger.py — maparea metode Java ↔ funcții Rust, metode lipsă, seam/drift/float/callee gaps și verdict map.
+- docs/port-ledger.md și tools/port_ledger.py — maparea metodelor Java ↔ funcții Rust, metode lipsă, seam/drift/float/callee gaps și verdict map.
 - tools/parity.py — enumerarea și starea harness-urilor.
 - tools/test_*_parity.py — comparații diferențiale cu oracle Java.
 - mods/horizon/src/test/java/dev/horizonlab/parity/ — oracle-urile Java.
@@ -71,3 +71,48 @@ Performanța poate fi optimizată intern numai dacă rezultatul observabil răm�
 - Nu am executat încă harness-urile: ele necesită jar-urile și resursele Minecraft ale utilizatorului în .local.
 - Nu declarăm niciun domeniu complet până când statusul harness-urilor, port ledger gaps și testele end-to-end nu sunt analizate.
 - Codul platform/Horizon aflat în crate-uri etichetate engine se exclude din refactorul vanilla, chiar dacă dependența lui trebuie păstrată pentru build.
+
+## Detaliere — horizon-core RNG și matematică
+
+Acoperirea existentă identificată în sursă include:
+- worldgen random adapter, seeds, draw counters, forks, positional factories, bounds și legacy/xoroshiro modes (`tools/test_worldgen_random_parity.py`);
+- random tick/scheduled tick state transitions și RNG fingerprint (`tools/test_random_tick_parity.py`);
+- anumite fishing RNG paths, cu UUID-to-seed încă explicit neacoperit (`tools/test_fishing_rng_parity.py`);
+- Float LogSampler comparat cu oracle-urile Java, cu mod exhaustiv opțional pentru toate cele 2^32 intrări float (`tools/test_float_log_parity.py`);
+- noise și geometry au harness-uri separate.
+
+Acestea sunt cazuri și harness-uri existente, nu rezultate de execuție în sesiunea curentă. Harness-ul worldgen documentează încă lipsuri pentru Gaussian samples, concurrent access și full chunk decoration. Paritatea double-precision Math.log, toate funcțiile Math pe toate arhitecturile și toate traseele RNG nu sunt dovedite de testele enumerate. Statusul fiecărui harness trebuie obținut din runner-ul `tools/parity.py --status` pe un mediu cu fișierele Minecraft 26.3 legitime disponibile.
+
+
+## Detaliere — poziții, geometrie și noise
+
+Harness-urile identificate în sursă, dar nerulate în această sesiune:
+
+- `tools/test_geometry_parity.py`: corpus determinist cu vectori și AABB, valori speciale IEEE-754, coordonate de margine, trig table (65.536 intrări), rotații/look direction, traversal, voxel shapes, joins optimizate/neoptimizate, coliziuni și block iteration. Raportul harness-ului exclude explicit entități live, efecte reale de velocity/grounding, fluids și block behavior.
+- `tools/test_noise_parity.py`: compară cu oracle Java gradient offsets/permutation tables, consumul RNG la construcție, Perlin 2D/3D și derivate, Simplex cu ambele moduri de offset, SmearedPerlin, NormalNoise octave construction, modern/legacy seeding, density volumes și noise stacks. Nu verifică grafurile serializate complete de density functions sau terenul generat complet.
+- Testele unitare din `position.rs` acoperă negative coordinate floor semantics, distinct packet/storage layouts, packed signed limits și overflow.
+- Testele unitare din `geometry/trig.rs` disting Mth.atan2 table-driven de fdlibm Math.atan2 și verifică vectori salvați pentru Java.
+- Existența acestor harness-uri nu este rezultat de execuție; nu se marchează domeniile ca verificate până nu există status real și comparație cu oracle.
+
+
+## Gap-uri de implementare cunoscute din comentariile sursă
+
+Statusul de mai jos este mai precis decât eticheta generală „neauditat” și trebuie păstrat până la implementare + comparație cu oracle:
+
+| Zonă | Limitare explicită în sursă/harness | Consecință pentru paritate |
+|---|---|---|
+| Density graph | Codec-urile serializate și tipurile rămase de funcții sunt pending | Nu se poate declara suport complet pentru definițiile vanilla de density |
+| Terrain generation | `horizon-core::density` spune că generarea completă de terrain este pending | Noise/density sampler parity nu echivalează cu world terrain parity |
+| Structures | `horizon-world::worldgen::generator.rs` spune că structurile nu sunt generate | Worldgen rămâne incomplet chiar dacă biome/noise/carving trec separat |
+| Placed features | Algoritmii/bindings neimplementați sunt omiși din execuție, păstrând doar locul în ordering | Lipsesc efecte observabile ale unor features vanilla; seed-urile celorlalte sunt protejate |
+| Scheduled ticks | Harness-ul `test_tick_parity.py` exclude block/fluid behavior | Tick queue parity nu dovedește block/fluid tick parity |
+| Carving | Harness-ul carving mask exclude cave/canyon generation și mask application | Mask storage parity nu dovedește carving parity |
+| Biomes | Harness-ul biome zoom exclude biome source/storage/blending/chunk integration | Quart lookup parity nu dovedește biome pipeline parity |
+
+Acestea sunt gap-uri de comportament, nu oportunități de ștergere. Înainte de optimizare trebuie cartografiate toate callsites și dependențele fiecărui sistem lipsă.
+
+
+### Palette/storage parity detail
+
+- `tools/test_paletted_container_parity.py` compares `horizon-core::paletted::PalettedContainer` against the pinned Java client oracle for block and biome strategies. It exercises single/list/hash-map/global palette thresholds, palette growth, scripted edits, network write/read, canonical pack/unpack and reload hashes.
+- This harness does **not** compare `horizon-world::chunk::PalettedContainer` (generic Tag/NBT adapter), `BlockSection` counts/free-slot reuse, or every `PackedStorage` consumer. Those require their own chunk/NBT/save-load coverage.
