@@ -23,3 +23,10 @@
 - Adăugată opțiunea explicită --scope all pentru scanarea largă.
 - Actualizat raportul pentru a număra separat fișierele Rust și funcțiile.
 - Status: teste adăugate, execuția CI încă neconfirmată.
+
+
+## 2026-11-15 — Matrice de paritate
+
+- Verificate în tree-ul upstream fixat 678 de harness-uri parity, 397 fișiere Java oracle și 115 fișiere de port map.
+- Creată matricea high-level în project-memory/PARITY_MATRIX.md, fără duplicarea port ledger-ului și a statusului harness-urilor.
+- Status: inventar documentar; niciun harness nu a fost executat de această activitate.
