@@ -26,3 +26,12 @@
 - GitHub Actions run #2: SUCCESS (`c1c793c1bfd6aa8b54508cf590c43ef71b65db01`).
 - Arborele curent nu conține încă sursa Horizon; detectorul nu a auditat încă funcții reale din engine.
 - Următorul pas: audit complet upstream Horizon, identificarea commit-ului exact și importul sursei fără a începe refactorul înainte de inventariere.
+
+## 2026-11-14 — Upstream Horizon source imported
+
+- Upstream baseline pinned to `horizon-rust/horizon` commit `bcb7258ad101638c57e8cdd7b1e3da406440bea8`.
+- Imported the upstream source snapshot into this repository while preserving project-memory, our duplicate detector, tests and CI.
+- Upstream tree at the pinned commit contains 7,052 entries and 3,588 Rust source files; the source tree was not yet semantically audited at import time.
+- Upstream already provides `tools/layers.json` and `tools/check_layers.py`; these are the canonical dependency-layer checks and will be reused, not reimplemented.
+- Upstream documents engine, platform and Horizon layers. Our code-change scope is the vanilla engine only; launcher and platform/Horizon features are retained as references/build dependencies where needed, not refactor targets.
+- The upstream layer inventory identifies 19 engine crates. This is a starting classification, not a claim that all gameplay has already been cleanly separated.

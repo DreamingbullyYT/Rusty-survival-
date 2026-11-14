@@ -14,3 +14,10 @@
 - Testele acoperă normalizarea identificatorilor/literalilor, shingle overlap, extragerea corpului funcției cu acolade în stringuri și comentarii bloc imbricate.
 - Scanarea curentă nu poate valida duplicări din engine deoarece sursa Rust Horizon nu a fost încă importată.
 - Limitare cunoscută: detectarea conceptuală depinde momentan de registrul de sisteme completat manual; urmează să fie extinsă după inventarierea arhitecturii și dependențelor.
+
+## 2026-11-14 — Import upstream
+
+- Baseline upstream fixat la `bcb7258ad101638c57e8cdd7b1e3da406440bea8`.
+- Înainte de import, tree audit a raportat 7,052 intrări și 3,588 fișiere Rust.
+- Testele detectorului și scanarea read-only sunt executate în workflow-ul de import înainte de commit.
+- Rezultatele scanării vor fi consemnate după finalizarea jobului.

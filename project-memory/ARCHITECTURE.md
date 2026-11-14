@@ -16,3 +16,9 @@
 ## Arhitectura țintă
 
 Se completează numai după auditul sursei. Pentru fiecare sistem se vor documenta: responsabilitatea, proprietarul unic, intrările/ieșirile, dependențele, limitele și testele.
+
+## Upstream architecture discovered
+
+The pinned upstream already defines engine/platform/Horizon/tool layers in `docs/layers.md`, with dependency rules in `tools/layers.json` and enforcement in `tools/check_layers.py`. Reuse these definitions and checks. Do not create a second layer checker.
+
+The current upstream classifies 19 crates as engine. Its own documentation notes that some gameplay and platform code is still mixed inside large crates; this must be audited rather than assumed solved. The current classification is evidence for the inventory, not a final target architecture.

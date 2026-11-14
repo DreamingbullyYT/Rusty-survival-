@@ -1,23 +1,23 @@
-## Finalizate
+# Task Ledger
 
-- [x] Confirmat repository-ul de lucru și permisiunile de scriere.
+## Finalizate
+- [x] Confirmat repository-ul și permisiunile de scriere.
 - [x] Stabilit scope-ul: numai engine; Modding API-ul propriu este ulterior.
 - [x] Înlocuit scheletul HNMod în branch-ul curent, păstrând istoricul Git.
-- [x] Creată structura inițială de memorie.
-- [x] Creat detectorul read-only pentru duplicate exacte, structurale și suprapuneri conceptuale.
-- [x] Adăugate teste și GitHub Actions CI; două rulări au trecut.
+- [x] Creată memoria permanentă și regula append-only pentru MASTER_LOG.
+- [x] Creat detectorul read-only pentru similitudini exacte/structurale și suprapuneri declarate.
+- [x] Adăugate teste și CI; rulările detectorului au trecut.
+- [x] Fixat commit-ul upstream și importat sursa Horizon.
+- [x] Identificat și păstrat tooling-ul upstream existent pentru verificarea straturilor.
 
 ## În curs
-
-- [ ] Inventarierea completă a repository-ului upstream Horizon.
-- [ ] Stabilirea commit-ului upstream de bază.
-- [ ] Importul controlat al sursei engine-ului în acest repository.
-- [ ] Construirea registrului real de sisteme și a hărții dependențelor.
-- [ ] Rularea detectorului pe sursa completă și analizarea rezultatelor.
+- [ ] Auditul real al celor 19 crate-uri clasificate upstream ca engine.
+- [ ] Cartografierea funcționalităților care sunt încă amestecate între engine și platform.
+- [ ] Construirea registrului complet de sisteme și a hărții dependențelor.
+- [ ] Analiza raportului detectorului și confirmarea manuală a dublurilor.
 
 ## Mai târziu
-
-- [ ] Arhitectură țintă documentată.
-- [ ] Refactor incremental și teste.
+- [ ] Definirea arhitecturii țintă pe baza auditului.
+- [ ] Refactor incremental, cu teste de regresie.
 - [ ] Stabilizarea engine-ului.
 - [ ] Proiectarea propriului Modding API — numai după stabilizare.
