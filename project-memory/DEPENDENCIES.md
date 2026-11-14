@@ -70,3 +70,11 @@ Acestea sunt dependențe declarate în manifestele de la commitul upstream fixat
 ## Înregistrare pentru fiecare muchie confirmată
 
 consumer -> provider, motiv, tipul contractului, riscuri, teste și excepții.
+
+
+## Clarificare de ownership din AGENTS.md
+
+- horizon-client-lib nu reprezintă automat un al doilea arbore de surse: manifestul indică surse existente sub crates/horizon-client. Pentru analiza duplicărilor, verificăm exact Cargo target src_path și modulele partajate înainte de a interpreta două crate-uri ca două implementări.
+- horizon-command deține parsing-ul/tree-ul Brigadier, în timp ce dispatch-ul și efectele comenzilor sunt în gameplay-ul din horizon-client.
+- horizon-world deține datele și mecanismele world/server-side (ticks, redstone, worldgen, entity physics); horizon-client coordonează bucla de gameplay și client/server. Muchiile nu trebuie confundate cu ownership comun.
+- horizon-client-render nu ajunge la gameplay, conform documentației upstream; dependențele sale către state-ul world/client trebuie urmărite ca flux de citire, nu presupuse drept duplicate.
