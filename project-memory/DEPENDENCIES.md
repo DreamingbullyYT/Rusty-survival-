@@ -15,7 +15,7 @@ Aceasta este o hartă de dependențe locale declarate prin path în Cargo.toml, 
 | horizon-client | horizon-assets, horizon-client-core, horizon-client-input, horizon-client-lib, horizon-client-render, horizon-command, horizon-core, horizon-hooks, horizon-items, horizon-narrator, horizon-perf-format, horizon-protocol, horizon-server-files, horizon-system, horizon-threads, horizon-world |
 | horizon-client-core | horizon-world |
 | horizon-client-input | horizon-client-core |
-| horizon-client-lib | horizon-assets, horizon-client-core, horizon-client-input, horizon-client-render, horizon-command, horizon-core, horizon-hooks, horizon-items, horizon-narrator, horizon-perf-format, horizon-protocol, horizon-server-files, horizon-threads, horizon-world |
+| horizon-client-lib | horizon-assets, horizon-bench, horizon-client-core, horizon-client-input, horizon-client-render, horizon-command, horizon-core, horizon-hooks, horizon-items, horizon-narrator, horizon-perf-format, horizon-protocol, horizon-server-files, horizon-threads, horizon-world |
 | horizon-client-render | horizon-assets, horizon-client-core, horizon-client-input, horizon-command, horizon-core, horizon-hooks, horizon-items, horizon-narrator, horizon-perf-format, horizon-system, horizon-threads, horizon-world |
 | horizon-command | horizon-client-core, horizon-core, horizon-protocol, horizon-world |
 | horizon-core | — |
