@@ -1,11 +1,11 @@
-# Task Ledger
-
 ## Finalizate
 
 - [x] Confirmat repository-ul de lucru și permisiunile de scriere.
 - [x] Stabilit scope-ul: numai engine; Modding API-ul propriu este ulterior.
+- [x] Înlocuit scheletul HNMod în branch-ul curent, păstrând istoricul Git.
 - [x] Creată structura inițială de memorie.
-- [x] Creat detectorul inițial de similitudini și suprapuneri declarate.
+- [x] Creat detectorul read-only pentru duplicate exacte, structurale și suprapuneri conceptuale.
+- [x] Adăugate teste și GitHub Actions CI; două rulări au trecut.
 
 ## În curs
 
