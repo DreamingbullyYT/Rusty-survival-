@@ -14,3 +14,12 @@
 - Testele acoperă normalizarea identificatorilor/literalilor, shingle overlap, extragerea corpului funcției cu acolade în stringuri și comentarii bloc imbricate.
 - Scanarea curentă nu poate valida duplicări din engine deoarece sursa Rust Horizon nu a fost încă importată.
 - Limitare cunoscută: detectarea conceptuală depinde momentan de registrul de sisteme completat manual; urmează să fie extinsă după inventarierea arhitecturii și dependențelor.
+
+
+## 2026-11-15 — Audit restrâns la engine
+
+- Adăugate teste pentru citirea crate-urilor engine din tools/layers.json.
+- Adăugată verificare că fișierele din crate-uri platform, testele standalone și exemplele nu intră în scope-ul implicit.
+- Adăugată opțiunea explicită --scope all pentru scanarea largă.
+- Actualizat raportul pentru a număra separat fișierele Rust și funcțiile.
+- Status: teste adăugate, execuția CI încă neconfirmată.
