@@ -3,7 +3,7 @@
 La începutul fiecărei sesiuni:
 
 1. Citește acest fișier.
-2. Citește integral `MASTER_LOG.md` și ultimele stări din `TASKS.md`, `ARCHITECTURE.md`, `SYSTEM_REGISTRY.md`, `DEPENDENCIES.md`, `DECISIONS.md`, `TEST_RESULTS.md` și `DO_NOT_DUPLICATE.md`.
+2. Citește integral `MASTER_LOG.md` și ultimele stări din `TASKS.md`, `ARCHITECTURE.md`, `SYSTEM_REGISTRY.md`, `DEPENDENCIES.md`, `DECISIONS.md`, `TEST_RESULTS.md`, `DO_NOT_DUPLICATE.md` și `PARITY_MATRIX.md`.
 3. Verifică repository-ul și commit-ul curent; documentația poate fi depășită.
 4. Compară starea reală a codului cu memoria. Dacă diferă, investighează și consemnează diferența înainte de a modifica.
 5. Nu presupune că o sarcină este făcută doar fiindcă apare ca planificată.
