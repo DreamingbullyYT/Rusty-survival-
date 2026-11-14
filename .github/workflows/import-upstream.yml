@@ -30,6 +30,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch --no-tags https://github.com/horizon-rust/horizon.git "$UPSTREAM_SHA"
           git checkout "$UPSTREAM_SHA" -- .
+          # Remove the upstream .github tree first: checkout of a pathspec alone can leave newly added files behind.
+          rm -rf .github
           git checkout "$BASE_SHA" -- .github PROJECT_SCOPE.md project-memory tools/engine_audit.py tests/test_engine_audit.py
 
           cat > UPSTREAM_BASE.md <<'EOF'
