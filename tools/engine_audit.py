@@ -1,28 +1,22 @@
 #!/usr/bin/env python3
-"""Read-only duplicate and responsibility-overlap scanner for Rust engine code.
-
-This is a heuristic audit tool, not a semantic proof system. It never edits source.
-"""
+"""Read-only heuristic duplicate and responsibility-overlap scanner for Rust."""
 from __future__ import annotations
 
 import argparse
-import difflib
 import hashlib
 import json
 import re
 import tomllib
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_DIRS = {".git", "target", "vendor", "build", "dist", "node_modules"}
-RUST_KEYWORDS = {
-    "as", "async", "await", "break", "const", "continue", "crate", "dyn",
-    "else", "enum", "extern", "false", "fn", "for", "if", "impl", "in",
-    "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
-    "self", "Self", "static", "struct", "super", "trait", "true", "type",
-    "unsafe", "use", "where", "while", "yield",
-}
+KEYWORDS = set("""
+as async await break const continue crate dyn else enum extern false fn for if impl in
+let loop match mod move mut pub ref return self Self static struct super trait true type
+unsafe use where while yield
+""".split())
 TOKEN_RE = re.compile(
     r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|'
     r'\b\d+(?:\.\d+)?\b|[A-Za-z_][A-Za-z0-9_]*|'
@@ -33,39 +27,59 @@ FN_RE = re.compile(r'\bfn\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(')
 
 def rust_files(root: Path):
     for path in root.rglob("*.rs"):
-        if any(part in SKIP_DIRS for part in path.parts):
-            continue
-        yield path
+        if not any(part in SKIP_DIRS for part in path.parts):
+            yield path
 
 
-def strip_comments_and_extract_functions(source: str):
-    """Find function bodies with a small lexer that skips comments and literals."""
-    functions = []
+def mask_rust(source: str, mask_literals: bool):
+    """Mask comments (including nested block comments) and optionally literals."""
+    out = list(source)
     i, n = 0, len(source)
-    clean = list(source)
+
+    def blank(start, end):
+        for k in range(start, end):
+            if out[k] != "\n":
+                out[k] = " "
+
     while i < n:
+        # Raw strings: r"...", r#"..."#, br#"..."#
+        raw = re.match(r'(?:br|r)(#*)" ', source[i:])
+        if raw:
+            # The expression above intentionally does not match ordinary raw
+            # strings with no space; handle the actual delimiter below.
+            raw = re.match(r'(?:br|r)(#*)"', source[i:])
+        if raw:
+            hashes = raw.group(1)
+            start = i
+            terminator = '"' + hashes
+            end_at = source.find(terminator, i + raw.end())
+            i = n if end_at < 0 else end_at + len(terminator)
+            if mask_literals:
+                blank(start, i)
+            continue
         if source.startswith("//", i):
-            j = source.find("\n", i)
-            j = n if j < 0 else j
-            for k in range(i, j):
-                clean[k] = " "
-            i = j
-        elif source.startswith("/*", i):
-            depth, j = 1, i + 2
-            while j < n and depth:
-                if source.startswith("/*", j):
+            end = source.find("\n", i)
+            end = n if end < 0 else end
+            blank(i, end)
+            i = end
+            continue
+        if source.startswith("/*", i):
+            start, depth = i, 1
+            i += 2
+            while i < n and depth:
+                if source.startswith("/*", i):
                     depth += 1
-                    j += 2
-                elif source.startswith("*/", j):
+                    i += 2
+                elif source.startswith("*/", i):
                     depth -= 1
-                    j += 2
+                    i += 2
                 else:
-                    j += 1
-            for k in range(i, j):
-                if clean[k] != "\n":
-                    clean[k] = " "
-            i = j
-        elif source[i] == '"':
+                    i += 1
+            blank(start, i)
+            continue
+        if source[i] == '"':
+            start
+ = i
             i += 1
             while i < n:
                 if source[i] == "\\":
@@ -75,35 +89,43 @@ def strip_comments_and_extract_functions(source: str):
                     break
                 else:
                     i += 1
-        else:
-            i += 1
-    cleaned = "".join(clean)
-    for match in FN_RE.finditer(cleaned):
-        open_brace = cleaned.find("{", match.end())
-        semicolon = cleaned.find(";", match.end())
+            if mask_literals:
+                blank(start, i)
+            continue
+        i += 1
+    return "".join(out)
+
+
+def extract_functions(source: str):
+    structure = mask_rust(source, True)
+    token_source = mask_rust(source, False)
+    found = []
+    for match in FN_RE.finditer(structure):
+        open_brace = structure.find("{", match.end())
+        semicolon = structure.find(";", match.end())
         if open_brace < 0 or (semicolon >= 0 and semicolon < open_brace):
             continue
-        depth, j = 1, open_brace + 1
-        while j < n and depth:
-            if cleaned[j] == "{":
+        depth, pos = 1, open_brace + 1
+        while pos < len(structure) and depth:
+            if structure[pos] == "{":
                 depth += 1
-            elif cleaned[j] == "}":
+            elif structure[pos] == "}":
                 depth -= 1
-            j += 1
+            pos += 1
         if depth == 0:
-            functions.append((match.group(1), source[open_brace + 1:j - 1]))
-    return functions
+            found.append((match.group(1), token_source[open_brace + 1:pos - 1]))
+    return found
 
 
 def normalized_tokens(code: str):
-    tokens = TOKEN_RE.findall(code)
+    code = mask_rust(code, False)
     result = []
-    for token in tokens:
+    for token in TOKEN_RE.findall(code):
         if token.startswith('"') or token.startswith("'"):
             result.append("<LITERAL>")
         elif token[0].isdigit():
             result.append("<NUMBER>")
-        elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", token) and token not in RUST_KEYWORDS:
+        elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", token) and token not in KEYWORDS:
             result.append("<IDENT>")
         else:
             result.append(token)
@@ -116,50 +138,81 @@ def shingles(tokens, width=5):
     return {tuple(tokens[i:i + width]) for i in range(len(tokens) - width + 1)}
 
 
+def simhash(features):
+    vector = [0] * 64
+    for feature in features:
+        digest = int.from_bytes(hashlib.blake2b(repr(feature).encode(), digest_size=8).digest(), "big")
+        for bit in range(64):
+            vector[bit] += 1 if digest & (1 << bit) else -1
+    value = 0
+    for bit, weight in enumerate(vector):
+        if weight >= 0:
+            value |= 1 << bit
+    return value
+
+
 def code_candidates(root: Path):
-    funcs = []
+    functions = []
     for path in rust_files(root):
         try:
             source = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        for name, body in strip_comments_and_extract_functions(source):
+        for name, body in extract_functions(source):
             tokens = normalized_tokens(body)
             if len(tokens) >= 25:
-                funcs.append({
+                features = shingles(tokens)
+                functions.append({
                     "path": path.relative_to(root).as_posix(),
                     "name": name,
                     "tokens": tokens,
+                    "features": features,
                     "hash": hashlib.sha256(" ".join(tokens).encode()).hexdigest(),
+                    "simhash": simhash(features),
                 })
+
     exact = defaultdict(list)
-    for fn in funcs:
+    for fn in functions:
         exact[fn["hash"]].append(fn)
     exact_groups = [
         [{"path": f["path"], "function": f["name"]} for f in group]
         for group in exact.values() if len(group) > 1
     ]
 
+    # LSH candidate generation avoids comparing every function with every other
+    # function. Four 16-bit bands catch close SimHash neighbours efficiently.
+    buckets = defaultdict(list)
+    for index, fn in enumerate(functions):
+        value = fn["simhash"]
+        for band in range(4):
+            buckets[(band, (value >> (band * 16)) & 0xFFFF)].append(index)
+    pairs = set()
+    for indexes in buckets.values():
+        if len(indexes) > 200:
+            continue  # overly common band: skip noisy bucket
+        for offset, left in enumerate(indexes):
+            for right in indexes[offset + 1:]:
+                if left != right:
+                    pairs.add((min(left, right), max(left, right)))
+
     similar = []
-    for i, left in enumerate(funcs):
-        left_set = shingles(left["tokens"])
-        for right in funcs[i + 1:]:
-            if left["path"] == right["path"] and left["name"] == right["name"]:
-                continue
-            a, b = len(left["tokens"]), len(right["tokens"])
-            if min(a, b) / max(a, b) < 0.72:
-                continue
-            right_set = shingles(right["tokens"])
-            union = left_set | right_set
-            score = len(left_set & right_set) / len(union) if union else 0.0
-            if score >= 0.72:
-                similar.append({
-                    "score": round(score, 3),
-                    "left": {"path": left["path"], "function": left["name"]},
-                    "right": {"path": right["path"], "function": right["name"]},
-                })
+    for left_i, right_i in pairs:
+        left, right = functions[left_i], functions[right_i]
+        if left["path"] == right["path"] and left["name"] == right["name"]:
+            continue
+        a, b = len(left["tokens"]), len(right["tokens"])
+        if min(a, b) / max(a, b) < 0.72:
+            continue
+        union = left["features"] | right["features"]
+        score = len(left["features"] & right["features"]) / len(union) if union else 0.0
+        if score >= 0.72:
+            similar.append({
+                "score": round(score, 3),
+                "left": {"path": left["path"], "function": left["name"]},
+                "right": {"path": right["path"], "function": right["name"]},
+            })
     similar.sort(key=lambda item: item["score"], reverse=True)
-    return exact_groups, similar, len(funcs)
+    return exact_groups, similar, len(functions)
 
 
 def concept_candidates(root: Path):
@@ -197,32 +250,26 @@ def main():
     parser.add_argument("--markdown", type=Path, default=Path("reports/engine-audit.md"))
     args = parser.parse_args()
     root = args.root.resolve()
-
-    exact, similar, function_count = code_candidates(root)
+    exact, similar, count = code_candidates(root)
     concepts = concept_candidates(root)
     report = {
         "scope": "read-only heuristic scan; no source files modified",
-        "rust_functions_scanned": function_count,
+        "rust_functions_scanned": count,
         "exact_duplicate_groups": exact,
         "structural_similarity_candidates": similar,
         "conceptual_overlap_candidates": concepts,
     }
-    json_path = root / args.json
-    md_path = root / args.markdown
+    json_path, md_path = root / args.json, root / args.markdown
     json_path.parent.mkdir(parents=True, exist_ok=True)
     md_path.parent.mkdir(parents=True, exist_ok=True)
     json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-
     lines = [
-        "# Engine Duplicate Audit",
-        "",
-        f"- Rust functions scanned: **{function_count}**",
+        "# Engine Duplicate Audit", "",
+        f"- Rust functions scanned: **{count}**",
         f"- Exact duplicate groups: **{len(exact)}**",
         f"- Structural similarity candidates: **{len(similar)}**",
-        f"- Conceptual overlap candidates: **{len(concepts)}**",
-        "",
-        "> Heuristic findings only. Similarity is not proof of duplication. No source code was changed.",
-        "",
+        f"- Conceptual overlap candidates: **{len(concepts)}**", "",
+        "> Heuristic findings only; similarity is not proof of duplication. Source files are never modified.", "",
         "## Exact duplicates",
     ]
     for group in exact:
@@ -231,10 +278,7 @@ def main():
         lines.append("- None detected.")
     lines += ["", "## Structural similarity"]
     for item in similar:
-        lines.append(
-            f"- **{item['score']:.1%}** — `{item['left']['path']}::{item['left']['function']}` "
-            f"↔ `{item['right']['path']}::{item['right']['function']}`"
-        )
+        lines.append(f"- **{item['score']:.1%}** — `{item['left']['path']}::{item['left']['function']}` ↔ `{item['right']['path']}::{item['right']['function']}`")
     if not similar:
         lines.append("- None detected.")
     lines += ["", "## Conceptual overlap"]
@@ -242,15 +286,11 @@ def main():
         if "error" in item:
             lines.append(f"- ERROR: {item['error']}")
         else:
-            lines.append(
-                f"- `{item['left']}` ↔ `{item['right']}`; "
-                f"shared tags: {', '.join(item['shared_tags']) or 'none'}; "
-                f"shared terms: {', '.join(item['shared_responsibility_terms']) or 'none'}."
-            )
+            lines.append(f"- `{item['left']}` ↔ `{item['right']}`; shared tags: {', '.join(item['shared_tags']) or 'none'}; shared terms: {', '.join(item['shared_responsibility_terms']) or 'none'}.")
     if not concepts:
         lines.append("- None detected (or registry has no systems yet).")
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"Scanned {function_count} Rust functions.")
+    print(f"Scanned {count} Rust functions.")
     print(f"Exact groups: {len(exact)} | structural candidates: {len(similar)} | conceptual candidates: {len(concepts)}")
     print(f"Reports: {json_path} and {md_path}")
 
