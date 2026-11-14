@@ -85,3 +85,6 @@ Sursa: AGENTS.md din commitul bcb7258ad101638c57e8cdd7b1e3da406440bea8. Acestea 
 - Parsing-ul comenzilor și executarea lor sunt responsabilități diferite: horizon-command deține tree/argument parsing; gameplay-ul din horizon-client deține dispatch și efectele comenzilor.
 - horizon-world deține logică world/server-side (inclusiv ticks/redstone), în timp ce horizon-client deține bucla de gameplay și coordonarea client/server. Nu le unim conceptual fără a distinge state ownership și threading.
 - Rendererul este separat de gameplay; un sistem vizual care citește starea jocului nu devine automat owner al regulilor de simulare.
+
+
+Manifest verification: crates/horizon-client-lib/Cargo.toml sets `[lib] path = "../horizon-client/src/client_lib.rs"`; its library source is physically in the horizon-client tree. The crate itself contains only its Cargo.toml. This is one shared source path exposed as a separate Cargo library target, not two independent source implementations.
