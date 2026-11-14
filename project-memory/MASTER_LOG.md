@@ -36,3 +36,10 @@
 - Optimizările și reducerea codului sunt permise numai dacă nu schimbă comportamentul vanilla. Nu se acceptă code-golf, scurtături nesigure sau eliminarea validărilor necesare.
 - A fost creat `PROJECT_GOAL_AND_RULES.md` ca document canonic; `project-memory/START_HERE.md` îl cere la începutul fiecărei sesiuni, iar `project-memory/DECISIONS.md` înregistrează decizia D-005.
 - Aceste schimbări sunt pe branch-ul `project-rules/parity-goal`; trebuie integrate în `main` după rezolvarea importului upstream aflat în desfășurare. Nu se declară încă prezente pe `main`.
+
+
+## 2026-11-15 — Politica local-only pentru fișierele Mojang
+
+- Clarificată regula canonică: jar-urile Minecraft, asset-urile Mojang, sursele decompilate și resursele pregătite/exportate nu se comit în repository.
+- Datele se folosesc local din instalarea legitimă a utilizatorului sau din altă sursă autorizată, de regulă sub .local/.
+- Decizia este documentată ca D-006 și completează regula existentă privind respectarea licențelor și permisiunilor.
