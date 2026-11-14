@@ -43,7 +43,6 @@ def mask_rust(source: str, mask_literals: bool):
 
     while i < n:
         # Raw strings: r"...", r#"..."#, br#"..."#
-        raw = re.match(r'(?:br|r)(#*)"', source[i:])
         if raw:
             # The expression above intentionally does not match ordinary raw
             # strings with no space; handle the actual delimiter below.
@@ -79,7 +78,6 @@ def mask_rust(source: str, mask_literals: bool):
             continue
         if source[i] == '"':
             start = i
- = i
             i += 1
             while i < n:
                 if source[i] == "\\":
