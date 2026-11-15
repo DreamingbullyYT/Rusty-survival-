@@ -113,7 +113,7 @@ jobs:
           EOF
 
           python -m unittest discover -s tests -p "test_*.py"
-          python tools/engine_audit.py --json reports/upstream-bcb7258-audit.json --markdown reports/upstream-bcb7258-audit.md
+          python tools/engine_audit.py --scope engine --json reports/upstream-bcb7258-audit.json --markdown reports/upstream-bcb7258-audit.md
 
           # Keep upstream workflows available to their tests, but do not import them into our repository.
           git rm -r -f --ignore-unmatch .github

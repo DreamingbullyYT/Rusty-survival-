@@ -2,25 +2,29 @@
 
 La începutul fiecărei sesiuni:
 
-1. Citește acest fișier.
-2. Citește integral `MASTER_LOG.md` și ultimele stări din `TASKS.md`, `ARCHITECTURE.md`, `SYSTEM_REGISTRY.md`, `DEPENDENCIES.md`, `DECISIONS.md`, `TEST_RESULTS.md` și `DO_NOT_DUPLICATE.md`.
-3. Verifică repository-ul și commit-ul curent; documentația poate fi depășită.
-4. Compară starea reală a codului cu memoria. Dacă diferă, investighează și consemnează diferența înainte de a modifica.
-5. Nu presupune că o sarcină este făcută doar fiindcă apare ca planificată.
+1. Citește integral `PROJECT_GOAL_AND_RULES.md` — acesta este documentul canonic pentru obiectiv și regulile care nu se negociază.
+2. Citește acest fișier.
+3. Citește docs/private-vanilla-26-3-parity.md înainte de a pregăti sau modifica testarea cu resurse Mojang în CI.
+4. Citește integral `MASTER_LOG.md` și stările curente din `TASKS.md`, `ARCHITECTURE.md`, `SYSTEM_REGISTRY.md`, `DEPENDENCIES.md`, `PARITY_MATRIX.md`, `DECISIONS.md`, `TEST_RESULTS.md` și `DO_NOT_DUPLICATE.md`. Pentru detectorul conceptual, verifică și `system_registry.toml`.
+5. Verifică repository-ul, branch-ul și commit-ul curent; documentația poate fi depășită.
+6. Compară memoria cu starea reală a codului. Dacă diferă, investighează și consemnează diferența înainte de a modifica.
+7. Nu presupune că o sarcină este făcută doar fiindcă apare ca planificată.
 
 ## Reguli care nu se negociază
 
-- Lucrăm numai la engine-ul Horizon.
-- Nu implementăm acum launcherul și nici propriul Modding API.
-- Înainte să adaugi, modifici sau ștergi ceva, caută în tot repository-ul dacă există deja.
-- Nicio funcționalitate nu trebuie să aibă două implementări canonice.
-- Dublurile conceptuale contează chiar dacă au nume diferite sau sunt în fișiere diferite.
-- Detectorul nu șterge și nu modifică automat codul.
-- Nu elimina cod până când nu există dovezi, înțelegerea dependențelor, teste și o decizie documentată.
+- Lucrăm numai la refactorizarea vanilla engine-ului Horizon.
+- Ținta este paritate comportamentală 1:1 cu Minecraft: Java Edition; baseline-ul inițial din upstream este Java Edition 26.3.
+- Codul trebuie să fie cât mai mic posibil, dar niciodată prin sacrificarea parității, corectitudinii, mentenabilității sau performanței.
+- Refolosim asset-urile Mojang din surse legitime și numai în limitele permisiunilor/licenței aplicabile; asset-urile nu înlocuiesc logica jocului.
+- Nu implementăm acum launcherul, funcționalități Android/platform/Horizon extras sau propriul Modding API. API-ul de modding vine numai după stabilizarea engine-ului.
+- Înainte să adaugi, modifici, muți sau ștergi ceva, caută în tot repository-ul dacă există deja.
+- O singură implementare canonică pentru fiecare responsabilitate; dublurile conceptuale contează chiar dacă numele diferă.
+- Detectorul raportează candidați; nu șterge și nu modifică automat codul.
+- Nu elimina cod fără dovezi, verificarea dependențelor și utilizărilor, teste și decizie documentată.
 - `MASTER_LOG.md` este append-only. Adaugă numai la final. Nu rescrie și nu șterge niciodată intrări vechi.
 - Actualizează fișierele de memorie afectate după fiecare activitate tehnică.
 - Nu pretinde că ai modificat sau testat ceva dacă tool-ul nu a confirmat operația.
 
 ## Ordinea de lucru
 
-Audit upstream → inventar sisteme → hartă dependențe → analiză duplicări → arhitectură țintă → refactor incremental → teste → stabilizare → abia apoi proiectarea Modding API-ului propriu.
+Verificare upstream/import → inventar sisteme → hartă dependențe și ownership → matrice de paritate Java Edition → analiză duplicări → arhitectură țintă → refactor incremental → teste de paritate/regresie → stabilizare → abia apoi proiectarea Modding API-ului propriu.

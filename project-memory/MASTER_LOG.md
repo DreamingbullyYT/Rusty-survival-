@@ -35,3 +35,46 @@
 - Upstream already provides `tools/layers.json` and `tools/check_layers.py`; these are the canonical dependency-layer checks and will be reused, not reimplemented.
 - Upstream documents engine, platform and Horizon layers. Our code-change scope is the vanilla engine only; launcher and platform/Horizon features are retained as references/build dependencies where needed, not refactor targets.
 - The upstream layer inventory identifies 19 engine crates. This is a starting classification, not a claim that all gameplay has already been cleanly separated.
+
+## 2026-11-15 — Import upstream confirmat și pregătirea auditului engine-only
+
+- Importul snapshot-ului Horizon a fost confirmat prin GitHub Actions run #8 (SUCCESS); `main` a avansat la `e02bf6f8e3b3f2a8725fbd3975c92a192b2456cf`.
+- Logul jobului confirmă fetch-ul upstream pinned `bcb7258ad101638c57e8cdd7b1e3da406440bea8`, rularea testelor, generarea raportului și push-ul commitului de import.
+- Testele din workflow au raportat 967 teste OK și 9 skipped.
+- Scanarea inițială a inclus toate sursele Rust: 41.988 funcții, 835 grupuri exacte și 11.343 candidați structurali. Rezultatele sunt doar candidați euristici și nu au fost folosite pentru ștergeri sau refactor.
+- Branch-ul de integrare pornește din commitul de import și aduce regulile canonice, inventarul preliminar, harta dependențelor, matricea de paritate și detectorul cu scope engine-only.
+- Testele detectorului engine-only și raportul restrâns trebuie confirmate de CI înainte de a folosi rezultatele pentru analiză semantică.
+- Nicio componentă a engine-ului nu a fost încă refactorizată; urmează inventarierea semantică, nu ștergerea de cod.
+
+## 2026-11-15 — Izolarea testelor de audit față de fixture-urile CI upstream
+
+- PR #1 run `43652682189` a eșuat deoarece `unittest discover` a inclus teste upstream care presupun prezența workflow-urilor și template-urilor `.github` originale, pe care importul le-a eliminat intenționat pentru a păstra configurația CI a repository-ului nostru.
+- Logul confirmă 922 teste, 9 skipped, 12 erori și 1 failure; problemele observate sunt fișiere workflow/template lipsă și un test care așteaptă cel puțin 10 runner jobs upstream.
+- Suite-ul complet upstream a trecut înainte de curățarea `.github` în import run #8 (967 OK, 9 skipped). Pentru CI-ul proiectului, workflow-ul de audit a fost restrâns la testele dedicate `test_engine_audit.py`, urmate de scanarea read-only engine-only.
+- Nicio modificare a engine-ului și nicio ștergere de cod nu a rezultat din această problemă.
+
+
+## 2026-11-15 — Decizie pentru resurse Mojang efemere în GitHub Actions
+
+- A fost consemnat planul de testare Java↔Rust Minecraft 26.3 într-un workflow manual, cu descărcare din endpoint-urile oficiale Mojang și verificare strictă prin research-lock.json.
+- Resursele vor exista numai în spațiul temporar al runnerului; fără commit, artifact, cache Actions sau release. Se vor folosi permisiuni minime și loguri limitate la checksum-uri și sumarul testelor.
+- S-a documentat explicit că logurile unui repository public rămân publice; efemer înseamnă că fișierele nu sunt păstrate/distribuite de repo, nu că GitHub sau vizitatorii logurilor nu pot vedea metadatele execuției.
+- Inspecția tools/lab.py a arătat că importul actual se bazează pe instalarea oficială locală și pe un server JAR furnizat separat. Este necesară adaptarea inputurilor sau un adapter minimal înainte de a putea folosi același flux pe runner.
+- Documentația dedicată: docs/private-vanilla-26-3-parity.md; decizia D-007; task-ul rămâne în curs.
+- Doar documentare și planificare: workflow-ul nu a fost încă implementat/rulat; nu s-au executat teste de paritate noi.
+
+
+## 2026-11-15 — Implementare downloader Mojang efemer și workflow manual
+
+- După inspecția completă a CLI-ului horizon-prepare și a preparării upstream, s-a confirmat că importatorul Rust existent acceptă layout-ul launcherului și nu necesită modificări sau un al doilea importator.
+- Adăugate tools/ci/vanilla_data.py pentru descărcarea oficială a version JSON, client/server JAR, artifactelor de bibliotecă, asset index-ului și tuturor obiectelor de asset; fiecare fișier este verificat prin SHA-1 și, când manifestul declară, dimensiune.
+- Adăugate teste unitare pentru validarea căilor, pin-urilor și descărcării atomice. Aceste teste sunt definite, dar nu au fost încă executate.
+- Adăugat .github/workflows/private-vanilla-parity.yml, manual-only, cu JDK 25, suite smoke/all/named, fără cache sau upload de artifacte, și cleanup la final.
+- Corectată documentația: manifest_sha1 este hash-ul version JSON-ului 26.3, nu al manifestului global Mojang.
+- Workflow-ul nu a fost executat: GitHub cere ca fișierul să fie prezent pe branch-ul default pentru workflow_dispatch; branch-ul curent este încă PR #1. Nicio resursă Mojang nu a fost descărcată și nu există rezultate de paritate noi.
+
+
+## 2026-11-15 — Confirmare teste unitare downloader în CI
+
+- Engine Audit Tooling run #32, commit dcf5300497ea816f91c1c11d032ea52c62fa822d: pasul Run vanilla downloader unit tests s-a încheiat cu SUCCESS; toate cele patru teste unitare au trecut.
+- La momentul înregistrării, auditul read-only engine din același job era încă în desfășurare. Workflow-ul de descărcare Mojang/parity nu a fost declanșat.

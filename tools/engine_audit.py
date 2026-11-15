@@ -25,10 +25,40 @@ TOKEN_RE = re.compile(
 FN_RE = re.compile(r'\bfn\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?:<[^;{}]*?>)?\s*\(')
 
 
-def rust_files(root: Path):
-    for path in root.rglob("*.rs"):
-        if not any(part in SKIP_DIRS for part in path.parts):
-            yield path
+def rust_files(root: Path, scope: str = "engine"):
+    """Yield production Rust files in the requested scope.
+
+    Engine scope is driven by the upstream tools/layers.json registry. It includes
+    each engine crate's src/ tree and crate-level build.rs, but excludes standalone
+    tests, examples, benches and fixtures. Inline #[cfg(test)] modules are still
+    part of their source file and are therefore a documented scanner limitation.
+    """
+    if scope == "all":
+        for path in root.rglob("*.rs"):
+            if not any(part in SKIP_DIRS for part in path.parts):
+                yield path
+        return
+
+    config_path = root / "tools" / "layers.json"
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        engine_crates = sorted(
+            name for name, layer in config["crates"].items() if layer == "engine"
+        )
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        raise ValueError(f"Cannot load engine crate scope from {config_path}: {exc}") from exc
+
+    excluded = {"tests", "benches", "examples", "fixtures", "testdata"}
+    for crate in engine_crates:
+        crate_root = root / "crates" / crate
+        if not crate_root.is_dir():
+            continue
+        for path in crate_root.rglob("*.rs"):
+            relative = path.relative_to(crate_root)
+            if any(part in excluded or part in SKIP_DIRS for part in relative.parts):
+                continue
+            if relative.parts[0] == "src" or relative.as_posix() == "build.rs":
+                yield path
 
 
 def mask_rust(source: str, mask_literals: bool):
@@ -154,9 +184,10 @@ def simhash(features):
     return value
 
 
-def code_candidates(root: Path):
+def code_candidates(root: Path, scope: str = "engine"):
     functions = []
-    for path in rust_files(root):
+    source_files = list(rust_files(root, scope))
+    for path in source_files:
         try:
             source = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
@@ -215,7 +246,7 @@ def code_candidates(root: Path):
                 "right": {"path": right["path"], "function": right["name"]},
             })
     similar.sort(key=lambda item: item["score"], reverse=True)
-    return exact_groups, similar, len(functions)
+    return exact_groups, similar, len(functions), len(source_files)
 
 
 def concept_candidates(root: Path):
@@ -249,14 +280,17 @@ def concept_candidates(root: Path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument("--scope", choices=("engine", "all"), default="engine",
+                        help="scan production files in engine crates (default), or every Rust file")
     parser.add_argument("--json", type=Path, default=Path("reports/engine-audit.json"))
     parser.add_argument("--markdown", type=Path, default=Path("reports/engine-audit.md"))
     args = parser.parse_args()
     root = args.root.resolve()
-    exact, similar, count = code_candidates(root)
+    exact, similar, count, files_count = code_candidates(root, args.scope)
     concepts = concept_candidates(root)
     report = {
-        "scope": "read-only heuristic scan; no source files modified",
+        "scope": f"read-only {args.scope} scan; engine scope includes crate src/ and build.rs, excluding standalone tests/examples/benches/fixtures; no source files modified",
+        "rust_files_scanned": files_count,
         "rust_functions_scanned": count,
         "exact_duplicate_groups": exact,
         "structural_similarity_candidates": similar,
@@ -268,6 +302,8 @@ def main():
     json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
     lines = [
         "# Engine Duplicate Audit", "",
+        f"- Scope: **{args.scope}**",
+        f"- Rust source files scanned: **{files_count}**",
         f"- Rust functions scanned: **{count}**",
         f"- Exact duplicate groups: **{len(exact)}**",
         f"- Structural similarity candidates: **{len(similar)}**",
@@ -293,7 +329,7 @@ def main():
     if not concepts:
         lines.append("- None detected (or registry has no systems yet).")
     md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"Scanned {count} Rust functions.")
+    print(f"Scanned {files_count} Rust source files and {count} functions.")
     print(f"Exact groups: {len(exact)} | structural candidates: {len(similar)} | conceptual candidates: {len(concepts)}")
     print(f"Reports: {json_path} and {md_path}")
 
