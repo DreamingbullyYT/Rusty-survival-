@@ -70,3 +70,12 @@ Un punct separat de verificat este `Vec3::rotation`, care folosește `f64::atan2
 - `structure/start.rs` deține structure kinds, placement codecs, start generation, jigsaw assembly, saved piece read și piece placement.
 - Acestea nu sunt dubluri: fiecare reprezintă o etapă vanilla distinctă. Nu comasa doar pentru a reduce numărul de fișiere sau a liniilor.
 - Feature catalog snapshot și feature graph inline sunt două responsabilități distincte: registry resolution/holders/tags vs execuția arborilor decodați.
+
+
+## Clarificare — feature scheduling, graph, catalog și placement
+
+- `decoration.rs` construiește ordinea biome→feature per step și calculează indexul pentru random seed; nu decodează feature JSON și nu plasează blocuri.
+- `feature_catalog.rs` rezolvă named feature/placed-feature holders și tags într-un snapshot bounded; nu este live registry loader.
+- `feature_graph.rs` decodează și execută arborii configured/placed features; nu gestionează registry reload sau chunk scheduling.
+- `placement.rs` decodează modifier-ele, `placement/chain.rs` le execută în ordinea declarată, iar `placement/layer.rs` implementează doar algoritmul intern de layer scan.
+- `state_provider.rs` produce BlockStateId; `block_feature.rs` și modulele concrete de feature scriu world state prin FeatureWorld. Sunt responsabilități diferite, nu dubluri.

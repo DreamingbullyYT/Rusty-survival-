@@ -219,3 +219,27 @@ Nota anterioară „structurile nu sunt generate” este prea generală și treb
 ### Nivel de certitudine
 
 Aceste concluzii provin din citirea sursei și a descrierilor harness-urilor. Nu s-au executat cargo tests, parity harnesses sau worldgen end-to-end în această sesiune. Nu se declară worldgen complet.
+
+
+## Feature execution — ownership și suprafață de codec
+
+### Configured feature graph
+
+- `feature_graph.rs` este arborele executabil al unui configured/placed feature, nu registry loader. Include basic End/platform features; block column/pile/disk/spring/vines/snow-freeze/delta/bamboo/replace blobs/end podium/gateway/bonus chest/chorus/speleothem/spike/blue ice/underwater magma/block blob/simple block; ore/scattered ore; trees/fallen trees; vegetation patch/coral/huge mushroom/multiface; lake/monster room/geode/iceberg/root system/dripstone/fungus/sculk/end spike; template/fossil; și compoziții weighted/sequence/overlay/random/boolean/chance.
+- Unele feature kinds cer `FeatureBlockBindings`, state-provider catalogs, biome/fluid/block tags, template resources ori callbacks de world. Așadar „type recunoscut” nu înseamnă că orice root poate fi executat fără toate resursele și bindings.
+- Decoderul limitează graph depth la 128, nod budget la 65.536, feature lists la 8.192 și modifier chains la 1.024. Acestea sunt protecții de input/work, iar paritatea trebuie verificată pentru resurse vanilla reale, nu presupusă din limite.
+
+### Placement modifiers
+
+`placement.rs::PlacementModifier` include biome, block predicate, environment scan, heightmap, surface-relative threshold, surface water depth, count/count-on-every-layer, noise-based count, noise-threshold count, in-square, cuboid, offset, height range, rarity, random chance, fixed placement și randomly selected. `placement/chain.rs` deține executarea ordonată cu buffer pending reutilizabil; `placement/layer.rs` deține layer scan și sampling intercalat al count provider-ului. Nu dubla aceste două execuții.
+
+### State providers și block-writing behavior
+
+- `state_provider.rs` deține simple, weighted, random block, rotated, copy properties, randomized int, rule-based și noise/noise-threshold/dual-noise providers; `state_provider/catalog.rs` rezolvă named holders, iar `state_provider/noise.rs` deține selecția noise.
+- `block_feature.rs` deține bindings și feature-uri de block-writing precum fill layer și replace single block; `generator_blocks.rs` leagă proprietățile/collision/support/survival ale blocurilor necesare features.
+- `feature.rs::BasicFeature` are doar void start platform, End island și End platform; nu reprezintă catalogul complet, care este în `feature_graph.rs`.
+- `decoration.rs` deține scheduling-ul biome→feature per step și seed index; `generator_decoration.rs` adaptează planul la 3×3 world region și adaugă structurile în ordinea vanilla.
+
+### Limita de inventar rămasă
+
+Nu putem spune care roots concrete din bundle-ul vanilla 26.3 sunt omise până nu inspectăm resursele autorizate extrase local (feature/placed_feature registries, tags, block facts, templates). Codul arată suportul tipurilor și decoderelor; lista roots efectiv unsupported este calculată la încărcarea bundle-ului și expusă de `unsupported_features()`.

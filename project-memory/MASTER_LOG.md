@@ -114,3 +114,13 @@
 - `feature_catalog.rs` declară explicit că este snapshot, nu datapack registry loader complet/live reload; `feature_graph.rs` execută arbori inline bounded. Unsupported placed-feature roots sunt omise din execuție, păstrând per-step order și seed-urile următoare.
 - `test_chunk_generation_parity.py` compară chunk-uri întregi (block states, quart biomes, block entity NBT) folosind un oracle Java care rulează stages vanilla; `test_structure_layout_parity.py`, `test_structure_blocks_parity.py` și `test_terrain_parity.py` verifică subdomenii separate. Harness-urile nu au fost rulate în această sesiune.
 - Nicio logică de engine nu a fost modificată; concluziile sunt source-backed, nu rezultate de execuție.
+
+
+## 2026-11-15 — Inventar feature graph, placement și state providers
+
+- Inspectate `feature.rs`, `feature_graph.rs`, `feature_catalog.rs`, `placement.rs`, `placement/chain.rs`, `placement/layer.rs`, `decoration.rs`, `feature_sort.rs`, `state_provider.rs`, `state_provider/noise.rs` și `block_feature.rs`.
+- Confirmată separarea între biome-step scheduling, named holder/tag expansion, executable feature graph, ordered placement modifier chain, state providers și block-writing features.
+- Feature graph-ul recunoaște o familie largă de algoritmi vanilla și compoziții; BasicFeature este doar submulțimea void start platform/End island/End platform. Placement și state-provider codecs au propriile familii și limite bounded.
+- Feature catalog declară explicit că nu este datapack registry loader complet și nu oferă live reload; graph-ul este bounded (depth 128, node budget 65.536; feature list 8.192; modifier chain 1.024). State provider are propriile limite depth 128/node budget 65.536.
+- Nu am putut extrage roots concrete unsupported din bundle-ul vanilla 26.3: resursele autorizate trebuie furnizate local și rămân necomise. `unsupported_features()` expune erorile concrete după încărcarea generatorului.
+- Nicio implementare engine nu a fost modificată și niciun test de paritate nu a fost rulat.

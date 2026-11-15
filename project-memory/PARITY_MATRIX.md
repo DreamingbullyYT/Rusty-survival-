@@ -135,3 +135,12 @@ Acestea sunt gap-uri de comportament, nu oportunități de ștergere. Înainte d
 ### Corecție importantă
 
 O intrare anterioară spunea că „structurile nu sunt generate”. Formularea este retrasă ca verdict general: sursa implementează structure starts, references, mai multe structure kinds, jigsaw assembly și piece placement. Verdictul corect este **suport parțial cu tipuri și trasee unsupported**, nu sistem absent. Whole-chunk harness-ul există și acoperă întregul flux pentru corpusul său, dar nu a fost rulat în această sesiune.
+
+
+### Feature codec / placement / provider scope
+
+- `FeatureDefinition` are implementări pentru o familie largă de feature algorithms și combinatori; `BasicFeature` este doar submulțimea End/platform. Nu deduce acoperirea completă din numărul de variante.
+- `PlacementModifier` acoperă biome, block predicate, environment scan, heightmap/surface, count/noise count, in-square/cuboid/offset, height range, rarity/chance, fixed și randomly selected.
+- `BlockStateProvider` acoperă simple/weighted/random block, rotated, copy properties, randomized int, rule-based și noise variants.
+- Limitele bounded ale decoderelor (feature depth 128, node budget 65.536, list 8.192, modifier chain 1.024; state-provider depth 128/node budget 65.536; placement depth 256/node budget 65.536) trebuie comparate cu toate resursele vanilla reale. Nu sunt automat gap-uri dacă niciun asset vanilla nu atinge limitele.
+- Lista efectivă de roots unsupported nu este încă măsurată; necesită încărcarea bundle-ului vanilla 26.3 local și raportul `OverworldGenerator::unsupported_features()` pentru fiecare dimensiune.

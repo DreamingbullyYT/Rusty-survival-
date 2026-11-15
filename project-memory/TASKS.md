@@ -68,3 +68,12 @@
 - [ ] Rulează `tools/test_terrain_parity.py`, apoi whole-chunk `tools/test_chunk_generation_parity.py` și harness-urile de structures; păstrează output-ul complet și separă KNOWN de mismatch nou.
 - [ ] Verifică feature registry datapack semantics (named holders, tags, optional dependencies, reload) față de Java 26.3; feature_catalog este explicit doar snapshot bounded.
 - [ ] Nu modifica implementarea înainte de lista completă a unsupported vanilla roots și a callsites lor.
+
+
+## Feature registry / placement audit
+
+- [x] Inventariate familiile de FeatureDefinition, PlacementModifier și BlockStateProvider direct din decoder-ele sursă.
+- [ ] Cu bundle-ul 26.3 legitim disponibil local, înregistrează toate feature și placed-feature roots pe dimensiune; salvează numele și decode error-ul pentru fiecare root unsupported.
+- [ ] Compară toate tipurile și codec-urile prezente în bundle cu match arms din FeatureDefinition, PlacementModifier, BlockStateProvider, BlockPredicate, IntProvider, HeightProvider și tree decorators.
+- [ ] Verifică dacă limitele decoderelor (depth/node/list/modifier) sunt peste toate inputurile vanilla 26.3; orice limită care respinge un asset vanilla este un gap de paritate.
+- [ ] Rulează feature catalog/graph/placement/region/sort/tree parity harnesses după ce probele și resursele locale sunt configurate.

@@ -58,3 +58,11 @@
 - Density decoder-ul acceptă o familie largă de funcții; limitările observate sunt DAG-only, nesting 256, interval branches 256 și no inline noise holders.
 - Inspectate descrierile harness-urilor whole-chunk, terrain, structure-layout și structure-block. Niciunul nu a fost rulat în această sesiune; niciun rezultat nou de paritate nu este raportat.
 - Corectată documentația pentru a nu descrie structures ca sistem absent. Nicio modificare a engine-ului și nicio concluzie de paritate completă.
+
+
+## 2026-11-15 — Feature codec source audit (fără execuție)
+
+- Inspectate match arms și tipurile pentru configured feature graph, placement modifiers și block-state providers.
+- Confirmată suprafața largă de tipuri implementate și separarea responsabilităților; decoder-ele au limite explicite pentru depth/node count/list sizes.
+- Nu au fost încărcate bundle-uri vanilla 26.3 și nu s-au generat rapoarte concrete de unsupported roots; nu s-au rulat parity harnesses.
+- Nicio modificare de engine.
