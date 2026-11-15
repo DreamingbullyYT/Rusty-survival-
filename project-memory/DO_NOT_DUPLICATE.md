@@ -59,3 +59,14 @@ Un punct separat de verificat este `Vec3::rotation`, care folosește `f64::atan2
 - `horizon-core/src/storage.rs::PackedStorage`: API generic de SimpleBitStorage pentru consumerii care au nevoie de slot/word-run/unpack.
 - `horizon-core/src/carving.rs::CarvingMask`: bitset contiguu pentru coloane de carving, nu padded SimpleBitStorage.
 - Aceste tipuri au roluri și contracte diferite; nu sunt dubluri confirmate. Un candidat viitor de minimizare este verificarea dacă partea de low-level read/write din PalettedContainer numeric poate delega mai mult către PackedStorage fără a pierde fast paths sau exactitatea layout-ului. Nu modifica până nu există măsurători și parity tests.
+
+
+## Clarificare — worldgen pipeline și structures
+
+- `generator.rs` orchestrează BIOMES/TERRAIN proto generation și expune separat structure starts/locate/jigsaw queries.
+- `terrain.rs` umple noise-stage chunk; nu este owner pentru structure lifecycle sau FEATURES.
+- `generator_structures.rs` deține STRUCTURE_STARTS/REFERENCES, cache și saved-start integration.
+- `generator_decoration.rs` deține FEATURES stage pentru 3×3 neighborhood, inclusiv plasarea pieselor de structură și placed features.
+- `structure/start.rs` deține structure kinds, placement codecs, start generation, jigsaw assembly, saved piece read și piece placement.
+- Acestea nu sunt dubluri: fiecare reprezintă o etapă vanilla distinctă. Nu comasa doar pentru a reduce numărul de fișiere sau a liniilor.
+- Feature catalog snapshot și feature graph inline sunt două responsabilități distincte: registry resolution/holders/tags vs execuția arborilor decodați.

@@ -55,3 +55,16 @@
 - [x] Confirmată separarea rolurilor dintre numeric PalettedContainer (core), Tag NBT PalettedContainer și BlockSection (world), PackedStorage și CarvingMask.
 - [ ] Verifică dacă duplicarea read/write din `horizon-core/src/paletted.rs` poate folosi `PackedStorage` fără alocări/overhead sau pierdere de fast paths; măsoară înainte de orice schimbare.
 - [ ] Mapează callsites pentru toate aceste tipuri și harness-urile de wire/NBT/save/load înainte de a propune o unificare.
+
+
+## Worldgen — următoarele verificări
+
+- [x] Corectată clasificarea structures: sistemul de starts/references/jigsaw/piece placement există; suportul rămâne parțial și trebuie listate explicit kinds unsupported.
+- [x] Confirmată separarea BIOMES/TERRAIN proto generation, STRUCTURE_STARTS/REFERENCES și FEATURES decoration.
+- [x] Confirmate limitele density registry: DAG only, depth 256, interval branches 256, inline noise holders unsupported.
+- [ ] Extrage lista exactă de StructureKind::Unsupported și Placement::Unsupported din toate bundle-urile vanilla 26.3; verifică dacă tipurile respective sunt vanilla sau doar Horizon/modded.
+- [ ] Extrage toate placed-feature roots care întorc decode errors pentru Overworld/Nether/End din bundle-ul 26.3 și clasifică fiecare algoritm/binding lipsă.
+- [ ] Rulează `tools/parity.py --list` și `--status` într-un mediu cu resursele/JAR-urile legitime 26.3; nu presupune că harness-urile sunt executate.
+- [ ] Rulează `tools/test_terrain_parity.py`, apoi whole-chunk `tools/test_chunk_generation_parity.py` și harness-urile de structures; păstrează output-ul complet și separă KNOWN de mismatch nou.
+- [ ] Verifică feature registry datapack semantics (named holders, tags, optional dependencies, reload) față de Java 26.3; feature_catalog este explicit doar snapshot bounded.
+- [ ] Nu modifica implementarea înainte de lista completă a unsupported vanilla roots și a callsites lor.

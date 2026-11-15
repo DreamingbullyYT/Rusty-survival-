@@ -188,3 +188,34 @@ Aceste limitări arată că baseline-ul importat nu este încă un engine 1:1 co
 
 - `tools/test_paletted_container_parity.py` targets only `horizon-core::paletted::PalettedContainer` and its wire/saved representations against the Java client oracle.
 - It does not by itself validate the Tag/NBT adapter or BlockSection in `horizon-world/src/chunk.rs`; those are separate layers and must be verified through chunk NBT/save-load harnesses.
+
+
+## Worldgen — structură reală a pipeline-ului și limite confirmate
+
+### Chunk pipeline
+
+- `horizon-world/src/worldgen/generator.rs` descrie `generate_proto` ca rulând statusurile BIOMES și TERRAIN; pipeline-ul de terrain include noise fill cu aquifers, material surface și carvers, apoi heightmaps. Nu este doar un noise sampler.
+- `terrain.rs` este owner-ul noise-stage chunk fill și al tranziției ProtoChunk/TerrainChunk; comentariul său precizează că nu produce singur un chunk complet. Structure lifecycle și feature decoration sunt etape separate.
+- `generator_decoration.rs` rulează FEATURES pentru un 3×3 neighborhood, cu structuri și placed features. Rădăcinile de placed feature ale căror algoritmi sau bindings nu sunt implementate sunt omise din execuție, dar poziția în per-step ordering este păstrată pentru a nu altera seed-urile feature-urilor următoare.
+- `generator_structures.rs` deține STRUCTURE_STARTS și STRUCTURE_REFERENCES, inclusiv cache, start generation, saved starts, referințe pentru chunk-uri vecine și beardifier.
+
+### Structures — corecție față de nota anterioară
+
+Nota anterioară „structurile nu sunt generate” este prea generală și trebuie interpretată ca limitare a anumitor trasee din pipeline, nu ca absență a sistemului:
+
+- Există generare de starts prin `create_starts` / `try_generate`, structure-set placement (random spread, concentric rings, dimension origin), validare biome, weighted selection și jigsaw assembly.
+- Sunt implementate mai multe structuri vanilla cu piese dedicate: buried treasure, igloo, swamp hut, desert pyramid, jungle temple, mansion, monument, ruined portal, shipwreck, ocean ruin, mineshaft, stronghold, fortress, nether fossil și End city; jigsaw structures sunt decodate și asamblate prin pool pieces.
+- Structurile au etapă separată de plasare a pieselor în FEATURES, prin `place_in_chunk`, după ce starts/references sunt construite.
+- Sunt suportate saved starts/legacy pieces în limitele formatelor implementate; la load, un start cu copii nesuportați sau necitibili este regenerat în loc să fie acceptat parțial.
+- Există tipuri de structure cu `StructureKind::Unsupported`, placements unsupported și limite specifice pentru jigsaw reach. Prin urmare suportul este parțial, nu absent și nici complet 1:1.
+
+### Density graph și feature registry
+
+- `horizon-world/src/worldgen/density.rs` decodează named density holders și inline roots pentru o familie largă de funcții vanilla: unary/binary arithmetic, constant, blend fields, beardifier, end islands, cache, blend density, pow, round/floor/ceil/truncate, gradient, noise/shift, old blended noise, slice, interpolated, find_top_surface, clamp, range_choice, lerp, interval_select, distance_to_point și spline.
+- Limitările explicit declarate: registrul acceptă numai grafuri aciclice, adâncime maximă 256 și cel mult 256 ramuri interval; inline noise holders nu sunt suportate. Acestea sunt limite de implementare concrete, nu dovada că lipsesc toate codec-urile.
+- `feature_catalog.rs` este un snapshot imutabil al resurselor; comentariul declară că nu este un loader complet de datapack registries și nu oferă live reload. `feature_graph.rs` execută un arbore inline bounded, în timp ce named holders/tags/reload rămân separate.
+- Feature roots cu decode errors sunt păstrate în identitate/order și raportate ca unsupported, nu executate. Acest lucru menține RNG order pentru rădăcinile rămase, dar efectele lipsă rămân diferențe de gameplay.
+
+### Nivel de certitudine
+
+Aceste concluzii provin din citirea sursei și a descrierilor harness-urilor. Nu s-au executat cargo tests, parity harnesses sau worldgen end-to-end în această sesiune. Nu se declară worldgen complet.

@@ -116,3 +116,22 @@ Acestea sunt gap-uri de comportament, nu oportunități de ștergere. Înainte d
 
 - `tools/test_paletted_container_parity.py` compares `horizon-core::paletted::PalettedContainer` against the pinned Java client oracle for block and biome strategies. It exercises single/list/hash-map/global palette thresholds, palette growth, scripted edits, network write/read, canonical pack/unpack and reload hashes.
 - This harness does **not** compare `horizon-world::chunk::PalettedContainer` (generic Tag/NBT adapter), `BlockSection` counts/free-slot reuse, or every `PackedStorage` consumer. Those require their own chunk/NBT/save-load coverage.
+
+
+## Worldgen — actualizare după inspecția callsites
+
+| Sub-sistem | Owner observat | Implementare observată | Limită rămasă / verificare |
+|---|---|---|---|
+| BIOMES + TERRAIN proto generation | `generator.rs`, `terrain.rs`, biome source/chunk | Noise fill, aquifers, material surface, carvers, heightmaps | Nu reprezintă chunk-ul complet sau stage transitions end-to-end |
+| STRUCTURE_STARTS | `generator_structures.rs`, `structure/start.rs` | Structure sets, placements, starts, jigsaw layout, saved starts, cache | Unele kinds/placements sunt Unsupported; saved piece readers au fallback la regeneration |
+| STRUCTURE_REFERENCES | `generator_structures.rs` | Caută starts în raza de 8 chunks, intersectează bounding boxes și păstrează ordinea iterării | Necesită verificare completă în whole-chunk oracle pe seeds/dimensiuni |
+| FEATURES | `generator_decoration.rs`, `feature_graph.rs`, `feature_catalog.rs` | 3×3 region decoration, structure piece placement, feature ordering și bounded inline feature graphs | Unsupported placed roots sunt omise; feature catalog nu este loader complet de datapack registry/live reload |
+| Density decode | `horizon-world/src/worldgen/density.rs` | Familie largă de density function types, named holders și spline | Grafuri numai aciclice, depth 256, interval branches 256, inline noise holders unsupported |
+| Whole chunk generation | `tools/test_chunk_generation_parity.py` + VanillaChunkGenerationOracle | Compară block states, quart biomes și block entities NBT pe chunk-uri întregi; oracle-ul conduce stages reale în ordinea vanilla | Nu a fost rulat aici; depinde de resurse/JAR-uri locale și de world_probe build |
+| Structure layout | `tools/test_structure_layout_parity.py` | Compară starts/piese și ordinea jigsaw; include profiluri modded și cazuri de diferență între 1.21.1 și 26.3 | Oracle-ul descris este 1.21.1 pentru baza sa, cu cazuri cunoscute verificate separat contra 26.3 |
+| Structure blocks | `tools/test_structure_blocks_parity.py` | Compară blocurile plasate de structuri cu world oracle | Are clase KNOWN raportate, nu eșecuri; acestea trebuie tratate ca gap-uri explicite |
+| Terrain fill | `tools/test_terrain_parity.py` | Compară noise-stage terrain filling cu bytecode vanilla pinned; include structuri-density bindings prin aquifer și final-density roots | Nu validează singur carvers/features/structures/chunk lifecycle |
+
+### Corecție importantă
+
+O intrare anterioară spunea că „structurile nu sunt generate”. Formularea este retrasă ca verdict general: sursa implementează structure starts, references, mai multe structure kinds, jigsaw assembly și piece placement. Verdictul corect este **suport parțial cu tipuri și trasee unsupported**, nu sistem absent. Whole-chunk harness-ul există și acoperă întregul flux pentru corpusul său, dar nu a fost rulat în această sesiune.

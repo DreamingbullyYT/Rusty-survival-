@@ -103,3 +103,14 @@
 - Inspectat `tools/test_paletted_container_parity.py`: compară `horizon-core::paletted::PalettedContainer` cu oracle-ul Java client pentru block/biome strategies, praguri Single/List/HashMap/Global, creștere palette, editări, wire read/write și pack/unpack/reload.
 - Harness-ul nu acoperă direct `horizon-world::chunk::PalettedContainer` (Tag/NBT), BlockSection counts/free-slot reuse sau toți consumatorii PackedStorage. Aceste straturi necesită probe chunk/NBT/save-load separate.
 - Nici acest harness nu a fost rulat în sesiunea curentă; doar scope-ul sursei a fost inspectat.
+
+
+## 2026-11-15 — Corecție și detaliere worldgen/structures
+
+- Corectez explicit nota anterioară care spunea generic „structurile nu sunt generate”. Inspecția extinsă arată că există STRUCTURE_STARTS și STRUCTURE_REFERENCES, structure-set placements, validare biome, weighted selection, jigsaw assembly, saved-start loading și piece placement în FEATURES.
+- `generator_structures.rs` orchestrează starts/references/cache; `structure/start.rs` generează starts și pieces; `generator_decoration.rs` plasează piesele în FEATURES. Nu sunt un singur sistem duplicat, ci etape distincte.
+- Sunt implementate mai multe structure kinds vanilla (buried treasure, igloo, swamp hut, desert pyramid, jungle temple, mansion, monument, ruined portal, shipwreck, ocean ruin, mineshaft, stronghold, fortress, nether fossil, End city și jigsaw). Există fallback `Unsupported` pentru tipuri/placements neacoperite și limite de jigsaw reach; verdictul corect este suport parțial, nu absență și nu paritate completă.
+- Density decode suportă o familie largă de funcții vanilla și named holders; limitările declarate sunt DAG only, depth max 256, interval branches max 256 și inline noise holders unsupported. Nu mai descriem generic „codec-urile density lipsesc”.
+- `feature_catalog.rs` declară explicit că este snapshot, nu datapack registry loader complet/live reload; `feature_graph.rs` execută arbori inline bounded. Unsupported placed-feature roots sunt omise din execuție, păstrând per-step order și seed-urile următoare.
+- `test_chunk_generation_parity.py` compară chunk-uri întregi (block states, quart biomes, block entity NBT) folosind un oracle Java care rulează stages vanilla; `test_structure_layout_parity.py`, `test_structure_blocks_parity.py` și `test_terrain_parity.py` verifică subdomenii separate. Harness-urile nu au fost rulate în această sesiune.
+- Nicio logică de engine nu a fost modificată; concluziile sunt source-backed, nu rezultate de execuție.
