@@ -39,3 +39,30 @@
 - Eșecurile nu indică o problemă în logica detectorului; totuși, rularea generală nu poate fi folosită ca validare a detectorului.
 - Ajustare: workflow-ul `engine-audit.yml` rulează acum numai `tests/test_engine_audit.py`, apoi execută auditul read-only cu `--scope engine`. Testele complete upstream au fost deja rulate în workflow-ul de import înainte de eliminarea workflow-urilor upstream.
 - Rezultatul noii rulări CI rămâne în așteptare; nu declarăm încă detectorul validat.
+
+## 2026-11-15 — Audit engine-only confirmat în CI
+
+- PR #1, GitHub Actions run #26, run ID `43652931734`, job `audit-tool`, job ID `132625133568`: SUCCESS.
+- Logul jobului confirmă `python -m unittest discover -s tests -p "test_engine_audit.py"`: 7 teste rulate, OK.
+- Scanarea read-only `python tools/engine_audit.py --scope engine` a terminat cu SUCCESS: 2.292 fișiere Rust și 34.788 funcții scanate; 555 grupuri exacte, 4.415 candidați structurali, 0 candidați conceptuali.
+- Raportul a fost scris în workspace-ul runnerului la `reports/engine-audit.json` și `reports/engine-audit.md`, dar run-ul nu a publicat artifacts; raportul detaliat nu este disponibil din GitHub Actions după încheierea jobului.
+- Aceste rezultate sunt candidați de analizat, nu dubluri semantice confirmate. Nicio implementare engine nu a fost ștearsă sau modificată.
+- Auditul semantic din această sesiune a inspectat prima trecere a `horizon-core` pentru version/RNG/Math și a identificat harness-uri existente pentru worldgen RNG, random ticks, fishing RNG, float log, noise și geometry. Niciun harness Java↔Rust și niciun test Cargo nu a fost executat în această sesiune.
+- PR #1 rămâne deschis; main nu a fost modificat prin această activitate.
+
+
+## 2026-11-15 — Worldgen source audit (fără execuție)
+
+- Inspectate callsites și ownership în `generator.rs`, `terrain.rs`, `generator_structures.rs`, `generator_decoration.rs`, `structure/start.rs`, `density.rs`, `feature_catalog.rs` și `feature_graph.rs`.
+- Confirmată existența pipeline-ului BIOMES/TERRAIN, structure starts/references, jigsaw assembly, structure piece placement și FEATURES 3×3 decoration. Unele structure kinds/placements și placed-feature roots sunt explicit unsupported.
+- Density decoder-ul acceptă o familie largă de funcții; limitările observate sunt DAG-only, nesting 256, interval branches 256 și no inline noise holders.
+- Inspectate descrierile harness-urilor whole-chunk, terrain, structure-layout și structure-block. Niciunul nu a fost rulat în această sesiune; niciun rezultat nou de paritate nu este raportat.
+- Corectată documentația pentru a nu descrie structures ca sistem absent. Nicio modificare a engine-ului și nicio concluzie de paritate completă.
+
+
+## 2026-11-15 — Feature codec source audit (fără execuție)
+
+- Inspectate match arms și tipurile pentru configured feature graph, placement modifiers și block-state providers.
+- Confirmată suprafața largă de tipuri implementate și separarea responsabilităților; decoder-ele au limite explicite pentru depth/node count/list sizes.
+- Nu au fost încărcate bundle-uri vanilla 26.3 și nu s-au generat rapoarte concrete de unsupported roots; nu s-au rulat parity harnesses.
+- Nicio modificare de engine.

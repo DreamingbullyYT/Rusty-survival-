@@ -26,10 +26,56 @@ Do not implement a competing layer registry or dependency-layer checker. Extend 
 
 ## Rezultate detector — fără concluzii automate
 
-Scanarea inițială de import a fost prea largă (toate sursele Rust), a raportat candidați exacți/structurali și nu a confirmat semantic nicio dublură. Nu elimina și nu modifica implementări pe baza acelor numere. Versiunea engine-only trebuie să ruleze în CI, iar fiecare candidat relevant trebuie verificat manual prin ownership, callsites, dataflow și teste.
+Scanarea inițială de import a fost prea largă (toate sursele Rust), a raportat candidați exacți/structurali și nu a confirmat semantic nicio dublură. Nu elimina și nu modifica cod pe baza acelor numere. Versiunea engine-only trebuie să ruleze în CI, iar fiecare candidat relevant trebuie verificat manual prin ownership, callsites, dataflow și teste.
 
 ## Surse partajate care nu trebuie confundate cu duplicări
 
 - `horizon-client-lib` declară în manifest `[lib] path = "../horizon-client/src/client_lib.rs"`; este aceeași cale de sursă expusă ca target Cargo separat, nu două implementări independente.
 - Parsing-ul comenzilor (`horizon-command`) și dispatch-ul/efectele comenzilor (`horizon-client/game`) sunt responsabilități distincte.
 - Rendererul care citește world state nu devine automat owner al regulilor de gameplay.
+
+## Candidat pentru revizuire semantică — bit sampling WorldgenRandom
+
+- Locații: `crates/horizon-core/src/random.rs` (`LegacyRandom::bits`) și `crates/horizon-core/src/random/worldgen.rs` (`WorldgenSource for LegacyRandom::worldgen_bits`).
+- Ambele conțin actualizarea LCG `state = state * MULTIPLIER + 11 mod 2^48` și extragerea biților.
+- Nu este declarată dublură confirmată: `WorldgenRandom` are propriul contract Java, draw counter și wrapped/plain behavior.
+- Callsite de producție verificat până acum: `horizon-world/src/worldgen/generator.rs::jigsaw_pieces` construiește un `LegacyRandom` local, apoi îl învelește în `WorldgenRandom`; nu transmite un lane `OrderedDraws`. În decorarea feature-urilor, callsite-ul identificat folosește `WorldgenRandom<XoroshiroRandom>`.
+- Prin urmare, ocolirea gate-ului `OrderedDraws` nu este un defect demonstrat în callsite-ul jigsaw inspectat. Adapterul ocolește `LegacyRandom::bits` și hook-ul `rng-trace`; relevanța acestei diferențe trebuie verificată față de scopul trace-ului și toate celelalte callsites.
+- Decizie curentă: păstrează ambele implementări; nu le comasa. Încheie inventarul tuturor constructorilor și testează comportamentul înainte de orice refactor. Detectorul structural singur nu poate rezolva cazul.
+
+
+## Clarificare — Mth trig vs Java Math trig
+
+În `horizon-core/src/geometry/trig.rs` coexistă algoritmul tabelat `Mth.atan2` și funcțiile `fdlibm_atan/fdlibm_asin/fdlibm_atan2`. Nu sunt două implementări ale aceleiași responsabilități: Mth folosește lookup table și aproximarea specifică jocului; fdlibm reproduce StrictMath/Math. `jmath::atan2` delegă la `fdlibm_atan2`.
+
+Un punct separat de verificat este `Vec3::rotation`, care folosește `f64::atan2/asin` native, pe când `direction_from_rotation` folosește Mth trig. Nu schimbăm apelurile până când harness-ul geometry și oracle-ul Java nu confirmă comportamentul bit cu bit.
+
+
+## Clarificare — PalettedContainer și packed storage
+
+- `horizon-core/src/paletted.rs::PalettedContainer`: palette numerică residentă pentru IDs block/biome și wire/saved forms; folosește `storage::locate/mask`.
+- `horizon-world/src/chunk.rs::PalettedContainer`: adaptor generic pentru NBT `Tag` plus câmpuri extra; convertește apoi valorile prin registry. Folosește `PackedStorage`.
+- `horizon-world/src/chunk.rs::BlockSection`: section runtime BlockStateId cu counts, free slots și PackedStorage.
+- `horizon-core/src/storage.rs::PackedStorage`: API generic de SimpleBitStorage pentru consumerii care au nevoie de slot/word-run/unpack.
+- `horizon-core/src/carving.rs::CarvingMask`: bitset contiguu pentru coloane de carving, nu padded SimpleBitStorage.
+- Aceste tipuri au roluri și contracte diferite; nu sunt dubluri confirmate. Un candidat viitor de minimizare este verificarea dacă partea de low-level read/write din PalettedContainer numeric poate delega mai mult către PackedStorage fără a pierde fast paths sau exactitatea layout-ului. Nu modifica până nu există măsurători și parity tests.
+
+
+## Clarificare — worldgen pipeline și structures
+
+- `generator.rs` orchestrează BIOMES/TERRAIN proto generation și expune separat structure starts/locate/jigsaw queries.
+- `terrain.rs` umple noise-stage chunk; nu este owner pentru structure lifecycle sau FEATURES.
+- `generator_structures.rs` deține STRUCTURE_STARTS/REFERENCES, cache și saved-start integration.
+- `generator_decoration.rs` deține FEATURES stage pentru 3×3 neighborhood, inclusiv plasarea pieselor de structură și placed features.
+- `structure/start.rs` deține structure kinds, placement codecs, start generation, jigsaw assembly, saved piece read și piece placement.
+- Acestea nu sunt dubluri: fiecare reprezintă o etapă vanilla distinctă. Nu comasa doar pentru a reduce numărul de fișiere sau a liniilor.
+- Feature catalog snapshot și feature graph inline sunt două responsabilități distincte: registry resolution/holders/tags vs execuția arborilor decodați.
+
+
+## Clarificare — feature scheduling, graph, catalog și placement
+
+- `decoration.rs` construiește ordinea biome→feature per step și calculează indexul pentru random seed; nu decodează feature JSON și nu plasează blocuri.
+- `feature_catalog.rs` rezolvă named feature/placed-feature holders și tags într-un snapshot bounded; nu este live registry loader.
+- `feature_graph.rs` decodează și execută arborii configured/placed features; nu gestionează registry reload sau chunk scheduling.
+- `placement.rs` decodează modifier-ele, `placement/chain.rs` le execută în ordinea declarată, iar `placement/layer.rs` implementează doar algoritmul intern de layer scan.
+- `state_provider.rs` produce BlockStateId; `block_feature.rs` și modulele concrete de feature scriu world state prin FeatureWorld. Sunt responsabilități diferite, nu dubluri.

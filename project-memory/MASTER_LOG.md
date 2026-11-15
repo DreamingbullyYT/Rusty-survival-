@@ -52,3 +52,75 @@
 - Logul confirmă 922 teste, 9 skipped, 12 erori și 1 failure; problemele observate sunt fișiere workflow/template lipsă și un test care așteaptă cel puțin 10 runner jobs upstream.
 - Suite-ul complet upstream a trecut înainte de curățarea `.github` în import run #8 (967 OK, 9 skipped). Pentru CI-ul proiectului, workflow-ul de audit a fost restrâns la testele dedicate `test_engine_audit.py`, urmate de scanarea read-only engine-only.
 - Nicio modificare a engine-ului și nicio ștergere de cod nu a rezultat din această problemă.
+
+## 2026-11-15 — CI engine-only și prima trecere semantică horizon-core
+
+- PR #1, run #26 (`43652931734`), job `audit-tool` (`132625133568`): SUCCESS. Au trecut 7 teste `test_engine_audit.py`; scanarea a procesat 2.292 fișiere Rust și 34.788 funcții, raportând 555 grupuri exacte și 4.415 candidați structurali. Raportul detaliat nu a fost publicat ca artifact.
+- A fost creat branch-ul `audit/horizon-core-primitives` din head-ul PR #1 `ab17491fd78b2f31b02feddcc9ef679ff46fafaa` pentru documentarea auditului semantic fără a modifica PR-ul de fundație.
+- Prima trecere asupra `horizon-core` a cartografiat version, LegacyRandom/XoroshiroRandom, positional/owner/ordered/worldgen RNG adapters și dispatch-ul jmath/fdlibm.
+- Au fost identificate harness-uri Java↔Rust pentru worldgen RNG, random ticks, fishing RNG, Float LogSampler, noise și geometry; ele nu au fost rulate în această sesiune.
+- Candidat de investigat, nu dublură confirmată: LCG bit sampling din `LegacyRandom::bits` și `WorldgenSource for LegacyRandom::worldgen_bits`. Cea din urmă poate evita `sync()`/trace; callsites și utilizarea cu OrderedDraws trebuie verificate înainte de orice schimbare.
+- Niciun fișier de engine nu a fost modificat; nu s-a executat niciun test Cargo sau harness Java↔Rust în această sesiune. Paritatea 1:1 nu este declarată.
+
+## 2026-11-15 — Verificare suplimentară a callsite-urilor WorldgenRandom
+
+- În `horizon-world/src/worldgen/generator.rs::jigsaw_pieces`, callsite-ul de producție inspectat construiește un LegacyRandom local și îl învelește în WorldgenRandom pentru jigsaw placement; nu este transmis un lane OrderedDraws.
+- `horizon-world/src/worldgen/generator_decoration.rs` folosește WorldgenRandom<XoroshiroRandom> pentru feature decoration. Fixture-ul dedicat testează ambele surse, nesting-ul wrapper-elor și operațiile de seed/fork/positional.
+- Asta reduce riscul ipotetic de sincronizare pentru callsite-ul jigsaw; nu îl transformă într-un bug. Bit adapter-ul continuă să ocolească rng-trace, dar trace-ul este descris ca diagnostic pentru LegacyRandom/mob AI. Trebuie verificat dacă această diferență este intenționată și dacă mai există constructori în workspace.
+- `horizon-client-render/src/random_source.rs` este o responsabilitate distinctă pentru randoms ne-seed-uite și alocarea ordonată a seed-urilor; nu este duplicarea generatorului worldgen.
+- Nu au fost modificate implementările RNG și nu au fost rulate teste; s-a actualizat numai documentația de audit.
+
+
+## 2026-11-15 — Prima trecere poziții, geometrie și noise
+
+- Inspectate `position.rs`, `geometry/mod.rs`, `geometry/trig.rs`, `jmath.rs`, `noise/mod.rs`, `noise/perlin.rs`, `noise/simplex.rs`, `noise/normal.rs` și `noise/volume.rs`.
+- Confirmate formate distincte BlockPos packet/storage/packed, shift semantics pentru coordonate negative și overflow wrapping; testele unitare acoperă limite și roundtrip.
+- Confirmată separarea semantică între Mth.atan2 table-driven și fdlibm Math.atan2; nu sunt dubluri. `Vec3::rotation` folosește native f64 atan2/asin și rămâne un punct de validat prin oracle, nu un bug confirmat.
+- Harness-urile `test_geometry_parity.py` și `test_noise_parity.py` au corpus diferențial extins, însă nu au fost rulate în această sesiune. Scope-ul lor are limite explicite față de entități live, grafuri complete de density functions și terrain.
+- Nicio implementare engine nu a fost modificată; nicio concluzie de paritate completă nu a fost trasă.
+
+
+## 2026-11-15 — Gap-uri vanilla explicite identificate în baseline
+
+- Comentariile din `horizon-core/src/density/mod.rs` și `density/graph/mod.rs` declară că generarea completă a terenului, codec-urile serializate și unele tipuri de funcții density sunt încă pending.
+- Comentariile din `horizon-world/src/worldgen/generator.rs` și `generator_decoration.rs` declară că structurile nu sunt generate și că placed features fără algoritm/bindings sunt omise din execuție.
+- Harness-urile inspectate au scope limitat: tick parity exclude block/fluid behavior; carving-mask parity exclude cave/canyon generation și aplicarea mask-ului; biome-zoom parity exclude biome storage/source/blending/chunk integration.
+- Concluzie: baseline-ul upstream nu poate fi considerat încă 1:1 complet. Paritatea samplerelor individuale nu echivalează cu paritatea worldgen-ului sau a jocului complet.
+- Următoarea etapă trebuie să transforme aceste limitări într-o listă de funcționalități lipsă cu owner/callsites/oracle; nu se elimină sau simplifică nimic pe baza acestor lipsuri.
+
+
+## 2026-11-15 — Audit de reprezentări packed storage și palettes
+
+- Confirmat că `horizon-core::storage::PackedStorage` este SimpleBitStorage padded și este folosit în `horizon-world/src/chunk.rs` pentru adaptorul NBT generic și BlockSection.
+- `horizon-core::paletted::PalettedContainer` este un container numeric separat pentru block/biome IDs și wire/saved forms; folosește aceiași helperi `locate/mask`, dar își păstrează propriile fast paths și operații bulk.
+- `horizon-world::chunk::PalettedContainer` stochează Tag NBT + câmpuri extra; `BlockSection` are BlockStateId, counts și free-slot reuse. Nu sunt duplicate directe ale containerului core.
+- `CarvingMask` folosește bit layout contiguu Y/Z/X și nu este SimpleBitStorage; nu se unifică pe baza tipului `Vec<u64>`.
+- Rămâne doar un candidat de optimizare internă pentru low-level read/write din paletted core, care necesită analiză de performanță și parity tests. Nicio schimbare de engine.
+
+
+## 2026-11-15 — Confirmarea scope-ului PalettedContainer oracle
+
+- Inspectat `tools/test_paletted_container_parity.py`: compară `horizon-core::paletted::PalettedContainer` cu oracle-ul Java client pentru block/biome strategies, praguri Single/List/HashMap/Global, creștere palette, editări, wire read/write și pack/unpack/reload.
+- Harness-ul nu acoperă direct `horizon-world::chunk::PalettedContainer` (Tag/NBT), BlockSection counts/free-slot reuse sau toți consumatorii PackedStorage. Aceste straturi necesită probe chunk/NBT/save-load separate.
+- Nici acest harness nu a fost rulat în sesiunea curentă; doar scope-ul sursei a fost inspectat.
+
+
+## 2026-11-15 — Corecție și detaliere worldgen/structures
+
+- Corectez explicit nota anterioară care spunea generic „structurile nu sunt generate”. Inspecția extinsă arată că există STRUCTURE_STARTS și STRUCTURE_REFERENCES, structure-set placements, validare biome, weighted selection, jigsaw assembly, saved-start loading și piece placement în FEATURES.
+- `generator_structures.rs` orchestrează starts/references/cache; `structure/start.rs` generează starts și pieces; `generator_decoration.rs` plasează piesele în FEATURES. Nu sunt un singur sistem duplicat, ci etape distincte.
+- Sunt implementate mai multe structure kinds vanilla (buried treasure, igloo, swamp hut, desert pyramid, jungle temple, mansion, monument, ruined portal, shipwreck, ocean ruin, mineshaft, stronghold, fortress, nether fossil, End city și jigsaw). Există fallback `Unsupported` pentru tipuri/placements neacoperite și limite de jigsaw reach; verdictul corect este suport parțial, nu absență și nu paritate completă.
+- Density decode suportă o familie largă de funcții vanilla și named holders; limitările declarate sunt DAG only, depth max 256, interval branches max 256 și inline noise holders unsupported. Nu mai descriem generic „codec-urile density lipsesc”.
+- `feature_catalog.rs` declară explicit că este snapshot, nu datapack registry loader complet/live reload; `feature_graph.rs` execută arbori inline bounded. Unsupported placed-feature roots sunt omise din execuție, păstrând per-step order și seed-urile următoare.
+- `test_chunk_generation_parity.py` compară chunk-uri întregi (block states, quart biomes, block entity NBT) folosind un oracle Java care rulează stages vanilla; `test_structure_layout_parity.py`, `test_structure_blocks_parity.py` și `test_terrain_parity.py` verifică subdomenii separate. Harness-urile nu au fost rulate în această sesiune.
+- Nicio logică de engine nu a fost modificată; concluziile sunt source-backed, nu rezultate de execuție.
+
+
+## 2026-11-15 — Inventar feature graph, placement și state providers
+
+- Inspectate `feature.rs`, `feature_graph.rs`, `feature_catalog.rs`, `placement.rs`, `placement/chain.rs`, `placement/layer.rs`, `decoration.rs`, `feature_sort.rs`, `state_provider.rs`, `state_provider/noise.rs` și `block_feature.rs`.
+- Confirmată separarea între biome-step scheduling, named holder/tag expansion, executable feature graph, ordered placement modifier chain, state providers și block-writing features.
+- Feature graph-ul recunoaște o familie largă de algoritmi vanilla și compoziții; BasicFeature este doar submulțimea void start platform/End island/End platform. Placement și state-provider codecs au propriile familii și limite bounded.
+- Feature catalog declară explicit că nu este datapack registry loader complet și nu oferă live reload; graph-ul este bounded (depth 128, node budget 65.536; feature list 8.192; modifier chain 1.024). State provider are propriile limite depth 128/node budget 65.536.
+- Nu am putut extrage roots concrete unsupported din bundle-ul vanilla 26.3: resursele autorizate trebuie furnizate local și rămân necomise. `unsupported_features()` expune erorile concrete după încărcarea generatorului.
+- Nicio implementare engine nu a fost modificată și niciun test de paritate nu a fost rulat.

@@ -7,7 +7,7 @@
 Sursele canonice existente la commitul upstream fixat bcb7258ad101638c57e8cdd7b1e3da406440bea8:
 
 - docs/rust-parity.md — starea generală și sursele live pentru paritate.
-- docs/port-ledger.md și tools/port_ledger.py — maparea metode Java ↔ funcții Rust, metode lipsă, seam/drift/float/callee gaps și verdict map.
+- docs/port-ledger.md și tools/port_ledger.py — maparea metodelor Java ↔ funcții Rust, metode lipsă, seam/drift/float/callee gaps și verdict map.
 - tools/parity.py — enumerarea și starea harness-urilor.
 - tools/test_*_parity.py — comparații diferențiale cu oracle Java.
 - mods/horizon/src/test/java/dev/horizonlab/parity/ — oracle-urile Java.
@@ -71,3 +71,76 @@ Performanța poate fi optimizată intern numai dacă rezultatul observabil răm�
 - Nu am executat încă harness-urile: ele necesită jar-urile și resursele Minecraft ale utilizatorului în .local.
 - Nu declarăm niciun domeniu complet până când statusul harness-urilor, port ledger gaps și testele end-to-end nu sunt analizate.
 - Codul platform/Horizon aflat în crate-uri etichetate engine se exclude din refactorul vanilla, chiar dacă dependența lui trebuie păstrată pentru build.
+
+## Detaliere — horizon-core RNG și matematică
+
+Acoperirea existentă identificată în sursă include:
+- worldgen random adapter, seeds, draw counters, forks, positional factories, bounds și legacy/xoroshiro modes (`tools/test_worldgen_random_parity.py`);
+- random tick/scheduled tick state transitions și RNG fingerprint (`tools/test_random_tick_parity.py`);
+- anumite fishing RNG paths, cu UUID-to-seed încă explicit neacoperit (`tools/test_fishing_rng_parity.py`);
+- Float LogSampler comparat cu oracle-urile Java, cu mod exhaustiv opțional pentru toate cele 2^32 intrări float (`tools/test_float_log_parity.py`);
+- noise și geometry au harness-uri separate.
+
+Acestea sunt cazuri și harness-uri existente, nu rezultate de execuție în sesiunea curentă. Harness-ul worldgen documentează încă lipsuri pentru Gaussian samples, concurrent access și full chunk decoration. Paritatea double-precision Math.log, toate funcțiile Math pe toate arhitecturile și toate traseele RNG nu sunt dovedite de testele enumerate. Statusul fiecărui harness trebuie obținut din runner-ul `tools/parity.py --status` pe un mediu cu fișierele Minecraft 26.3 legitime disponibile.
+
+
+## Detaliere — poziții, geometrie și noise
+
+Harness-urile identificate în sursă, dar nerulate în această sesiune:
+
+- `tools/test_geometry_parity.py`: corpus determinist cu vectori și AABB, valori speciale IEEE-754, coordonate de margine, trig table (65.536 intrări), rotații/look direction, traversal, voxel shapes, joins optimizate/neoptimizate, coliziuni și block iteration. Raportul harness-ului exclude explicit entități live, efecte reale de velocity/grounding, fluids și block behavior.
+- `tools/test_noise_parity.py`: compară cu oracle Java gradient offsets/permutation tables, consumul RNG la construcție, Perlin 2D/3D și derivate, Simplex cu ambele moduri de offset, SmearedPerlin, NormalNoise octave construction, modern/legacy seeding, density volumes și noise stacks. Nu verifică grafurile serializate complete de density functions sau terenul generat complet.
+- Testele unitare din `position.rs` acoperă negative coordinate floor semantics, distinct packet/storage layouts, packed signed limits și overflow.
+- Testele unitare din `geometry/trig.rs` disting Mth.atan2 table-driven de fdlibm Math.atan2 și verifică vectori salvați pentru Java.
+- Existența acestor harness-uri nu este rezultat de execuție; nu se marchează domeniile ca verificate până nu există status real și comparație cu oracle.
+
+
+## Gap-uri de implementare cunoscute din comentariile sursă
+
+Statusul de mai jos este mai precis decât eticheta generală „neauditat” și trebuie păstrat până la implementare + comparație cu oracle:
+
+| Zonă | Limitare explicită în sursă/harness | Consecință pentru paritate |
+|---|---|---|
+| Density graph | Codec-urile serializate și tipurile rămase de funcții sunt pending | Nu se poate declara suport complet pentru definițiile vanilla de density |
+| Terrain generation | `horizon-core::density` spune că generarea completă de terrain este pending | Noise/density sampler parity nu echivalează cu world terrain parity |
+| Structures | `horizon-world::worldgen::generator.rs` spune că structurile nu sunt generate | Worldgen rămâne incomplet chiar dacă biome/noise/carving trec separat |
+| Placed features | Algoritmii/bindings neimplementați sunt omiși din execuție, păstrând doar locul în ordering | Lipsesc efecte observabile ale unor features vanilla; seed-urile celorlalte sunt protejate |
+| Scheduled ticks | Harness-ul `test_tick_parity.py` exclude block/fluid behavior | Tick queue parity nu dovedește block/fluid tick parity |
+| Carving | Harness-ul carving mask exclude cave/canyon generation și mask application | Mask storage parity nu dovedește carving parity |
+| Biomes | Harness-ul biome zoom exclude biome source/storage/blending/chunk integration | Quart lookup parity nu dovedește biome pipeline parity |
+
+Acestea sunt gap-uri de comportament, nu oportunități de ștergere. Înainte de optimizare trebuie cartografiate toate callsites și dependențele fiecărui sistem lipsă.
+
+
+### Palette/storage parity detail
+
+- `tools/test_paletted_container_parity.py` compares `horizon-core::paletted::PalettedContainer` against the pinned Java client oracle for block and biome strategies. It exercises single/list/hash-map/global palette thresholds, palette growth, scripted edits, network write/read, canonical pack/unpack and reload hashes.
+- This harness does **not** compare `horizon-world::chunk::PalettedContainer` (generic Tag/NBT adapter), `BlockSection` counts/free-slot reuse, or every `PackedStorage` consumer. Those require their own chunk/NBT/save-load coverage.
+
+
+## Worldgen — actualizare după inspecția callsites
+
+| Sub-sistem | Owner observat | Implementare observată | Limită rămasă / verificare |
+|---|---|---|---|
+| BIOMES + TERRAIN proto generation | `generator.rs`, `terrain.rs`, biome source/chunk | Noise fill, aquifers, material surface, carvers, heightmaps | Nu reprezintă chunk-ul complet sau stage transitions end-to-end |
+| STRUCTURE_STARTS | `generator_structures.rs`, `structure/start.rs` | Structure sets, placements, starts, jigsaw layout, saved starts, cache | Unele kinds/placements sunt Unsupported; saved piece readers au fallback la regeneration |
+| STRUCTURE_REFERENCES | `generator_structures.rs` | Caută starts în raza de 8 chunks, intersectează bounding boxes și păstrează ordinea iterării | Necesită verificare completă în whole-chunk oracle pe seeds/dimensiuni |
+| FEATURES | `generator_decoration.rs`, `feature_graph.rs`, `feature_catalog.rs` | 3×3 region decoration, structure piece placement, feature ordering și bounded inline feature graphs | Unsupported placed roots sunt omise; feature catalog nu este loader complet de datapack registry/live reload |
+| Density decode | `horizon-world/src/worldgen/density.rs` | Familie largă de density function types, named holders și spline | Grafuri numai aciclice, depth 256, interval branches 256, inline noise holders unsupported |
+| Whole chunk generation | `tools/test_chunk_generation_parity.py` + VanillaChunkGenerationOracle | Compară block states, quart biomes și block entities NBT pe chunk-uri întregi; oracle-ul conduce stages reale în ordinea vanilla | Nu a fost rulat aici; depinde de resurse/JAR-uri locale și de world_probe build |
+| Structure layout | `tools/test_structure_layout_parity.py` | Compară starts/piese și ordinea jigsaw; include profiluri modded și cazuri de diferență între 1.21.1 și 26.3 | Oracle-ul descris este 1.21.1 pentru baza sa, cu cazuri cunoscute verificate separat contra 26.3 |
+| Structure blocks | `tools/test_structure_blocks_parity.py` | Compară blocurile plasate de structuri cu world oracle | Are clase KNOWN raportate, nu eșecuri; acestea trebuie tratate ca gap-uri explicite |
+| Terrain fill | `tools/test_terrain_parity.py` | Compară noise-stage terrain filling cu bytecode vanilla pinned; include structuri-density bindings prin aquifer și final-density roots | Nu validează singur carvers/features/structures/chunk lifecycle |
+
+### Corecție importantă
+
+O intrare anterioară spunea că „structurile nu sunt generate”. Formularea este retrasă ca verdict general: sursa implementează structure starts, references, mai multe structure kinds, jigsaw assembly și piece placement. Verdictul corect este **suport parțial cu tipuri și trasee unsupported**, nu sistem absent. Whole-chunk harness-ul există și acoperă întregul flux pentru corpusul său, dar nu a fost rulat în această sesiune.
+
+
+### Feature codec / placement / provider scope
+
+- `FeatureDefinition` are implementări pentru o familie largă de feature algorithms și combinatori; `BasicFeature` este doar submulțimea End/platform. Nu deduce acoperirea completă din numărul de variante.
+- `PlacementModifier` acoperă biome, block predicate, environment scan, heightmap/surface, count/noise count, in-square/cuboid/offset, height range, rarity/chance, fixed și randomly selected.
+- `BlockStateProvider` acoperă simple/weighted/random block, rotated, copy properties, randomized int, rule-based și noise variants.
+- Limitele bounded ale decoderelor (feature depth 128, node budget 65.536, list 8.192, modifier chain 1.024; state-provider depth 128/node budget 65.536; placement depth 256/node budget 65.536) trebuie comparate cu toate resursele vanilla reale. Nu sunt automat gap-uri dacă niciun asset vanilla nu atinge limitele.
+- Lista efectivă de roots unsupported nu este încă măsurată; necesită încărcarea bundle-ului vanilla 26.3 local și raportul `OverworldGenerator::unsupported_features()` pentru fiecare dimensiune.
