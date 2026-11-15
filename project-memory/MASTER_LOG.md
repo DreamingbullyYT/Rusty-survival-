@@ -72,3 +72,9 @@
 - Adăugat .github/workflows/private-vanilla-parity.yml, manual-only, cu JDK 25, suite smoke/all/named, fără cache sau upload de artifacte, și cleanup la final.
 - Corectată documentația: manifest_sha1 este hash-ul version JSON-ului 26.3, nu al manifestului global Mojang.
 - Workflow-ul nu a fost executat: GitHub cere ca fișierul să fie prezent pe branch-ul default pentru workflow_dispatch; branch-ul curent este încă PR #1. Nicio resursă Mojang nu a fost descărcată și nu există rezultate de paritate noi.
+
+
+## 2026-11-15 — Confirmare teste unitare downloader în CI
+
+- Engine Audit Tooling run #32, commit dcf5300497ea816f91c1c11d032ea52c62fa822d: pasul Run vanilla downloader unit tests s-a încheiat cu SUCCESS; toate cele patru teste unitare au trecut.
+- La momentul înregistrării, auditul read-only engine din același job era încă în desfășurare. Workflow-ul de descărcare Mojang/parity nu a fost declanșat.

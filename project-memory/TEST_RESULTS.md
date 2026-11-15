@@ -56,3 +56,10 @@
 - Adăugat workflow manual .github/workflows/private-vanilla-parity.yml, cu JDK 25, import prin horizon-prepare, copiere sounds/languages și suite smoke/all/named.
 - Nu există încă execuție GitHub Actions pentru acest workflow: branch-ul este PR #1, iar GitHub permite dispatch manual numai după ce workflow-ul există pe branch-ul default. Nu s-au descărcat resurse Mojang și nu s-au rulat teste Java↔Rust în această sesiune.
 - Testele unitare ale downloader-ului sunt conectate la workflow-ul Engine Audit Tooling, astfel încât să poată rula pe PR fără a descărca resurse Mojang. Nu au fost încă confirmate ca trecute; se așteaptă rezultatul check-ului PR.
+
+
+## 2026-11-15 — CI run #32: downloader unit tests
+
+- GitHub Actions run 43700810845, commit dcf5300497ea816f91c1c11d032ea52c62fa822d.
+- Step `Run vanilla downloader unit tests`: completed SUCCESS. The four unit tests for safe paths, version-lock validation, verified atomic download/reuse and cleanup after checksum mismatch passed.
+- The subsequent `Run read-only engine audit` step was still in progress at the time of this entry. The manual Mojang download/preparation/parity workflow was not triggered.
