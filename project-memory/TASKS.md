@@ -13,7 +13,8 @@
 - [x] Integrate în acest branch regulile canonice, deciziile D-005/D-006 și documentele de audit.
 
 ## În curs
-- [ ] Proiectarea și implementarea workflow-ului manual workflow_dispatch pentru oracle/parity Minecraft 26.3, cu resurse Mojang descărcate oficial, verificate și păstrate exclusiv temporar pe runner; vezi docs/private-vanilla-26-3-parity.md. Nu este implementat încă.
+- [ ] Rulare inițială a workflow-ului Private Vanilla 26.3 Parity după integrarea lui în branch-ul default; verificarea rezultatelor reale și actualizarea TEST_RESULTS.md.
+- [x] Implementat downloader-ul oficial Mojang, testele unitare și workflow-ul manual Private Vanilla 26.3 Parity; vezi docs/private-vanilla-26-3-parity.md. Rămâne de declanșat după ce workflow-ul ajunge pe main.
 - [ ] Re-rularea CI pe PR după izolarea testelor detectorului de fixture-urile .github upstream.
 - [ ] Verificarea raportului engine-only după ce CI rulează; candidații de similitudine necesită triere manuală.
 - [ ] Inventarierea semantică a sistemelor din crate-urile mixte, cu module, callsites, dataflow și teste.

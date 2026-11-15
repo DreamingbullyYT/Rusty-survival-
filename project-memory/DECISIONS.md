@@ -46,3 +46,13 @@
 - Clarificare de securitate: într-un repository public, logurile Actions sunt publice; deci această soluție ține JAR-urile și asset-urile în afara repository-ului și artifactelor, dar nu face execuția sau metadatele logurilor secrete față de GitHub ori publicul care poate vedea logurile. Se raportează doar versiunea, rezultatele checksum și sumarul testelor.
 - tools/lab.py actual importă clientul și bibliotecile din instalarea oficială locală și primește separat server JAR-ul; nu descarcă întregul set necesar pentru runner. Înainte de workflow, trebuie adăugat un mod de input explicit pentru fișierele/directoarele pregătite de CI sau un adapter subțire, păstrând comportamentul local actual și fără a duplica logica de verificare/parity.
 - Nicio implementare de workflow sau testare CI privată nu este declarată finalizată prin această decizie; vezi docs/private-vanilla-26-3-parity.md.
+
+
+## D-008 — Downloader CI folosește importatorul canonic horizon-prepare
+
+- Decizie: workflow-ul CI pregătește un layout standard de launcher în RUNNER_TEMP, apoi folosește direct horizon-prepare --prepare cu --minecraft-dir și --server-jar. Nu se adaugă un al doilea importator și nu se modifică fluxul local.
+- Downloader-ul Python citește versiunea și hash-urile numai din research-lock.json, ia URL-ul version JSON din manifestul global Mojang, verifică hash-ul version JSON, apoi verifică client/server JAR, artifactele bibliotecilor, asset index-ul și fiecare asset object.
+- manifest_sha1 din lock identifică version JSON-ul fixat, nu manifestul global. Manifestul global este preluat prin HTTPS, iar version JSON-ul ales este verificat prin hash-ul fixat/acceptat.
+- Workflow-ul rămâne manual-only; oferă suite smoke, all și named. Nu rulează automat la fiecare push.
+- Workflow-ul nu poate fi declanșat manual până când fișierul lui există pe branch-ul default GitHub. Nu se face merge automat pentru a ocoli această limitare.
+- Nu se folosesc Actions cache sau artifacts pentru resurse Mojang; fișierele sunt șterse din RUNNER_TEMP și .local la finalul jobului.

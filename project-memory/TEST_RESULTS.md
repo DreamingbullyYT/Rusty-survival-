@@ -47,3 +47,12 @@
 - Lock-ul fixează Minecraft Java Edition 26.3, SHA-1 pentru client și server JAR, hash-uri acceptate pentru manifest/asset index și Java major 25.
 - tools/lab.py folosește în prezent instalarea locală a launcherului pentru manifest, client JAR, biblioteci și asset store; server JAR-ul este furnizat separat. Nu există încă un mod de input complet pentru resurse descărcate pe runner.
 - Workflow-ul privat/efemer este doar documentat și planificat; nu a fost creat, declanșat sau testat. Nu există rezultate Java↔Rust noi și nu se declară paritate.
+
+
+## 2026-11-15 — Implementare downloader și workflow privat de paritate
+
+- Inspecția a confirmat că horizon-prepare are deja inputuri explicite pentru version JSON, client JAR, biblioteci, assets și server JAR; importul său scrie .local/minecraft/<version>/prepared.json și inventarele necesare harness-urilor.
+- Adăugate tools/ci/vanilla_data.py și teste unitare pentru căi sigure, verificarea lock-ului și descărcări atomice cu SHA-1.
+- Adăugat workflow manual .github/workflows/private-vanilla-parity.yml, cu JDK 25, import prin horizon-prepare, copiere sounds/languages și suite smoke/all/named.
+- Nu există încă execuție GitHub Actions pentru acest workflow: branch-ul este PR #1, iar GitHub permite dispatch manual numai după ce workflow-ul există pe branch-ul default. Nu s-au descărcat resurse Mojang și nu s-au rulat teste Java↔Rust în această sesiune.
+- Testele unitare ale downloader-ului sunt definite, dar nu au fost executate local în această sesiune; CI-ul workflow-ului va rula testele la declanșare.

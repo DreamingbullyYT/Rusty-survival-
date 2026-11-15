@@ -76,3 +76,8 @@ Performanța poate fi optimizată intern numai dacă rezultatul observabil răm�
 ## Pregătirea resurselor pentru CI
 
 Procedura planificată pentru testele care au nevoie de oracle-ul Java este documentată în docs/private-vanilla-26-3-parity.md. Aceasta folosește numai surse oficiale Mojang, hash-urile din research-lock.json, spațiul temporar al unui runner efemer și harness-urile existente. Nu introduce un al doilea parity runner și nu publică JAR-uri/assets. Până când workflow-ul este implementat și executat, harness-urile rămân nevalidate în CI pe baza acestui mecanism.
+
+
+## Pregătirea resurselor în CI — implementare
+
+Workflow-ul manual .github/workflows/private-vanilla-parity.yml pregătește resursele prin tools/ci/vanilla_data.py și le importă cu horizon-prepare. Testele folosesc harness-urile canonice tools/parity.py; nu există un al doilea runner. Starea și criteriile sunt documentate în docs/private-vanilla-26-3-parity.md. Niciun caz nu este marcat PASS până la o execuție reală.

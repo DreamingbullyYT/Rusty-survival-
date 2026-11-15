@@ -62,3 +62,13 @@
 - Inspecția tools/lab.py a arătat că importul actual se bazează pe instalarea oficială locală și pe un server JAR furnizat separat. Este necesară adaptarea inputurilor sau un adapter minimal înainte de a putea folosi același flux pe runner.
 - Documentația dedicată: docs/private-vanilla-26-3-parity.md; decizia D-007; task-ul rămâne în curs.
 - Doar documentare și planificare: workflow-ul nu a fost încă implementat/rulat; nu s-au executat teste de paritate noi.
+
+
+## 2026-11-15 — Implementare downloader Mojang efemer și workflow manual
+
+- După inspecția completă a CLI-ului horizon-prepare și a preparării upstream, s-a confirmat că importatorul Rust existent acceptă layout-ul launcherului și nu necesită modificări sau un al doilea importator.
+- Adăugate tools/ci/vanilla_data.py pentru descărcarea oficială a version JSON, client/server JAR, artifactelor de bibliotecă, asset index-ului și tuturor obiectelor de asset; fiecare fișier este verificat prin SHA-1 și, când manifestul declară, dimensiune.
+- Adăugate teste unitare pentru validarea căilor, pin-urilor și descărcării atomice. Aceste teste sunt definite, dar nu au fost încă executate.
+- Adăugat .github/workflows/private-vanilla-parity.yml, manual-only, cu JDK 25, suite smoke/all/named, fără cache sau upload de artifacte, și cleanup la final.
+- Corectată documentația: manifest_sha1 este hash-ul version JSON-ului 26.3, nu al manifestului global Mojang.
+- Workflow-ul nu a fost executat: GitHub cere ca fișierul să fie prezent pe branch-ul default pentru workflow_dispatch; branch-ul curent este încă PR #1. Nicio resursă Mojang nu a fost descărcată și nu există rezultate de paritate noi.
