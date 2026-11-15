@@ -5,7 +5,7 @@ La începutul fiecărei sesiuni:
 1. Citește integral `PROJECT_GOAL_AND_RULES.md` — acesta este documentul canonic pentru obiectiv și regulile care nu se negociază.
 2. Citește acest fișier.
 3. Citește docs/private-vanilla-26-3-parity.md înainte de a pregăti sau modifica testarea cu resurse Mojang în CI.
-3. Citește integral `MASTER_LOG.md` și stările curente din `TASKS.md`, `ARCHITECTURE.md`, `SYSTEM_REGISTRY.md`, `DEPENDENCIES.md`, `PARITY_MATRIX.md`, `DECISIONS.md`, `TEST_RESULTS.md` și `DO_NOT_DUPLICATE.md`. Pentru detectorul conceptual, verifică și `system_registry.toml`.
+4. Citește integral `MASTER_LOG.md` și stările curente din `TASKS.md`, `ARCHITECTURE.md`, `SYSTEM_REGISTRY.md`, `DEPENDENCIES.md`, `PARITY_MATRIX.md`, `DECISIONS.md`, `TEST_RESULTS.md` și `DO_NOT_DUPLICATE.md`. Pentru detectorul conceptual, verifică și `system_registry.toml`.
 5. Verifică repository-ul, branch-ul și commit-ul curent; documentația poate fi depășită.
 6. Compară memoria cu starea reală a codului. Dacă diferă, investighează și consemnează diferența înainte de a modifica.
 7. Nu presupune că o sarcină este făcută doar fiindcă apare ca planificată.
