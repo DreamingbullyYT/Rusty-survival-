@@ -55,4 +55,4 @@
 - Adăugate tools/ci/vanilla_data.py și teste unitare pentru căi sigure, verificarea lock-ului și descărcări atomice cu SHA-1.
 - Adăugat workflow manual .github/workflows/private-vanilla-parity.yml, cu JDK 25, import prin horizon-prepare, copiere sounds/languages și suite smoke/all/named.
 - Nu există încă execuție GitHub Actions pentru acest workflow: branch-ul este PR #1, iar GitHub permite dispatch manual numai după ce workflow-ul există pe branch-ul default. Nu s-au descărcat resurse Mojang și nu s-au rulat teste Java↔Rust în această sesiune.
-- Testele unitare ale downloader-ului sunt definite, dar nu au fost executate local în această sesiune; CI-ul workflow-ului va rula testele la declanșare.
+- Testele unitare ale downloader-ului sunt conectate la workflow-ul Engine Audit Tooling, astfel încât să poată rula pe PR fără a descărca resurse Mojang. Nu au fost încă confirmate ca trecute; se așteaptă rezultatul check-ului PR.

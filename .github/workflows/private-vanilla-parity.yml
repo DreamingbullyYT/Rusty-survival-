@@ -19,7 +19,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: private-vanilla-parity-\${{ github.ref }}
+  group: private-vanilla-parity-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -94,8 +94,8 @@ jobs:
       - name: Run selected vanilla parity harnesses
         shell: bash
         env:
-          PARITY_SUITE: \${{ inputs.suite }}
-          PARITY_HARNESSES: \${{ inputs.harnesses }}
+          PARITY_SUITE: ${{ inputs.suite }}
+          PARITY_HARNESSES: ${{ inputs.harnesses }}
         run: |
           python3 - <<'PY'
           import os

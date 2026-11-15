@@ -2,7 +2,7 @@
 
 ## Scop
 
-Pregătim o cale repetabilă de a rula oracle-urile Java și harness-urile Rust↔Java pentru Minecraft: Java Edition 26.3 fără a introduce JAR-uri, asset-uri sau resurse Mojang în repository. Acest document este planul canonic pentru implementarea CI; workflow-ul nu este încă implementat sau executat.
+Pregătim o cale repetabilă de a rula oracle-urile Java și harness-urile Rust↔Java pentru Minecraft: Java Edition 26.3 fără a introduce JAR-uri, asset-uri sau resurse Mojang în repository. Acest document este planul canonic pentru implementarea CI; workflow-ul este implementat pe branch-ul PR #1; testele unitare sunt adăugate și vor rula în CI-ul PR-ului.
 
 ## Implementare
 
@@ -49,14 +49,14 @@ Nu afișa tokenuri, secrete, conținut binar, fișiere întregi sau dump-uri de 
 
 ## Criterii de acceptare
 
-- [ ] Workflow manual, separat de CI-ul obișnuit.
-- [ ] JDK 25 și versiunea 26.3 sunt verificate.
-- [ ] Manifest, client/server JAR, asset index, obiecte și biblioteci sunt verificate criptografic din lock/manifest.
+- [x] Workflow manual, separat de CI-ul obișnuit.
+- [x] JDK 25 și versiunea 26.3 sunt verificate din research-lock.json.
+- [x] Manifestul versiunii, client/server JAR, asset index, obiecte și biblioteci sunt verificate criptografic din lock/manifest.
 - [x] Refolosește interfața existentă horizon-prepare --prepare și layout-ul standard de launcher; nu modifică fluxul local.
 - [x] Harness-urile pot fi alese ca smoke, all sau named; rezultatele sunt reduse la sumar și numele testelor eșuate.
-- [ ] Nu există upload-artifact, cache sau commit de resurse Mojang.
-- [ ] Directorul temporar este curățat la final, inclusiv la eșec.
-- [ ] Logurile nu expun conținutul resurselor.
+- [x] Nu există upload-artifact, cache sau commit de resurse Mojang.
+- [x] Directorul temporar este curățat la final, inclusiv la eșec.
+- [x] Logurile nu expun conținutul resurselor; output-ul harness-urilor este filtrat la sumar.
 - [ ] Testarea este efectiv rulată; doar atunci se actualizează TEST_RESULTS.md cu rezultate concrete.
 
 ## Stare actuală

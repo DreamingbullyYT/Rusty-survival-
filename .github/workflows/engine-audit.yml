@@ -19,5 +19,7 @@ jobs:
           python-version: "3.12"
       - name: Run audit tool tests
         run: python -m unittest discover -s tests -p "test_engine_audit.py"
+      - name: Run vanilla downloader unit tests
+        run: python -m unittest discover -s tools/ci -p "test_vanilla_data.py" -v
       - name: Run read-only engine audit
         run: python tools/engine_audit.py --scope engine
