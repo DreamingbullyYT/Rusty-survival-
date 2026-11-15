@@ -39,3 +39,11 @@
 - Eșecurile nu indică o problemă în logica detectorului; totuși, rularea generală nu poate fi folosită ca validare a detectorului.
 - Ajustare: workflow-ul `engine-audit.yml` rulează acum numai `tests/test_engine_audit.py`, apoi execută auditul read-only cu `--scope engine`. Testele complete upstream au fost deja rulate în workflow-ul de import înainte de eliminarea workflow-urilor upstream.
 - Rezultatul noii rulări CI rămâne în așteptare; nu declarăm încă detectorul validat.
+
+
+## 2026-11-15 — Planificare resurse Mojang efemere pentru parity CI
+
+- Au fost inspectate research-lock.json și fluxul tools/lab.py.
+- Lock-ul fixează Minecraft Java Edition 26.3, SHA-1 pentru client și server JAR, hash-uri acceptate pentru manifest/asset index și Java major 25.
+- tools/lab.py folosește în prezent instalarea locală a launcherului pentru manifest, client JAR, biblioteci și asset store; server JAR-ul este furnizat separat. Nu există încă un mod de input complet pentru resurse descărcate pe runner.
+- Workflow-ul privat/efemer este doar documentat și planificat; nu a fost creat, declanșat sau testat. Nu există rezultate Java↔Rust noi și nu se declară paritate.

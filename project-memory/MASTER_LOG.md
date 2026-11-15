@@ -52,3 +52,13 @@
 - Logul confirmă 922 teste, 9 skipped, 12 erori și 1 failure; problemele observate sunt fișiere workflow/template lipsă și un test care așteaptă cel puțin 10 runner jobs upstream.
 - Suite-ul complet upstream a trecut înainte de curățarea `.github` în import run #8 (967 OK, 9 skipped). Pentru CI-ul proiectului, workflow-ul de audit a fost restrâns la testele dedicate `test_engine_audit.py`, urmate de scanarea read-only engine-only.
 - Nicio modificare a engine-ului și nicio ștergere de cod nu a rezultat din această problemă.
+
+
+## 2026-11-15 — Decizie pentru resurse Mojang efemere în GitHub Actions
+
+- A fost consemnat planul de testare Java↔Rust Minecraft 26.3 într-un workflow manual, cu descărcare din endpoint-urile oficiale Mojang și verificare strictă prin research-lock.json.
+- Resursele vor exista numai în spațiul temporar al runnerului; fără commit, artifact, cache Actions sau release. Se vor folosi permisiuni minime și loguri limitate la checksum-uri și sumarul testelor.
+- S-a documentat explicit că logurile unui repository public rămân publice; efemer înseamnă că fișierele nu sunt păstrate/distribuite de repo, nu că GitHub sau vizitatorii logurilor nu pot vedea metadatele execuției.
+- Inspecția tools/lab.py a arătat că importul actual se bazează pe instalarea oficială locală și pe un server JAR furnizat separat. Este necesară adaptarea inputurilor sau un adapter minimal înainte de a putea folosi același flux pe runner.
+- Documentația dedicată: docs/private-vanilla-26-3-parity.md; decizia D-007; task-ul rămâne în curs.
+- Doar documentare și planificare: workflow-ul nu a fost încă implementat/rulat; nu s-au executat teste de paritate noi.

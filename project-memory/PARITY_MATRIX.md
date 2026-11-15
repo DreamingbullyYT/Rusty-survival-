@@ -71,3 +71,8 @@ Performanța poate fi optimizată intern numai dacă rezultatul observabil răm�
 - Nu am executat încă harness-urile: ele necesită jar-urile și resursele Minecraft ale utilizatorului în .local.
 - Nu declarăm niciun domeniu complet până când statusul harness-urilor, port ledger gaps și testele end-to-end nu sunt analizate.
 - Codul platform/Horizon aflat în crate-uri etichetate engine se exclude din refactorul vanilla, chiar dacă dependența lui trebuie păstrată pentru build.
+
+
+## Pregătirea resurselor pentru CI
+
+Procedura planificată pentru testele care au nevoie de oracle-ul Java este documentată în docs/private-vanilla-26-3-parity.md. Aceasta folosește numai surse oficiale Mojang, hash-urile din research-lock.json, spațiul temporar al unui runner efemer și harness-urile existente. Nu introduce un al doilea parity runner și nu publică JAR-uri/assets. Până când workflow-ul este implementat și executat, harness-urile rămân nevalidate în CI pe baza acestui mecanism.

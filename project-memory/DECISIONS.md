@@ -35,3 +35,14 @@
 - Decizie: nu comitem în repository jar-uri Minecraft, assets Mojang, surse decompilate sau resurse pregătite/exportate din joc. Le folosim local din instalarea legitimă a utilizatorului sau din altă sursă autorizată, în mod normal sub .local/.
 - Motiv: folosirea asset-urilor pentru referință și teste nu implică drept de redistribuire. Regula upstream AGENTS.md interzice explicit comiterea fișierelor Mojang.
 - Excepție: numai o permisiune/licență aplicabilă, verificată explicit, poate permite redistribuirea unui fișier anume.
+
+
+## D-007 — Resurse Mojang în CI numai pe runner efemer
+
+- Decizie: testele de paritate Minecraft Java 26.3 pot pregăti resursele necesare din endpoint-urile oficiale Mojang într-un workflow GitHub Actions declanșat manual (workflow_dispatch), exclusiv în spațiul temporar al runnerului.
+- Versiunea și hash-urile acceptate se citesc din research-lock.json; manifestul de versiune, client/server JAR, asset index, obiectele de asset și bibliotecile se verifică prin checksum înainte de folosire.
+- Nu se comit resurse Mojang, nu se publică artifacte, nu se folosește cache Actions pentru ele și nu se salvează în release-uri. Curățarea spațiului temporar se face la finalul jobului; runnerul este efemer.
+- Workflow-ul are permisiuni minime (contents: read) și nu are nevoie de secrete/tokenuri pentru descărcările publice Mojang. Nu se afișează conținutul fișierelor sau date private în loguri.
+- Clarificare de securitate: într-un repository public, logurile Actions sunt publice; deci această soluție ține JAR-urile și asset-urile în afara repository-ului și artifactelor, dar nu face execuția sau metadatele logurilor secrete față de GitHub ori publicul care poate vedea logurile. Se raportează doar versiunea, rezultatele checksum și sumarul testelor.
+- tools/lab.py actual importă clientul și bibliotecile din instalarea oficială locală și primește separat server JAR-ul; nu descarcă întregul set necesar pentru runner. Înainte de workflow, trebuie adăugat un mod de input explicit pentru fișierele/directoarele pregătite de CI sau un adapter subțire, păstrând comportamentul local actual și fără a duplica logica de verificare/parity.
+- Nicio implementare de workflow sau testare CI privată nu este declarată finalizată prin această decizie; vezi docs/private-vanilla-26-3-parity.md.
