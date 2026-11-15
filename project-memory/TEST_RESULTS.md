@@ -63,3 +63,15 @@
 - GitHub Actions run 43700810845, commit dcf5300497ea816f91c1c11d032ea52c62fa822d.
 - Step `Run vanilla downloader unit tests`: completed SUCCESS. The four unit tests for safe paths, version-lock validation, verified atomic download/reuse and cleanup after checksum mismatch passed.
 - The subsequent `Run read-only engine audit` step was still in progress at the time of this entry. The manual Mojang download/preparation/parity workflow was not triggered.
+
+
+## 2026-11-15 — Audit read-only (fără build, fără harness)
+
+Ce s-a rulat și rezultatul:
+- `python3 tools/check_layers.py`: „Layer check passed: 55 crates, 26 exceptions left to move”.
+- `cargo metadata --format-version 1 --no-deps --offline` pe cele patru workspace-uri: a reușit; folosit pentru graful din `DEPENDENCIES.md`.
+- `python3 tools/port_ledger.py coverage|gaps|where|todo`: „No ledger yet”; nu a fost ocolit (are nevoie de `.local/`).
+- `python3 tools/parity.py --list`: 649 din 682 de harness-uri ar rula; `--status`: toate 682 „never run”.
+- Scripturi Python read-only pe `reports/upstream-bcb7258-audit.json` și pe sursele din repo (clasificare duplicate, numărare linii, import-uri).
+
+Ce NU s-a rulat: `cargo build`, `cargo check`, `cargo test`, `cargo clippy`, niciun harness de paritate, nicio descărcare de resurse Mojang. Nu există rezultate noi de paritate. Detalii: `reports/engine-audit-2026-11-15/README.md`.
