@@ -78,3 +78,14 @@
 
 - Engine Audit Tooling run #32, commit dcf5300497ea816f91c1c11d032ea52c62fa822d: pasul Run vanilla downloader unit tests s-a încheiat cu SUCCESS; toate cele patru teste unitare au trecut.
 - La momentul înregistrării, auditul read-only engine din același job era încă în desfășurare. Workflow-ul de descărcare Mojang/parity nu a fost declanșat.
+
+
+## 2026-11-15 — Audit read-only al engine-ului pe baseline-ul bcb7258
+
+- Patru subagenți read-only au analizat repository-ul fără să-l modifice: graful de dependențe, inventarul crate-urilor engine, starea parității din datele comise și trierea grupurilor exacte ale detectorului. Rapoartele sunt în `reports/engine-audit-2026-11-15/`.
+- Verificate independent înainte de consemnare: `check_layers.py` trece (55 crate-uri, 26 excepții); `horizon-cosmetics` și `horizon-telemetry` sunt dependențe necondiționate ale `horizon-client`; `git status` a rămas curat după audit.
+- Rezultate principale: engine-ul are 1.430.651 de linii Rust (887.804 în `src/` fără teste); ~33k linii de glue pentru mod API și ~6,4k de funcții Horizon în render sunt încă în crate-uri engine; 52 de harness-uri nu au oracle Java; port ledger-ul nu poate fi interogat fără `.local/`; din 24 de grupuri de duplicate netriviale, 15 sunt reale, 4 neclare, 5 coincidente.
+- Observație: cele 835 de grupuri exacte sunt majoritar zgomot (363 doar în teste, 431 banale). Economia netă estimată din dublurile reale este mică (~90–120 de linii). Concluzie provizorie: o reducere semnificativă de dimensiune nu vine din aceste grupuri; rămâne de verificat în duplicarea structurală și în codul din afara fazei curente.
+- Nu s-a rulat niciun build, test sau harness, nu s-au descărcat resurse Mojang și nu s-a modificat codul engine-ului. Nu există rezultate noi de paritate.
+- Un agent a rulat `tools/parity.py --list/--status`, care a scris `.local/parity-runner/state.json`; directorul a fost șters imediat și `git status` a fost curat.
+- Următorul pas propus: rularea manuală a workflow-ului Private Vanilla 26.3 Parity după merge, ca să existe o bază măsurată, apoi inventarul semantic pe modulele mari.

@@ -78,3 +78,20 @@ consumer -> provider, motiv, tipul contractului, riscuri, teste și excepții.
 - horizon-command deține parsing-ul/tree-ul Brigadier, în timp ce dispatch-ul și efectele comenzilor sunt în gameplay-ul din horizon-client.
 - horizon-world deține datele și mecanismele world/server-side (ticks, redstone, worldgen, entity physics); horizon-client coordonează bucla de gameplay și client/server. Muchiile nu trebuie confundate cu ownership comun.
 - horizon-client-render nu ajunge la gameplay, conform documentației upstream; dependențele sale către state-ul world/client trebuie urmărite ca flux de citire, nu presupuse drept duplicate.
+
+
+## Graf confirmat la nivel de workspace (2026-11-15)
+
+Sursa: `cargo metadata --no-deps --offline` pe cele patru workspace-uri din `tools/layers.json`, plus `tools/check_layers.py`. Raport complet: `reports/engine-audit-2026-11-15/deps.md`.
+
+- 55 de pachete workspace, toate prezente în `tools/layers.json` și invers. Straturi: 19 engine (8 portable), 17 platform, 15 horizon, 4 tool.
+- `python3 tools/check_layers.py`: trece (55 crate-uri, 26 excepții rămase de mutat).
+- Fără cicluri între crate-urile workspace, inclusiv dev-dependencies (conform raportului `deps.md`).
+- Muchii engine către straturi superioare: exact cele 26 din `allowed` (horizon-client 13, horizon-client-lib 8, horizon-client-render 5).
+- Fan-in: `horizon-core` este folosit de 12 crate-uri workspace; `horizon-client` și `horizon-client-lib` au fan-in 1.
+
+Neconcordanțe constatate (de investigat, nu de „reparat” automat):
+- `docs/layers.md` spune că funcțiile Horizon stau în spatele `horizon-extras`, dar `horizon-cosmetics` (Cargo.toml linia 14) și `horizon-telemetry` (linia 75) sunt dependențe necondiționate ale `horizon-client`.
+- 10 nume de dependențe directe ale crate-urilor engine apar la două sau mai multe versiuni în `Cargo.lock`, printre ele base64, getrandom, miniz_oxide, familia objc2, rustix, socket2, windows, windows-sys.
+
+Limite: graful extern tranzitiv nu este confirmat complet (s-a folosit `--no-deps`); feature gates sunt urmărite doar pentru muchiile workspace opționale.

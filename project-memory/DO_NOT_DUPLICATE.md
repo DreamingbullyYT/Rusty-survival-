@@ -33,3 +33,26 @@ Scanarea inițială de import a fost prea largă (toate sursele Rust), a raporta
 - `horizon-client-lib` declară în manifest `[lib] path = "../horizon-client/src/client_lib.rs"`; este aceeași cale de sursă expusă ca target Cargo separat, nu două implementări independente.
 - Parsing-ul comenzilor (`horizon-command`) și dispatch-ul/efectele comenzilor (`horizon-client/game`) sunt responsabilități distincte.
 - Rendererul care citește world state nu devine automat owner al regulilor de gameplay.
+
+
+## Trierea detectorului pe `reports/upstream-bcb7258-audit.json` (2026-11-15)
+
+Raport complet: `reports/engine-audit-2026-11-15/dups.md`. Nimic nu a fost șters sau modificat. „Exact” înseamnă aceeași formă de tokeni cu identificatorii și literalele abstractizate, nu același text; JSON-ul este scanare all-scope (include teste și exemple).
+
+| Clasă | Grupuri | Linii duplicate |
+|---|---:|---:|
+| A: doar teste | 363 | 6.117 |
+| B: banale (≤3 instrucțiuni) | 431 | 4.479 |
+| C: între crate-uri, netriviale | 4 | 66 |
+| D: același crate, netriviale | 20 | 296 |
+| E: generat, protocol sau tabele | 17 | 307 |
+
+Cele 24 de grupuri C și D au fost citite integral: 15 REAL, 4 UNCLEAR, 5 COINCIDENTAL. Economie netă estimată pentru REAL: ~90–120 linii de producție (estimare, nu măsurătoare). Candidații structurali (11.343) sunt în mare parte tabele enum-spre-șir și nu sunt dubluri reale.
+
+Nu se unifică fără rularea harness-ului pe oracle-ul 26.3:
+- senzorii `sense_players`, `sense_hurt`, `sense_living` (mobs): în `villager_brain` limita `FOLLOW_RANGE` diferă;
+- `place_configured_feature` și `place_placed_feature`, `rotate_left` și `rotate_right` din `java_hash_map.rs`, `corridor_left` și `corridor_right`, `draw_overlay_message` și `draw_title`: oglindesc metode vanilla diferite;
+- `introduce` și `code_hello` (horizon-friends): handshake-uri cu MAGIC și timeout-uri diferite;
+- `apply` și `apply_secret` din `rsa.rs`: varianta secretă este apărare intenționată împotriva side-channel.
+
+Pentru un PR viitor: dublura din `realms.rs` (`closest_expiration` copiat în `mod tests`) face ca testul să nu exerseze funcția livrată; se poate înlocui cu apel la funcția reală păstrând aserțiunile.

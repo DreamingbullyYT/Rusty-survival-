@@ -81,3 +81,46 @@ Procedura planificată pentru testele care au nevoie de oracle-ul Java este docu
 ## Pregătirea resurselor în CI — implementare
 
 Workflow-ul manual .github/workflows/private-vanilla-parity.yml pregătește resursele prin tools/ci/vanilla_data.py și le importă cu horizon-prepare. Testele folosesc harness-urile canonice tools/parity.py; nu există un al doilea runner. Starea și criteriile sunt documentate în docs/private-vanilla-26-3-parity.md. Niciun caz nu este marcat PASS până la o execuție reală.
+
+
+## Evidență disponibilă fără date Mojang (2026-11-15)
+
+Sursa: fișiere comise în repository și comenzi read-only. Raport complet: `reports/engine-audit-2026-11-15/parity.md`. Niciun domeniu nu devine „verificat” prin aceste cifre: ele arată doar ce infrastructură există.
+
+- `tools/port_ledger.py` nu poate fi interogat: are nevoie de `.local/` (jar și surse decompilate). `coverage`, `gaps`, `where`, `todo` răspund „No ledger yet”. Tipurile de gap (seam, drift, float, callee, class) nu sunt calculabile din repo.
+- Harta de verdicte comisă (`tools/port_map/*.tsv`, 115 fișiere, 14.897 rânduri): 10.926 mapate (7.744 `port`, 3.182 `inline`), 423 `missing`, 3.509 `skip:*`, 39 `home`.
+- 678 fișiere `tools/test_*_parity.py`; 397 fișiere Java oracle; 350 fișiere probe/fixture/bench Rust. `tools/parity.py --list` enumerează 682 de nume; `--status` arată toate 682 ca „never run”.
+- 626 de harness-uri ajung la un oracle Java sau rulează jar-ul vanilla (după închiderea importurilor); 52 nu au nici oracle Java, nici rulare a jar-ului (de exemplu light, save_roundtrip, world_reopen, lan_integration). Regula 1 de acceptare cere oracle independent.
+- 5 harness-uri fără probe: macro_source_type, mob_pickup_save, orb_saved_uuid, seed_sync, stand_fall_save (pot folosi o fixture prin variabilă de mediu, nepotrivită după nume).
+- 28 de fișiere Java oracle nu sunt atinse de închiderea importurilor niciunui harness (unele sunt exportatoare sau ajutoare).
+- `docs/known-issues.md` are 4 linii și nicio intrare (lista se generează la release); 0 probleme cunoscute nu înseamnă 0 gap-uri.
+- Domenii cu acoperire subțire față de volumul mapat: mobs (1.677 metode mapate, 69 harness-uri), rendering (1.416, 14), commands (854, 20), protocol (820, 19). Domeniul transversal „order/timing/float” nu are niciun harness după nume.
+
+Atenție: `tools/parity.py --list` și `--status` scriu `.local/parity-runner/state.json` în repo. `.local/` nu se comite; verifică `git status` după ce le rulezi.
+
+Tabel pe domenii (asocierea cu domeniile se face după cuvinte-cheie din nume și căi: inferat):
+
+| PARITY_MATRIX domain | #harnesses | #oracles (java / jar) | mapped methods (port+inline) | missing / gap counts | known issues | evidence |
+|---|---|---|---|---|---|---|
+| Version, math, RNG, coordinates, primitives | 3 | 2 / 0 | 353 | missing n/a; gap-note 10 | 0 | harness_domains.json; tsv_domains.py on `horizon-core` paths |
+| World data and persistence | 32 | 24 / 3 | 419 | missing n/a; gap-note 76; 3 harnesses without probe | 0 | harnesses.json; `world`/`save`/`datafix` paths |
+| Save/load and datafix (merged into row above in matrix) | (in row above) | | | | 0 | PARITY_MATRIX.md row "Save/load, datafix" |
+| World generation | 39 | 38 / 1 | 842 | missing n/a; gap-note 29 | 0 | `worldgen` / `biome` / `carver` paths |
+| Block states, block entities, ticks, redstone | 103 | 97 / 21 | 1,091 | missing n/a; gap-note 47; 6 harnesses with no oracle | 0 | `horizon-world/src/level`, `block_ticks`, `redstone` |
+| Fluids, fire, weather, environment | 36 | 30 / 11 | 417 | missing n/a; gap-note 28 | 0 | fluid/fire/weather paths |
+| Items, data components, enchantments, cooldowns | 43 | 40 / 3 | 247 | missing n/a; gap-note 45 | 0 | `horizon-items`, `item_data`, `enchant` |
+| Inventory, containers, crafting, trade | 34 | 32 / 3 | 532 | missing n/a; gap-note 39 | 0 | `menu`, `container`, `crafting`, `merchant` |
+| Entities, physics, collisions, projectiles | 59 | 54 / 11 | 311 | missing n/a; gap-note 84 | 0 | `entities`, `projectile`, `minecart`, `boats` |
+| Mobs, AI, goals, navigation, spawning | 69 | 62 / 13 | 1,677 | missing n/a; gap-note 243 | 0 | `mobs/`, `creatures`, `natural_spawning` |
+| Player movement, mining, interaction, combat | 25 | 25 / 3 | 92 | missing n/a; gap-note 18 | 0 | `melee`, `use_hand`, `combat` |
+| Effects, food, damage, potions, equipment | 22 | 22 / 0 | 67 | missing n/a; gap-note 12 | 0 | `effect`, `food`, `damage` |
+| Commands, selectors, functions, command blocks | 20 | 16 / 0 | 854 | missing n/a; gap-note 112; 1 harness without probe | 0 | `horizon-command`, `commands` |
+| Protocol, login, packets, client/server sync | 19 | 16 / 4 | 820 | missing n/a; gap-note 158; 1 harness without probe | 0 | `horizon-protocol`, `game/remote*` |
+| Integrated, dedicated server, LAN | 31 | 29 / 18 | 140 | missing n/a; gap-note 40 | 0 | `integrated`, `dedicated`, `lan` |
+| Dimensions, game rules, time, weather ticks | 9 | 9 / 0 | not separable (no matching Rust group) | n/a | 0 | harness names only |
+| Rendering, meshing, lighting, particles, camera | 14 | 11 / 0 | 1,416 | missing n/a; gap-note 240 | 0 | `gfx`, `mesher`, `light`, `particles` |
+| Resource packs, assets, models, fonts, lang | 13 | 13 / 1 | 216 | missing n/a; gap-note 19 | 0 | `horizon-assets`, `packs`, `font` |
+| UI, HUD, screens, input, audio | 11 | 11 / 0 | 458 | missing n/a; gap-note 90 | 0 | `hud`, `settings_shell`, `keybinds`, `audio` |
+| Order, timing, float semantics, RNG draw order (transversal) | 0 by name (inferred) | 0 | n/a | float/drift/seam gaps need ledger build | 0 | PARITY_MATRIX.md last row |
+| Unassigned by name | 96 | 95 / 10 | 394 (Rust paths in unclassified modules) | n/a | 0 | harness_domains.json "Unclassified" |
+

@@ -18,9 +18,20 @@
 - [x] Implementat downloader-ul oficial Mojang, testele unitare și workflow-ul manual Private Vanilla 26.3 Parity; vezi docs/private-vanilla-26-3-parity.md. Rămâne de declanșat după ce workflow-ul ajunge pe main.
 - [ ] Re-rularea CI pe PR după izolarea testelor detectorului de fixture-urile .github upstream.
 - [ ] Verificarea raportului engine-only după ce CI rulează; candidații de similitudine necesită triere manuală.
+  - Parțial (2026-11-15): cele 24 de grupuri exacte netriviale au fost triate manual (15 REAL, 4 UNCLEAR, 5 COINCIDENTAL) în `reports/engine-audit-2026-11-15/dups.md`; nimic nu a fost modificat.
 - [ ] Inventarierea semantică a sistemelor din crate-urile mixte, cu module, callsites, dataflow și teste.
+  - Parțial (2026-11-15): inventar cantitativ pe cele 19 crate-uri engine și lista nepotrivirilor doc/cod în `reports/engine-audit-2026-11-15/inventory.md`. Lipsesc callsites, dataflow și teste per modul.
 - [ ] Confirmarea grafului complet de dependențe Cargo, inclusiv dependențe transitive și feature gates.
+  - Parțial (2026-11-15): graful între crate-urile workspace, `check_layers.py` și versiunile externe multiple în `reports/engine-audit-2026-11-15/deps.md`. Dependențele externe tranzitive nu sunt confirmate (s-a folosit `--no-deps`).
 - [ ] Extracția statusului real al harness-urilor și gap-urilor din port ledger; acestea nu au fost încă rulate în acest audit.
+  - Parțial (2026-11-15): numărătorile din fișierele comise în `reports/engine-audit-2026-11-15/parity.md`. Gap-urile din port ledger rămân blocate: au nevoie de `.local/` (workflow-ul Private Vanilla 26.3 Parity).
+
+## Candidați pentru PR-uri mici (după rularea parității pe CI)
+- [ ] Înlocuirea copiei din `mod tests` din `realms.rs` cu apel la `closest_expiration` real (aserțiunile rămân).
+- [ ] `from_server_toml` duplicat între `horizon-chat-filter` și `horizon-anticheat`, cu proprietar în `horizon-server-files`.
+- [ ] `SplitMix64` repetat în trei locuri, cu proprietar în `horizon-core/src/random.rs` (verifică întâi `properties.rs`).
+- [ ] Ierarhia dependențelor `horizon-cosmetics` și `horizon-telemetry` față de `docs/layers.md` (decizie, nu refactor).
+- [ ] Rularea manuală a suitei Private Vanilla 26.3 Parity ca să existe prima bază de paritate măsurată.
 
 ## Mai târziu
 - [ ] Definirea arhitecturii țintă minimală pe baza inventarului semantic.
