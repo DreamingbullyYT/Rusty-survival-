@@ -299,3 +299,25 @@ Not tested:
 - APK installation and runtime on the user's device; Vulkan rendering, lifecycle and surface recreation remain unverified.
 Next:
 - Install APK on ARM64 Android, then capture logcat and verify Vulkan adapter/surface/present and lifecycle.
+
+
+## S-2026-11-17-18 — Add initial engine core and automated tests
+Date: 2026-11-17
+Commit: pending
+Goal: Start engine work with a small platform-independent core primitive and an automated test gate, without inventing incomplete Minecraft behavior.
+Changes:
+- Added root Cargo workspace and crates/engine-core with no third-party dependencies.
+- Added horizontal block-to-chunk mapping using Euclidean division/remainder; negative block coordinates map to valid local X/Z coordinates.
+- Kept Y absolute and intentionally did not define dimension height, section height, block states, world generation or gameplay.
+- Added integration tests for positive/negative chunk boundaries, round-trip behavior across -4097..=4097, integer extremes, and the 16-block chunk width.
+- Added .github/workflows/engine-tests.yml to run formatting, tests and Clippy on Rust changes.
+- Added docs/specs/ENGINE_TEST_STRATEGY.md.
+Verification:
+- Source and test code added; GitHub Actions result pending.
+- Local Rust tests not run because rustc/cargo are unavailable in the current execution environment.
+Not tested:
+- No official Minecraft Java 26.3 reference fixture has been captured.
+- No world/chunk storage, sections, registries, simulation, physics, lighting, fluids, generation, persistence or renderer implementation.
+- No Android build or Vulkan work was performed in this session.
+Next:
+- Wait for Engine Tests workflow; fix any failures and only then add the next small, evidence-backed engine primitive.
