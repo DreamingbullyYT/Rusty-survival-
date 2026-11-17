@@ -1,3 +1,8 @@
+## 2026-11-17 — Add version-pinned reference fixture contract
+- Added `rusty-survival-testkit` as a separate workspace crate with a typed JSON fixture model and validation for schema version, Java 26.3 target, subsystem, artifact metadata, scenario, normalization and capture provenance.
+- Added five synthetic self-tests and one explicitly synthetic fixture example; these validate the harness contract only and do not count as Minecraft parity.
+- Kept the engine runtime crate free of testkit dependencies. Official artifact download, Java oracle, comparator and reference workflow remain unimplemented.
+
 ## 2026-11-17 — Move engine foundation directly to main
 - User clarified that all work must be performed directly on `main`, without creating PRs.
 - Fast-forwarded `main` from `af4b87c74225cf46f80b78eab6a56e76fabf471a` to `8bf795c2959a1ca78e4fe40618b418df015162ae`, carrying the tested engine-core foundation and PMCS updates.
