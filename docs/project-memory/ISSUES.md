@@ -38,3 +38,9 @@ Minelib networking requires protocol, authentication, encryption and security re
 Status: INVESTIGATING
 Evidence: CI run 44127492869 completed SUCCESS. ARM64 native library compilation and Gradle debug APK packaging both passed. Artifact ID 14347124661 (2,379,313 bytes; SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61).
 Required action: Install on a real device; verify Vulkan adapter selection, first present, pause/resume, rotation and repeated surface recreation. CI compilation/package success is not proof of runtime support.
+
+
+## I-010 — Engine core test coverage and parity evidence
+Status: INVESTIGATING
+A minimal horizontal coordinate primitive and tests have been added. These test coordinate invariants only. No version-pinned Minecraft Java 26.3 differential fixtures or gameplay tests exist yet.
+Required action: Verify the new Rust workflow; expand test coverage in dependency order and only mark parity VERIFIED after comparison with captured 26.3 reference behavior.
