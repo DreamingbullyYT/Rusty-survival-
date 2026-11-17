@@ -1,6 +1,11 @@
 name: Mojang Reference Artifact Smoke Test
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/**"
+      - ".github/workflows/reference-artifact-smoke.yml"
   workflow_dispatch:
     inputs:
       simulate_failure:
@@ -37,10 +42,11 @@ jobs:
         run: python -m unittest discover -s tools/tests -v
 
       - name: Resolve and download official Java 26.3 server
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: python tools/fetch_mojang_server.py --version 26.3 --output-dir "$REFERENCE_DIR"
 
       - name: Optional deliberate failure for cleanup verification
-        if: ${{ inputs.simulate_failure }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.simulate_failure }}
         run: |
           echo "Intentional failure requested; cleanup must still run."
           exit 1
