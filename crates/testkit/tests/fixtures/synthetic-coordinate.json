@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "id": "synthetic.coordinates.chunk-origin",
+  "kind": "synthetic",
+  "target": {
+    "edition": "java",
+    "version": "26.3"
+  },
+  "subsystem": "coordinates",
+  "scenario": {
+    "seed": 0,
+    "dimension": "minecraft:overworld",
+    "coordinates": { "x": -16, "y": 64, "z": 32 },
+    "settings": { "chunk_width": 16 },
+    "initial_state": { "purpose": "validator_self_test" },
+    "actions": [
+      {
+        "operation": "map_block_to_chunk",
+        "ticks": 0,
+        "input": { "x": -16, "y": 64, "z": 32 }
+      }
+    ]
+  },
+  "expected": {
+    "chunk_x": -1,
+    "chunk_z": 2,
+    "local_x": 0,
+    "local_z": 0
+  },
+  "normalization": {
+    "ignored_paths": [],
+    "float_tolerance": 0.0001
+  },
+  "provenance": {
+    "capture_tool": "hand-authored synthetic test",
+    "java_runtime": "not_used",
+    "captured_at": "2026-11-17T00:00:00Z",
+    "source": "synthetic; not captured from Minecraft Java and not parity evidence"
+  }
+}
