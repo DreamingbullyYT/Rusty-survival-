@@ -394,3 +394,27 @@ Limitations:
 - No reference fixtures, world storage, sections, registry, or gameplay implementation yet.
 Next:
 - Verify both main push workflows, then continue the version-pinned reference-fixture harness directly on main.
+
+
+## S-2026-11-17-23 — Define engine layout and temporary reference-test policy
+Date: 2026-11-17
+Commit: dcbc7d0c858918c6a52769a54f0e6a9a7d2b8934 (layout), 6e6ef01402b8bdc4cf1d17a2ffe9f23ff225acf7 (reference pipeline), followed by project-memory synchronization commits.
+Goal: Turn the user's engine-only direction into a readable implementation map and a compliant, non-redistributing reference-test plan.
+Changes:
+- Reviewed the current Rusty Survival main branch and current Horizon architecture/layer, native-client, parity and CI documentation.
+- Re-inspected Minelib's AGPLv3 root license, world crate, raycast/noise/mesh concepts, renderer and asset path assumptions. No source was copied.
+- Added docs/specs/ENGINE_LAYOUT.md with staged crate ownership, dependency direction, source-file conventions and explicit no-modding scope.
+- Added docs/specs/REFERENCE_TEST_PIPELINE.md for official-source reference tests using ephemeral $RUNNER_TEMP, size/hash checks, no cache/artifact/release, and cleanup on all outcomes.
+- Updated AI_HANDOFF, CURRENT_STATE and PROJECT_MEMORY to record the engine-only scope and reference-artifact policy.
+Verification:
+- Read main HEAD cd78a65be0c779e1a1a676e2524fd973ab3c3ecc before the documentation changes.
+- Inspected Horizon docs/layers.md, AGENTS.md, native-client.md, rust-parity.md and parity-workflow.md.
+- Inspected Minelib Cargo manifests, root AGPLv3 LICENSE, world chunk/raycast/noise/mesh sources, renderer entry point and asset path implementation.
+- Documentation commits were applied directly to main.
+Not tested:
+- GitHub Actions validation for these documentation updates is pending.
+- No Rust source, fixture runner, Mojang downloader or reference workflow was implemented.
+- No Minecraft artifact was downloaded; no Java 26.3 differential fixture exists.
+- Only engine-core exists; the crate tree is a staged plan, not an implemented game.
+Next:
+- Implement fixture schema and synthetic harness tests, then official metadata/hash-verified temporary download and manual Actions workflow. Keep direct-to-main and do not start modding.
