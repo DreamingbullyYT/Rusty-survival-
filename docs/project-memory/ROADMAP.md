@@ -24,7 +24,7 @@
 
 ## Phase 3 — Android platform vertical slice
 - [x] Implement isolated ARM64 NativeActivity + winit + wgpu Vulkan clear-screen POC source.
-- [ ] Pass GitHub Actions Android compile and APK packaging (tracked in I-009).
+- [ ] Pass GitHub Actions Android compile and APK packaging (tracked in I-009; initial failure was SDK setup action v3 requesting removed tools package).
 - [ ] Install and test on real device: startup, first present, pause/resume, rotation and repeated surface recreation.
 - [ ] Record device/GPU/driver details and smoke-test results.
 - [ ] Decide production renderer/platform stack based on evidence.

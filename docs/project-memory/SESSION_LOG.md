@@ -229,3 +229,20 @@ Not tested:
 - Android compile/package and device runtime are still pending.
 Next:
 - Review Android Vulkan POC and PMCS workflow results; fix any failures before device testing.
+
+
+## S-2026-11-17-14 — Fix Android SDK setup action failure
+Date: 2026-11-17
+Commit: pending
+Goal: Remove the first CI blocker before the Android Rust build begins.
+Changes:
+- Android POC run 44127348128 failed in setup-android@v3 because that action attempted to install Google's removed SDK tools package.
+- Updated the Android POC workflow to setup-android@v4, whose current documentation no longer requests the removed package by default.
+- Kept Android SDK/NDK package installation explicit.
+Verification:
+- Failure root cause confirmed from the workflow job log.
+- Retry/build on the corrected workflow is pending.
+Not tested:
+- Rust Android compilation, Gradle packaging, APK installation, Vulkan device runtime.
+Next:
+- Verify setup-android@v4, then fix any Rust/Gradle errors exposed by the build.

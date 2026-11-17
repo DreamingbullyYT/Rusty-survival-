@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — Fix Android SDK setup action failure
+- Android POC run 44127348128 failed before compilation because setup-android@v3 requested Google's removed SDK tools package.
+- Updated the workflow to setup-android@v4 and made platform-tools installation explicit.
+- Rust compilation and APK packaging remain pending.
+
+
 ## 2026-11-17 — Track Android POC validation gate
 - Added I-009 to track ARM64 compilation, APK packaging and real-device Vulkan lifecycle validation.
 - POC remains INVESTIGATING until CI and hardware results are recorded.

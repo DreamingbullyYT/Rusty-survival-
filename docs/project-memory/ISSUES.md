@@ -43,5 +43,5 @@ Required action: If multiplayer is in initial scope, create a separate protocol 
 
 ## I-009 — Android Vulkan POC build and device validation
 Status: INVESTIGATING
-Evidence: An isolated ARM64 NativeActivity/winit/wgpu Vulkan clear-screen POC and CI packaging workflow have been added. The first CI build and real-device tests are pending.
+Evidence: An isolated ARM64 NativeActivity/winit/wgpu Vulkan clear-screen POC and CI packaging workflow have been added. Initial CI run 44127348128 failed in setup-android@v3 because it attempted to install Google's removed SDK tools package, before Rust compilation. The workflow is being moved to setup-android@v4.
 Required action: Pass ARM64 native compilation and APK packaging; install on a real device; verify Vulkan adapter selection, first present, pause/resume, rotation and repeated surface recreation. Do not treat a CI APK build as proof of device runtime support.
