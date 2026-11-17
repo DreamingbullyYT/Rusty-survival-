@@ -37,7 +37,7 @@ Repository HEAD: resolve dynamically from current main; do not store a stale SHA
 - Added `.github/workflows/reference-tool-tests.yml` for offline tests and `.github/workflows/reference-artifact-smoke.yml` for manual temporary artifact acquisition with unconditional cleanup and an optional deliberate-failure path.
 
 ## Not implemented / not verified
-- Fixture schema/parser/validator and synthetic self-tests are implemented. Downloader and manual artifact-only workflow are implemented but their Actions runs are not yet verified. No Java 26.3 differential fixture, Java oracle, Rust probe comparator or parity runner exists.
+- Fixture schema/parser/validator and synthetic self-tests are implemented. Downloader and manual artifact-only workflow are implemented. Offline Python tests and the push-triggered cleanup path passed Actions; the actual manual download path has not yet been dispatched or verified. No Java 26.3 differential fixture, Java oracle, Rust probe comparator or parity runner exists.
 - No world sections, heightmaps, block states, registries, ticks, generation, physics, lighting, fluids, persistence, renderer, audio, runtime or playable game.
 - No Mojang binary or asset has been downloaded or committed as part of the latest documentation work.
 - Minelib upstream tests and complete legal/provenance review remain incomplete.
