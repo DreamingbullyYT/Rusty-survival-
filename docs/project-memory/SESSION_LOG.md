@@ -176,3 +176,22 @@ Not tested:
 - No engine or Android behavior; current architecture remains a proposal.
 Next:
 - Prove Android lifecycle/surface integration and continue version-specific reference capture.
+
+
+## S-2026-11-17-11 — Refine Android renderer feasibility assessment
+Date: 2026-11-17
+Commit: pending
+Goal: Determine whether a realistic Rust Android Vulkan proof-of-concept path exists.
+Changes:
+- Cross-checked wgpu 25 supported-platform documentation and winit 0.30 Android integration/lifecycle documentation.
+- Clarified that wgpu 25 lists Vulkan on Android and winit 0.30 has an Android glue path, but Minelib's pinned manifests do not enable that Android entrypoint/configuration.
+- Updated the Minelib renderer audit and architecture proposal; wgpu+winit is now a credible POC candidate, not a selected backend.
+- Changed I-006 to INVESTIGATING and made the POC the next action.
+Verification:
+- Source manifests and upstream release workflow inspected.
+- Official winit docs confirm Android glue feature and Resumed/Suspended surface lifecycle requirements.
+- wgpu 25 docs list Vulkan support on Android.
+Not tested:
+- No Android compile, APK, device runtime, Vulkan adapter, surface, or swapchain test.
+Next:
+- Build an isolated clear-screen Android POC with wgpu 25 + winit 0.30; do not add engine/gameplay code to it.

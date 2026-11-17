@@ -70,7 +70,7 @@ Owns player/entity movement, collision resolution, selection/collision shapes, r
 Defines renderer-facing world snapshots, camera state, render resources, capabilities, and frame submission without exposing a concrete GPU API to simulation.
 
 ### renderer-vulkan (candidate, not selected)
-Potential Android renderer backend. Could use wgpu or another maintained abstraction, but only after a real-device Vulkan surface/lifecycle proof. Owns GPU resource lifetime, swapchain, chunk meshing, shaders, transparency, UI composition, and presentation.
+Potential Android renderer backend. wgpu 25 documents Vulkan support on Android, and winit 0.30 provides an Android backend through android-activity glue. This makes wgpu+winit a credible proof-of-concept candidate, not a selected production dependency. Verify NativeActivity/GameActivity integration, Resumed/Suspended surface lifetime, swapchain recreation and real-device behavior before deciding. Owns GPU resource lifetime, swapchain, chunk meshing, shaders, transparency, UI composition, and presentation.
 
 The 26.3 release's MultiDrawIndirect and order-independent transparency are observable/technical reference points; the engine may use different GPU techniques if output remains equivalent.
 

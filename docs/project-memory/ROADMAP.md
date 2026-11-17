@@ -11,7 +11,7 @@
 - [x] Inspect renderer, asset loader and networking source entry points; record ADAPT/REPLACE/BLOCKED decisions.
 - [ ] Run upstream world crate tests in a reproducible environment.
 - [ ] Complete legal/provenance review of candidate code and assets.
-- [ ] Build a minimal Android proof of concept before adopting platform/rendering dependencies.
+- [ ] Build a minimal Android wgpu 25 + winit 0.30 Vulkan clear-screen proof of concept; test lifecycle and swapchain recreation.
 - [ ] Audit remaining candidate platform/p2p/relay components if their reuse is still being considered.
 
 ## Phase 2 — Specification and architecture

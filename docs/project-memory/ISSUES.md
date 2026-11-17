@@ -25,10 +25,10 @@ Evidence: Source inspection shows custom 16×512×16 chunks, Minelib-specific bl
 Required action: Independently specify and implement Minecraft Java 26.3 semantics. Treat mesh and DDA as algorithmic candidates only.
 
 
-## I-006 — Minelib renderer Android surface support unproven
-Status: OPEN
-Evidence: Minelib renderer constructor accepts Arc<winit::window::Window>, creates/configures a wgpu surface internally, and has no demonstrated Android lifecycle/surface proof in the audited source or CI.
-Required action: Build a minimal Android wgpu/Vulkan surface proof and test pause/resume, surface recreation, rotation, synchronization, and device loss.
+## I-006 — Android renderer lifecycle/surface proof required
+Status: INVESTIGATING
+Evidence: wgpu 25 lists Vulkan on Linux/Android and winit 0.30 documents Android support through android-activity glue. Minelib's pinned workspace does not enable the Android glue feature or provide an Android entrypoint, and no Android build/device test was found.
+Required action: Build an isolated Android winit + wgpu 25 Vulkan clear-screen APK. Verify Resumed/Suspended, pause/resume, surface recreation, rotation, synchronization and real-device presentation before selecting the production backend.
 
 ## I-007 — Minelib embedded asset provenance
 Status: BLOCKED

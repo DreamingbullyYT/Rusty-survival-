@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-17
-Status: ARCHITECTURE_PROPOSAL_IN_PROGRESS
+Status: ANDROID_RENDERER_POC_PLANNED
 Repository HEAD: resolve dynamically from the current main branch; do not store a commit SHA here because it becomes stale after every commit.
 
 ## Direction
@@ -29,13 +29,13 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - No Android application or APK.
 - No renderer integration or Vulkan device/surface test.
 - No Minecraft Java 26.3 parity fixtures.
-- No Android lifecycle proof.
+- No Android lifecycle proof; wgpu 25 + winit 0.30 is a candidate combination, not yet built or tested.
 - Minelib upstream tests, legal/provenance review, and security review remain incomplete.
 - Architecture is a proposal; final crate boundaries and renderer backend are not selected.
 - 26.3 internal world/simulation details remain unresolved pending reference capture.
 
 ## Next actions
-1. Validate the Android lifecycle/surface approach and select a minimal proof-of-concept stack.
+1. Build and test the isolated wgpu 25 + winit 0.30 Android Vulkan clear-screen proof of concept.
 2. Capture 26.3 metadata, registry/tag inventory, dimension/chunk semantics and reference fixtures.
 3. Complete remaining Minelib legal/provenance and upstream test work.
 4. Review the architecture and parity matrix against evidence.

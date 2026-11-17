@@ -17,8 +17,13 @@ Method: GitHub source inspection only. No upstream source was cloned, built, or 
 - Renderer owns substantial world-specific pipeline state, GPU chunk meshes, textures, TAA, reflections, overlays, capture, and Minelib-specific lighting data.
 - The root render module is approximately 2,583 lines / 99 KB at the pinned commit; shader and supporting modules add substantially more code.
 
+### Android integration nuance
+The pinned workspace uses winit 0.30 and wgpu 25. The wgpu 25 platform table lists Vulkan support on Linux/Android. Winit 0.30 also has an Android backend, but its documentation requires an Android glue feature such as android-native-activity and an android_main entry point; the application must pass AndroidApp into the event loop. The Minelib workspace manifests inspected here declare winit = 0.30 without Android feature flags, contain no android-activity dependency/entrypoint, and its release workflow only demonstrates Windows builds. Therefore Android support is technically plausible, but not wired or demonstrated by this pinned Minelib build.
+
+Winit's Android lifecycle guidance says graphics initialization/window creation should happen after Resumed; on Android, Suspended corresponds to destruction of the SurfaceView and invalidates render surfaces. This lifecycle must be handled explicitly.
+
 ### Compatibility assessment
-The use of wgpu is a plausible technology candidate for an Android Vulkan backend, but the source does not prove Android surface/lifecycle support. Its public constructor is tied to winit Window and the renderer owns surface setup. Direct Minelib world/assets dependencies and custom vertex/lighting/registry assumptions prevent drop-in reuse.
+The wgpu + winit combination is a credible candidate path for an Android Vulkan proof of concept. It is not yet a verified choice. The Minelib renderer remains tightly coupled to Minelib world/assets and custom vertex/lighting/registry assumptions, so it cannot be adopted wholesale.
 
 ### Decision
 **ADAPT algorithms and GPU techniques only; do not import the renderer wholesale.**

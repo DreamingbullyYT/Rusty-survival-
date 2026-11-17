@@ -1,5 +1,12 @@
 # Project Changelog
 
+## 2026-11-17 — Refine Android renderer feasibility assessment
+- Confirmed wgpu 25 documents Vulkan support on Android and winit 0.30 documents an Android glue/lifecycle path.
+- Minelib's pinned manifests do not enable that Android entrypoint/configuration; its renderer remains unproven on Android.
+- Updated the backend status to candidate-only and planned an isolated clear-screen POC before selecting the renderer.
+- No Android build or device test has been performed.
+
+
 ## 2026-11-17 — Strengthen AI onboarding for specs and audits
 - AI_HANDOFF now requires reading relevant version-pinned specifications and audit documents.
 - PROJECT_MEMORY identifies Rusty Survival Engine and treats reference fixtures as a source of truth.
