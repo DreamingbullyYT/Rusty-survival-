@@ -1,0 +1,58 @@
+name: Mojang Reference Artifact Smoke Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      simulate_failure:
+        description: "Intentionally fail after verification to exercise unconditional cleanup"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mojang-reference-artifact-smoke
+  cancel-in-progress: false
+
+jobs:
+  acquire-and-verify:
+    name: Download, verify, and discard Java 26.3 server
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      REFERENCE_DIR: ${{ runner.temp }}/rusty-survival-minecraft-reference-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run offline downloader tests
+        run: python -m unittest discover -s tools/tests -v
+
+      - name: Resolve and download official Java 26.3 server
+        run: python tools/fetch_mojang_server.py --version 26.3 --output-dir "$REFERENCE_DIR"
+
+      - name: Optional deliberate failure for cleanup verification
+        if: ${{ inputs.simulate_failure }}
+        run: |
+          echo "Intentional failure requested; cleanup must still run."
+          exit 1
+
+      - name: Delete all temporary Minecraft files
+        if: always()
+        run: |
+          if [ -d "$REFERENCE_DIR" ]; then
+            rm -rf -- "$REFERENCE_DIR"
+          fi
+          if [ -e "$REFERENCE_DIR" ]; then
+            echo "Temporary Minecraft directory still exists after cleanup." >&2
+            exit 1
+          fi
+          echo "Temporary Minecraft directory is absent."
