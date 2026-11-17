@@ -29,6 +29,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Run PMCS validator regression tests
+        run: python -m unittest discover -s tests -v
+
       - name: Validate PMCS structure and freshness
         env:
           EVENT_NAME: ${{ github.event_name }}

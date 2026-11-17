@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — PMCS regression hardening
+- Added isolated regression tests for missing required documents, implementation changes without required memory updates, append-only session journal violations, and valid implementation-plus-memory updates.
+- Expanded code-change freshness requirements to include CHANGELOG, CURRENT_STATE, ISSUES, ROADMAP, and SESSION_LOG.
+- Removed a stale commit SHA from CURRENT_STATE; the live repository head must be resolved from Git.
+- Regression suite awaits GitHub Actions verification.
+
 ## 2026-11-17 — Pin Minecraft Java Edition 26.3
 - Recorded the previously established project target as Minecraft Java Edition 26.3 in the handoff, project memory, compatibility record, parity matrix, decisions, and roadmap.
 - Confirmed Horizon remains architectural inspiration only; no Horizon code or implementation is copied.

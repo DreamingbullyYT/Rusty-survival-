@@ -64,3 +64,22 @@ Not tested:
 - This documentation-only commit does not test engine behavior or Minecraft parity.
 Next:
 - Start the Minecraft Java 26.3 technical specification.
+
+This file is chronological and append-only. Never rewrite or delete earlier session entries. The validator rejects deletion of existing non-empty journal lines in pull requests and pushes when the base commit is available.
+
+## S-2026-11-17-05 — PMCS regression hardening
+Date: 2026-11-17
+Commit: pending
+Goal: Exercise PMCS failure paths and remove a stale commit identifier from current state.
+Changes:
+- Added isolated regression tests for missing required documents, implementation changes without memory updates, append-only journal violations, and a valid implementation-plus-memory update.
+- Expanded the implementation freshness gate to require CHANGELOG, CURRENT_STATE, ISSUES, ROADMAP, and SESSION_LOG updates together.
+- Excluded test fixtures from implementation freshness detection.
+- Replaced the stale literal HEAD SHA in CURRENT_STATE with an instruction to resolve the branch head dynamically.
+Verification:
+- Pending GitHub Actions execution for the new regression suite.
+- Existing PMCS push runs were successful, but they did not exercise these negative cases.
+Not tested:
+- Engine code, Android build, Vulkan, and Minecraft Java parity; no engine exists yet.
+Next:
+- Confirm the regression suite passes in GitHub Actions, then continue the version-specific technical specification.

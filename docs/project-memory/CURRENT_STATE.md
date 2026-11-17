@@ -1,8 +1,8 @@
 # Current State
 
 Last updated: 2026-11-17
-Status: AUDIT_IN_PROGRESS
-Latest verified repository HEAD before this update: 963d44a544120f360e6e29fa4384b0706479d9f0
+Status: PMCS_HARDENING
+Repository HEAD: resolve dynamically from the current `main` branch; do not store a commit SHA here because it becomes stale after every commit.
 
 ## Direction
 - Correctness target: Minecraft Java Edition 26.3 observable behavior.
@@ -13,7 +13,9 @@ Latest verified repository HEAD before this update: 963d44a544120f360e6e29fa4384
 ## Repository
 - Repository: DreamingbullyYT/Rusty-survival-
 - Default branch: main
-- PMCS automation and GitHub Actions validation are implemented and have passed two push runs.
+- PMCS structural/freshness validator and GitHub Actions workflow are implemented.
+- Initial PMCS workflow push runs 44121524070, 44121703417, and 44122028665 succeeded.
+- Regression tests for missing documents, stale implementation memory, append-only journal protection, and valid updates are being added; do not mark them VERIFIED until CI confirms.
 
 ## Implemented
 - Clean project bootstrap and project-memory documentation.
@@ -23,7 +25,6 @@ Latest verified repository HEAD before this update: 963d44a544120f360e6e29fa4384
 - PMCS mandatory handoff rules, append-only session journal, and change template.
 - Python structural/freshness validator.
 - GitHub Actions workflow for push, pull request, and manual PMCS validation.
-- Successful PMCS runs: 44121524070 and 44121703417.
 - Minecraft Java Edition 26.3 recorded as the selected parity target.
 - Horizon recorded as inspiration only, with independent implementation and no code copying.
 
@@ -37,7 +38,7 @@ Latest verified repository HEAD before this update: 963d44a544120f360e6e29fa4384
 - No successful Android build.
 - No Vulkan device/surface test.
 - Minelib's upstream tests have not been executed.
-- Validator negative/failure-path tests have not all been exercised.
+- PMCS negative/failure-path regression tests have not yet been verified by CI.
 
 ## World audit findings
 - Minelib chunks use a custom 16×16×512 model with Y starting at zero; not directly compatible with modern Java world-height/section semantics.
@@ -48,7 +49,8 @@ Latest verified repository HEAD before this update: 963d44a544120f360e6e29fa4384
 - Meshing and DDA raycast contain potentially reusable general algorithms, but need semantic extraction and tests.
 
 ## Next actions
-1. Produce the Minecraft Java 26.3 technical/parity specification.
-2. Continue Minelib candidate audits and Android Vulkan/lifecycle proof before selecting dependencies.
-3. Finalize architecture and test harness.
-4. Begin the engine only after the initial spec and platform foundations are reviewed.
+1. Complete PMCS regression tests and verify CI.
+2. Produce the Minecraft Java 26.3 technical/parity specification.
+3. Continue Minelib candidate audits and Android Vulkan/lifecycle proof before selecting dependencies.
+4. Finalize architecture and test harness.
+5. Begin the engine only after the initial spec and platform foundations are reviewed.

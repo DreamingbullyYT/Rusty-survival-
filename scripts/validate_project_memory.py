@@ -28,11 +28,15 @@ REQUIRED_TEXT = {
 MEMORY_REQUIRED_FOR_CODE = {
     "docs/project-memory/CHANGELOG.md",
     "docs/project-memory/CURRENT_STATE.md",
+    "docs/project-memory/ISSUES.md",
+    "docs/project-memory/ROADMAP.md",
+    "docs/project-memory/SESSION_LOG.md",
 }
 EXCLUDED_PREFIXES = (
-    "docs/", ".github/", "scripts/", ".",
+    "docs/", ".github/", "scripts/", "tests/", ".",
 )
 EXCLUDED_FILES = {"README.md", "LICENSE", "LICENSE.md", ".gitignore"}
+
 
 def git(*args: str) -> str:
     result = subprocess.run(["git", *args], cwd=ROOT, text=True, capture_output=True)
@@ -40,13 +44,16 @@ def git(*args: str) -> str:
         raise RuntimeError(result.stderr.strip() or f"git {' '.join(args)} failed")
     return result.stdout
 
+
 def changed_paths(base: str) -> list[str]:
     return [p for p in git("diff", "--name-only", f"{base}...HEAD").splitlines() if p]
+
 
 def is_implementation_path(path: str) -> bool:
     if path in EXCLUDED_FILES or path.startswith(EXCLUDED_PREFIXES):
         return False
     return True
+
 
 def validate_session_log(base: str | None, errors: list[str]) -> None:
     path = ROOT / MEMORY / "SESSION_LOG.md"
@@ -61,6 +68,7 @@ def validate_session_log(base: str | None, errors: list[str]) -> None:
         removed = [line for line in diff.splitlines() if line.startswith("-") and not line.startswith("---")]
         if removed:
             errors.append("SESSION_LOG.md is append-only: existing lines were removed or edited.")
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -115,6 +123,7 @@ def main() -> int:
     else:
         print("Structural checks completed; base-diff checks were not requested.")
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

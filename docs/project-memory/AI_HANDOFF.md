@@ -12,12 +12,13 @@ Architectural inspiration: Horizon (ideas only; no code copying)
 2. Inspect the current branch, HEAD commit, working tree, and recent history. Repository state is authoritative over stale prose.
 3. Read the latest session-log entry and unresolved issues before proposing work.
 4. Treat source code, Git history, reproducible test output, and pinned upstream references as ground truth. Never invent progress.
-5. Do not import/copy Horizon code. Horizon is architectural/technical inspiration only. Independently design and implement our systems.
+5. Do not import/copy Horizon code. Horizon is architectural/technical inspiration only; independently design and implement our systems.
 6. Do not import Minelib code until its license and component-level suitability have been reviewed and recorded.
 7. Do not claim Android support, parity, performance, or test success without reproducible evidence.
 8. Before implementation, state the intended change, affected modules, risks, and verification plan.
 9. After every meaningful change, update the memory documents in the same commit. Append a session-log entry; do not rewrite old entries.
 10. Run `python scripts/validate_project_memory.py --base <base-sha>` when a base commit is available, and run it without --base for a structural check.
+11. Run `python -m unittest discover -s tests -v` to exercise PMCS validator regression cases.
 
 ## Non-negotiable project direction
 - Android-first.
