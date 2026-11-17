@@ -151,3 +151,10 @@
 - Added initial PMCS documentation.
 - Preserved prior Git history; no old files were inspected or reused.
 - No game implementation or build is claimed.
+
+
+## 2026-11-17 — Define engine layout and temporary reference-test policy
+- Added docs/specs/ENGINE_LAYOUT.md with staged crate ownership, dependency direction, source-file conventions and engine-only scope.
+- Added docs/specs/REFERENCE_TEST_PIPELINE.md with official-source reference acquisition, temporary runner storage, checksum/size verification, no cache/artifact/release and cleanup requirements.
+- Clarified that modding is out of scope.
+- No engine code, downloader or reference workflow was added in this documentation step.
