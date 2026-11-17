@@ -1,3 +1,12 @@
+## 2026-11-17 — Add initial Rust engine core and automated tests
+- Added a dependency-free Cargo workspace and a small platform-independent engine-core crate.
+- Implemented horizontal block-to-chunk mapping with Euclidean division for negative coordinates; no dimension height or gameplay rules were invented.
+- Added integration tests for positive/negative boundaries, round trips, integer extremes, and 16-block horizontal chunk width.
+- Added Engine Tests GitHub Actions workflow for formatting, tests and Clippy.
+- Added the initial engine test strategy; these invariants are not a Minecraft Java 26.3 parity claim.
+- Android POC debugging is paused and was not modified.
+
+
 # Project Changelog
 
 ## 2026-11-17 — Verify PMCS and extract installable APK
