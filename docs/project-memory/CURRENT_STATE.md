@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-17
-Status: ENGINE_CORE_TEST_FOUNDATION_ADDED; ENGINE_LAYOUT_AND_REFERENCE_PIPELINE_DOCUMENTED; ANDROID_VULKAN_POC_DEVICE_CRASH_UNRESOLVED
+Status: ENGINE_CORE_AND_FIXTURE_CONTRACT_IMPLEMENTED; REFERENCE_DOWNLOAD_PIPELINE_NOT_IMPLEMENTED; ANDROID_VULKAN_POC_DEVICE_CRASH_UNRESOLVED
 Repository HEAD: resolve dynamically from current main; do not store a stale SHA here.
 
 ## Direction
@@ -31,9 +31,10 @@ Repository HEAD: resolve dynamically from current main; do not store a stale SHA
 - Added `docs/specs/ENGINE_LAYOUT.md`: staged, readable crate ownership map and dependency direction. Only engine-core exists; no placeholder crates.
 - Added `docs/specs/REFERENCE_TEST_PIPELINE.md`: official-source reference acquisition policy using ephemeral `$RUNNER_TEMP`, hash/size checks, no cache/artifact/release and unconditional cleanup.
 - Docs commits: ENGINE_LAYOUT `dcbc7d0c858918c6a52769a54f0e6a9a7d2b8934`; REFERENCE_TEST_PIPELINE `6e6ef01402b8bdc4cf1d17a2ffe9f23ff225acf7`.
+- Added `rusty-survival-testkit` as a separate workspace crate with serde-based fixture contract, validation, and five synthetic self-tests. The only checked-in fixture is explicitly labelled synthetic and is not parity evidence.
 
 ## Not implemented / not verified
-- No Java 26.3 differential fixture, fixture runner or official artifact downloader yet.
+- Fixture schema/parser/validator and synthetic self-tests are implemented; no Java 26.3 differential fixture, comparator/runner or official artifact downloader exists yet.
 - No world sections, heightmaps, block states, registries, ticks, generation, physics, lighting, fluids, persistence, renderer, audio, runtime or playable game.
 - No Mojang binary or asset has been downloaded or committed as part of the latest documentation work.
 - Minelib upstream tests and complete legal/provenance review remain incomplete.
@@ -42,9 +43,8 @@ Repository HEAD: resolve dynamically from current main; do not store a stale SHA
 
 ## Next actions
 1. Continue directly on main; no PRs or feature branches.
-2. Implement a small version-pinned fixture schema/validator and synthetic self-tests (clearly not vanilla parity).
-3. Implement official metadata/artifact resolution with size/hash checks into `$RUNNER_TEMP`.
-4. Add a manual Actions reference workflow; verify cleanup on success and failure; never cache or upload Mojang files.
-5. Capture real Java 26.3 fixtures, then implement world/dimension/chunk foundations in dependency order.
+2. Implement official metadata/artifact resolution with size/hash checks into `$RUNNER_TEMP`.
+3. Add a manual Actions reference workflow; verify cleanup on success and failure; never cache or upload Mojang files.
+4. Capture real Java 26.3 fixtures, then implement world/dimension/chunk foundations in dependency order.
 6. Keep all modding work out of scope.
 7. Keep Android POC crash investigation paused unless explicitly requested.
