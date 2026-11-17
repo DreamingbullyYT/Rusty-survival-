@@ -6,7 +6,7 @@
 - [x] Add PMCS structural/freshness validator.
 - [x] Add GitHub Actions workflow for pull requests and pushes.
 - [x] Add append-only session journal and change template.
-- [x] Verify the workflow with a real GitHub Actions run (run 44121524070, success).
+- [x] Verify the workflow with real GitHub Actions runs 44121524070 and 44121703417.
 - [ ] Exercise validator failure cases (missing docs, stale implementation change, edited journal line).
 
 ## Phase 1 — Minelib audit
@@ -21,9 +21,9 @@
 - [ ] Audit remaining candidate renderer/assets/network components in depth.
 
 ## Phase 2 — Specification and architecture
-- [ ] Confirm exact Minecraft Java Edition target version.
-- [ ] Specify chunk sections, world height, block states, registries, generation, lighting, fluids, collision, and interaction.
-- [ ] Build PARITY_MATRIX.md from observable behavior categories.
+- [x] Select Minecraft Java Edition 26.3 as the observable behavior target.
+- [ ] Specify chunk sections, world height, block states, registries, generation, lighting, fluids, collision, and interaction for 26.3.
+- [ ] Build PARITY_MATRIX.md from detailed 26.3 observable behavior cases.
 - [ ] Finalize module boundaries and interfaces.
 - [ ] Define deterministic test harness and reference fixtures.
 - [ ] Record Horizon-inspired architectural ideas as independent design requirements, not copied code.
@@ -41,7 +41,7 @@
 - [ ] No custom Modding API until vanilla foundation is stable unless the user explicitly changes scope.
 
 ## Exit criteria before engine implementation
-- [x] PMCS automation passes its first CI run.
-- [ ] Exact Minecraft Java Edition version is selected.
+- [x] PMCS automation passes its first CI runs.
+- [x] Minecraft Java Edition 26.3 target is selected.
 - [ ] Architecture and initial parity specification are reviewed.
 - [ ] Reuse decisions and Android platform risks are documented.

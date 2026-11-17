@@ -1,7 +1,7 @@
 # Minecraft Java Edition Parity Matrix
 
-Target Java Edition version: NOT SELECTED
-Overall status: NOT STARTED
+Target Java Edition version: **26.3**
+Overall status: NOT_STARTED
 
 | Domain | Required observable behavior | Status | Evidence |
 |---|---|---|---|
@@ -18,4 +18,4 @@ Overall status: NOT STARTED
 | Audio | Events, attenuation, spatialization | NOT_STARTED | — |
 | Input | Keyboard/controller/touch mapping | NOT_STARTED | — |
 
-A row can become VERIFIED only with a reproducible test or documented comparison against the selected reference version.
+A row can become VERIFIED only with a reproducible test or documented comparison against Minecraft Java Edition 26.3.

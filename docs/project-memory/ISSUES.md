@@ -14,11 +14,12 @@ Required action: Review scope/provenance of each crate and contribution, notices
 Status: OPEN
 Required action: Determine permitted asset acquisition, use, modification, and redistribution. Do not bundle Mojang assets without a documented lawful basis.
 
-## I-004 — Minecraft Java parity specification
-Status: BLOCKED
-Required action: User must confirm exact Java Edition target version before world-height, chunk-section, registry, terrain, lighting, and parity specifications can be pinned.
+## I-004 — Minecraft Java 26.3 parity specification
+Status: OPEN
+Evidence: Minecraft Java Edition 26.3 is the selected behavior target. The parity matrix is currently a high-level checklist; version-specific mechanics and reference fixtures have not yet been specified.
+Required action: Build a version-pinned specification for world height/sections, block states/registries, generation, lighting, fluids, collision, interaction, and observable test cases.
 
 ## I-005 — Minelib world semantics do not establish Java Edition parity
 Status: INVESTIGATING
 Evidence: Source inspection shows custom 16×512×16 chunks, Minelib-specific block IDs/registry, custom value-noise terrain, RGB torch lighting, and chemical torch gameplay. Fluid geometry exists but Java-compatible fluid tick/spread behavior is not demonstrated.
-Required action: Independently specify and implement target-version world semantics. Treat mesh and DDA as algorithmic candidates only.
+Required action: Independently specify and implement Minecraft Java 26.3 semantics. Treat mesh and DDA as algorithmic candidates only.

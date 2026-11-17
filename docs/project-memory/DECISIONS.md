@@ -15,8 +15,8 @@ Reason: User explicitly selected this platform.
 ## D-003 — Minecraft Java observable parity
 Date: 2026-11-17
 Status: ACCEPTED
-Decision: Minecraft Java Edition observable behavior is the primary correctness criterion. Exact release/version remains pending confirmation.
-Reason: User selected parity as the top priority.
+Decision: Minecraft Java Edition observable behavior is the primary correctness criterion, with version 26.3 as the selected target.
+Reason: User established Minecraft Java 26.3 as the target in the project master brief.
 
 ## D-004 — Repository reset
 Date: 2026-11-17
@@ -35,3 +35,9 @@ Date: 2026-11-17
 Status: ACCEPTED
 Decision: Design and implement our own engine, using audited Minelib components only where justified and independently developed systems elsewhere.
 Reason: Preserve control over Android-first architecture and Minecraft Java behavior without inheriting another project's implementation.
+
+## D-007 — Minecraft Java Edition 26.3 target
+Date: 2026-11-17
+Status: ACCEPTED
+Decision: Pin the project's observable behavior target to Minecraft Java Edition 26.3.
+Reason: This was the version established in the user's project master brief; retain it instead of asking the user to repeat an existing decision.

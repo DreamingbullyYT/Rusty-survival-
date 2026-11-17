@@ -2,10 +2,10 @@
 
 Last updated: 2026-11-17
 Status: AUDIT_IN_PROGRESS
-Latest verified repository HEAD before this status update: 0e1074a9bf6b4599820a7cc92373c76f51f59dad
+Latest verified repository HEAD before this update: 963d44a544120f360e6e29fa4384b0706479d9f0
 
 ## Direction
-- Correctness target: Minecraft Java Edition observable behavior; exact release/version is not selected yet.
+- Correctness target: Minecraft Java Edition 26.3 observable behavior.
 - Horizon: architectural and technical inspiration only; no code copying.
 - Minelib: hybrid reuse only after component-level audit.
 - Platform: Android first.
@@ -13,7 +13,7 @@ Latest verified repository HEAD before this status update: 0e1074a9bf6b4599820a7
 ## Repository
 - Repository: DreamingbullyYT/Rusty-survival-
 - Default branch: main
-- PMCS baseline and GitHub Actions validation are implemented; first workflow run passed.
+- PMCS automation and GitHub Actions validation are implemented and have passed two push runs.
 
 ## Implemented
 - Clean project bootstrap and project-memory documentation.
@@ -23,7 +23,9 @@ Latest verified repository HEAD before this status update: 0e1074a9bf6b4599820a7
 - PMCS mandatory handoff rules, append-only session journal, and change template.
 - Python structural/freshness validator.
 - GitHub Actions workflow for push, pull request, and manual PMCS validation.
-- First PMCS GitHub Actions run succeeded: run 44121524070, commit 0e1074a9bf6b4599820a7cc92373c76f51f59dad.
+- Successful PMCS runs: 44121524070 and 44121703417.
+- Minecraft Java Edition 26.3 recorded as the selected parity target.
+- Horizon recorded as inspiration only, with independent implementation and no code copying.
 
 ## Not implemented / not verified
 - No Rust workspace or game code.
@@ -31,11 +33,11 @@ Latest verified repository HEAD before this status update: 0e1074a9bf6b4599820a7
 - No renderer integration.
 - No Minelib or Horizon source copied.
 - No Minecraft asset bundle imported.
-- No Minecraft Java parity tests.
+- No Minecraft Java 26.3 parity tests.
 - No successful Android build.
 - No Vulkan device/surface test.
 - Minelib's upstream tests have not been executed.
-- The validator has passed its first CI execution, but future PR/push scenarios (including intentional failure cases) have not all been exercised.
+- Validator negative/failure-path tests have not all been exercised.
 
 ## World audit findings
 - Minelib chunks use a custom 16×16×512 model with Y starting at zero; not directly compatible with modern Java world-height/section semantics.
@@ -46,7 +48,7 @@ Latest verified repository HEAD before this status update: 0e1074a9bf6b4599820a7
 - Meshing and DDA raycast contain potentially reusable general algorithms, but need semantic extraction and tests.
 
 ## Next actions
-1. Confirm exact Minecraft Java Edition target version.
-2. Write target-version world/chunk/block-state specifications and parity tests.
-3. Continue Minelib candidate audits and Android Vulkan/lifecycle proof before selecting dependencies.
-4. Only then begin the engine implementation.
+1. Produce the Minecraft Java 26.3 technical/parity specification.
+2. Continue Minelib candidate audits and Android Vulkan/lifecycle proof before selecting dependencies.
+3. Finalize architecture and test harness.
+4. Begin the engine only after the initial spec and platform foundations are reviewed.

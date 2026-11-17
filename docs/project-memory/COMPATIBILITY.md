@@ -4,7 +4,7 @@
 - Android: project target only; no build verified.
 - Desktop: not currently in scope.
 - Vulkan: candidate graphics API/backend; device/API requirements not yet validated.
-- Minecraft Java Edition: exact target version not yet selected.
+- Minecraft Java Edition target: 26.3 (selected project target; no parity implementation verified yet).
 
 ## Minelib upstream
 - Repository: https://github.com/Viendax/minelib
@@ -15,6 +15,11 @@
 - README platform status: Windows/Linux available; macOS soon; Android/iOS in preparation.
 - Current release workflow: Windows runner, Windows game/relay/launcher executables.
 - No Minelib source has been copied into this repository.
+
+## Architectural inspiration
+- Horizon may inform architectural ideas, modularity, system boundaries, and engineering approach.
+- No Horizon source code, assets, or implementation is to be copied.
+- All systems in this repository are independently designed and implemented unless a separately audited Minelib component is deliberately reused.
 
 ## Candidate crate portability
 - world: manifest only depends on bytemuck; platform-neutral at dependency level, but behavior and test compatibility remain unverified.

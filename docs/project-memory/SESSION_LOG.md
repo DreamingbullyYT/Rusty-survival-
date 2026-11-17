@@ -36,3 +36,17 @@ Not tested:
 - Full engine build, Android build, Vulkan, and Minecraft parity (no engine exists yet).
 Next:
 - Confirm exact Minecraft Java Edition target version, then write the target-version specification before engine code.
+
+## S-2026-11-17-03 — Pin Java Edition target
+Date: 2026-11-17
+Commit: pending
+Goal: Ensure PMCS preserves the previously established project target.
+Changes:
+- Recorded Minecraft Java Edition 26.3 as the selected parity target.
+- Clarified Horizon is inspiration only and all engine implementation is independent.
+Verification:
+- Updated DECISIONS, COMPATIBILITY, PARITY_MATRIX, ISSUES, CURRENT_STATE, and ROADMAP.
+Not tested:
+- No Minecraft Java 26.3 parity behavior has been implemented or tested.
+Next:
+- Produce the version-specific technical specification before engine implementation.
