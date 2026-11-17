@@ -9,7 +9,7 @@ Architectural inspiration: Horizon and Minelib (ideas only; no Horizon code copy
 
 ## Mandatory onboarding
 1. Read this file, then PROJECT_MEMORY.md, CURRENT_STATE.md, ARCHITECTURE.md, DECISIONS.md, ISSUES.md, ROADMAP.md, COMPATIBILITY.md, PARITY_MATRIX.md, REUSE_MATRIX.md, and SESSION_LOG.md.
-2. Read docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md, docs/specs/ENGINE_TEST_STRATEGY.md, docs/specs/ENGINE_LAYOUT.md, docs/specs/REFERENCE_TEST_PIPELINE.md, and relevant documents in docs/specs/ and docs/audits/.
+2. Read docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md, docs/specs/ENGINE_TEST_STRATEGY.md, docs/specs/ENGINE_LAYOUT.md, docs/specs/REFERENCE_TEST_PIPELINE.md, and relevant documents in docs/specs/ and docs/audits/. The `rusty-survival-testkit` crate owns fixture parsing/validation; synthetic fixtures are harness tests, never Java parity evidence.
 3. Inspect current branch, HEAD commit, working tree, and recent history. Repository state is authoritative over stale prose.
 4. Work directly on `main`; do not create feature branches or pull requests unless the user explicitly changes this rule.
 5. Read the latest session-log entry and unresolved issues before proposing work.
