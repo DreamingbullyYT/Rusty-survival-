@@ -1,6 +1,6 @@
 # Architecture — Proposed Rusty Survival Engine
 
-Status: HIGH-LEVEL DESIGN PROPOSAL / NOT IMPLEMENTED
+Status: PROPOSED LAYERED ARCHITECTURE; INITIAL ENGINE-CORE CRATE IMPLEMENTED
 Correctness target: Minecraft Java Edition 26.3 observable behavior
 Primary platform: Android
 Inspiration: Horizon's engineering and modularity ideas only. No Horizon source or implementation is copied.
@@ -142,3 +142,7 @@ Only after this is stable should chunk rendering and progressively richer vanill
 - No renderer-first rewrite that embeds gameplay rules in shaders.
 - No guessed world-height, generation, lighting, fluid, or movement constants.
 - No promise of 1:1 parity until reference fixtures pass.
+
+
+## Initial implementation status
+A minimal Cargo workspace now contains a dependency-free engine-core crate. It currently implements horizontal block-to-chunk coordinate mapping with negative-coordinate-safe Euclidean division. This is a primitive only; world sections, dimension bounds, registries, gameplay, and Java parity remain unimplemented. The test strategy is documented in docs/specs/ENGINE_TEST_STRATEGY.md.
