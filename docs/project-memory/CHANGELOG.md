@@ -1,3 +1,8 @@
+## 2026-11-17 — Correct Rust test formatting after first CI run
+- Engine Tests run 44140498548 correctly stopped at the formatting gate; rustfmt differences were found in the integration test.
+- Applied the canonical rustfmt layout without changing test behavior; compilation, tests and Clippy remain pending rerun.
+
+
 ## 2026-11-17 — Add initial Rust engine core and automated tests
 - Added a dependency-free Cargo workspace and a small platform-independent engine-core crate.
 - Implemented horizontal block-to-chunk mapping with Euclidean division for negative coordinates; no dimension height or gameplay rules were invented.
