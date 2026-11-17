@@ -12,7 +12,7 @@ Purpose: use a legitimate, version-pinned Java 26.3 installation as a temporary 
 - No Minecraft download for ordinary deterministic engine tests.
 
 ### Vanilla Reference Tests (separate gated workflow)
-- Implemented as explicit `workflow_dispatch` in `.github/workflows/reference-artifact-smoke.yml`; no schedule.
+- Implemented in `.github/workflows/reference-artifact-smoke.yml`: pushes affecting the downloader run only offline tests; the actual Mojang download runs only after a manual `workflow_dispatch`. No schedule.
 - Uses a clean GitHub-hosted runner and a unique directory under `$RUNNER_TEMP`.
 - Resolve release 26.3 using Mojang's official version manifest and version JSON.
 - Download only the artifact required by a test: server jar for server-side tests; client jar only for client-side tests.
