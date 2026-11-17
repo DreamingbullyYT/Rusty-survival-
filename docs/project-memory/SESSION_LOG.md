@@ -460,3 +460,26 @@ Limitations:
 - No Mojang binaries/assets were downloaded or committed.
 Next:
 - Confirm PMCS validation for this commit, then implement official manifest resolution and temporary server artifact download with strict host/size/SHA-1 verification and unconditional cleanup.
+
+
+## S-2026-11-17-26 — Implement official Java 26.3 artifact acquisition
+Date: 2026-11-17
+Commits: downloader `24dcb37d65d68d347229c67d1b3b804a957b20ca`; package/test setup `23b6f618366cd35e6f97cfec29e469ff2f3d5cff`, `5dc11eb210655aa36635d24022d8aff0a5163483`, `1638651c0763b767e403a2b1e27576b6da2ed984`; test fixture hash correction `be3d60060411ddfaf96f699abb88808813d5f86b`; workflows `bdb07db33ba0e94c4b708d57e21192594b3fe327`, `8ccec737f1677bcb7898db180471b1edaa9bb3c8`; documentation synchronization follows.
+Goal: Implement official-source artifact acquisition without retaining or publishing Minecraft binaries.
+Changes:
+- Added standard-library-only `tools/fetch_mojang_server.py` for exact Java 26.3 release resolution via Mojang's v2 manifest and version JSON.
+- Validates the manifest-pinned version JSON SHA-1; allows only official Mojang metadata and artifact HTTPS hosts, including redirect targets.
+- Streams the official server jar into a caller-provided temporary directory and verifies exact size and SHA-1 before exposing `server.jar`; partial files are removed on failure.
+- Added offline Python unit tests for URL validation, credentials/nonstandard ports, exact size and SHA-1 checks.
+- Added `.github/workflows/reference-tool-tests.yml` for offline tests and `.github/workflows/reference-artifact-smoke.yml` for manual artifact acquisition, no binary upload/cache, unconditional cleanup and an optional deliberate-failure path.
+- Updated reference pipeline spec and PMCS docs. Scope remains vanilla engine only; no modding.
+Verification:
+- Confirmed official Java 26.3 server metadata values from Mojang-derived metadata references: SHA-1 `33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c`, size 62,294,556 bytes, Java runtime major 25. Actual downloader always resolves and verifies live official metadata rather than hardcoding these values.
+- Computed the deterministic unit-test fixture SHA-1 for the literal bytes `vanilla` and corrected the expected value.
+Not yet verified:
+- No GitHub Actions run for the new Python tests/workflow has been inspected yet.
+- No Mojang artifact has been downloaded by this session.
+- Cleanup on normal and deliberate-failure paths is not yet proven.
+- No Java server, oracle, Rust probe or differential comparator is implemented; this workflow is artifact acquisition only and makes no parity claim.
+Next:
+- Inspect latest main Actions runs; fix offline test issues. Manually dispatch artifact smoke workflow with `simulate_failure=false`, then with `true`, and verify cleanup step success on both. Only then implement the first oracle/probe comparison.
