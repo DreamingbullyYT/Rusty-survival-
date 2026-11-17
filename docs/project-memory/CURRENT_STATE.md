@@ -24,6 +24,7 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - Proposed layered architecture and Android Vulkan POC plan.
 - Isolated Android NativeActivity + winit 0.30.13 + wgpu 25.0.0 Vulkan clear-screen POC source and Gradle packaging.
 - GitHub Actions successfully compiled the ARM64 native library and packaged a debug APK.
+- The user installed the APK; it immediately crashes. The supplied log does not contain a conclusive native crash signature, so the cause is unknown. Android debugging is paused by the user's latest direction.
 - Artifact: workflow run 44127492869, artifact ID 14347124661, 2,379,313 bytes, SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61. Extracted APK is 7,726,873 bytes, ARM64-only (`lib/arm64-v8a/libmain.so`), SHA-256 27493418f81bd866dbbfe89cff4bcdc5ff9f4ef058142d127adcc10545538552.
 - No Minelib or Horizon source/assets copied.
 - Added a dependency-free Cargo workspace and rusty-survival-engine-core.
@@ -31,15 +32,16 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - Added integration tests for positive/negative boundaries, round trips, integer extremes, and the 16-block horizontal chunk width.
 - Added Engine Tests GitHub Actions workflow for formatting, tests, and Clippy.
 - Added docs/specs/ENGINE_TEST_STRATEGY.md.
+- Engine Tests run 44140498548 failed at formatting; run 44140653759 found one remaining rustfmt difference. Both runs stopped before compilation, cargo test, and Clippy. All repeated assertions have now been formatted; a subsequent workflow result is not yet confirmed.
+- Local Rust tests were not run because rustc and cargo are unavailable in the current execution environment.
 
 ## Not implemented / not verified
-- APK has not yet been installed or executed on a real device.
+- APK launch on the user's device failed immediately; successful runtime startup and Vulkan presentation remain unverified.
 - Android Vulkan adapter/surface/present, pause/resume, rotation, or swapchain recreation have not been tested on hardware.
 - Protocol/data-version values still need confirmation from version.json in a legitimate official 26.3 artifact before networking/save implementation.
 - Full registry, world/chunk, tick, physics, generation, lighting and fluid specifications are incomplete.
 - No world model beyond the initial coordinate primitive; no sections, heightmaps, block states, registries, ticks, generation, physics, lighting, fluids, persistence, renderer, or gameplay.
 - No Minecraft Java 26.3 differential fixtures captured; coordinate tests verify foundational invariants only and do not establish parity.
-- No Minecraft Java 26.3 parity fixtures.
 - Minelib upstream tests, legal/provenance review, and security review remain incomplete.
 - wgpu/winit is only a candidate path; production renderer selection remains OPEN.
 
