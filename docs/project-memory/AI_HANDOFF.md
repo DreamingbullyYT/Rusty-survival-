@@ -11,7 +11,8 @@ Architectural inspiration: Horizon (ideas only; no code copying)
 1. Read this file, then PROJECT_MEMORY.md, CURRENT_STATE.md, ARCHITECTURE.md, DECISIONS.md, ISSUES.md, ROADMAP.md, COMPATIBILITY.md, PARITY_MATRIX.md, REUSE_MATRIX.md, and SESSION_LOG.md.
 2. Read docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md, docs/specs/ENGINE_TEST_STRATEGY.md, and relevant documents in docs/specs/ and docs/audits/.
 3. Inspect the current branch, HEAD commit, working tree, and recent history. Repository state is authoritative over stale prose.
-4. Read the latest session-log entry and unresolved issues before proposing work.
+4. Work directly on `main` by default. Do not create feature branches or pull requests; the user explicitly prefers all project work directly in main. Only change this workflow if the user explicitly asks.
+5. Read the latest session-log entry and unresolved issues before proposing work.
 5. Treat source code, Git history, reproducible test output, pinned upstream references, and reference fixtures as ground truth. Never invent progress.
 6. Do not import/copy Horizon code. Horizon is architectural/technical inspiration only; independently design and implement our systems.
 7. Do not import Minelib code until its license and component-level suitability have been reviewed and recorded.
