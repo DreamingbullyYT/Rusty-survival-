@@ -54,3 +54,8 @@ The Java 26.3 fixture runner and downloader are not implemented. Future CI must 
 ## I-012 — Engine crate boundaries and staged implementation
 Status: INVESTIGATING
 A readable target layout is documented, but only engine-core exists. Do not create placeholder crates or implement version-specific world semantics before fixture evidence exists.
+
+
+## I-013 — Fixture validation versus reference execution
+Status: INVESTIGATING
+The version-pinned JSON fixture contract and synthetic validator tests are implemented in `crates/testkit`. No Java 26.3 oracle capture, artifact downloader, output comparator or differential execution exists yet. Synthetic fixtures must never be counted as vanilla parity.
