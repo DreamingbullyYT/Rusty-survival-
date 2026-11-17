@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-17
-Status: ENGINE_CORE_AND_FIXTURE_CONTRACT_IMPLEMENTED; REFERENCE_DOWNLOAD_PIPELINE_NOT_IMPLEMENTED; ANDROID_VULKAN_POC_DEVICE_CRASH_UNRESOLVED
+Status: ENGINE_CORE_FIXTURE_CONTRACT_AND_ARTIFACT_ACQUISITION_IMPLEMENTED; WORKFLOW_VERIFICATION_PENDING; JAVA_ORACLE_NOT_IMPLEMENTED; ANDROID_VULKAN_POC_DEVICE_CRASH_UNRESOLVED
 Repository HEAD: resolve dynamically from current main; do not store a stale SHA here.
 
 ## Direction
@@ -32,9 +32,12 @@ Repository HEAD: resolve dynamically from current main; do not store a stale SHA
 - Added `docs/specs/REFERENCE_TEST_PIPELINE.md`: official-source reference acquisition policy using ephemeral `$RUNNER_TEMP`, hash/size checks, no cache/artifact/release and unconditional cleanup.
 - Docs commits: ENGINE_LAYOUT `dcbc7d0c858918c6a52769a54f0e6a9a7d2b8934`; REFERENCE_TEST_PIPELINE `6e6ef01402b8bdc4cf1d17a2ffe9f23ff225acf7`.
 - Added `rusty-survival-testkit` as a separate workspace crate with serde-based fixture contract, validation, and five synthetic self-tests. The only checked-in fixture is explicitly labelled synthetic and is not parity evidence.
+- Added `tools/fetch_mojang_server.py`: resolves the pinned Java 26.3 release from Mojang's official v2 manifest, verifies manifest metadata SHA-1, rejects unapproved hosts/redirects, and streams the server jar while checking exact size and SHA-1.
+- Added offline Python unit tests for URL policy and artifact verification.
+- Added `.github/workflows/reference-tool-tests.yml` for offline tests and `.github/workflows/reference-artifact-smoke.yml` for manual temporary artifact acquisition with unconditional cleanup and an optional deliberate-failure path.
 
 ## Not implemented / not verified
-- Fixture schema/parser/validator and synthetic self-tests are implemented; no Java 26.3 differential fixture, comparator/runner or official artifact downloader exists yet.
+- Fixture schema/parser/validator and synthetic self-tests are implemented. Downloader and manual artifact-only workflow are implemented but their Actions runs are not yet verified. No Java 26.3 differential fixture, Java oracle, Rust probe comparator or parity runner exists.
 - No world sections, heightmaps, block states, registries, ticks, generation, physics, lighting, fluids, persistence, renderer, audio, runtime or playable game.
 - No Mojang binary or asset has been downloaded or committed as part of the latest documentation work.
 - Minelib upstream tests and complete legal/provenance review remain incomplete.
