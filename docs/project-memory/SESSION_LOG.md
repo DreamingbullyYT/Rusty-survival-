@@ -418,3 +418,25 @@ Not tested:
 - Only engine-core exists; the crate tree is a staged plan, not an implemented game.
 Next:
 - Implement fixture schema and synthetic harness tests, then official metadata/hash-verified temporary download and manual Actions workflow. Keep direct-to-main and do not start modding.
+
+
+## S-2026-11-17-24 — Implement version-pinned fixture contract and validator
+Date: 2026-11-17
+Commit: implementation commits `6a0fb18f95a0126a791d0889a1a30c7f2e308420`, `e8647f94df5f785fd0f6b03436fa1688b5b7510e`, `39a665d96584b916b7997fb68ac410992bcb6504`, and workspace commit `9fe6551a680bf359cd48b2efe63eba31b6226a61`; memory synchronization commits follow.
+Goal: Establish a typed, version-pinned fixture contract before downloading or executing a Minecraft reference artifact.
+Changes:
+- Added `crates/testkit` as a separate workspace crate; engine runtime dependencies remain unchanged.
+- Added a serde JSON model for fixture identity/classification, Java 26.3 target, subsystem, optional artifact identity/hash/size/official URL, scenario inputs/actions, expected output, normalization and capture provenance.
+- Added fail-closed validation for schema/version, required identity fields, artifact SHA-1/size/official Mojang HTTPS host, action names, normalization paths/tolerance and provenance.
+- Added five synthetic self-tests and a clearly labelled synthetic coordinate fixture. Synthetic data is harness-only and is not Java parity evidence.
+- Updated project memory, roadmap and handoff.
+Verification:
+- Repository HEAD and previous PMCS run were verified before changes; run 44149547685 completed SUCCESS on prior HEAD `63c979c1865f932df3e2572d9a56236524616711`.
+- Rust CI and PMCS validation for this change are pending.
+Not tested:
+- No local Rust compiler is available in this environment; no local cargo fmt/test/clippy was run.
+- No official Mojang metadata or game artifact was downloaded.
+- No Java oracle, Rust probe comparator or Java 26.3 differential fixture exists.
+- No Minecraft parity is established by synthetic tests.
+Next:
+- Verify Rust CI and PMCS; fix any reported issues. Then implement official metadata resolution and temporary artifact verification/cleanup, followed by a manual reference workflow. Keep direct-to-main and engine-only scope.
