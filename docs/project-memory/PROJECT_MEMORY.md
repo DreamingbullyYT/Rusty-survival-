@@ -38,7 +38,7 @@ Current active scope is the vanilla engine only: world data, world generation, s
 PMCS documents live in docs/project-memory/. Specifications and audits live in docs/specs/ and docs/audits/. Read AI_HANDOFF.md first.
 
 ## Engine foundation
-The current workspace contains only `rusty-survival-engine-core` with horizontal coordinate mapping. Its tests establish coordinate invariants only, not Minecraft parity. See docs/specs/ENGINE_TEST_STRATEGY.md and docs/specs/ENGINE_LAYOUT.md.
+The workspace contains `rusty-survival-engine-core` with horizontal coordinate mapping and `rusty-survival-testkit` with a typed, version-pinned fixture contract and validator. Coordinate and synthetic testkit tests establish internal invariants only, not Minecraft parity. See docs/specs/ENGINE_TEST_STRATEGY.md, docs/specs/ENGINE_LAYOUT.md and docs/specs/REFERENCE_TEST_PIPELINE.md.
 
 ## Reference test acquisition
 Future Java 26.3 oracle tests may resolve official Mojang metadata and download only required artifacts to ephemeral GitHub Actions runner storage. Verify size/hash; never commit, cache, upload, release or otherwise redistribute Mojang files. The public workflow must remain transparent about the download source and method. See docs/specs/REFERENCE_TEST_PIPELINE.md.
