@@ -43,4 +43,5 @@ Required action: Install on a real device; verify Vulkan adapter selection, firs
 ## I-010 — Engine core test coverage and parity evidence
 Status: INVESTIGATING
 A minimal horizontal coordinate primitive and tests have been added. These test coordinate invariants only. No version-pinned Minecraft Java 26.3 differential fixtures or gameplay tests exist yet.
-Required action: Verify the new Rust workflow; expand test coverage in dependency order and only mark parity VERIFIED after comparison with captured 26.3 reference behavior.
+Evidence: Engine Tests run 44140955601 passed formatting, all workspace targets, and Clippy on PR head f504ba1f3629702330380c3bb71c44c4a5879150. PMCS run 44140955639 also passed.
+Required action: Add version-pinned Java 26.3 reference fixtures and expand coverage in dependency order. Mark parity VERIFIED only after comparison with captured reference behavior.
