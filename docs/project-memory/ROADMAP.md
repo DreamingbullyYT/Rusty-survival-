@@ -57,8 +57,9 @@
 - [x] Define staged, readable crate ownership and dependency direction in docs/specs/ENGINE_LAYOUT.md.
 - [x] Define official-source Java 26.3 reference tests in docs/specs/REFERENCE_TEST_PIPELINE.md: ephemeral $RUNNER_TEMP, size/hash verification, no cache/artifact/release, unconditional cleanup.
 - [x] Implement fixture schema/validator with synthetic self-tests (not counted as vanilla parity).
-- [ ] Implement official metadata/artifact resolution and temporary download cleanup.
-- [ ] Add manual Actions reference workflow; prove cleanup on success and failure.
+- [x] Implement official metadata/artifact resolution and temporary download verification.
+- [x] Add manual Actions artifact smoke workflow with unconditional cleanup and deliberate-failure switch.
+- [ ] Verify workflow cleanup on both success and deliberate failure.
 - [ ] Capture real 26.3 fixtures, then implement dimension/chunk/section foundations.
 - [ ] Expand engine crates gradually; no empty placeholder crates.
 - [ ] Keep modding entirely out of scope.
