@@ -1,3 +1,7 @@
+## 2026-11-17 — Verify offline reference tooling checks
+- GitHub Actions run 44162815461 passed on commit `965287f36d9d8855e9f9f2f8e715c3e61d4ed58e`: all nine Python unit tests passed and the unconditional cleanup step confirmed the temporary directory was absent.
+- The artifact smoke workflow runs offline tests on matching pushes and only downloads the Mojang server jar on manual dispatch. The live download and deliberate-failure cleanup paths still require manual dispatch.
+
 ## 2026-11-17 — Implement official Java 26.3 artifact acquisition
 - Added a standard-library Python resolver/downloader that pins release 26.3 through Mojang's official v2 manifest and version JSON, verifies metadata SHA-1, restricts official HTTPS hosts and redirects, and checks exact server jar size/SHA-1 while streaming.
 - Added offline unit tests for official URL policy and artifact verification.
