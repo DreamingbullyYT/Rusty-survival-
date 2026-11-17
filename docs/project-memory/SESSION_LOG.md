@@ -103,3 +103,22 @@ Not tested:
 - Engine code, Android build, Vulkan, Minelib upstream tests, and Minecraft Java parity; no engine exists yet.
 Next:
 - Begin the Minecraft Java Edition 26.3 technical/parity specification and finish architecture/platform risk review before writing engine code.
+
+
+## S-2026-11-17-07 — Establish Minecraft Java 26.3 baseline
+Date: 2026-11-17
+Commit: pending
+Goal: Convert the selected target version into an evidence-backed release baseline before engine implementation.
+Changes:
+- Added docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md.
+- Recorded version metadata, 26.3-specific gameplay/data/rendering/network changes, unknown internals, reference-test method, and Android constraints.
+- Updated roadmap and current state to mark the initial baseline as complete while keeping detailed internals and architecture open.
+Verification:
+- Consulted official Minecraft 26.3 release notes and official feedback release notes.
+- Cross-checked protocol/data version and pack formats against version metadata references.
+- No game binary or asset was downloaded, copied, or committed.
+Not tested:
+- No black-box fixtures captured from a local 26.3 installation.
+- No engine implementation, Android build, Vulkan, Minelib upstream tests, or parity tests.
+Next:
+- Capture 26.3 version metadata and data/registry inventories, then specify chunk/world semantics with reproducible evidence.

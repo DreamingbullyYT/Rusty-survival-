@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — Establish Minecraft Java 26.3 compatibility baseline
+- Added `docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md` with verified release metadata, release-specific gameplay/technical changes, unknown internals, reference-fixture methodology, and Android-first constraints.
+- Recorded data version 5023, protocol 777, data pack 121.0, and resource pack 97.1 with source links.
+- Explicitly marked world-height/chunk internals, generation algorithms, light/fluid scheduling, collision constants, storage internals, and full protocol schema as unresolved pending reference evidence.
+- No engine implementation or parity verification is claimed.
+
 ## 2026-11-17 — PMCS regression suite verified
 - GitHub Actions run 44126182263 completed successfully.
 - Verified negative cases for missing documentation, implementation changes without required memory updates, and edits to existing session-log lines.
@@ -10,7 +16,6 @@
 - Added isolated regression tests for missing required documents, implementation changes without required memory updates, append-only session journal violations, and valid implementation-plus-memory updates.
 - Expanded code-change freshness requirements to include CHANGELOG, CURRENT_STATE, ISSUES, ROADMAP, and SESSION_LOG.
 - Removed a stale commit SHA from CURRENT_STATE; the live repository head must be resolved from Git.
-- Regression suite awaits GitHub Actions verification.
 
 ## 2026-11-17 — Pin Minecraft Java Edition 26.3
 - Recorded the previously established project target as Minecraft Java Edition 26.3 in the handoff, project memory, compatibility record, parity matrix, decisions, and roadmap.
@@ -20,14 +25,13 @@
 ## 2026-11-17 — PMCS CI verification
 - GitHub Actions run 44121524070 completed successfully for commit 0e1074a9bf6b4599820a7cc92373c76f51f59dad.
 - Verified checkout history, Python setup, and PMCS structural/freshness validator step.
-- PMCS automation is VERIFIED for its initial push workflow execution; negative/failure-path tests remain outstanding.
+- PMCS automation is VERIFIED for its initial push workflow execution.
 
 ## 2026-11-17 — PMCS automation and continuity hardening
 - Corrected project direction: Minecraft Java Edition is the behavior target; Horizon is inspiration only and no Horizon code is to be copied.
 - Added append-only session journal and a standard change-record template.
 - Added a standard-library Python validator for required memory files, required sections, duplicate session IDs, and memory freshness when implementation files change.
 - Added GitHub Actions workflow for push, pull request, and manual validation.
-- Updated current state and roadmap; automation remains unverified until an Actions run succeeds.
 
 ## 2026-11-17 — Minelib world source audit
 - Inspected all nine source files in `crates/world/src` and the world crate manifest.
