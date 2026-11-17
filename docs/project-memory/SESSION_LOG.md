@@ -337,3 +337,19 @@ Not tested:
 - cargo test and Clippy did not run in the failed attempt because the formatting step stopped the job.
 Next:
 - Re-run Engine Tests and inspect compile, test and lint results.
+
+
+## S-2026-11-17-20 — Complete rustfmt correction
+Date: 2026-11-17
+Commit: pending
+Goal: Fix the remaining formatting difference reported by the second Engine Tests run.
+Changes:
+- Engine Tests run 44140653759 still failed at cargo fmt because the negative-coordinate case contained a second assertion with the same long-line formatting.
+- Updated all matching assertions to the canonical multi-line rustfmt layout.
+Verification:
+- Exact remaining diff identified from job 134242296995.
+- Latest Engine Tests run after this commit is pending.
+Not tested:
+- cargo test and Clippy remain unexecuted because formatting stops the job first.
+Next:
+- Verify the next Engine Tests run reaches compilation, tests, and Clippy.
