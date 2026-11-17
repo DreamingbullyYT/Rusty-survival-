@@ -9,7 +9,7 @@ Architectural inspiration: Horizon (ideas only; no code copying)
 
 ## Mandatory onboarding
 1. Read this file, then PROJECT_MEMORY.md, CURRENT_STATE.md, ARCHITECTURE.md, DECISIONS.md, ISSUES.md, ROADMAP.md, COMPATIBILITY.md, PARITY_MATRIX.md, REUSE_MATRIX.md, and SESSION_LOG.md.
-2. Read docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md and relevant documents in docs/specs/ and docs/audits/.
+2. Read docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md, docs/specs/ENGINE_TEST_STRATEGY.md, and relevant documents in docs/specs/ and docs/audits/.
 3. Inspect the current branch, HEAD commit, working tree, and recent history. Repository state is authoritative over stale prose.
 4. Read the latest session-log entry and unresolved issues before proposing work.
 5. Treat source code, Git history, reproducible test output, pinned upstream references, and reference fixtures as ground truth. Never invent progress.
@@ -20,6 +20,7 @@ Architectural inspiration: Horizon (ideas only; no code copying)
 10. After every meaningful change, update the memory documents in the same commit. Append a session-log entry; do not rewrite old entries.
 11. Run python scripts/validate_project_memory.py --base <base-sha> when a base commit is available, and run it without --base for a structural check.
 12. Run python -m unittest discover -s tests -v to exercise PMCS validator regression cases.
+13. Run cargo fmt --all -- --check, cargo test --workspace --all-targets, and cargo clippy --workspace --all-targets -- -D warnings for Rust engine changes.
 
 ## Non-negotiable project direction
 - Android-first.
