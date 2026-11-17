@@ -25,6 +25,7 @@ Independent systems for platform integration, runtime, vanilla gameplay, world s
 - Run Rust formatting, unit/integration tests, and Clippy in CI for engine changes.
 - No fabricated test results or completion claims.
 - Update project memory with each meaningful implementation change.
+- Repository workflow: commit all changes directly to `main`; do not create pull requests or intermediate feature branches unless the user explicitly changes this preference.
 - Keep historical session records append-only.
 - Do not guess version-specific Minecraft Java 26.3 constants or mechanics; use reference fixtures and mark unknowns OPEN.
 
