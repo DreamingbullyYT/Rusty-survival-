@@ -48,6 +48,6 @@
 ## Current execution focus — Engine test foundation
 - [x] Add minimal Rust core and deterministic coordinate tests.
 - [x] Add CI for formatting, tests and Clippy.
-- [ ] Verify the new Engine Tests workflow.
-- [ ] Add version-pinned reference fixture runner and captured 26.3 fixtures.
+- [x] Verify the new Engine Tests workflow: run 44140955601 passed formatting, tests and Clippy; PMCS run 44140955639 passed.
+- [ ] Design and implement a version-pinned reference fixture runner; capture 26.3 fixtures from a lawful reference installation.
 - [ ] Continue engine implementation only from specified and testable behavior.
