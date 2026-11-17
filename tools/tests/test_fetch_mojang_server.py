@@ -46,7 +46,7 @@ class OfficialUrlTests(unittest.TestCase):
 
 class ArtifactVerificationTests(unittest.TestCase):
     def test_accepts_exact_size_and_sha1(self):
-        verify_payload(b"vanilla", 7, "7c9f4e9e2b1c7e7c1e8c8f7f7e6f7f8f9a0b1c2d")
+        verify_payload(b"vanilla", 7, "44ebfed28707437b7233c3b2206cd220b2aded34")
 
     def test_rejects_size_mismatch(self):
         with self.assertRaises(ValueError):
