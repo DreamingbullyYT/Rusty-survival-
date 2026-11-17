@@ -27,7 +27,10 @@ fn negative_coordinates_use_euclidean_division() {
 
     for (block, expected_chunk, expected_local) in cases {
         let address = BlockPos::new(block, -64, block).chunk_address();
-        assert_eq!(address.chunk(), ChunkPos::new(expected_chunk, expected_chunk));
+        assert_eq!(
+            address.chunk(),
+            ChunkPos::new(expected_chunk, expected_chunk)
+        );
         assert_eq!(address.local_x(), expected_local);
         assert_eq!(address.local_z(), expected_local);
     }
