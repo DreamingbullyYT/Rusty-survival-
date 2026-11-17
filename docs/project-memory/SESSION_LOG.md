@@ -321,3 +321,19 @@ Not tested:
 - No Android build or Vulkan work was performed in this session.
 Next:
 - Wait for Engine Tests workflow; fix any failures and only then add the next small, evidence-backed engine primitive.
+
+
+## S-2026-11-17-19 — Fix initial Rust formatting check
+Date: 2026-11-17
+Commit: pending
+Goal: Resolve the first Engine Tests CI failure without weakening the checks.
+Changes:
+- Engine Tests run 44140498548 installed stable Rust successfully, then failed at cargo fmt --all -- --check because two assertions and one small array did not match rustfmt output.
+- Reformatted the integration test to rustfmt's canonical layout; test logic is unchanged.
+Verification:
+- Root cause confirmed from the exact GitHub Actions job log.
+- Follow-up Engine Tests run is pending.
+Not tested:
+- cargo test and Clippy did not run in the failed attempt because the formatting step stopped the job.
+Next:
+- Re-run Engine Tests and inspect compile, test and lint results.
