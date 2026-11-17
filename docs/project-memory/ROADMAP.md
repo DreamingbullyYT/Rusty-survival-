@@ -2,12 +2,14 @@
 
 ## Phase 0 — Bootstrap
 - [x] Reset repository tree and establish PMCS.
-- [ ] Verify bootstrap commit and document final SHA.
+- [x] Verify bootstrap commit and record SHA.
 
 ## Phase 1 — Minelib audit
-- [ ] Record upstream commit/tag and license.
-- [ ] Audit each candidate crate: dependencies, portability, Android support, coupling, tests, maintenance.
-- [ ] Produce REUSE_MATRIX.md with KEEP / ADAPT / REPLACE / REJECT decisions.
+- [x] Record upstream commit/tag and root license.
+- [x] Inspect workspace manifests and current release workflow.
+- [x] Produce preliminary KEEP / ADAPT / REPLACE / REJECT matrix.
+- [ ] Audit every source module and tests for candidate crates.
+- [ ] Complete legal/provenance review of candidate code and assets.
 - [ ] Build a minimal Android proof of concept before adopting platform/rendering dependencies.
 
 ## Phase 2 — Specification and architecture
@@ -18,8 +20,8 @@
 
 ## Phase 3 — Vertical slice
 - [ ] Android app lifecycle and surface.
-- [ ] Render a minimal world.
-- [ ] Input/touch pipeline.
+- [ ] Render a minimal world through Vulkan.
+- [ ] Touch/input pipeline.
 - [ ] Load/save one test world.
 - [ ] Reproducible CI build and device test.
 

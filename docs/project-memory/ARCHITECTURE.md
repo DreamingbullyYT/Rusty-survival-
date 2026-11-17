@@ -22,7 +22,13 @@
 - networking: protocol, client/server transport, synchronization.
 - tests/parity: deterministic fixtures and observable behavior tests.
 
-These are logical boundaries, not a finalized crate layout. Final crate boundaries depend on the Minelib audit and Android toolchain proof.
+These are logical boundaries, not a finalized crate layout. Final crate boundaries depend on the Minelib source audit and Android toolchain proof.
+
+## Minelib audit implications
+- Minelib world crate is platform-neutral at manifest level (only bytemuck dependency), but its semantics are not yet proven compatible with Java Edition.
+- Minelib renderer directly uses winit Window and depends on Minelib world/assets. Any reuse needs an adapter boundary and Android surface proof.
+- Minelib platform crate is desktop-input oriented; implement Android lifecycle/touch independently unless a narrowly reusable abstraction is found.
+- Do not import Minelib's app crate wholesale.
 
 ## Data flow
 Android platform -> runtime/input -> simulation -> world snapshot -> renderer.
