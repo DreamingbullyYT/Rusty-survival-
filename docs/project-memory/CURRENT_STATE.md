@@ -24,7 +24,7 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - Proposed layered architecture and Android Vulkan POC plan.
 - Isolated Android NativeActivity + winit 0.30.13 + wgpu 25.0.0 Vulkan clear-screen POC source and Gradle packaging.
 - GitHub Actions successfully compiled the ARM64 native library and packaged a debug APK.
-- Artifact: workflow run 44127492869, artifact ID 14347124661, 2,379,313 bytes, SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61.
+- Artifact: workflow run 44127492869, artifact ID 14347124661, 2,379,313 bytes, SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61. Extracted APK is 7,726,873 bytes, ARM64-only (`lib/arm64-v8a/libmain.so`), SHA-256 27493418f81bd866dbbfe89cff4bcdc5ff9f4ef058142d127adcc10545538552.
 - No Minelib or Horizon source/assets copied.
 
 ## Not implemented / not verified

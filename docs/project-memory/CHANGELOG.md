@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — Verify PMCS and extract installable APK
+- Latest PMCS validation passed for commit cf521ffa8c936b868fe82b302483fd65e6d9390c.
+- Extracted the successful Android workflow artifact and verified it contains an ARM64 debug APK.
+- Recorded APK size and SHA-256; real-device runtime testing remains pending.
+
+
 ## 2026-11-17 — Expand Minecraft 26.3 reference baseline
 - Added a sourced initial baseline for 26.3 release-specific features and technical changes.
 - Expanded parity matrix with explicit domain coverage and reproducible fixture requirements.

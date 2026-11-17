@@ -281,3 +281,21 @@ Not tested:
 - No official jar has been extracted; no registry inventory, fixture, engine code or parity test exists yet.
 Next:
 - Obtain lawful reference artifact access, verify version.json, then extract registry/tag/block-state metadata.
+
+
+## S-2026-11-17-17 — Verify PMCS and extract installable APK
+Date: 2026-11-17
+Commit: pending
+Goal: Confirm the documentation update passes PMCS and make the generated APK directly available for device testing.
+Changes:
+- Latest PMCS validation run 44134445257 completed SUCCESS for commit cf521ffa8c936b868fe82b302483fd65e6d9390c.
+- Downloaded workflow artifact 14347124661 and inspected its archive; it contains app-debug.apk.
+- Extracted APK to the conversation output and confirmed the packaged native library is ARM64-only at lib/arm64-v8a/libmain.so.
+- APK size: 7,726,873 bytes. SHA-256: 27493418f81bd866dbbfe89cff4bcdc5ff9f4ef058142d127adcc10545538552.
+Verification:
+- APK archive structure and ARM64 native library presence confirmed.
+- PMCS workflow passed.
+Not tested:
+- APK installation and runtime on the user's device; Vulkan rendering, lifecycle and surface recreation remain unverified.
+Next:
+- Install APK on ARM64 Android, then capture logcat and verify Vulkan adapter/surface/present and lifecycle.
