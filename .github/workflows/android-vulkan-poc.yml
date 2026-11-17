@@ -6,7 +6,6 @@ on:
     paths:
       - "poc/android-vulkan/**"
       - ".github/workflows/android-vulkan-poc.yml"
-      - "docs/project-memory/**"
   pull_request:
     branches: [main]
     paths:

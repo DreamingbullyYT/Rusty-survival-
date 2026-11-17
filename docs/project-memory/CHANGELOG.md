@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — Android Vulkan POC CI passes
+- ARM64 native library compilation and Gradle debug APK packaging passed in workflow run 44127492869.
+- Artifact 14347124661 produced; SHA-256 recorded in CURRENT_STATE.md and ISSUES.md.
+- Real-device Vulkan runtime validation remains pending.
+
+
 ## 2026-11-17 — Fix Android SDK setup action failure
 - Android POC run 44127348128 failed before compilation because setup-android@v3 requested Google's removed SDK tools package.
 - Updated the workflow to setup-android@v4 and made platform-tools installation explicit.

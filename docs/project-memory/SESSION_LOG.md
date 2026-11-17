@@ -246,3 +246,21 @@ Not tested:
 - Rust Android compilation, Gradle packaging, APK installation, Vulkan device runtime.
 Next:
 - Verify setup-android@v4, then fix any Rust/Gradle errors exposed by the build.
+
+
+## S-2026-11-17-15 — Android Vulkan POC CI passes
+Date: 2026-11-17
+Commit: pending
+Goal: Record successful ARM64 native compilation and APK packaging, keeping hardware runtime validation separate.
+Changes:
+- GitHub Actions run 44127492869 completed SUCCESS.
+- ARM64 Rust native library build passed.
+- Gradle debug APK packaging passed.
+- Artifact 14347124661 created (2,379,313 bytes; SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61).
+- Clarified that CI success does not prove device Vulkan presentation or lifecycle behavior.
+Verification:
+- Workflow run and every build/package step reported success.
+Not tested:
+- No real-device install, Vulkan presentation, pause/resume, rotation or surface recreation.
+Next:
+- Install artifact APK on a real Android ARM64 device and record adapter/driver and lifecycle results.

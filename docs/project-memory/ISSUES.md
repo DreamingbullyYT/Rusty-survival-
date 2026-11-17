@@ -1,47 +1,40 @@
 # Issues and Risks
 
-## I-001 — Minelib Android readiness
+Status vocabulary: OPEN, INVESTIGATING, IMPLEMENTED, VERIFIED, BLOCKED.
+
+## I-001 — Exact Minecraft Java target specification
 Status: INVESTIGATING
-Evidence: Upstream README lists Windows/Linux as available and Android/iOS as in preparation. The inspected release workflow builds Windows executables only. Platform crate uses winit and desktop-oriented keyboard/mouse handling.
-Required action: Prove Android target support, lifecycle, surface creation, touch input, native dependencies, and build reproducibility.
+The target version is Minecraft Java Edition 26.3. Detailed version-pinned mechanics and test fixtures are not complete.
 
-## I-002 — Component license compatibility
+## I-002 — Minelib license and provenance boundaries
 Status: OPEN
-Evidence: Repository LICENSE is AGPLv3; GitHub API metadata reports NOASSERTION. The p2p package manifest separately declares MIT OR Apache-2.0.
-Required action: Review scope/provenance of each crate and contribution, notices, source-distribution/network-use obligations, and redistribution implications before reuse. Do not assume package metadata overrides root LICENSE.
+The root project is AGPLv3; individual crates may have distinct declared licenses. Any code reuse requires file-level provenance, license compatibility review and attribution/obligations review. No Minelib source has been copied into this repository.
 
-## I-003 — Minecraft asset rights and provenance
-Status: OPEN
-Required action: Determine permitted asset acquisition, use, modification, and redistribution. Do not bundle Mojang assets without a documented lawful basis.
-
-## I-004 — Minecraft Java 26.3 parity specification
-Status: OPEN
-Evidence: Minecraft Java Edition 26.3 is the selected behavior target. The parity matrix is currently a high-level checklist; version-specific mechanics and reference fixtures have not yet been specified.
-Required action: Build a version-pinned specification for world height/sections, block states/registries, generation, lighting, fluids, collision, interaction, and observable test cases.
-
-## I-005 — Minelib world semantics do not establish Java Edition parity
+## I-003 — Android platform support in Minelib
 Status: INVESTIGATING
-Evidence: Source inspection shows custom 16×512×16 chunks, Minelib-specific block IDs/registry, custom value-noise terrain, RGB torch lighting, and chemical torch gameplay. Fluid geometry exists but Java-compatible fluid tick/spread behavior is not demonstrated.
-Required action: Independently specify and implement Minecraft Java 26.3 semantics. Treat mesh and DDA as algorithmic candidates only.
+Upstream README describes Android/iOS support as in preparation. Desktop-only platform assumptions must not enter the Android engine boundary.
 
-
-## I-006 — Android renderer lifecycle/surface proof required
-Status: INVESTIGATING
-Evidence: wgpu 25 lists Vulkan on Linux/Android and winit 0.30 documents Android support through android-activity glue. Minelib's pinned workspace does not enable the Android glue feature or provide an Android entrypoint, and no Android build/device test was found.
-Required action: Build an isolated Android winit + wgpu 25 Vulkan clear-screen APK. Verify Resumed/Suspended, pause/resume, surface recreation, rotation, synchronization and real-device presentation before selecting the production backend.
-
-## I-007 — Minelib embedded asset provenance
-Status: BLOCKED
-Evidence: minelib-assets embeds VoxelArt_Libre.zip using include_bytes! and installs it into the user's resource-pack directory. The inspected source does not establish provenance or redistribution rights.
-Required action: Obtain and record author, license, permission and redistribution terms before any reuse or bundling.
-
-## I-008 — Minelib networking is not Java protocol
+## I-004 — Java world/chunk/block-state incompatibility
 Status: OPEN
-Evidence: minelib-net uses a custom Postcard/Noise-over-TCP protocol with Minelib account, relay, room and gameplay message types. It is not Minecraft Java Edition 26.3 protocol 777.
-Required action: If multiplayer is in initial scope, create a separate protocol 777 specification and black-box interoperability fixtures. Do not substitute the Minelib relay protocol.
+Minelib's current chunk height, block IDs, registry and generator are not Java-compatible drop-ins. Only isolated algorithms may be adapted after tests.
 
+## I-005 — Java-compatible world generation, lighting and fluids
+Status: OPEN
+Custom Minelib algorithms do not establish Java parity. Implement against version-pinned reference behavior and fixtures.
 
-## I-009 — Android Vulkan POC build and device validation
+## I-006 — Renderer integration on Android
 Status: INVESTIGATING
-Evidence: An isolated ARM64 NativeActivity/winit/wgpu Vulkan clear-screen POC and CI packaging workflow have been added. Initial CI run 44127348128 failed in setup-android@v3 because it attempted to install Google's removed SDK tools package, before Rust compilation. The workflow is being moved to setup-android@v4.
-Required action: Pass ARM64 native compilation and APK packaging; install on a real device; verify Vulkan adapter selection, first present, pause/resume, rotation and repeated surface recreation. Do not treat a CI APK build as proof of device runtime support.
+Minelib renderer is an adaptation candidate, not a verified Android renderer. Vulkan surface and lifecycle support need hardware proof.
+
+## I-007 — Asset provenance and redistribution
+Status: OPEN
+Do not bundle Mojang assets until lawful acquisition, redistribution basis and provenance are documented.
+
+## I-008 — Networking protocol compatibility and security
+Status: OPEN
+Minelib networking requires protocol, authentication, encryption and security review before reuse.
+
+## I-009 — Android Vulkan POC device validation
+Status: INVESTIGATING
+Evidence: CI run 44127492869 completed SUCCESS. ARM64 native library compilation and Gradle debug APK packaging both passed. Artifact ID 14347124661 (2,379,313 bytes; SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61).
+Required action: Install on a real device; verify Vulkan adapter selection, first present, pause/resume, rotation and repeated surface recreation. CI compilation/package success is not proof of runtime support.
