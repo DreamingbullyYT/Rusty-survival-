@@ -374,3 +374,23 @@ Limitations:
 - Local Rust tests were not run because rustc/cargo are unavailable in this execution environment; GitHub Actions executed the Rust checks.
 Next:
 - Design a lawful, deterministic 26.3 reference-fixture capture format and runner before implementing version-specific world behavior.
+
+
+## S-2026-11-17-22 — Move engine foundation directly to main
+Date: 2026-11-17
+Commit: 8bf795c2959a1ca78e4fe40618b418df015162ae
+Goal: Apply the already-tested engine foundation directly to main, following the user's explicit repository workflow preference.
+Changes:
+- User clarified that no pull requests or intermediate feature branches should be used; all work should be done directly on main.
+- Fast-forwarded main from af4b87c74225cf46f80b78eab6a56e76fabf471a to the tested head 8bf795c2959a1ca78e4fe40618b418df015162ae.
+- The old PR #4 was closed after its head was moved onto main. GitHub reports merged=true because the PR head is now contained in main; no PR merge operation was performed.
+- Established direct-to-main as the default workflow for future changes.
+Verification:
+- Engine Tests run 44140955601: SUCCESS (formatting, cargo test --workspace --all-targets, Clippy).
+- PMCS run 44142349002: SUCCESS on the exact main head before push.
+- Main push runs 44142921426 (Engine Tests) and 44142921444 (PMCS) were triggered; outcomes pending at the time of this entry.
+Limitations:
+- Engine tests cover foundational coordinate invariants only; no Minecraft Java Edition 26.3 parity is established.
+- No reference fixtures, world storage, sections, registry, or gameplay implementation yet.
+Next:
+- Verify both main push workflows, then continue the version-pinned reference-fixture harness directly on main.
