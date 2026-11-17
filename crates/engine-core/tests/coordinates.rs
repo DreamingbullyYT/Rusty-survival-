@@ -2,17 +2,14 @@ use rusty_survival_engine_core::{BlockPos, ChunkPos, CHUNK_WIDTH};
 
 #[test]
 fn positive_chunk_boundaries_map_to_expected_local_coordinates() {
-    let cases = [
-        (0, 0, 0),
-        (15, 0, 15),
-        (16, 1, 0),
-        (31, 1, 15),
-        (32, 2, 0),
-    ];
+    let cases = [(0, 0, 0), (15, 0, 15), (16, 1, 0), (31, 1, 15), (32, 2, 0)];
 
     for (block, expected_chunk, expected_local) in cases {
         let address = BlockPos::new(block, 70, block).chunk_address();
-        assert_eq!(address.chunk(), ChunkPos::new(expected_chunk, expected_chunk));
+        assert_eq!(
+            address.chunk(),
+            ChunkPos::new(expected_chunk, expected_chunk)
+        );
         assert_eq!(address.local_x(), expected_local);
         assert_eq!(address.local_z(), expected_local);
     }
