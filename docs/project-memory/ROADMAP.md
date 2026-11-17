@@ -6,14 +6,17 @@
 
 ## Phase 1 — Minelib audit
 - [x] Record upstream commit/tag and root license.
-- [x] Inspect workspace manifests and current release workflow.
-- [x] Produce preliminary KEEP / ADAPT / REPLACE / REJECT matrix.
-- [ ] Audit every source module and tests for candidate crates.
+- [x] Inspect workspace manifests and release workflow.
+- [x] Produce preliminary reuse matrix.
+- [x] Inspect all `minelib-world` source modules.
+- [x] Record world/chunk/block/generation/light/fluid/mesh/raycast incompatibilities.
+- [ ] Run upstream world crate tests in a reproducible local/CI environment.
 - [ ] Complete legal/provenance review of candidate code and assets.
 - [ ] Build a minimal Android proof of concept before adopting platform/rendering dependencies.
 
 ## Phase 2 — Specification and architecture
 - [ ] Confirm exact Minecraft Java target version.
+- [ ] Specify chunk sections, world height, block states, registries, generation, lighting, fluids, collision and interaction.
 - [ ] Build PARITY_MATRIX.md from observable behavior categories.
 - [ ] Finalize crate/module boundaries and interfaces.
 - [ ] Define deterministic test harness and reference fixtures.

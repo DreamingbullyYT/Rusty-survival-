@@ -1,5 +1,12 @@
 # Project Changelog
 
+## 2026-11-17 — Minelib world source audit
+- Inspected all nine source files in `crates/world/src` and the world crate manifest.
+- Documented custom 16×16×512 chunk model, fixed custom block IDs/registry, custom terrain/noise, custom RGB/torch lighting, fluid geometry without demonstrated Java-compatible fluid simulation, mesh architecture, and DDA raycast.
+- Updated REUSE_MATRIX.md with module-level ADAPT/REPLACE decisions.
+- Confirmed source contains unit tests, but they were not executed in this audit.
+- No upstream source/assets copied; no Android build or Java parity claim made.
+
 ## 2026-11-17 — Preliminary Minelib audit
 - Pinned upstream reference to 1cd3faeca7a29acf491b794dda1eacf768d61e41.
 - Verified root AGPLv3 license text and noted GitHub metadata NOASSERTION.
