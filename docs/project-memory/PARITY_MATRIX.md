@@ -39,3 +39,7 @@ Each fixture must include:
 - Test command and result
 
 No parity row may be marked VERIFIED from visual resemblance alone if the domain requires state, timing, persistence, protocol or physics equivalence.
+
+
+## Foundational tests (not parity verification)
+The initial engine-core suite tests horizontal coordinate partitioning and round-trip invariants, including negative coordinates. This does not mark the World and dimensions domain VERIFIED: no captured Minecraft Java 26.3 reference fixture has been compared, and chunk sections, dimension bounds, heightmaps, storage and biome semantics remain unimplemented.
