@@ -1,6 +1,6 @@
 # Minecraft Java 26.3 Reference Test Pipeline
 
-Status: DESIGN ONLY; downloader, fixture runner and workflow are not implemented.
+Status: DOWNLOADER AND MANUAL ARTIFACT SMOKE WORKFLOW IMPLEMENTED; JAVA ORACLE/PROBE COMPARATOR NOT IMPLEMENTED.
 Purpose: use a legitimate, version-pinned Java 26.3 installation as a temporary test oracle without publishing or committing Mojang files.
 
 ## 1. Two independent CI gates
@@ -12,13 +12,12 @@ Purpose: use a legitimate, version-pinned Java 26.3 installation as a temporary 
 - No Minecraft download for ordinary deterministic engine tests.
 
 ### Vanilla Reference Tests (separate gated workflow)
-- Start with explicit `workflow_dispatch`; consider a schedule only after cost/runtime are measured.
-- Use a clean GitHub-hosted runner and a unique directory under `$RUNNER_TEMP`.
+- Implemented as explicit `workflow_dispatch` in `.github/workflows/reference-artifact-smoke.yml`; no schedule.
+- Uses a clean GitHub-hosted runner and a unique directory under `$RUNNER_TEMP`.
 - Resolve release 26.3 using Mojang's official version manifest and version JSON.
 - Download only the artifact required by a test: server jar for server-side tests; client jar only for client-side tests.
 - Verify exact size and SHA-1 against official metadata.
-- Run a pinned Java runtime, a Java oracle and the Rust probe with identical fixture inputs.
-- Compare normalized observable outputs and emit a concise pass/fail report.
+- Current workflow only acquires and verifies the official server jar; it does not execute Java, a Java oracle, a Rust probe or parity comparison yet.
 
 Do not download assets/libraries/client files for a server-only test.
 
@@ -72,11 +71,13 @@ Synthetic tests may validate the harness itself, but must be labelled synthetic 
 
 ## 6. Implementation sequence
 
-1. Implement a small fixture schema and validator with synthetic self-tests.
-2. Implement official metadata/artifact resolution and hash/size checks into `$RUNNER_TEMP`.
-3. Add one small server-side Java oracle/Rust probe comparison.
-4. Add a manual Actions workflow and test cleanup on success and deliberate failure.
-5. Expand subsystem coverage only with captured reference evidence.
+1. [x] Implement fixture schema/validator and synthetic self-tests.
+2. [x] Implement official metadata/artifact resolution and hash/size checks into a caller-supplied temporary directory.
+3. [x] Add offline unit tests for URL allowlisting and artifact verification.
+4. [x] Add a manual Actions artifact smoke workflow with a deliberate-failure input and unconditional cleanup.
+5. [ ] Verify both normal and deliberate-failure workflow runs; inspect cleanup step results.
+6. [ ] Add one small server-side Java oracle/Rust probe comparison.
+7. Expand subsystem coverage only with captured reference evidence.
 
 ## 7. Compliance boundary
 
