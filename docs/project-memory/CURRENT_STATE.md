@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-17
-Status: ANDROID_VULKAN_POC_CI_PASSED_DEVICE_TEST_PENDING
+Status: ENGINE_CORE_TEST_FOUNDATION_ADDED; ANDROID_VULKAN_POC_DEVICE_CRASH_UNRESOLVED
 Repository HEAD: resolve dynamically from the current main branch; do not store a commit SHA here because it becomes stale after every commit.
 
 ## Direction
@@ -26,21 +26,27 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - GitHub Actions successfully compiled the ARM64 native library and packaged a debug APK.
 - Artifact: workflow run 44127492869, artifact ID 14347124661, 2,379,313 bytes, SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61. Extracted APK is 7,726,873 bytes, ARM64-only (`lib/arm64-v8a/libmain.so`), SHA-256 27493418f81bd866dbbfe89cff4bcdc5ff9f4ef058142d127adcc10545538552.
 - No Minelib or Horizon source/assets copied.
+- Added a dependency-free Cargo workspace and rusty-survival-engine-core.
+- Implemented horizontal block-to-chunk mapping using Euclidean division/remainder, preserving valid local X/Z for negative coordinates without defining dimension height.
+- Added integration tests for positive/negative boundaries, round trips, integer extremes, and the 16-block horizontal chunk width.
+- Added Engine Tests GitHub Actions workflow for formatting, tests, and Clippy.
+- Added docs/specs/ENGINE_TEST_STRATEGY.md.
 
 ## Not implemented / not verified
 - APK has not yet been installed or executed on a real device.
 - Android Vulkan adapter/surface/present, pause/resume, rotation, or swapchain recreation have not been tested on hardware.
 - Protocol/data-version values still need confirmation from version.json in a legitimate official 26.3 artifact before networking/save implementation.
 - Full registry, world/chunk, tick, physics, generation, lighting and fluid specifications are incomplete.
-- No Rust engine workspace or gameplay code.
+- No world model beyond the initial coordinate primitive; no sections, heightmaps, block states, registries, ticks, generation, physics, lighting, fluids, persistence, renderer, or gameplay.
+- No Minecraft Java 26.3 differential fixtures captured; coordinate tests verify foundational invariants only and do not establish parity.
 - No Minecraft Java 26.3 parity fixtures.
 - Minelib upstream tests, legal/provenance review, and security review remain incomplete.
 - wgpu/winit is only a candidate path; production renderer selection remains OPEN.
 
 ## Next actions
-1. Install the generated APK on a real ARM64 Android device; capture logcat.
-2. Verify Vulkan adapter, first frame presentation, pause/resume, rotation, and repeated surface recreation.
-3. Verify 26.3 version metadata and extract registries/tags/block states from a legitimate reference artifact.
-4. Specify chunk/dimension storage, tick ordering, collision, generation, lighting and fluids.
-5. Build deterministic differential fixtures and test harness.
-6. Begin engine implementation only after the specification, architecture and platform risks are reviewed.
+1. Verify the new Engine Tests workflow and fix any Rust formatting, compile, test, or lint failures.
+2. Expand engine-core only with small, well-defined primitives and tests.
+3. Build deterministic Minecraft Java 26.3 reference fixtures before implementing version-specific world/gameplay rules.
+4. Verify 26.3 version metadata and extract registries/tags/block states from a legitimate reference artifact.
+5. Specify dimensions, chunk sections, storage, generation, lighting, fluids, collision and tick order with evidence.
+6. Keep Android POC crash investigation paused until the user asks to resume it.
