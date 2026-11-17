@@ -440,3 +440,23 @@ Not tested:
 - No Minecraft parity is established by synthetic tests.
 Next:
 - Verify Rust CI and PMCS; fix any reported issues. Then implement official metadata resolution and temporary artifact verification/cleanup, followed by a manual reference workflow. Keep direct-to-main and engine-only scope.
+
+
+## S-2026-11-17-25 — Verify fixture testkit Rust CI
+Date: 2026-11-17
+Commit: pending (documentation-only verification addendum)
+Goal: Record the complete Rust CI result for the new fixture contract and its formatting correction.
+Changes:
+- Engine Tests run 44156147284 initially failed only at rustfmt; the job log identified formatting-only differences in `crates/testkit/src/lib.rs`.
+- Applied rustfmt's reported layout in commit `d6c07dad02aebcd310317c306e17d7c423075661`; no test logic changed.
+Verification:
+- Engine Tests run 44156319837 on exact commit `d6c07dad02aebcd310317c306e17d7c423075661`: SUCCESS.
+- `cargo fmt --all -- --check`: PASS.
+- `cargo test --workspace --all-targets`: PASS, including all five testkit synthetic contract tests and existing engine-core coordinate tests.
+- `cargo clippy --workspace --all-targets -- -D warnings`: PASS.
+- Project Memory Validation run 44156319814 was created for the same commit but remained pending with no job assigned at the time of this entry.
+Limitations:
+- Rust CI validates the fixture contract only; no Java 26.3 oracle, Mojang artifact downloader, comparator or parity fixture exists.
+- No Mojang binaries/assets were downloaded or committed.
+Next:
+- Confirm PMCS validation for this commit, then implement official manifest resolution and temporary server artifact download with strict host/size/SHA-1 verification and unconditional cleanup.
