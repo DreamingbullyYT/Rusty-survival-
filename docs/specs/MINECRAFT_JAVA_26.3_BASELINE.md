@@ -1,175 +1,98 @@
-# Minecraft Java Edition 26.3 — Compatibility Baseline
+# Minecraft Java Edition 26.3 — Reference Baseline
 
-Status: INITIAL BASELINE / NOT A COMPLETE IMPLEMENTATION SPECIFICATION
-Target: Minecraft Java Edition 26.3 (Wilderness Bound)
-Primary purpose: define the version-pinned observable behavior target for the independent Rusty Survival engine.
+Status: INITIAL BASELINE / NOT A COMPLETE TECHNICAL SPECIFICATION
+Target: Minecraft Java Edition 26.3 stable release
+Primary goal: match observable vanilla behavior, not reproduce Mojang's internal source architecture.
 
 ## 1. Version identity
 
-| Property | Target value | Evidence |
+| Field | Target value | Evidence / confidence |
 |---|---:|---|
-| Edition | Java Edition | Official release notes |
-| Release | 26.3 | Official release notes |
-| Release name | Wilderness Bound | Official release notes |
-| Release date | 2026-09-15 | Official release notes |
-| Data version | 5023 | `/version` reference and version metadata |
-| Network protocol | 777 (0x309) | `/version` reference |
-| Data pack format | 121.0 | Official release notes |
-| Resource pack format | 97.1 | Official release notes |
+| Release | 26.3 | Official Mojang release notes |
+| Release date | 2026-09-15 | Official Mojang release notes |
+| Protocol version | 777 | Community-maintained protocol reference; confirm against the official 26.3 server/client artifact before networking implementation |
+| World/data version | 5023 | Community-maintained data-version reference; confirm against the official 26.3 artifact before save-format implementation |
+| Data pack format | 121.0 | Official Mojang release notes |
+| Resource pack format | 97.1 | Official Mojang release notes |
+| Java runtime | Java 25 or newer | Version metadata reference; relevant to desktop reference runtime, not a requirement for our Android Rust app |
 
-Primary sources:
-- Official 26.3 release notes: https://www.minecraft.net/en-us/article/minecraft-java-edition-26-3
-- Official 26.3 feedback/release technical notes: https://feedback.minecraft.net/hc/en-us/articles/48913133328013-Minecraft-Java-Edition-26-3
-- Version metadata reference: https://minecraft.wiki/w/Commands/version
-- Protocol version reference: https://minecraft.wiki/w/Protocol_version
-- Pack format reference: https://minecraft.wiki/w/Data_pack_version
+Sources:
+- Official release notes: https://www.minecraft.net/en-us/article/minecraft-java-edition-26-3
+- Official technical changes: https://feedback.minecraft.net/hc/en-us/articles/48913133328013-Minecraft-Java-Edition-26-3
+- Protocol version reference (CC BY-SA 3.0): https://minecraft.wiki/w/Protocol_version
+- Data version reference (CC BY-SA 3.0): https://minecraft.wiki/w/Data_version
+- Cross-check metadata table: https://gofedako.com/mc/java/versions/
 
-The official release notes are authoritative for announced features and changes. Secondary version tables are used only for metadata cross-checking. Where sources disagree, record the discrepancy and verify against a legitimate 26.3 installation's version metadata before implementation.
+The protocol and data-version numbers above are reference metadata, not yet verified by extracting version.json from a legally obtained official 26.3 jar. Do that before implementing network handshake or world-save compatibility.
 
-## 2. Compatibility contract
+## 2. 26.3 release-specific behavior that must enter parity coverage
 
-The engine targets observable Minecraft Java Edition 26.3 behavior, not source-code or internal-architecture equivalence.
-
-Observable parity includes, when the corresponding subsystem is implemented:
-- state transitions and game rules;
-- world generation and saved-world behavior;
-- block states, shapes, collision and interaction;
-- fluids, light, weather and environmental simulation;
-- entities, AI, movement, damage and inventories;
-- crafting, recipes, loot, structures and progression;
-- client presentation, rendering order, particles, audio and UI behavior;
-- data/resource pack loading and version compatibility;
-- network protocol behavior if multiplayer is included in the supported scope.
-
-A feature is not VERIFIED merely because it looks similar. It needs reproducible reference cases and matching outcomes. Record intentional exclusions and platform-driven presentation differences separately; do not silently call them parity.
-
-## 3. 26.3 release-specific feature and behavior inventory
-
-This inventory is a minimum version-specific checklist, not a complete list of every vanilla feature inherited from earlier releases.
-
-### World generation and blocks
-- Dappled Forest biome, generated near cold biomes.
-- Poplar trees and fallen Poplar trees, with red/orange/yellow leaf variants.
-- Poplar logs and wood family.
-- Shelf Mushrooms in small and large forms, including growth behavior and placement on Poplar trees/fallen trees.
+### World content and generation
+- Dappled Forest biome, found near cold biomes.
+- Poplar trees with red/orange/yellow leaf variants; fallen Poplar trees.
+- Shelf Mushrooms, including small/large behavior and growth interaction.
 - Red Shrubs and their bone-meal behavior.
-- Abandoned Camp structure and biome variants.
-- New Explorer Map content and map item identities.
-- Wool stairs and slabs for all wool colors.
-- Concrete stairs and slabs for all concrete colors.
+- Abandoned Camp structures with biome-specific variants and loot containers.
+- Explorer maps for Abandoned Camps and other structures.
+- Poplar sapling growth can select any of the three Poplar variants.
 
-### Items and gameplay
-- Cushions: no collision, cannot overlap other cushions, break when support is removed, cannot be moved by pistons.
-- Straw Beds: one-use sleep item, does not set spawn, destroyed after use, dimension-specific failure behavior in Nether and End.
-- Explorer Maps are separate item types rather than renamed Filled Maps; old-world conversion and cloning behavior must be tested.
+### Blocks, items, interaction and player behavior
+- Cushions: 16 color variants, sit interaction, placement/support rules, no collision, cannot be piston-moved, break when support is removed.
+- Straw Beds: one-use sleep item; do not set spawn; destroyed after use; Nether/End restrictions.
+- Wool stairs and slabs for every wool color.
+- Concrete stairs and slabs for every concrete color; stonecutter support.
+- Shelf Mushrooms have bounce behavior and sound when a living entity bounces on them.
+- Red Shrubs can be composted; bone meal can grow an adjacent shrub when space permits.
 - Spectator players can interact with portals to teleport.
-- Suspicious Stew and Mushroom Stew crafting accepts two of any mushroom.
-- Shield raising takes precedence over Hoe tilling and Shovel path-making.
-- Ender Pearl teleportation resets the teleported player's momentum.
-- Endermen/Shulkers no longer teleport onto Bedrock; projectile damage behavior for mounted Endermen changed.
 
-### Entities and environment
-- Persistent mobs' random walk/swim behavior deactivates when no players are nearby, like non-persistent mobs.
-- New passive/neutral mob spawn set for Dappled Forest, using cold variants where applicable.
-- Poplar leaf ambience, particles and sound behavior must be represented.
-- New/changed tags affecting fluid flow, teleport destinations, heightmaps, fire spread, washed-away blocks, and other gameplay rules must be loaded as data, not duplicated as scattered hard-coded lists.
+### Gameplay and UI changes
+- Explorer Maps are distinct item types rather than renamed Filled Maps; old-world conversion and map cloning must preserve type.
+- Explorer/Buried Treasure maps are no longer zoomable unless their item is in the extendable_maps tag.
+- Player map marker consistently shows facing direction.
+- Persistent mob random walk/swim behavior deactivates when players are not nearby, like non-persistent mobs.
+- Villager trades unlocked by profession level-up update while the player is trading.
+- Suspicious Stew and Mushroom Stew recipes accept two of any mushroom.
+- Shield raising takes precedence over hoe tilling and shovel path-making.
+- Structure location and chunk generation performance changes are not behavior specifications by themselves; measure performance separately.
 
-### Rendering and client presentation
-- 26.3 introduces an order-independent transparency algorithm as the replacement for the prior Improved Transparency approach; release notes describe it as an approximation with some remaining artifacts and a higher expected performance cost.
-- Terrain blocks use MultiDrawIndirect on supported devices.
-- Terrain and post-process shader contracts changed to support multi-draw.
-- Player map icon now shows facing direction.
-- Debug overlay adds player speed and display refresh rate and supports its own GUI scale.
-- Subtitle direction targets the most recent sound in range.
-- 26.3 changes UI and input behavior on desktop, including SDL3, physical-key scancodes, and relative mouse mode. Android must provide equivalent game actions through touch/controller input where applicable; desktop window management itself is not an Android requirement.
+### Rendering and platform implications
+- 26.3 replaces the prior Improved Transparency approach with order-independent transparency (OIT). Treat this as a rendering parity item; do not assume a particular internal algorithm from the release note alone.
+- Terrain blocks use MultiDrawIndirect on supported devices. This is an optimization/capability path, not a requirement to force on every Android GPU.
+- The desktop Java client changed from GLFW to SDL3 for window/input/platform integration. This is not a reason to adopt SDL3 in the Android Rust engine. Our Android adapter remains independently designed and must expose equivalent input/lifecycle behavior where applicable.
+- The release adds post effects as resource-pack-controlled client-side screen effects. Server simulation must not assume a client has applied a visual post effect.
 
-### Data, resources and persistence
-- Data pack format: 121.0.
-- Resource pack format: 97.1.
-- `level.dat` includes a `version_history` list with prior data versions.
-- Block-state providers are standalone registry-backed types under `worldgen/block_state_provider`; inline object shorthand is supported for simple providers.
-- World-generation provider identifiers and cache types changed; removed provider types must not be assumed present.
-- 26.3 introduces/changes many block, entity, fluid, structure, potion, damage, and biome tags. Load tag definitions from the versioned data set.
-- Item model elements add `shade_direction_override`; older `shade` behavior is removed.
-- Palette texture locations and metadata changed.
-- Map color tint source was removed.
-- The `blocks.json` data generation report no longer contains its `definition` field.
+## 3. Core systems requiring deeper specification
 
-### Networking and server behavior
-- Protocol version target: 777 (0x309).
-- Minecraft Server Management Protocol notes version 3.1.0 and additional tag-driven behavior.
-- Server `white-list` property defaults to true in 26.3.
-- Multiplayer implementation must use the 26.3 packet schema and state machine, not an earlier protocol version. Exact packet IDs, codecs, login/configuration/play transitions, compression, encryption, and edge cases require a separate protocol spec and reference tests.
+The release notes do not define these systems sufficiently. Do not guess their constants or implementation details.
 
-## 4. What is deliberately not assumed yet
+1. Dimension min/max Y, section count, section indexing and out-of-range behavior.
+2. Chunk data layout, palettes, packed storage, block entities, biomes, heightmaps and serialization.
+3. Block-state registry: identifiers, properties, default states, tags and state transitions.
+4. World generation: seed pipeline, random sources, noise parameters, density functions, biome source, carvers, features, structures and placement order.
+5. Lighting: sky/block light, propagation, opacity/emission, boundary updates and relighting.
+6. Fluids: water/lava state, scheduling, flow, source creation, interactions and tick order.
+7. Physics: movement constants, collision boxes, step-up, gravity, drag, swimming, climbing, knockback and ray selection.
+8. Tick model: game time, scheduled ticks, random ticks, entity/block update order and pause semantics.
+9. Rendering: model baking, culling, AO/light sampling, transparency ordering/OIT, fog, particles and animation.
+10. Persistence: level.dat, region/chunk NBT, player data, data version 5023 and migration behavior.
+11. Networking: protocol 777 handshake, login/configuration/play states, packet IDs, compression, encryption/authentication and keepalive.
+12. Input/platform: pointer capture, keyboard/controller semantics, touch mapping, focus changes, app pause/resume and surface loss.
 
-The release notes and metadata above do NOT establish every internal value or algorithm. Do not guess or copy values from Minelib.
+## 4. Evidence and implementation policy
 
-The following require direct 26.3 reference capture or additional primary technical evidence before implementation:
-- exact minimum/maximum build height and dimension-specific height ranges;
-- chunk section layout, palette encoding, light arrays and serialization details;
-- block-state registry contents and canonical property ordering;
-- generation noise settings, random sources, feature placement order and seed behavior;
-- light propagation, skylight, block light and update scheduling;
-- fluid tick scheduling, source creation, flow decay and cross-chunk edge behavior;
-- collision boxes, step height, movement constants and tick ordering;
-- entity AI scheduling, pathfinding and random tick behavior;
-- region file, NBT, data-fixer and migration behavior for all relevant saved data;
-- full 26.3 network packet schema;
-- renderer shader inputs, vertex formats, blending and depth rules.
+- Every numeric constant must link to a reference artifact, a reproducible experiment, or a test fixture.
+- Separate public observable behavior from internal implementation assumptions.
+- Reference fixtures must record exact game version, world seed, settings, player state, action sequence and expected result.
+- Differential tests compare our output with the official 26.3 reference client/server; they must not compare against Minelib as a proxy for vanilla.
+- Use only lawfully obtained reference artifacts. Do not commit Mojang binaries or assets without a documented redistribution basis.
+- Community wiki data used as evidence must retain attribution and comply with its CC BY-SA terms; prefer official artifacts for final constants.
+- Mark every claim OPEN until backed by source, reproducible test, or fixture.
 
-These items remain OPEN until supported by reproducible fixtures. Do not put guessed constants into production code.
+## 5. Immediate specification sequence
 
-## 5. Reference and differential-test method
-
-Use a legally obtained, unmodified Minecraft Java Edition 26.3 installation as a black-box reference. Do not redistribute its jars or assets. Record the exact version metadata used for every fixture.
-
-For each fixture, store:
-- fixture ID and target subsystem;
-- exact 26.3 build/version metadata;
-- world seed and world creation options, when relevant;
-- initial world/player/entity state;
-- exact input/action sequence and tick count;
-- expected observable result;
-- capture method and known nondeterminism;
-- engine result and pass/fail status.
-
-Prefer deterministic fixtures. For inherently random behavior, record seeds and control all available random sources; otherwise compare distributions and mark the test probabilistic rather than deterministic.
-
-Golden data may include normalized state snapshots, NBT summaries, block/biome samples, movement traces, packet traces, screenshots, and audio-event traces. Do not include Mojang assets or copyrighted game binaries in the repository unless a documented lawful basis permits it.
-
-## 6. Required parity test groups
-
-- Version and data identity.
-- Dimension/world bounds and chunk lifecycle.
-- Block registry, states, tags, shapes and updates.
-- World generation, structures, biomes and feature placement.
-- Lighting, fluids, weather and random ticks.
-- Player movement, collision, raycasting and interaction.
-- Entity simulation, AI, damage and status effects.
-- Items, inventories, crafting, recipes and loot.
-- Persistence, loading, saving and migration.
-- Rendering, transparency, particles, maps and UI.
-- Audio and subtitles.
-- Networking and server behavior, if included.
-
-Every test group starts NOT_STARTED. A subsystem may become IMPLEMENTED before it is VERIFIED. Only passing reference fixtures can move it to VERIFIED.
-
-## 7. Android-first engineering constraints
-
-- Android lifecycle, surfaces, touch, sensors, storage and audio belong in the platform adapter, not vanilla simulation.
-- Vulkan is the preferred Android rendering backend, but do not assume desktop Vulkan behavior maps directly to Android. Prove surface creation, swapchain lifecycle, format support, synchronization and device-loss handling on real devices.
-- MultiDrawIndirect and order-independent transparency are 26.3 reference behaviors, not mandatory implementation techniques. Use a different Android GPU path if necessary, but match visible output within documented tolerances.
-- The simulation must be renderer-independent and testable headlessly.
-- Rendering quality/performance trade-offs must not change game rules or authoritative world state.
-
-## 8. Next specification work
-
-1. Capture version.json and relevant data metadata from an unmodified 26.3 client/server installation.
-2. Build a 26.3 registry and tag inventory from legitimate version data.
-3. Specify dimensions, chunk sections, storage and block states with evidence.
-4. Specify world generation, light, fluids, collision and tick ordering with fixtures.
-5. Create a minimal differential test harness before implementing those systems.
-6. Write the separate 26.3 network protocol specification if multiplayer remains in the initial product scope.
-
-This document is a baseline inventory. It is not permission to begin implementing guessed internals, and it does not claim engine parity.
+1. Extract version.json and server/client data from a legitimate official 26.3 installation; verify protocol, data version and pack formats.
+2. Capture registries, tags, block states and item/component definitions from the reference artifact.
+3. Specify chunk/dimension layout and save representation.
+4. Specify block interactions, collision/selection and tick ordering.
+5. Specify generation, lighting and fluid systems.
+6. Build differential fixtures before implementing the corresponding systems.

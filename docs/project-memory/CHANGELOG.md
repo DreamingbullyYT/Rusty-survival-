@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — Expand Minecraft 26.3 reference baseline
+- Added a sourced initial baseline for 26.3 release-specific features and technical changes.
+- Expanded parity matrix with explicit domain coverage and reproducible fixture requirements.
+- Kept protocol/data-version metadata provisional pending official version.json verification.
+
+
 ## 2026-11-17 — Android Vulkan POC CI passes
 - ARM64 native library compilation and Gradle debug APK packaging passed in workflow run 44127492869.
 - Artifact 14347124661 produced; SHA-256 recorded in CURRENT_STATE.md and ISSUES.md.

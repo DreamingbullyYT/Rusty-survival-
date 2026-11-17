@@ -264,3 +264,20 @@ Not tested:
 - No real-device install, Vulkan presentation, pause/resume, rotation or surface recreation.
 Next:
 - Install artifact APK on a real Android ARM64 device and record adapter/driver and lifecycle results.
+
+
+## S-2026-11-17-16 — Expand Minecraft 26.3 reference baseline
+Date: 2026-11-17
+Commit: pending
+Goal: Convert the selected Minecraft Java 26.3 target into a sourced initial behavior baseline and a test-oriented parity matrix.
+Changes:
+- Added docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md with release identity, technical formats, version-specific gameplay/rendering changes, unresolved core specifications and evidence policy.
+- Expanded PARITY_MATRIX.md into concrete domains and a required deterministic fixture format.
+- Updated CURRENT_STATE.md and ROADMAP.md to distinguish documented release facts from unverified protocol/data-version metadata and incomplete mechanics.
+Verification:
+- Cross-checked release-specific facts against Mojang's official 26.3 release notes.
+- Protocol 777 and data version 5023 are recorded as community-reference values and explicitly marked for confirmation from official version.json before implementation.
+Not tested:
+- No official jar has been extracted; no registry inventory, fixture, engine code or parity test exists yet.
+Next:
+- Obtain lawful reference artifact access, verify version.json, then extract registry/tag/block-state metadata.

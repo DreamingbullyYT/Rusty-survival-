@@ -16,10 +16,11 @@
 - [x] Select Minecraft Java Edition 26.3 as the observable behavior target.
 - [x] Create initial version-pinned 26.3 release-feature and technical-metadata baseline.
 - [x] Create proposed layered architecture and logical module boundaries.
+- [x] Expand parity matrix with 26.3 release behavior domains and fixture format.
 - [x] Document Android Vulkan POC plan and candidate wgpu/winit integration path.
-- [ ] Capture 26.3 version metadata and complete registry/tag inventory.
-- [ ] Specify dimensions, chunk sections, storage, block states, generation, lighting, fluids, collision and tick order with evidence.
-- [ ] Build PARITY_MATRIX.md from detailed 26.3 observable behavior cases.
+- [ ] Verify protocol/data version by inspecting official 26.3 version.json.
+- [ ] Capture 26.3 registry/tag/block-state inventory.
+- [ ] Specify dimensions, chunk sections, storage, generation, lighting, fluids, collision and tick order with evidence.
 - [ ] Define deterministic differential test harness and reference fixtures.
 
 ## Phase 3 — Android platform vertical slice
