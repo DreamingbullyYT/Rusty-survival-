@@ -1,5 +1,12 @@
 # Project Changelog
 
+## 2026-11-17 — Propose modular Android-first engine architecture
+- Rewrote ARCHITECTURE.md as a layered design proposal with narrow interfaces and simulation/render/platform separation.
+- Documented logical modules, dependency direction, deterministic scheduling principles, first vertical slice, and open decisions.
+- Kept renderer backend, ECS, save format, multiplayer scope, and final crate layout undecided pending Android proof and 26.3 reference evidence.
+- No engine code or parity implementation added.
+
+
 ## 2026-11-17 — Minelib renderer, assets and networking audit
 - Added docs/audits/MINELIB_RENDER_ASSETS_NET_AUDIT.md.
 - Renderer: ADAPT GPU techniques only; wgpu is a candidate but Minelib's renderer is not Android-proven and is coupled to winit and Minelib world/assets.

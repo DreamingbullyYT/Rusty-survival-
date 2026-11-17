@@ -2,20 +2,12 @@
 
 ## Phase 0 — Bootstrap and continuity
 - [x] Reset repository tree and establish PMCS.
-- [x] Verify bootstrap commit and record SHA.
-- [x] Add PMCS structural/freshness validator.
-- [x] Add GitHub Actions workflow for pull requests and pushes.
-- [x] Add append-only session journal and change template.
-- [x] Verify PMCS workflow and regression tests in GitHub Actions.
-- [x] Exercise validator failure cases and the valid update path.
-- [x] Remove the stale hard-coded repository HEAD SHA from CURRENT_STATE.
+- [x] Add PMCS structural/freshness validator, regression tests, session journal and GitHub Actions workflow.
+- [x] Verify PMCS regression suite in GitHub Actions.
 
 ## Phase 1 — Minelib audit
-- [x] Record upstream commit/tag and root license.
-- [x] Inspect workspace manifests and release workflow.
-- [x] Produce preliminary reuse matrix.
-- [x] Inspect all minelib-world source modules.
-- [x] Record world/chunk/block/generation/light/fluid/mesh/raycast incompatibilities.
+- [x] Record upstream commit/tag, root license and workspace manifests.
+- [x] Inspect every minelib-world source module.
 - [x] Inspect renderer, asset loader and networking source entry points; record ADAPT/REPLACE/BLOCKED decisions.
 - [ ] Run upstream world crate tests in a reproducible environment.
 - [ ] Complete legal/provenance review of candidate code and assets.
@@ -24,13 +16,13 @@
 
 ## Phase 2 — Specification and architecture
 - [x] Select Minecraft Java Edition 26.3 as the observable behavior target.
-- [x] Create an initial version-pinned 26.3 release-feature and technical-metadata baseline.
-- [ ] Capture official 26.3 version metadata and build a complete registry/tag inventory.
+- [x] Create initial version-pinned 26.3 release-feature and technical-metadata baseline.
+- [x] Create a proposed layered architecture and logical module boundaries.
+- [ ] Capture 26.3 version metadata and complete registry/tag inventory.
 - [ ] Specify dimensions, chunk sections, storage, block states, generation, lighting, fluids, collision and tick order with evidence.
 - [ ] Build PARITY_MATRIX.md from detailed 26.3 observable behavior cases.
-- [ ] Finalize module boundaries and interfaces.
 - [ ] Define deterministic differential test harness and reference fixtures.
-- [ ] Record Horizon-inspired architectural ideas as independent design requirements, not copied code.
+- [ ] Review and finalize module boundaries after Android proof and technical specification.
 
 ## Phase 3 — Vertical slice
 - [ ] Android app lifecycle and surface.
@@ -48,7 +40,8 @@
 - [x] PMCS automation and regression tests pass in GitHub Actions.
 - [x] Minecraft Java Edition 26.3 target is selected.
 - [x] Initial version-pinned 26.3 baseline is written.
-- [x] Minelib renderer/assets/network entry points have source-level reuse decisions.
+- [x] Minelib world, renderer, assets and networking have source-level reuse decisions.
+- [x] A proposed layered architecture is documented.
 - [ ] Detailed technical parity specification is evidence-backed.
-- [ ] Architecture and module boundaries are reviewed.
-- [ ] Remaining reuse decisions and Android platform risks are documented.
+- [ ] Android lifecycle/surface approach is proven.
+- [ ] Remaining reuse decisions and legal/provenance risks are closed or explicitly accepted.

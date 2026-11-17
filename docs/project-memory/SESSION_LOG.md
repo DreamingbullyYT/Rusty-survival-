@@ -142,3 +142,21 @@ Not tested:
 - No upstream build/tests, Android build, Vulkan surface, GPU benchmark, security audit, or Java protocol interoperability test.
 Next:
 - Continue 26.3 reference data capture and prove Android surface/lifecycle before finalizing backend and crate boundaries.
+
+
+## S-2026-11-17-09 — Propose modular Android-first engine architecture
+Date: 2026-11-17
+Commit: pending
+Goal: Define clean logical boundaries before choosing crates or implementing engine systems.
+Changes:
+- Rewrote ARCHITECTURE.md as a layered proposal covering Android platform, runtime, vanilla data, world model/generation, simulation, physics, renderer, resource packs, persistence, audio, optional Java protocol, and testkit.
+- Defined dependency direction and immutable renderer snapshots.
+- Kept wgpu/Vulkan, ECS, save format, multiplayer scope and final crate boundaries OPEN pending proof and reference evidence.
+- Updated roadmap and current state.
+Verification:
+- Documentation review against the 26.3 baseline and Minelib component audit.
+- No engine source code was added.
+Not tested:
+- No Android app, surface, renderer, simulation, persistence or parity tests.
+Next:
+- Build the minimal Android lifecycle/surface proof and continue collecting 26.3 reference data before final architecture approval.
