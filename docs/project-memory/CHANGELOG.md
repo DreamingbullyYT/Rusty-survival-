@@ -1,3 +1,9 @@
+## 2026-11-17 — Implement official Java 26.3 artifact acquisition
+- Added a standard-library Python resolver/downloader that pins release 26.3 through Mojang's official v2 manifest and version JSON, verifies metadata SHA-1, restricts official HTTPS hosts and redirects, and checks exact server jar size/SHA-1 while streaming.
+- Added offline unit tests for official URL policy and artifact verification.
+- Added an automatic offline tooling-test workflow and a manual artifact-only Actions workflow. The latter has unconditional temporary-directory cleanup and an optional deliberate-failure input; it does not execute an oracle or claim parity.
+- No Minecraft binary was committed, cached, uploaded, or released.
+
 ## 2026-11-17 — Add version-pinned reference fixture contract
 - Added `rusty-survival-testkit` as a separate workspace crate with a typed JSON fixture model and validation for schema version, Java 26.3 target, subsystem, artifact metadata, scenario, normalization and capture provenance.
 - Added five synthetic self-tests and one explicitly synthetic fixture example; these validate the harness contract only and do not count as Minecraft parity.
