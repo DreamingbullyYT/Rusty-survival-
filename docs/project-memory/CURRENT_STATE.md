@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-17
-Status: ANDROID_RENDERER_POC_PLANNED
+Status: ANDROID_VULKAN_POC_IMPLEMENTED_AWAITING_CI
 Repository HEAD: resolve dynamically from the current main branch; do not store a commit SHA here because it becomes stale after every commit.
 
 ## Direction
@@ -13,30 +13,30 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 ## Repository
 - Repository: DreamingbullyYT/Rusty-survival-
 - Default branch: main
-- PMCS validator and regression suite are verified; run 44126182263 passed.
-- Initial 26.3 compatibility baseline and Minelib renderer/assets/network audit are recorded.
+- PMCS validator/regression suite verified.
+- 26.3 baseline, Minelib audits, and proposed architecture recorded.
 
 ## Implemented
 - PMCS continuity docs, validator, regression suite and GitHub Actions workflow.
-- Initial Minecraft Java Edition 26.3 release-feature/metadata baseline.
-- Source-level Minelib world audit.
-- Source-level Minelib renderer/assets/network audit with component reuse decisions.
-- Proposed layered engine architecture in ARCHITECTURE.md.
-- No Horizon or Minelib code/assets copied.
+- Initial Minecraft Java Edition 26.3 compatibility baseline.
+- Source-level Minelib world, renderer, assets and network audits.
+- Proposed layered architecture and Android Vulkan POC plan.
+- Isolated Android NativeActivity + winit 0.30.13 + wgpu 25.0.0 Vulkan clear-screen POC source and Gradle packaging.
+- Dedicated GitHub Actions workflow to compile and package an ARM64 debug APK.
+- No Minelib or Horizon source/assets copied.
 
 ## Not implemented / not verified
-- No Rust workspace or game code.
-- No Android application or APK.
-- No renderer integration or Vulkan device/surface test.
+- POC CI build has not yet completed for the latest commit.
+- No APK has yet been verified as installable on a real device.
+- No Android Vulkan adapter/surface/present, pause/resume, rotation, or swapchain recreation test has been performed on hardware.
+- No Rust engine workspace or gameplay code.
 - No Minecraft Java 26.3 parity fixtures.
-- No Android lifecycle proof; wgpu 25 + winit 0.30 is a candidate combination, not yet built or tested.
 - Minelib upstream tests, legal/provenance review, and security review remain incomplete.
-- Architecture is a proposal; final crate boundaries and renderer backend are not selected.
-- 26.3 internal world/simulation details remain unresolved pending reference capture.
+- wgpu/winit is only a candidate path; production renderer selection remains OPEN.
 
 ## Next actions
-1. Build and test the isolated wgpu 25 + winit 0.30 Android Vulkan clear-screen proof of concept.
-2. Capture 26.3 metadata, registry/tag inventory, dimension/chunk semantics and reference fixtures.
-3. Complete remaining Minelib legal/provenance and upstream test work.
-4. Review the architecture and parity matrix against evidence.
-5. Start engine implementation only after architecture, Android risks and initial parity spec are reviewed.
+1. Fix any Android POC CI build errors and produce a debug APK artifact.
+2. Install/test the APK on a real ARM64 Android device; capture logcat and lifecycle behavior.
+3. Continue 26.3 reference metadata, registry/tag and world/chunk specification.
+4. Finalize architecture and differential test harness.
+5. Begin engine implementation only after the specification, architecture and platform risks are reviewed.

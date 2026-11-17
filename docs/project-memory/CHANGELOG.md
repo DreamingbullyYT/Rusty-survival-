@@ -1,5 +1,13 @@
 # Project Changelog
 
+## 2026-11-17 — Implement isolated Android Vulkan POC
+- Added a minimal ARM64 NativeActivity + winit 0.30.13 + wgpu 25.0.0 Vulkan clear-screen app.
+- Added explicit Resumed/Suspended handling and surface recreation path.
+- Added adapter/driver/capability logging and Gradle APK packaging.
+- Added dedicated GitHub Actions workflow for Android compilation and debug APK packaging.
+- CI and real-device results are pending; this is a platform POC, not engine implementation.
+
+
 ## 2026-11-17 — Refine Android renderer feasibility assessment
 - Confirmed wgpu 25 documents Vulkan support on Android and winit 0.30 documents an Android glue/lifecycle path.
 - Minelib's pinned manifests do not enable that Android entrypoint/configuration; its renderer remains unproven on Android.

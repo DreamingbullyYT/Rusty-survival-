@@ -195,3 +195,22 @@ Not tested:
 - No Android compile, APK, device runtime, Vulkan adapter, surface, or swapchain test.
 Next:
 - Build an isolated clear-screen Android POC with wgpu 25 + winit 0.30; do not add engine/gameplay code to it.
+
+
+## S-2026-11-17-12 — Implement isolated Android Vulkan POC
+Date: 2026-11-17
+Commit: pending
+Goal: Test a minimal Android app lifecycle and Vulkan presentation path without starting engine/gameplay implementation.
+Changes:
+- Added poc/android-vulkan Rust cdylib using NativeActivity glue, winit 0.30.13 and wgpu 25.0.0 with Vulkan backend.
+- Added explicit Resumed/Suspended handling; surface-dependent GPU state is dropped on suspend and recreated on resume.
+- Added adapter/driver/features/limits/surface capability logging and a clear-only render pass.
+- Added Gradle packaging and a dedicated ARM64 Android build workflow.
+- Added README with local build and device-test instructions.
+Verification:
+- Source authored and committed; CI build pending.
+Not tested:
+- No Android compiler result, APK install, real-device Vulkan presentation, lifecycle, rotation, or performance test yet.
+- No engine or Minecraft parity code.
+Next:
+- Fix any CI compile/package failures, then test the generated APK on real hardware.
