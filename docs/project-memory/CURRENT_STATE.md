@@ -32,8 +32,10 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - Added integration tests for positive/negative boundaries, round trips, integer extremes, and the 16-block horizontal chunk width.
 - Added Engine Tests GitHub Actions workflow for formatting, tests, and Clippy.
 - Added docs/specs/ENGINE_TEST_STRATEGY.md.
-- Engine Tests run 44140498548 failed at formatting; run 44140653759 found one remaining rustfmt difference. Both runs stopped before compilation, cargo test, and Clippy. All repeated assertions have now been formatted; a subsequent workflow result is not yet confirmed.
-- Local Rust tests were not run because rustc and cargo are unavailable in the current execution environment.
+- Engine Tests run 44140955601 completed SUCCESS on PR head `f504ba1f3629702330380c3bb71c44c4a5879150`; formatting, `cargo test --workspace --all-targets`, and Clippy all passed.
+- PMCS validation run 44140955639 completed SUCCESS on the same PR head.
+- Earlier formatting failures (44140498548 and 44140653759) were corrected; the latest CI run confirms all Rust gates now pass.
+- Local Rust tests were not run because rustc and cargo are unavailable in the current execution environment; CI executed them successfully.
 
 ## Not implemented / not verified
 - APK launch on the user's device failed immediately; successful runtime startup and Vulkan presentation remain unverified.
@@ -46,8 +48,8 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - wgpu/winit is only a candidate path; production renderer selection remains OPEN.
 
 ## Next actions
-1. Verify the new Engine Tests workflow and fix any Rust formatting, compile, test, or lint failures.
-2. Expand engine-core only with small, well-defined primitives and tests.
+1. Keep PR #4 open until the user explicitly approves merging; latest Engine Tests and PMCS workflows pass.
+2. Design a version-pinned 26.3 reference-fixture harness before adding more world/gameplay behavior.
 3. Build deterministic Minecraft Java 26.3 reference fixtures before implementing version-specific world/gameplay rules.
 4. Verify 26.3 version metadata and extract registries/tags/block states from a legitimate reference artifact.
 5. Specify dimensions, chunk sections, storage, generation, lighting, fluids, collision and tick order with evidence.
