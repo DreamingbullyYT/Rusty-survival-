@@ -26,7 +26,7 @@ Repository HEAD: resolve dynamically from the current main branch; do not store 
 - No Minelib or Horizon source/assets copied.
 
 ## Not implemented / not verified
-- POC CI build has not yet completed for the latest commit.
+- POC CI build is running; no successful build is claimed yet.
 - No APK has yet been verified as installable on a real device.
 - No Android Vulkan adapter/surface/present, pause/resume, rotation, or swapchain recreation test has been performed on hardware.
 - No Rust engine workspace or gameplay code.

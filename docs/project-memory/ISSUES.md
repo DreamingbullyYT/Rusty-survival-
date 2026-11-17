@@ -39,3 +39,9 @@ Required action: Obtain and record author, license, permission and redistributio
 Status: OPEN
 Evidence: minelib-net uses a custom Postcard/Noise-over-TCP protocol with Minelib account, relay, room and gameplay message types. It is not Minecraft Java Edition 26.3 protocol 777.
 Required action: If multiplayer is in initial scope, create a separate protocol 777 specification and black-box interoperability fixtures. Do not substitute the Minelib relay protocol.
+
+
+## I-009 — Android Vulkan POC build and device validation
+Status: INVESTIGATING
+Evidence: An isolated ARM64 NativeActivity/winit/wgpu Vulkan clear-screen POC and CI packaging workflow have been added. The first CI build and real-device tests are pending.
+Required action: Pass ARM64 native compilation and APK packaging; install on a real device; verify Vulkan adapter selection, first present, pause/resume, rotation and repeated surface recreation. Do not treat a CI APK build as proof of device runtime support.

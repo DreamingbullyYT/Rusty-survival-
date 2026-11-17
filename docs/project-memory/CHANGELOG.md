@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 2026-11-17 — Track Android POC validation gate
+- Added I-009 to track ARM64 compilation, APK packaging and real-device Vulkan lifecycle validation.
+- POC remains INVESTIGATING until CI and hardware results are recorded.
+
+
 ## 2026-11-17 — Implement isolated Android Vulkan POC
 - Added a minimal ARM64 NativeActivity + winit 0.30.13 + wgpu 25.0.0 Vulkan clear-screen app.
 - Added explicit Resumed/Suspended handling and surface recreation path.

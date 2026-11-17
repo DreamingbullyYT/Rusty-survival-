@@ -214,3 +214,18 @@ Not tested:
 - No engine or Minecraft parity code.
 Next:
 - Fix any CI compile/package failures, then test the generated APK on real hardware.
+
+
+## S-2026-11-17-13 — Record Android POC validation gate
+Date: 2026-11-17
+Commit: pending
+Goal: Ensure PMCS explicitly tracks the newly added Android POC build and device-validation gate.
+Changes:
+- Added I-009 for Android Vulkan POC build and real-device validation.
+- Kept the POC status INVESTIGATING until CI and hardware results exist.
+Verification:
+- Documentation consistency check.
+Not tested:
+- Android compile/package and device runtime are still pending.
+Next:
+- Review Android Vulkan POC and PMCS workflow results; fix any failures before device testing.
