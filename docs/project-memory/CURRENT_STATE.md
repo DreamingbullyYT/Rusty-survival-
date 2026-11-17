@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-17
 Status: AUDIT_IN_PROGRESS
-Latest verified repository HEAD at this update: 39c5651ba3c032d680f5f918ba4abd50055b4fdd
+Latest verified repository HEAD before this status update: 0e1074a9bf6b4599820a7cc92373c76f51f59dad
 
 ## Direction
 - Correctness target: Minecraft Java Edition observable behavior; exact release/version is not selected yet.
@@ -13,14 +13,17 @@ Latest verified repository HEAD at this update: 39c5651ba3c032d680f5f918ba4abd50
 ## Repository
 - Repository: DreamingbullyYT/Rusty-survival-
 - Default branch: main
-- PMCS baseline established and being automated.
+- PMCS baseline and GitHub Actions validation are implemented; first workflow run passed.
 
 ## Implemented
 - Clean project bootstrap and project-memory documentation.
 - Preliminary Minelib crate/license/dependency audit.
 - Source-level inspection of every module in `crates/world/src`.
 - Expanded reuse matrix with per-module findings.
-- PMCS handoff rules and status vocabulary.
+- PMCS mandatory handoff rules, append-only session journal, and change template.
+- Python structural/freshness validator.
+- GitHub Actions workflow for push, pull request, and manual PMCS validation.
+- First PMCS GitHub Actions run succeeded: run 44121524070, commit 0e1074a9bf6b4599820a7cc92373c76f51f59dad.
 
 ## Not implemented / not verified
 - No Rust workspace or game code.
@@ -32,7 +35,7 @@ Latest verified repository HEAD at this update: 39c5651ba3c032d680f5f918ba4abd50
 - No successful Android build.
 - No Vulkan device/surface test.
 - Minelib's upstream tests have not been executed.
-- PMCS automation in this commit is being added; it is not yet verified by a GitHub Actions run.
+- The validator has passed its first CI execution, but future PR/push scenarios (including intentional failure cases) have not all been exercised.
 
 ## World audit findings
 - Minelib chunks use a custom 16×16×512 model with Y starting at zero; not directly compatible with modern Java world-height/section semantics.
@@ -43,8 +46,7 @@ Latest verified repository HEAD at this update: 39c5651ba3c032d680f5f918ba4abd50
 - Meshing and DDA raycast contain potentially reusable general algorithms, but need semantic extraction and tests.
 
 ## Next actions
-1. Complete and verify PMCS automation through GitHub Actions.
-2. Confirm exact Minecraft Java Edition target version.
-3. Write target-version world/chunk/block-state specifications and parity tests.
-4. Continue Minelib candidate audits and Android Vulkan/lifecycle proof before selecting dependencies.
-5. Only then begin the engine implementation.
+1. Confirm exact Minecraft Java Edition target version.
+2. Write target-version world/chunk/block-state specifications and parity tests.
+3. Continue Minelib candidate audits and Android Vulkan/lifecycle proof before selecting dependencies.
+4. Only then begin the engine implementation.

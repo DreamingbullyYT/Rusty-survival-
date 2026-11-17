@@ -3,10 +3,11 @@
 ## Phase 0 — Bootstrap and continuity
 - [x] Reset repository tree and establish PMCS.
 - [x] Verify bootstrap commit and record SHA.
-- [ ] Add PMCS structural/freshness validator.
-- [ ] Add GitHub Actions workflow for pull requests and pushes.
-- [ ] Add append-only session journal and change template.
-- [ ] Verify the workflow with a real GitHub Actions run.
+- [x] Add PMCS structural/freshness validator.
+- [x] Add GitHub Actions workflow for pull requests and pushes.
+- [x] Add append-only session journal and change template.
+- [x] Verify the workflow with a real GitHub Actions run (run 44121524070, success).
+- [ ] Exercise validator failure cases (missing docs, stale implementation change, edited journal line).
 
 ## Phase 1 — Minelib audit
 - [x] Record upstream commit/tag and root license.
@@ -40,7 +41,7 @@
 - [ ] No custom Modding API until vanilla foundation is stable unless the user explicitly changes scope.
 
 ## Exit criteria before engine implementation
-- PMCS automation passes.
-- Exact Minecraft Java Edition version is selected.
-- Architecture and initial parity specification are reviewed.
-- Reuse decisions and Android platform risks are documented.
+- [x] PMCS automation passes its first CI run.
+- [ ] Exact Minecraft Java Edition version is selected.
+- [ ] Architecture and initial parity specification are reviewed.
+- [ ] Reuse decisions and Android platform risks are documented.

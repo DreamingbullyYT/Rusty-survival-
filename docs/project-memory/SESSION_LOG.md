@@ -18,3 +18,21 @@ Verification:
 Limitations:
 - Automation is not considered VERIFIED until CI runs successfully.
 - Exact Minecraft Java Edition release/version remains unselected.
+
+## S-2026-11-17-02 — Verify PMCS CI
+Date: 2026-11-17
+Commit: 0e1074a9bf6b4599820a7cc92373c76f51f59dad (automation commit)
+Goal: Verify the new PMCS workflow on GitHub Actions.
+Changes:
+- Confirmed workflow was triggered by push on main.
+- Inspected run and job steps for completion.
+Verification:
+- GitHub Actions run 44121524070: SUCCESS.
+- Checkout repository history: SUCCESS.
+- Set up Python 3.12: SUCCESS.
+- Validate project memory: SUCCESS.
+Not tested:
+- Deliberately broken documentation and stale-memory negative cases.
+- Full engine build, Android build, Vulkan, and Minecraft parity (no engine exists yet).
+Next:
+- Confirm exact Minecraft Java Edition target version, then write the target-version specification before engine code.

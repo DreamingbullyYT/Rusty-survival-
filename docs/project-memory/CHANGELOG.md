@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 2026-11-17 — PMCS CI verification
+- GitHub Actions run 44121524070 completed successfully for commit 0e1074a9bf6b4599820a7cc92373c76f51f59dad.
+- Verified checkout history, Python setup, and PMCS structural/freshness validator step.
+- PMCS automation is VERIFIED for its initial push workflow execution; negative/failure-path tests remain outstanding.
+
 ## 2026-11-17 — PMCS automation and continuity hardening
 - Corrected project direction: Minecraft Java Edition is the behavior target; Horizon is inspiration only and no Horizon code is to be copied.
 - Added append-only session journal and a standard change-record template.
