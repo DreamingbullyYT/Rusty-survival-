@@ -118,9 +118,7 @@ impl Fixture {
         let mut errors = Vec::new();
 
         if self.schema_version != FIXTURE_SCHEMA_VERSION {
-            errors.push(format!(
-                "schema_version must be {FIXTURE_SCHEMA_VERSION}"
-            ));
+            errors.push(format!("schema_version must be {FIXTURE_SCHEMA_VERSION}"));
         }
         if self.id.trim().is_empty() {
             errors.push("id must not be empty".to_owned());
@@ -132,9 +130,7 @@ impl Fixture {
             errors.push("target.edition must be java".to_owned());
         }
         if self.target.version != TARGET_MINECRAFT_VERSION {
-            errors.push(format!(
-                "target.version must be {TARGET_MINECRAFT_VERSION}"
-            ));
+            errors.push(format!("target.version must be {TARGET_MINECRAFT_VERSION}"));
         }
 
         match (&self.kind, &self.artifact) {
@@ -145,7 +141,9 @@ impl Fixture {
                 if artifact.sha1.len() != 40
                     || !artifact.sha1.bytes().all(|byte| byte.is_ascii_hexdigit())
                 {
-                    errors.push("artifact.sha1 must contain exactly 40 hexadecimal characters".to_owned());
+                    errors.push(
+                        "artifact.sha1 must contain exactly 40 hexadecimal characters".to_owned(),
+                    );
                 }
                 if artifact.size_bytes == 0 {
                     errors.push("artifact.size_bytes must be greater than zero".to_owned());
@@ -155,11 +153,12 @@ impl Fixture {
                     .strip_prefix("https://")
                     .and_then(|url| url.split('/').next())
                     .is_some_and(|host| {
-                        host == "piston-data.mojang.com"
-                            || host == "launcher.mojang.com"
+                        host == "piston-data.mojang.com" || host == "launcher.mojang.com"
                     });
                 if !official_host {
-                    errors.push("artifact.url must use an approved official Mojang HTTPS host".to_owned());
+                    errors.push(
+                        "artifact.url must use an approved official Mojang HTTPS host".to_owned(),
+                    );
                 }
             }
             (FixtureKind::Synthetic, None) => {}
@@ -168,22 +167,43 @@ impl Fixture {
         if self.scenario.dimension.as_deref() == Some("") {
             errors.push("scenario.dimension must not be empty when present".to_owned());
         }
-        if self.scenario.actions.iter().any(|action| action.operation.trim().is_empty()) {
+        if self
+            .scenario
+            .actions
+            .iter()
+            .any(|action| action.operation.trim().is_empty())
+        {
             errors.push("every action.operation must not be empty".to_owned());
         }
-        if self.normalization.ignored_paths.iter().any(|path| path.trim().is_empty()) {
+        if self
+            .normalization
+            .ignored_paths
+            .iter()
+            .any(|path| path.trim().is_empty())
+        {
             errors.push("normalization.ignored_paths must not contain empty paths".to_owned());
         }
         if let Some(tolerance) = self.normalization.float_tolerance {
             if !tolerance.is_finite() || tolerance < 0.0 {
-                errors.push("normalization.float_tolerance must be finite and non-negative".to_owned());
+                errors.push(
+                    "normalization.float_tolerance must be finite and non-negative".to_owned(),
+                );
             }
         }
 
         for (field, value) in [
-            ("provenance.capture_tool", self.provenance.capture_tool.as_str()),
-            ("provenance.java_runtime", self.provenance.java_runtime.as_str()),
-            ("provenance.captured_at", self.provenance.captured_at.as_str()),
+            (
+                "provenance.capture_tool",
+                self.provenance.capture_tool.as_str(),
+            ),
+            (
+                "provenance.java_runtime",
+                self.provenance.java_runtime.as_str(),
+            ),
+            (
+                "provenance.captured_at",
+                self.provenance.captured_at.as_str(),
+            ),
             ("provenance.source", self.provenance.source.as_str()),
         ] {
             if value.trim().is_empty() {
@@ -228,7 +248,9 @@ mod tests {
     fn rejects_vanilla_fixture_without_official_artifact() {
         let input = SYNTHETIC_FIXTURE.replace("\"synthetic\"", "\"vanilla_reference\"");
         let errors = Fixture::parse_and_validate(&input).unwrap_err();
-        assert!(errors.iter().any(|error| error.contains("require an artifact")));
+        assert!(errors
+            .iter()
+            .any(|error| error.contains("require an artifact")));
     }
 
     #[test]
@@ -241,6 +263,8 @@ mod tests {
             url: "https://example.com/server.jar".to_owned(),
         });
         let errors = fixture.validate();
-        assert!(errors.iter().any(|error| error.contains("official Mojang HTTPS host")));
+        assert!(errors
+            .iter()
+            .any(|error| error.contains("official Mojang HTTPS host")));
     }
 }
