@@ -45,3 +45,12 @@ Status: INVESTIGATING
 A minimal horizontal coordinate primitive and tests have been added. These test coordinate invariants only. No version-pinned Minecraft Java 26.3 differential fixtures or gameplay tests exist yet.
 Evidence: Engine Tests run 44140955601 passed formatting, all workspace targets, and Clippy on PR head f504ba1f3629702330380c3bb71c44c4a5879150. PMCS run 44140955639 also passed.
 Required action: Add version-pinned Java 26.3 reference fixtures and expand coverage in dependency order. Mark parity VERIFIED only after comparison with captured reference behavior.
+
+
+## I-011 — Reference-artifact acquisition and non-publication
+Status: OPEN
+The Java 26.3 fixture runner and downloader are not implemented. Future CI must resolve official Mojang metadata, verify size/hash, use $RUNNER_TEMP, and delete inputs on every exit path. It must not cache or upload Mojang jars/assets. The public workflow must be transparent; hiding the download mechanism is not a compliance strategy.
+
+## I-012 — Engine crate boundaries and staged implementation
+Status: INVESTIGATING
+A readable target layout is documented, but only engine-core exists. Do not create placeholder crates or implement version-specific world semantics before fixture evidence exists.
