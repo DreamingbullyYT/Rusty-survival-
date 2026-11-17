@@ -83,3 +83,23 @@ Not tested:
 - Engine code, Android build, Vulkan, and Minecraft Java parity; no engine exists yet.
 Next:
 - Confirm the regression suite passes in GitHub Actions, then continue the version-specific technical specification.
+
+
+## S-2026-11-17-06 — Verify PMCS regression suite
+Date: 2026-11-17
+Commit: pending
+Goal: Confirm the PMCS validator rejects broken continuity states and accepts a valid implementation update.
+Changes:
+- Recorded the regression suite and verification outcome in the current state and roadmap.
+- Confirmed CURRENT_STATE no longer stores a hard-coded HEAD SHA.
+Verification:
+- GitHub Actions run 44126182263: SUCCESS.
+- Missing required document negative test: PASS (validator correctly failed).
+- Implementation change without memory updates negative test: PASS (validator correctly failed).
+- Existing session-log line edit negative test: PASS (validator correctly failed).
+- Valid implementation change with required memory updates: PASS.
+- Full PMCS structural/freshness validation: PASS.
+Not tested:
+- Engine code, Android build, Vulkan, Minelib upstream tests, and Minecraft Java parity; no engine exists yet.
+Next:
+- Begin the Minecraft Java Edition 26.3 technical/parity specification and finish architecture/platform risk review before writing engine code.

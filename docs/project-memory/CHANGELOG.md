@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — PMCS regression suite verified
+- GitHub Actions run 44126182263 completed successfully.
+- Verified negative cases for missing documentation, implementation changes without required memory updates, and edits to existing session-log lines.
+- Verified the positive case for implementation changes accompanied by all required memory updates.
+- PMCS regression hardening is now VERIFIED; no engine, Android, Vulkan, or Minecraft parity tests are implied.
+
 ## 2026-11-17 — PMCS regression hardening
 - Added isolated regression tests for missing required documents, implementation changes without required memory updates, append-only session journal violations, and valid implementation-plus-memory updates.
 - Expanded code-change freshness requirements to include CHANGELOG, CURRENT_STATE, ISSUES, ROADMAP, and SESSION_LOG.
