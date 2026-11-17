@@ -23,7 +23,7 @@
 - [ ] Specify dimensions, chunk sections, storage, generation, lighting, fluids, collision and tick order with evidence.
 - [ ] Define deterministic differential test harness and reference fixtures.
 
-## Phase 3 — Android platform vertical slice
+## Phase 3 — Android platform vertical slice (paused per current priority)
 - [x] Implement isolated ARM64 NativeActivity + winit + wgpu Vulkan clear-screen POC source.
 - [x] Pass GitHub Actions ARM64 native compilation and Gradle APK packaging.
 - [ ] Install and test on real device: startup, first present, pause/resume, rotation and repeated surface recreation.
@@ -31,7 +31,7 @@
 - [ ] Decide production renderer/platform stack based on evidence.
 - [ ] Integrate lifecycle and surface into the engine only after POC passes.
 
-## Phase 4 — Vanilla parity implementation
+## Phase 4 — Vanilla parity implementation (not started)
 - [ ] Implement systems in dependency order, with tests.
 - [ ] Track each parity feature as NOT_STARTED / IMPLEMENTED / VERIFIED / BLOCKED.
 - [ ] No custom Modding API until the vanilla foundation is stable unless the user explicitly changes scope.
@@ -43,3 +43,11 @@
 - [ ] Detailed technical parity specification is evidence-backed.
 - [ ] Android lifecycle/surface approach is proven on hardware.
 - [ ] Remaining reuse and legal/provenance risks are closed or explicitly accepted.
+
+
+## Current execution focus — Engine test foundation
+- [x] Add minimal Rust core and deterministic coordinate tests.
+- [x] Add CI for formatting, tests and Clippy.
+- [ ] Verify the new Engine Tests workflow.
+- [ ] Add version-pinned reference fixture runner and captured 26.3 fixtures.
+- [ ] Continue engine implementation only from specified and testable behavior.
