@@ -1,3 +1,10 @@
+## 2026-11-17 — Move engine foundation directly to main
+- User clarified that all work must be performed directly on `main`, without creating PRs.
+- Fast-forwarded `main` from `af4b87c74225cf46f80b78eab6a56e76fabf471a` to `8bf795c2959a1ca78e4fe40618b418df015162ae`, carrying the tested engine-core foundation and PMCS updates.
+- The prior PR #4 was closed after the direct branch update; GitHub reports it as merged because its head commit is now on `main`. No PR merge operation was used.
+- Engine Tests run 44140955601 and PMCS PR run 44142349002 passed before the direct main update. Main push runs 44142921426 (Engine Tests) and 44142921444 (PMCS) were triggered; their final results are pending verification.
+- Future work: direct commits to `main`, no PR workflow. No Minecraft Java 26.3 parity is claimed.
+
 ## 2026-11-17 — Engine test foundation CI verified
 - Engine Tests run 44140955601 passed on PR head f504ba1f3629702330380c3bb71c44c4a5879150: rustfmt, cargo test --workspace --all-targets, and Clippy all succeeded.
 - Project Memory Validation run 44140955639 also passed, including regression tests and structure/freshness validation.
