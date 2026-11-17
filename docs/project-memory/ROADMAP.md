@@ -56,7 +56,7 @@
 ## Engine-only execution plan (current priority)
 - [x] Define staged, readable crate ownership and dependency direction in docs/specs/ENGINE_LAYOUT.md.
 - [x] Define official-source Java 26.3 reference tests in docs/specs/REFERENCE_TEST_PIPELINE.md: ephemeral $RUNNER_TEMP, size/hash verification, no cache/artifact/release, unconditional cleanup.
-- [ ] Implement fixture schema/validator with synthetic self-tests (not counted as vanilla parity).
+- [x] Implement fixture schema/validator with synthetic self-tests (not counted as vanilla parity).
 - [ ] Implement official metadata/artifact resolution and temporary download cleanup.
 - [ ] Add manual Actions reference workflow; prove cleanup on success and failure.
 - [ ] Capture real 26.3 fixtures, then implement dimension/chunk/section foundations.
