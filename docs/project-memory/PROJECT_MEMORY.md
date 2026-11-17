@@ -4,23 +4,32 @@
 Working title: Minelib Hybrid
 Repository: DreamingbullyYT/Rusty-survival-
 Primary platform: Android
-Technical strategy: Hybrid — selective reuse after audit, independent implementation where needed.
-Primary goal: high-fidelity observable parity with Minecraft Java Edition.
+Correctness target: Minecraft Java Edition observable behavior (exact version pending)
+Architectural inspiration: Horizon, ideas only; no code copying
+Technical strategy: Hybrid — selective Minelib reuse after audit, independent implementation where needed.
+
+## Mission
+Build an independent, modular, Android-first voxel game engine/runtime that aims for high-fidelity observable parity with Minecraft Java Edition. Learn from Horizon's architecture and engineering ideas without copying its code or implementation. Audit Minelib components and reuse only those that are technically, legally, and architecturally suitable.
 
 ## Scope
-Build a modular voxel game runtime with independent systems for platform integration, world simulation, rendering, resources/assets, audio, input, persistence, and networking. Android is the first implementation target. Desktop is not a current delivery target unless explicitly approved.
+Independent systems for platform integration, runtime, vanilla gameplay, world simulation, rendering, resources/assets, audio, input, persistence, and networking. Android is the first implementation target. Desktop is not a current delivery target unless explicitly approved.
 
 ## Ground rules
 - Correctness/parity before feature breadth or benchmark optimization.
 - Do not assume Minelib is Minecraft-compatible merely because it supports voxel worlds or Java-world import.
+- Horizon is inspiration only. No copied Horizon source, assets, or implementation.
 - Reuse is conditional, not mandatory.
 - Record provenance, licenses, and modifications for every imported component and asset.
 - No undocumented architectural coupling.
 - No fabricated test results or completion claims.
 - Update project memory with each meaningful implementation change.
+- Keep historical session records append-only.
 
 ## Source of truth
 1. Current source and build configuration.
 2. Git history and commit references.
 3. Reproducible tests and captured logs.
 4. These documents as an indexed project state, updated alongside code.
+
+## Continuity system
+PMCS consists of AI_HANDOFF, PROJECT_MEMORY, CURRENT_STATE, ARCHITECTURE, DECISIONS, ISSUES, ROADMAP, COMPATIBILITY, PARITY_MATRIX, REUSE_MATRIX, CHANGELOG, SESSION_LOG, and CHANGE_TEMPLATE. A GitHub Actions workflow validates required documents and checks that implementation changes include memory updates. The validator is a guardrail, not a substitute for truthful human/AI updates.

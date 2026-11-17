@@ -1,5 +1,12 @@
 # Project Changelog
 
+## 2026-11-17 — PMCS automation and continuity hardening
+- Corrected project direction: Minecraft Java Edition is the behavior target; Horizon is inspiration only and no Horizon code is to be copied.
+- Added append-only session journal and a standard change-record template.
+- Added a standard-library Python validator for required memory files, required sections, duplicate session IDs, and memory freshness when implementation files change.
+- Added GitHub Actions workflow for push, pull request, and manual validation.
+- Updated current state and roadmap; automation remains unverified until an Actions run succeeds.
+
 ## 2026-11-17 — Minelib world source audit
 - Inspected all nine source files in `crates/world/src` and the world crate manifest.
 - Documented custom 16×16×512 chunk model, fixed custom block IDs/registry, custom terrain/noise, custom RGB/torch lighting, fluid geometry without demonstrated Java-compatible fluid simulation, mesh architecture, and DDA raycast.
