@@ -59,3 +59,8 @@ A readable target layout is documented, but only engine-core exists. Do not crea
 ## I-013 — Fixture validation versus reference execution
 Status: INVESTIGATING
 The version-pinned JSON fixture contract and synthetic validator tests are implemented in `crates/testkit`. No Java 26.3 oracle capture, artifact downloader, output comparator or differential execution exists yet. Synthetic fixtures must never be counted as vanilla parity.
+
+
+## I-014 — Reference artifact workflow verification
+Status: INVESTIGATING
+The official metadata resolver, server artifact downloader, offline Python tests and manual Actions workflow have been implemented. The workflow is intentionally artifact-only and does not claim to run a Java oracle or prove game parity. Verify a normal run and a deliberate-failure run; inspect that the unconditional cleanup step succeeds and the temporary directory is absent. No Mojang binary is uploaded, cached or committed.
