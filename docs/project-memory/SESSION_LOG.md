@@ -122,3 +122,23 @@ Not tested:
 - No engine implementation, Android build, Vulkan, Minelib upstream tests, or parity tests.
 Next:
 - Capture 26.3 version metadata and data/registry inventories, then specify chunk/world semantics with reproducible evidence.
+
+
+## S-2026-11-17-08 — Audit Minelib renderer, assets and networking
+Date: 2026-11-17
+Commit: pending
+Goal: Decide whether the remaining major Minelib crates can support an Android-first Java 26.3 engine.
+Changes:
+- Added docs/audits/MINELIB_RENDER_ASSETS_NET_AUDIT.md.
+- Updated REUSE_MATRIX with renderer, assets, networking and embedded-pack decisions.
+- Renderer: ADAPT techniques only; no Android surface/lifecycle proof and tight Minelib coupling.
+- Assets: ADAPT directory/ZIP abstraction only; replace desktop path ownership and implement 26.3 formats independently.
+- Networking: REPLACE Minelib's custom relay protocol for Java multiplayer.
+- Embedded VoxelArt pack: BLOCKED pending provenance and redistribution rights.
+Verification:
+- Inspected pinned source manifests and relevant renderer initialization, asset path/resource-pack code, and network protocol/transport/game message definitions.
+- No source, shader, binary, or asset copied.
+Not tested:
+- No upstream build/tests, Android build, Vulkan surface, GPU benchmark, security audit, or Java protocol interoperability test.
+Next:
+- Continue 26.3 reference data capture and prove Android surface/lifecycle before finalizing backend and crate boundaries.

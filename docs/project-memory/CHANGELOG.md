@@ -1,7 +1,15 @@
 # Project Changelog
 
+## 2026-11-17 — Minelib renderer, assets and networking audit
+- Added docs/audits/MINELIB_RENDER_ASSETS_NET_AUDIT.md.
+- Renderer: ADAPT GPU techniques only; wgpu is a candidate but Minelib's renderer is not Android-proven and is coupled to winit and Minelib world/assets.
+- Assets: ADAPT directory/ZIP loading abstraction; replace platform path handling and 26.3 pack semantics.
+- Networking: REPLACE custom Minelib relay protocol for Minecraft Java 26.3 networking.
+- Embedded VoxelArt pack: BLOCKED pending independent provenance and redistribution review.
+- Source inspection only; no builds, tests, benchmarks, or security audit performed.
+
 ## 2026-11-17 — Establish Minecraft Java 26.3 compatibility baseline
-- Added `docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md` with verified release metadata, release-specific gameplay/technical changes, unknown internals, reference-fixture methodology, and Android-first constraints.
+- Added docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md with verified release metadata, release-specific gameplay/technical changes, unknown internals, reference-fixture methodology, and Android-first constraints.
 - Recorded data version 5023, protocol 777, data pack 121.0, and resource pack 97.1 with source links.
 - Explicitly marked world-height/chunk internals, generation algorithms, light/fluid scheduling, collision constants, storage internals, and full protocol schema as unresolved pending reference evidence.
 - No engine implementation or parity verification is claimed.
@@ -34,7 +42,7 @@
 - Added GitHub Actions workflow for push, pull request, and manual validation.
 
 ## 2026-11-17 — Minelib world source audit
-- Inspected all nine source files in `crates/world/src` and the world crate manifest.
+- Inspected all nine source files in crates/world/src and the world crate manifest.
 - Documented custom 16×16×512 chunk model, fixed custom block IDs/registry, custom terrain/noise, custom RGB/torch lighting, fluid geometry without demonstrated Java-compatible fluid simulation, mesh architecture, and DDA raycast.
 - Updated REUSE_MATRIX.md with module-level ADAPT/REPLACE decisions.
 - Confirmed source contains unit tests, but they were not executed in this audit.

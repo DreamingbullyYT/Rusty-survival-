@@ -23,3 +23,19 @@ Required action: Build a version-pinned specification for world height/sections,
 Status: INVESTIGATING
 Evidence: Source inspection shows custom 16×512×16 chunks, Minelib-specific block IDs/registry, custom value-noise terrain, RGB torch lighting, and chemical torch gameplay. Fluid geometry exists but Java-compatible fluid tick/spread behavior is not demonstrated.
 Required action: Independently specify and implement Minecraft Java 26.3 semantics. Treat mesh and DDA as algorithmic candidates only.
+
+
+## I-006 — Minelib renderer Android surface support unproven
+Status: OPEN
+Evidence: Minelib renderer constructor accepts Arc<winit::window::Window>, creates/configures a wgpu surface internally, and has no demonstrated Android lifecycle/surface proof in the audited source or CI.
+Required action: Build a minimal Android wgpu/Vulkan surface proof and test pause/resume, surface recreation, rotation, synchronization, and device loss.
+
+## I-007 — Minelib embedded asset provenance
+Status: BLOCKED
+Evidence: minelib-assets embeds VoxelArt_Libre.zip using include_bytes! and installs it into the user's resource-pack directory. The inspected source does not establish provenance or redistribution rights.
+Required action: Obtain and record author, license, permission and redistribution terms before any reuse or bundling.
+
+## I-008 — Minelib networking is not Java protocol
+Status: OPEN
+Evidence: minelib-net uses a custom Postcard/Noise-over-TCP protocol with Minelib account, relay, room and gameplay message types. It is not Minecraft Java Edition 26.3 protocol 777.
+Required action: If multiplayer is in initial scope, create a separate protocol 777 specification and black-box interoperability fixtures. Do not substitute the Minelib relay protocol.

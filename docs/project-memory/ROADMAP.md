@@ -6,21 +6,21 @@
 - [x] Add PMCS structural/freshness validator.
 - [x] Add GitHub Actions workflow for pull requests and pushes.
 - [x] Add append-only session journal and change template.
-- [x] Verify PMCS workflow runs 44121524070, 44121703417, 44122028665, and regression suite run 44126182263.
-- [x] Exercise validator failure cases: missing documents, implementation changes without memory updates, and edited session-log content.
-- [x] Verify the positive path for implementation changes accompanied by all required memory updates.
+- [x] Verify PMCS workflow and regression tests in GitHub Actions.
+- [x] Exercise validator failure cases and the valid update path.
 - [x] Remove the stale hard-coded repository HEAD SHA from CURRENT_STATE.
 
 ## Phase 1 — Minelib audit
 - [x] Record upstream commit/tag and root license.
 - [x] Inspect workspace manifests and release workflow.
 - [x] Produce preliminary reuse matrix.
-- [x] Inspect all `minelib-world` source modules.
+- [x] Inspect all minelib-world source modules.
 - [x] Record world/chunk/block/generation/light/fluid/mesh/raycast incompatibilities.
+- [x] Inspect renderer, asset loader and networking source entry points; record ADAPT/REPLACE/BLOCKED decisions.
 - [ ] Run upstream world crate tests in a reproducible environment.
 - [ ] Complete legal/provenance review of candidate code and assets.
 - [ ] Build a minimal Android proof of concept before adopting platform/rendering dependencies.
-- [ ] Audit remaining candidate renderer/assets/network components in depth.
+- [ ] Audit remaining candidate platform/p2p/relay components if their reuse is still being considered.
 
 ## Phase 2 — Specification and architecture
 - [x] Select Minecraft Java Edition 26.3 as the observable behavior target.
@@ -48,6 +48,7 @@
 - [x] PMCS automation and regression tests pass in GitHub Actions.
 - [x] Minecraft Java Edition 26.3 target is selected.
 - [x] Initial version-pinned 26.3 baseline is written.
+- [x] Minelib renderer/assets/network entry points have source-level reuse decisions.
 - [ ] Detailed technical parity specification is evidence-backed.
 - [ ] Architecture and module boundaries are reviewed.
-- [ ] Reuse decisions and Android platform risks are documented.
+- [ ] Remaining reuse decisions and Android platform risks are documented.
