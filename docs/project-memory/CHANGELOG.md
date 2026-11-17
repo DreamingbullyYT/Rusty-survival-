@@ -1,5 +1,11 @@
 # Project Changelog
 
+## 2026-11-17 — Strengthen AI onboarding for specs and audits
+- AI_HANDOFF now requires reading relevant version-pinned specifications and audit documents.
+- PROJECT_MEMORY identifies Rusty Survival Engine and treats reference fixtures as a source of truth.
+- Added an explicit rule against guessing unknown Minecraft Java 26.3 behavior.
+
+
 ## 2026-11-17 — Propose modular Android-first engine architecture
 - Rewrote ARCHITECTURE.md as a layered design proposal with narrow interfaces and simulation/render/platform separation.
 - Documented logical modules, dependency direction, deterministic scheduling principles, first vertical slice, and open decisions.

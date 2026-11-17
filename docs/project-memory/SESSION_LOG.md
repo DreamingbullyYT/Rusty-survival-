@@ -160,3 +160,19 @@ Not tested:
 - No Android app, surface, renderer, simulation, persistence or parity tests.
 Next:
 - Build the minimal Android lifecycle/surface proof and continue collecting 26.3 reference data before final architecture approval.
+
+
+## S-2026-11-17-10 — Strengthen AI onboarding for specifications and audits
+Date: 2026-11-17
+Commit: pending
+Goal: Ensure new AI sessions discover the version baseline, component audits, and architecture proposal without relying on chat memory.
+Changes:
+- Updated AI_HANDOFF to require reading relevant docs/specs and docs/audits.
+- Updated PROJECT_MEMORY identity to Rusty Survival Engine and included reference-fixture evidence as a source of truth.
+- Added a rule against guessing unknown Minecraft Java 26.3 behavior.
+Verification:
+- Documentation cross-check only.
+Not tested:
+- No engine or Android behavior; current architecture remains a proposal.
+Next:
+- Prove Android lifecycle/surface integration and continue version-specific reference capture.

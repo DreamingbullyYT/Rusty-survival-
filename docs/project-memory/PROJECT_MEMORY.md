@@ -1,7 +1,7 @@
 # Project Memory
 
 ## Identity
-Working title: Minelib Hybrid
+Project: Rusty Survival Engine
 Repository: DreamingbullyYT/Rusty-survival-
 Primary platform: Android
 Correctness target: Minecraft Java Edition 26.3 observable behavior
@@ -24,12 +24,14 @@ Independent systems for platform integration, runtime, vanilla gameplay, world s
 - No fabricated test results or completion claims.
 - Update project memory with each meaningful implementation change.
 - Keep historical session records append-only.
+- Do not guess version-specific Minecraft Java 26.3 constants or mechanics; use reference fixtures and mark unknowns OPEN.
 
 ## Source of truth
 1. Current source and build configuration.
 2. Git history and commit references.
 3. Reproducible tests and captured logs.
-4. These documents as an indexed project state, updated alongside code.
+4. Version-pinned Minecraft Java 26.3 reference fixtures and their provenance.
+5. These documents as an indexed project state, updated alongside code.
 
 ## Continuity system
-PMCS consists of AI_HANDOFF, PROJECT_MEMORY, CURRENT_STATE, ARCHITECTURE, DECISIONS, ISSUES, ROADMAP, COMPATIBILITY, PARITY_MATRIX, REUSE_MATRIX, CHANGELOG, SESSION_LOG, and CHANGE_TEMPLATE. A GitHub Actions workflow validates required documents and checks that implementation changes include memory updates. The validator is a guardrail, not a substitute for truthful human/AI updates.
+PMCS consists of AI_HANDOFF, PROJECT_MEMORY, CURRENT_STATE, ARCHITECTURE, DECISIONS, ISSUES, ROADMAP, COMPATIBILITY, PARITY_MATRIX, REUSE_MATRIX, CHANGELOG, SESSION_LOG, and CHANGE_TEMPLATE, plus version-pinned specifications in docs/specs/ and audit evidence in docs/audits/. A GitHub Actions workflow validates required documents and checks that implementation changes include memory updates. The validator is a guardrail, not a substitute for truthful human/AI updates.
