@@ -21,6 +21,8 @@ Independent systems for platform integration, runtime, vanilla gameplay, world s
 - Reuse is conditional, not mandatory.
 - Record provenance, licenses, and modifications for every imported component and asset.
 - No undocumented architectural coupling.
+- Keep headless engine logic independent of Android, graphics APIs, audio devices, UI, and filesystem paths.
+- Run Rust formatting, unit/integration tests, and Clippy in CI for engine changes.
 - No fabricated test results or completion claims.
 - Update project memory with each meaningful implementation change.
 - Keep historical session records append-only.
@@ -35,3 +37,7 @@ Independent systems for platform integration, runtime, vanilla gameplay, world s
 
 ## Continuity system
 PMCS consists of AI_HANDOFF, PROJECT_MEMORY, CURRENT_STATE, ARCHITECTURE, DECISIONS, ISSUES, ROADMAP, COMPATIBILITY, PARITY_MATRIX, REUSE_MATRIX, CHANGELOG, SESSION_LOG, and CHANGE_TEMPLATE, plus version-pinned specifications in docs/specs/ and audit evidence in docs/audits/. A GitHub Actions workflow validates required documents and checks that implementation changes include memory updates. The validator is a guardrail, not a substitute for truthful human/AI updates.
+
+
+## Engine test foundation
+The initial Cargo workspace and rusty-survival-engine-core crate provide only platform-independent horizontal block-to-chunk coordinate mapping. The Engine Tests workflow runs formatting, tests and Clippy. These checks are foundational invariants only, not a Minecraft Java 26.3 parity claim. See docs/specs/ENGINE_TEST_STRATEGY.md.
