@@ -34,7 +34,7 @@ Current active scope is the vanilla engine only: world data, world generation, s
 4. Version-pinned Minecraft Java 26.3 reference fixtures and provenance.
 5. Project memory as an index, updated with meaningful changes.
 
-## Continuity
+## Continuity system
 PMCS documents live in docs/project-memory/. Specifications and audits live in docs/specs/ and docs/audits/. Read AI_HANDOFF.md first.
 
 ## Engine foundation
