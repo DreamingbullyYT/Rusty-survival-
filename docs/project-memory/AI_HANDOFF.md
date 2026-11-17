@@ -4,7 +4,7 @@ Last updated: 2026-11-17
 Project: Minelib Hybrid (working title)
 Repository: DreamingbullyYT/Rusty-survival-
 Primary platform: Android
-Correctness target: Minecraft Java Edition (exact version pending)
+Correctness target: Minecraft Java Edition 26.3
 Architectural inspiration: Horizon (ideas only; no code copying)
 
 ## Mandatory onboarding
@@ -21,7 +21,7 @@ Architectural inspiration: Horizon (ideas only; no code copying)
 
 ## Non-negotiable project direction
 - Android-first.
-- Minecraft Java Edition observable behavior is the primary correctness criterion; exact version must be explicitly selected before version-specific implementation.
+- Minecraft Java Edition 26.3 observable behavior is the primary correctness criterion.
 - Horizon is inspiration for architectural ideas and engineering approach only; no source code, assets, or copied implementation.
 - Modular architecture with explicit interfaces and minimal cross-system coupling.
 - Hybrid Minelib reuse only after code-quality, dependency, license, and Android checks.

@@ -4,12 +4,12 @@
 Working title: Minelib Hybrid
 Repository: DreamingbullyYT/Rusty-survival-
 Primary platform: Android
-Correctness target: Minecraft Java Edition observable behavior (exact version pending)
+Correctness target: Minecraft Java Edition 26.3 observable behavior
 Architectural inspiration: Horizon, ideas only; no code copying
 Technical strategy: Hybrid — selective Minelib reuse after audit, independent implementation where needed.
 
 ## Mission
-Build an independent, modular, Android-first voxel game engine/runtime that aims for high-fidelity observable parity with Minecraft Java Edition. Learn from Horizon's architecture and engineering ideas without copying its code or implementation. Audit Minelib components and reuse only those that are technically, legally, and architecturally suitable.
+Build an independent, modular, Android-first voxel game engine/runtime that aims for high-fidelity observable parity with Minecraft Java Edition 26.3. Learn from Horizon's architecture and engineering ideas without copying its code or implementation. Audit Minelib components and reuse only those that are technically, legally, and architecturally suitable.
 
 ## Scope
 Independent systems for platform integration, runtime, vanilla gameplay, world simulation, rendering, resources/assets, audio, input, persistence, and networking. Android is the first implementation target. Desktop is not a current delivery target unless explicitly approved.

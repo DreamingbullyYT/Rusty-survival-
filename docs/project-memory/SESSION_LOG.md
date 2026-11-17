@@ -50,3 +50,17 @@ Not tested:
 - No Minecraft Java 26.3 parity behavior has been implemented or tested.
 Next:
 - Produce the version-specific technical specification before engine implementation.
+
+## S-2026-11-17-04 — Synchronize current handoff and project memory
+Date: 2026-11-17
+Commit: pending
+Goal: Ensure the mandatory AI entry documents agree with the selected version.
+Changes:
+- Updated AI_HANDOFF and PROJECT_MEMORY to state Minecraft Java Edition 26.3.
+- Added a changelog entry for the target-version decision.
+Verification:
+- Structural markers retained for PMCS validation.
+Not tested:
+- This documentation-only commit does not test engine behavior or Minecraft parity.
+Next:
+- Start the Minecraft Java 26.3 technical specification.

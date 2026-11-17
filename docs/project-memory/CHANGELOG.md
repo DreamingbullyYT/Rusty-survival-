@@ -1,5 +1,10 @@
 # Project Changelog
 
+## 2026-11-17 — Pin Minecraft Java Edition 26.3
+- Recorded the previously established project target as Minecraft Java Edition 26.3 in the handoff, project memory, compatibility record, parity matrix, decisions, and roadmap.
+- Confirmed Horizon remains architectural inspiration only; no Horizon code or implementation is copied.
+- No engine implementation or parity verification is claimed.
+
 ## 2026-11-17 — PMCS CI verification
 - GitHub Actions run 44121524070 completed successfully for commit 0e1074a9bf6b4599820a7cc92373c76f51f59dad.
 - Verified checkout history, Python setup, and PMCS structural/freshness validator step.
