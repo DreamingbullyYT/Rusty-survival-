@@ -483,3 +483,10 @@ Not yet verified:
 - No Java server, oracle, Rust probe or differential comparator is implemented; this workflow is artifact acquisition only and makes no parity claim.
 Next:
 - Inspect latest main Actions runs; fix offline test issues. Manually dispatch artifact smoke workflow with `simulate_failure=false`, then with `true`, and verify cleanup step success on both. Only then implement the first oracle/probe comparison.
+
+
+### Verification addendum — 2026-11-17
+- The first artifact-workflow commits produced push runs with zero jobs because the workflow used the `runner.temp` context at job-level scope. Removed that unsupported job-level expression and now derives the unique directory from the runner-provided `RUNNER_TEMP` environment inside steps.
+- The workflow now explicitly supports push checks (offline tests only) and manual dispatch (actual download). This avoids a no-trigger workflow run and prevents ordinary pushes from downloading Mojang binaries.
+- Push run 44162815461 on commit `965287f36d9d8855e9f9f2f8e715c3e61d4ed58e`: SUCCESS. All nine offline Python tests passed; the artifact download was correctly skipped for a push event; unconditional cleanup passed and confirmed the temp directory was absent.
+- A manual `workflow_dispatch` could not be initiated through the available GitHub connection (no dispatch action is exposed). Therefore the live Mojang download, actual downloaded-file verification and deliberate-failure cleanup path remain unverified and require a manual run from the repository Actions tab.
