@@ -1,7 +1,7 @@
 //! Pure, default-disabled lifecycle policy for validated DreamMod packages.
 //! This module does not execute scripts or install files.
 
-use crate::{CapabilityDenied, CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage};
+use crate::{CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LifecycleState {
@@ -18,6 +18,7 @@ pub enum LifecycleError {
     InvalidTransition { from: LifecycleState, operation: &'static str },
     Approval(CapabilityPlanError),
     NotEnabled,
+    CapabilityDenied(String),
 }
 
 /// Tracks one package's explicit approval and activation state.
@@ -97,9 +98,7 @@ impl ModLifecycle {
             .as_ref()
             .ok_or(LifecycleError::NotEnabled)?
             .require(capability)
-            .map_err(|denied: CapabilityDenied| {
-                LifecycleError::Approval(CapabilityPlanError::UnknownCapability(denied.0))
-            })
+            .map_err(|denied| LifecycleError::CapabilityDenied(denied.0))
     }
 
     fn invalid_transition(&self, operation: &'static str) -> LifecycleError {
@@ -107,5 +106,94 @@ impl ModLifecycle {
             from: self.state,
             operation,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ApiCompatibility;
+    use std::collections::BTreeMap;
+
+    fn package() -> ValidatedPackage {
+        ValidatedPackage {
+            manifest: Manifest {
+                schema_version: 1,
+                id: "example.lifecycle".into(),
+                name: "Lifecycle test".into(),
+                version: "1.0.0".into(),
+                api: ApiCompatibility {
+                    min: "0.2.0".into(),
+                    max: "0.3.0".into(),
+                },
+                entrypoint: "scripts/main.dream".into(),
+                capabilities: vec!["world.read".into()],
+                dependencies: BTreeMap::new(),
+            },
+            entries: Vec::new(),
+            files: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn approval_does_not_automatically_enable_a_mod() {
+        let package = package();
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
+        assert_eq!(lifecycle.require("world.read"), Err(LifecycleError::NotEnabled));
+
+        lifecycle.approve(&["world.read".into()]).unwrap();
+        assert_eq!(lifecycle.state(), LifecycleState::Ready);
+        assert_eq!(lifecycle.require("world.read"), Err(LifecycleError::NotEnabled));
+    }
+
+    #[test]
+    fn activation_and_capability_checks_are_both_required() {
+        let package = package();
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        lifecycle.approve(&["world.read".into()]).unwrap();
+        lifecycle.enable().unwrap();
+
+        assert_eq!(lifecycle.state(), LifecycleState::Enabled);
+        assert_eq!(lifecycle.require("world.read"), Ok(()));
+        assert_eq!(
+            lifecycle.require("world.write"),
+            Err(LifecycleError::CapabilityDenied("world.write".into()))
+        );
+
+        lifecycle.disable().unwrap();
+        assert_eq!(lifecycle.require("world.read"), Err(LifecycleError::NotEnabled));
+    }
+
+    #[test]
+    fn failed_mod_loses_capabilities_and_cannot_be_reenabled() {
+        let package = package();
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        lifecycle.approve(&["world.read".into()]).unwrap();
+        lifecycle.enable().unwrap();
+        lifecycle.fail("script fault").unwrap();
+
+        assert_eq!(lifecycle.state(), LifecycleState::Failed);
+        assert_eq!(lifecycle.failure(), Some("script fault"));
+        assert_eq!(lifecycle.require("world.read"), Err(LifecycleError::NotEnabled));
+        assert!(matches!(
+            lifecycle.enable(),
+            Err(LifecycleError::InvalidTransition { .. })
+        ));
+    }
+
+    #[test]
+    fn rejects_invalid_transitions_and_unrequested_approvals() {
+        let package = package();
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        assert!(matches!(
+            lifecycle.enable(),
+            Err(LifecycleError::InvalidTransition { .. })
+        ));
+        assert!(matches!(
+            lifecycle.approve(&["world.write".into()]),
+            Err(LifecycleError::Approval(CapabilityPlanError::UnrequestedCapability(_)))
+        ));
+        assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
     }
 }
