@@ -70,3 +70,7 @@ Horizon handle before any interpreted script receives the value. Do not make
 `dreammod-package` a Core dependency solely to reuse this policy primitive; the package
 inspector and runtime host should remain separable to avoid pulling ZIP/manifest machinery
 into the native engine unnecessarily.
+
+
+## Bounded player query batches
+Player reads cross the host boundary as a `PlayerSnapshotBatch`, capped at 256 unique UUIDs. One `entities.read` authorization check protects one host callback for the whole batch. This avoids one native/interpreter crossing per player and provides a hard per-call work/memory bound. A server with more than 256 online players must use explicit paging rather than silently truncating or exceeding the batch cap. The Core collector must preserve Horizon's `server_players()` connection order and copy all data before the hook's host borrow ends.
