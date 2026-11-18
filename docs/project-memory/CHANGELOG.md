@@ -526,3 +526,8 @@
 ### Callback and cascade hardening — 2026-11-18
 - Added a public per-mod capability check on ModManager for use as Core's authorization closure.
 - Hardened failure propagation when an intermediate dependent was already Failed and added a regression test.
+
+### Latest CI results — 2026-11-18
+- Package run `44364198594`: PASS — formatting, 42 tests (seven manager tests), Clippy.
+- PMCS run `44364312080`: PASS — regression and freshness/structure checks.
+- Core `44363904945` and overlay `44363904976` remain in progress; no runtime loader success claimed.
