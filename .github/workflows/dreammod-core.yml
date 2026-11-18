@@ -33,7 +33,7 @@ jobs:
           ref: 0b14f8acfd97fa2c750e42795249dcc981178ca4
           path: .ci/horizon
       - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@1.95.0
+        uses: dtolnay/rust-toolchain@1.99.1
         with:
           components: rustfmt
       - name: Cache pinned Horizon tooling build
