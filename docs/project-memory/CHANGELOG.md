@@ -466,3 +466,10 @@
 - Audited the exact pinned Horizon source; its SDK publishing workflow reads tools/ci/rust-version, whose value is 1.99.1.
 - Updated DreamMod's overlay workflow and overlay metadata to Rust 1.99.1 in commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7.
 - Rerun 44328650675 is in progress; no claim is made yet about resolving the compiler mismatch or generated hooks symbol.
+
+
+## 2026-11-18 — Reference CI and native mod status
+- Engine CI now acquires official Minecraft Java 26.3 temporarily, verifies the server archive, runs current workspace tests/Clippy, and removes the jar after each run.
+- Run 44331401582 passed: 10 Rust tests total, format, Clippy, archive integrity and cleanup.
+- Clarified that this is not yet differential parity; engine remains a coordinate foundation with a test-fixture contract.
+- Corrected overlay artifact metadata to Rust 1.99.1. Prebuilt compilation passed in run 44328650675; native-host loading and artifact upload remain pending in rerun 44330930078.
