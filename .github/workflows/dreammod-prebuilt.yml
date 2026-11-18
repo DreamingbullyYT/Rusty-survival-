@@ -1,0 +1,100 @@
+name: DreamMod Prebuilt Distribution
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "mods/dreammod-core/**"
+      - ".github/workflows/dreammod-prebuilt.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dreammod-prebuilt-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-prebuilt-native-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out DreamMod
+        uses: actions/checkout@v4
+      - name: Download and verify pinned Horizon Launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="0.2.78"
+          base="https://github.com/horizon-rust/horizon/releases/download/launcher%40${version}"
+          mkdir -p "$RUNNER_TEMP/horizon-launcher"
+          cd "$RUNNER_TEMP/horizon-launcher"
+          curl --fail --location --retry 3 --retry-delay 2 "$base/SHA256SUMS" -o SHA256SUMS
+          curl --fail --location --retry 3 --retry-delay 2 "$base/horizon-launcher-linux-x86_64.tar.gz" -o launcher.tar.gz
+          grep 'horizon-launcher-linux-x86_64.tar.gz' SHA256SUMS | sha256sum --check -
+          mkdir extracted
+          tar -xzf launcher.tar.gz -C extracted
+          launcher="$(find extracted -type f -name horizon-launcher -perm -111 -print -quit)"
+          test -n "$launcher"
+          echo "HORIZON_LAUNCHER=$RUNNER_TEMP/horizon-launcher/$launcher" >> "$GITHUB_ENV"
+      - name: Isolate Horizon Launcher data
+        shell: bash
+        run: |
+          set -euo pipefail
+          home="$RUNNER_TEMP/horizon-ci-home"
+          mkdir -p "$home"
+          {
+            echo "HOME=$home"
+            echo "XDG_CONFIG_HOME=$home/.config"
+            echo "XDG_DATA_HOME=$home/.local/share"
+            echo "XDG_CACHE_HOME=$home/.cache"
+          } >> "$GITHUB_ENV"
+      - name: Install the pinned Nightly base
+        run: '"$HORIZON_LAUNCHER" install nightly'
+      - name: Create a clean CI instance
+        run: |
+          "$HORIZON_LAUNCHER" instance create DreamModCI
+          "$HORIZON_LAUNCHER" instance version DreamModCI nightly
+      - name: Build DreamMod Core through the official native-build route
+        run: '"$HORIZON_LAUNCHER" native-build mods/dreammod-core --instance DreamModCI --trust-native-code --profile optimized'
+      - name: Inspect the prebuilt native build
+        id: inspect
+        shell: bash
+        run: |
+          set -euo pipefail
+          record=""
+          while IFS= read -r candidate; do
+            if grep -q 'dreammod_core' "$candidate"; then
+              record="$candidate"
+              break
+            fi
+          done < <(find "$HOME" -type f -name native-mods.json -print)
+          test -n "$record"
+          build_dir="$(dirname "$record")"
+          test -f "$build_dir/native-mods.json"
+          grep -q 'dreammod_core' "$build_dir/native-mods.json"
+          test -d "$build_dir/horizon-native-mods"
+          mod_library="$(find "$build_dir/horizon-native-mods" -type f \\( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \\) -print -quit)"
+          test -n "$mod_library"
+          test -f "$build_dir/horizon-client"
+          echo "build_dir=$build_dir" >> "$GITHUB_OUTPUT"
+          echo "mod_library=$mod_library" >> "$GITHUB_OUTPUT"
+          echo "Native build directory: $build_dir"
+          echo "DreamMod Core library: $mod_library"
+          echo "Native inventory:"
+          cat "$build_dir/native-mods.json"
+      - name: Archive the native build overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          tar -czf dist/dreammod-horizon-nightly-native.tar.gz -C "${{ steps.inspect.outputs.build_dir }}" .
+          cp "${{ steps.inspect.outputs.build_dir }}/native-mods.json" dist/native-mods.json
+      - name: Upload CI-built native distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreammod-horizon-nightly-native
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
