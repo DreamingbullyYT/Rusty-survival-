@@ -1,43 +1,51 @@
 # Architecture and Project Decisions
 
-## D-001 — Hybrid Minelib strategy
+## D-001 — Hybrid Minelib strategy (SUPERSEDED)
 Date: 2026-11-17
-Status: ACCEPTED
-Decision: Evaluate Minelib as a source of selectively reusable components, not as a mandatory fork base.
-Reason: Preserve useful engineering while avoiding inherited architectural constraints and unsupported Android assumptions.
+Status: SUPERSEDED
+Historical decision to evaluate Minelib as a source of reusable engine components. It does not govern active DreamMod work.
 
-## D-002 — Android first
+## D-002 — Android first (SUPERSEDED)
 Date: 2026-11-17
-Status: ACCEPTED
-Decision: Android is the first-class target.
-Reason: User explicitly selected this platform.
+Status: SUPERSEDED
+Historical target for the independent engine prototype. DreamMod follows the supported Horizon runtime/build targets.
 
-## D-003 — Minecraft Java observable parity
+## D-003 — Minecraft Java observable parity (SUPERSEDED)
 Date: 2026-11-17
-Status: ACCEPTED
-Decision: Minecraft Java Edition observable behavior is the primary correctness criterion, with version 26.3 as the selected target.
-Reason: User established Minecraft Java 26.3 as the target in the project master brief.
+Status: SUPERSEDED
+Historical correctness target for the independent engine prototype; not the active DreamMod mission.
 
-## D-004 — Repository reset
+## D-004 — Repository reset (HISTORICAL)
 Date: 2026-11-17
-Status: ACCEPTED
-Decision: Replace the default-branch tree with a clean project bootstrap while retaining Git history.
-Reason: User explicitly requested that previous repository contents be removed and the project restarted.
+Status: HISTORICAL
+The repository was reset to a clean project bootstrap while retaining Git history.
 
-## D-005 — Horizon as inspiration, not code base
-Date: 2026-11-17
+## D-005 — Horizon integration
+Date: 2026-11-18
 Status: ACCEPTED
-Decision: Use Horizon only as inspiration for architecture, modularity, separation of concerns, and engineering ideas. Do not copy Horizon source code, assets, or implementation.
-Reason: User explicitly clarified that we want the ideas, not a copy.
+Decision: Use Horizon as the target engine and integrate DreamMod Core through a pinned HNMod/horizon-mixins build-time integration. Do not copy Horizon source into this repository.
+Reason: User explicitly selected Horizon as the engine base and approved the prebuilt-distribution architecture.
 
-## D-006 — Independent engine implementation
-Date: 2026-11-17
+## D-006 — No compilation for player-installed mods
+Date: 2026-11-18
 Status: ACCEPTED
-Decision: Design and implement our own engine, using audited Minelib components only where justified and independently developed systems elsewhere.
-Reason: Preserve control over Android-first architecture and Minecraft Java behavior without inheriting another project's implementation.
+Decision: Ordinary .dmod packages contain interpreted source and are loaded at runtime. No Rust/native compilation, bytecode compilation or game rebuild is required on player devices.
+Reason: User requires mods to work without compilation on the player's machine.
 
-## D-007 — Minecraft Java Edition 26.3 target
-Date: 2026-11-17
+## D-007 — Prebuilt Horizon distribution
+Date: 2026-11-18
 Status: ACCEPTED
-Decision: Pin the project's observable behavior target to Minecraft Java Edition 26.3.
-Reason: This was the version established in the user's project master brief; retain it instead of asking the user to repeat an existing decision.
+Decision: Integrate DreamMod Core once during trusted build time and distribute a prebuilt Horizon package containing it. The separate launcher handles installation and updates.
+Reason: This avoids player-side HNMod compilation.
+
+## D-008 — Deep, contract-based extensibility
+Date: 2026-11-18
+Status: ACCEPTED
+Decision: DreamMod must support adding systems and replacing designated subsystems through explicit, versioned contracts, with AI, physics and rendering among the intended advanced domains.
+Reason: User selected maximum extensibility while preserving runtime safety and performance.
+
+## D-009 — Script language remains open
+Date: 2026-11-18
+Status: ACCEPTED
+Decision: Do not lock Rhai or another runtime until no-compilation semantics, API ergonomics, Android support, sandboxing and representative benchmarks are evaluated.
+Reason: The choice affects the entire runtime and should be evidence-based.
