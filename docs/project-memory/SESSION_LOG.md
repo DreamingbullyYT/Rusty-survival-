@@ -1353,3 +1353,27 @@ Limitations:
 - No runtime dispatcher or cache exists yet. This storage design only makes future per-dispatch sharing cheap; each mod must pass its own capability check before receiving the batch.
 Next:
 - Verify both workflows, then benchmark batch clone/delivery and design the scheduler's per-dispatch ownership and invalidation rules.
+
+
+## S-2026-11-18-41 — Read PMCS, verify Core CI and repair overlay route type
+Date: 2026-11-18
+Source HEAD at start: 741f7ff15bb22a2b16b8a5a667fe471d3ee3ddc9
+Changes:
+- Read AI_HANDOFF.md, PROJECT_MEMORY.md, CURRENT_STATE.md, the architecture specification, ISSUES.md, ROADMAP.md, CHANGELOG.md and the latest session log before continuing.
+- Verified DreamMod Core Actions run 44322745253: pinned Horizon native/API/host-WASM check, formatting, Core unit tests and source packaging all passed.
+- Verified package Arc-backed batch CI run 44318172781 and archive-deadline CI run 44317125357.
+- Investigated PMCS run 44322745310. All six validator regression tests passed; freshness validation failed because CURRENT_STATE.md, ISSUES.md, ROADMAP.md, CHANGELOG.md and SESSION_LOG.md had not been updated with the latest implementation/test result.
+- Investigated overlay run 44322745328. The injected test used the wrong Route namespace: native_mods::Route is the picker/UI enum, while sdk_cache::slices and prebuilt::compile require prebuilt::Route. Pinned Horizon source confirms prebuilt::Route::Api.
+- Updated scripts/ci/patch_horizon_api_route.py to use prebuilt::Route::Api for both the SDK slice fetch and prebuilt compiler call.
+Verification:
+- Core run 44322745253: PASS.
+- Package run 44318172781: PASS.
+- Archive deadline package run 44317125357: PASS.
+- PMCS run 44322745310: FAIL due missing documentation updates; its six validator regression tests passed. Re-run after this complete companion update.
+- Overlay run 44322745328: FAIL due the route type mismatch; corrected patch awaits a fresh workflow run.
+Limitations:
+- The actual native host-loader test and overlay artifact inspection have not run successfully.
+- No production .dmod interpreter/loader/sandbox, concrete lifecycle authorization adapter, dispatcher/cache, or ARM64 benchmark exists.
+Next:
+- Confirm PMCS passes on the complete documentation update.
+- Rerun the API-only overlay workflow and inspect any subsequent compile/runtime failure; only then test the real Horizon native host loader and inspect the artifact.
