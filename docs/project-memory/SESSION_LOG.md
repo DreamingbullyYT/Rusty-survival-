@@ -1488,3 +1488,10 @@ Next:
 - Verify run 44361815335 through RUNPATH patch, host loader, archive inspection and upload.
 - If it passes, inspect the resulting artifact with LD_LIBRARY_PATH unset and confirm the native-mods.json hash matches.
 - Keep launcher/game startup separate from native-host unit-test evidence.
+
+## S-2026-11-18-45 — shared lifecycle authorization contract
+- Added dependency-free `mods/dreammod-contract` to avoid coupling trusted Core to the package archive parser dependencies.
+- Moved the `PlayerReadAuthorization` trait and canonical `entities.read` identifier into that crate. Core now consumes the shared trait; `ModLifecycle` implements it using the existing enabled-state and capability checks.
+- Added regression coverage that calls the shared trait directly and verifies default-deny, explicit grant, separate enable, disable and fail-closed behavior.
+- Package/Core/overlay CI is pending. The earlier PMCS run `44362787017` failed because the required memory documents were not updated after later source commits; the memory update is now being appended after the latest code changes.
+- No interpreter, scheduler, actual runtime manager, script binding or end-to-end `.dmod` execution is implemented.
