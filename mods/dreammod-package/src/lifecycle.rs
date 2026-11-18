@@ -13,12 +13,15 @@ pub enum LifecycleState {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub const MAX_FAILURE_REASON_BYTES: usize = 512;
+
 pub enum LifecycleError {
     InvalidManifest,
     InvalidTransition { from: LifecycleState, operation: &'static str },
     Approval(CapabilityPlanError),
     NotEnabled,
     CapabilityDenied(String),
+    FailureReasonTooLong,
 }
 
 /// Tracks one package's explicit approval and activation state.
@@ -83,8 +86,12 @@ impl ModLifecycle {
         if self.state == LifecycleState::Failed {
             return Err(self.invalid_transition("fail"));
         }
+        let reason = reason.into();
+        if reason.len() > MAX_FAILURE_REASON_BYTES || reason.chars().any(char::is_control) {
+            return Err(LifecycleError::FailureReasonTooLong);
+        }
         self.gate = None;
-        self.failure = Some(reason.into());
+        self.failure = Some(reason);
         self.state = LifecycleState::Failed;
         Ok(())
     }
@@ -106,6 +113,30 @@ impl ModLifecycle {
             from: self.state,
             operation,
         }
+    }
+}
+
+
+/// The only supported entry point for a host-side privileged operation.
+/// The callback is never invoked unless the mod is enabled and the capability
+/// is explicitly granted. Horizon adapters should route every privileged API
+/// operation through this boundary rather than exposing raw host handles.
+pub struct HostAdapter<'a> {
+    lifecycle: &'a ModLifecycle,
+}
+
+impl<'a> HostAdapter<'a> {
+    pub fn new(lifecycle: &'a ModLifecycle) -> Self {
+        Self { lifecycle }
+    }
+
+    pub fn invoke<T>(
+        &self,
+        capability: &str,
+        operation: impl FnOnce() -> T,
+    ) -> Result<T, LifecycleError> {
+        self.lifecycle.require(capability)?;
+        Ok(operation())
     }
 }
 
@@ -133,6 +164,47 @@ mod tests {
             entries: Vec::new(),
             files: Vec::new(),
         }
+    }
+
+
+    #[test]
+    fn host_adapter_never_calls_operation_without_authorization() {
+        use std::cell::Cell;
+        let package = package();
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        let calls = Cell::new(0);
+        let denied = HostAdapter::new(&lifecycle).invoke("world.read", || calls.set(calls.get() + 1));
+        assert_eq!(denied, Err(LifecycleError::NotEnabled));
+        assert_eq!(calls.get(), 0);
+
+        lifecycle.approve(&["world.read".into()]).unwrap();
+        lifecycle.enable().unwrap();
+        let result = HostAdapter::new(&lifecycle)
+            .invoke("world.read", || {
+                calls.set(calls.get() + 1);
+                42
+            })
+            .unwrap();
+        assert_eq!(result, 42);
+        assert_eq!(calls.get(), 1);
+
+        let denied = HostAdapter::new(&lifecycle)
+            .invoke("world.write", || calls.set(calls.get() + 1));
+        assert_eq!(denied, Err(LifecycleError::CapabilityDenied("world.write".into())));
+        assert_eq!(calls.get(), 1);
+    }
+
+    #[test]
+    fn failure_reason_is_bounded_and_control_free() {
+        let package = package();
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        assert_eq!(
+            lifecycle.fail("x".repeat(MAX_FAILURE_REASON_BYTES + 1)),
+            Err(LifecycleError::FailureReasonTooLong)
+        );
+        assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
+        assert_eq!(lifecycle.fail("bad\\nreason"), Err(LifecycleError::FailureReasonTooLong));
+        assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
     }
 
     #[test]
