@@ -54,6 +54,7 @@
 - [x] Implement the first Core-side bounded online-player snapshot collector against the pinned ServerHost API; Core workflow run 44310547586 passed SDK build, host/WASM validation and packaging.
 - [x] Require a per-mod player-read authorization interface before Core touches ServerHost; regression tests prove denial happens before the host callback. Binding the interface to actual ModLifecycle instances remains open.
 - [x] Add Core-local snapshot validation/batch-limit unit tests. Confirm an actual cargo test CI execution separately; the Horizon checker is not assumed to run unit tests.
+- [ ] Verify the corrected gated collector source commit eadd1aa in Core Actions; earlier run targeted an intermediate source-edit regression.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
 
