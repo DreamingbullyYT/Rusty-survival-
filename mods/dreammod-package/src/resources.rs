@@ -107,11 +107,7 @@ impl ResourceTransaction {
             }
         }
 
-        let total = registry
-            .owners
-            .len()
-            .checked_add(self.staged.len())
-            .unwrap_or(usize::MAX);
+        let total = registry.owners.len().saturating_add(self.staged.len());
         if total > MAX_REGISTERED_RESOURCES {
             return Err(ResourceError::GlobalLimit {
                 maximum: MAX_REGISTERED_RESOURCES,
