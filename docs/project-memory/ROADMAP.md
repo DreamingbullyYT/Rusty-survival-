@@ -2,7 +2,7 @@
 
 ## Phase 0 — Project continuity
 - [x] Preserve PMCS, validator, regression tests and GitHub Actions workflow.
-- [ ] Verify legacy-aware session ID validation and its duplicate/reuse regression tests.
+- [x] Verify legacy-aware session ID validation and its duplicate/reuse regression tests (Actions run 44299837834 passed; final PMCS run 44300145443 passed).
 - [x] Record the 2026-11-18 DreamMod project pivot in persistent memory.
 - [x] Define the initial DreamMod architecture and prebuilt-distribution model.
 
@@ -42,7 +42,7 @@
 - [x] Integrate an in-memory ZIP reader with strict local-header/central-directory consistency checks, bounded metadata preflight and CRC-checked streaming; no filesystem extraction (CI run 44299317538 passed: 19 tests + Clippy).
 - [x] Implement deterministic dependency validation and load-order planning (runtime lifecycle remains open).
 - [x] Verify the standalone package contract workflow: formatting, 19 unit tests and Clippy passed on commit 4e983c0 (Actions run 44299317538).
-- [ ] Verify bounded in-memory retention of validated script/asset bytes; fixture assertions added, package CI pending.
+- [x] Verify bounded in-memory retention of validated script/asset bytes; Actions run 44300015439 passed formatting, 19 tests and Clippy.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
 
