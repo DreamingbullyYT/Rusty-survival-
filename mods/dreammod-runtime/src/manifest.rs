@@ -12,9 +12,9 @@ impl ModId {
         let value = value.into();
         let valid = (3..=96).contains(&value.len())
             && value.is_ascii()
-            && value
-                .bytes()
-                .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || b"._-".contains(&byte))
+            && value.bytes().all(|byte| {
+                byte.is_ascii_lowercase() || byte.is_ascii_digit() || b"._-".contains(&byte)
+            })
             && value.as_bytes()[0].is_ascii_alphanumeric()
             && value.as_bytes()[value.len() - 1].is_ascii_alphanumeric()
             && !value.contains("..")
@@ -196,9 +196,8 @@ pub fn is_safe_relative_path(value: &str) -> bool {
     }
 
     let path = Path::new(value);
-    path.components().all(|component| {
-        matches!(component, std::path::Component::Normal(_))
-    })
+    path.components()
+        .all(|component| matches!(component, std::path::Component::Normal(_)))
 }
 
 pub fn is_valid_event_name(value: &str) -> bool {
@@ -266,6 +265,9 @@ mod tests {
         )
         .unwrap();
 
-        assert!(matches!(manifest.validate(), Err(ManifestError::InvalidEvent(_))));
+        assert!(matches!(
+            manifest.validate(),
+            Err(ManifestError::InvalidEvent(_))
+        ));
     }
 }
