@@ -268,3 +268,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - The package bridge re-exports the shared `entities.read` constant from `dreammod-contract`.
 - Added a direct trait-level lifecycle regression test covering awaiting approval, no grant, ready-but-not-enabled, enabled with grant, disabled and failed states.
 - Package run `44362952060` is queued for this test; Core run `44362777239` is still building the pinned Horizon checker. Overlay run `44362776804` remains queued. Results pending.
+
+## ModManager milestone — 2026-11-18
+- Added and exported `dreammod_package::manager::ModManager`.
+- It owns validated package contents plus one lifecycle per mod; validates dependencies before publishing the manager; exposes deterministic load order and read-only package/lifecycle access.
+- It enforces dependency-before-dependent enable, prevents disabling an enabled dependency, and propagates failures transitively to dependents.
+- New tests cover these invariants. Package CI run `44363310681` and PMCS run `44363323071` are pending; do not mark verified until completed.
+- No `.dmod` interpreter or script execution, scheduler, registration transaction, or concrete Horizon runtime binding exists.
