@@ -585,3 +585,8 @@
 - Integrated transactional resource reservations into ModManager: Enabled-only registration, per-mod namespace enforcement, deterministic owner inspection, cleanup on disable, and cleanup across failure cascades.
 - Added lifecycle integration regression tests. Package run `44386150155` and PMCS run `44386149892` pending at entry time.
 - No actual Horizon resource publication is implemented or claimed.
+
+
+### Resource lifecycle integration verification — 2026-11-18
+- Package CI run `44386150155`: PASS — 55 tests, formatting, Clippy with warnings denied.
+- Added duplicate registration batch rollback regression in commit `51aa347d1140`; follow-up CI pending.
