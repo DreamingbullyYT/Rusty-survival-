@@ -345,3 +345,10 @@
 - Each regular package file is streamed to EOF and CRC-checked before its bytes are returned. Existing 16 MiB per-file and 64 MiB aggregate uncompressed limits bound retained content.
 - Added real-ZIP fixture assertions for exact script and asset payloads.
 - No disk extraction, installation, capability grant or script execution is implemented. CI pending.
+
+
+## 2026-11-18 — Verify in-memory package contents and PMCS migration
+- DreamMod package Actions run 44300015439 passed on commit 2dd019b4a370fec853ec19849c4538f6cce9be44: formatting, all 19 tests, and Clippy with -D warnings.
+- The real ZIP fixture confirms that script and asset payload bytes are retained exactly after validation; no disk extraction is used.
+- Legacy-aware PMCS session ID validation passed regression tests and full structural/freshness validation in run 44300145443.
+- Historical duplicate session headings remain unchanged; new IDs are checked against prior history.
