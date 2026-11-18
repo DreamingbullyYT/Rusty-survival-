@@ -536,3 +536,8 @@
 - Added in-memory `ModManager::read_asset` for validated `.dmod` assets.
 - Enforced `assets.read`, Enabled lifecycle state, `assets/` namespace and safe archive path rules before returning immutable bytes.
 - No extraction or resource registration added; CI pending.
+
+### Asset API verification — 2026-11-18
+- Package run `44364618050`: PASS — 43 tests, rustfmt and Clippy.
+- PMCS run `44364715327`: validation steps PASS; final cleanup pending.
+- Core `44363904945`: tests still running after all prior pinned SDK/API/format checks passed. Overlay `44363904976`: API-only compile in progress.
