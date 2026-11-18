@@ -74,3 +74,8 @@ Added a metadata-only archive inventory validator in `mods/dreammod-package`. It
 ## DM-016 — Deterministic dependency planning
 Status: IMPLEMENTED
 Added a bounded, side-effect-free dependency planner to `dreammod-package`. It validates each manifest, rejects duplicate installed IDs, missing dependencies and semver mismatches, detects cycles, and emits a stable dependency-first order with lexicographic tie-breaking. It does not install, execute or grant capabilities. Unit tests cover order, missing/incompatible dependencies, cycles and duplicate IDs. CI result is pending inspection.
+
+
+## DM-017 — Real in-memory .dmod ZIP inspection
+Status: IMPLEMENTED — CI PENDING
+Added an exact-pinned ZIP reader dependency and inspect_dmod(). It bounds compressed input, validates archive header consistency before member access, accepts only Stored/Deflate, performs metadata preflight before decompression, reads and parses the manifest, validates the declared script entrypoint, then streams all regular members to EOF in fixed-size chunks for actual-size and CRC validation. No files are extracted. Tests cover real valid ZIPs, traversal, truncated/non-ZIP input and payload corruption. The dedicated GitHub Actions result has not yet been inspected; do not treat this as VERIFIED until CI passes.
