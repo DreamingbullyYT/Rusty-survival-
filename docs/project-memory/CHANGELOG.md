@@ -387,3 +387,10 @@
 - Added tests for valid DTOs, invalid names/dimensions/coordinates, denied callback non-invocation and invalid snapshot rejection.
 - This is the typed bridge contract and policy boundary only; no concrete `ServerHost` implementation or script exposure is wired yet.
 - Source commits: `3e8baf1`, `8845d96`, `7bae3ea`. Verification: Actions run `44309091208` passed formatting, all package tests and Clippy.
+
+
+## 2026-11-18 — Add bounded player snapshot batches
+- Added `PlayerSnapshotBatch` with a maximum of 256 entries and duplicate-UUID rejection.
+- Added `HostAdapter::read_player_snapshots()`, which performs one `entities.read` lifecycle/capability check before one batch host callback.
+- This is designed for one coarse native-to-script crossing per batch rather than one crossing per player. The concrete Horizon collector and script binding remain open.
+- Added tests for batch size, duplicate identities and authorization before the host callback. CI pending.
