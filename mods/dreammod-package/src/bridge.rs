@@ -80,7 +80,7 @@ impl PlayerSnapshot {
 /// A bounded batch for one script/native boundary crossing.
 #[derive(Debug, Clone, PartialEq)]
 pub struct PlayerSnapshotBatch {
-    players: Vec<PlayerSnapshot>,
+    players: std::sync::Arc<[PlayerSnapshot]>,
 }
 
 impl PlayerSnapshotBatch {
@@ -100,7 +100,9 @@ impl PlayerSnapshotBatch {
             return Err(SnapshotError::DuplicatePlayer(duplicate[0]));
         }
 
-        Ok(Self { players })
+        Ok(Self {
+            players: std::sync::Arc::from(players),
+        })
     }
 
     pub fn players(&self) -> &[PlayerSnapshot] {
@@ -154,6 +156,20 @@ mod tests {
         assert_eq!(snapshot.name(), "Dreamer_7");
         assert_eq!(snapshot.dimension(), "minecraft:overworld");
         assert_eq!(snapshot.position(), [12.5, 64.0, -3.25]);
+    }
+
+    #[test]
+    fn snapshot_batch_clone_shares_immutable_storage() {
+        let player = PlayerSnapshot::new(
+            7,
+            "Dreamer_7".into(),
+            "minecraft:overworld".into(),
+            [0.0; 3],
+        )
+        .unwrap();
+        let batch = PlayerSnapshotBatch::new(vec![player]).unwrap();
+        let clone = batch.clone();
+        assert!(std::sync::Arc::ptr_eq(&batch.players, &clone.players));
     }
 
     #[test]
