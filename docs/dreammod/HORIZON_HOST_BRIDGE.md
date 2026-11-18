@@ -117,3 +117,17 @@ scheduler or sandbox exists yet.
 
 
 Core-local tests now cover malformed player names/dimension IDs, non-finite and out-of-range coordinates, duplicate UUIDs, the 256-player limit, and authorization-before-operation behavior. The Core workflow now explicitly runs `cargo fmt --all -- --check` and `cargo test` after the pinned SDK check. The first run of this new test step is pending; source presence is not test verification.
+
+
+## API performance and package-load budget (2026-11-18)
+
+The Core and package player-batch validators now detect duplicate UUIDs using one contiguous
+scratch vector and sorting, instead of allocating tree nodes. The 256-player limit and the
+original Horizon connection order are unchanged. This is a bounded allocation optimization;
+no benchmark or FPS improvement is claimed.
+
+Package inspection now accepts a monotonic deadline and defaults to 60 seconds. It polls
+between ZIP entries and decompression chunks. A future complete DreamMod loader must create
+one deadline at load start and pass it through dependency preparation, asset/script parsing
+and registration. The current deadline covers archive inspection only; it is not a complete
+runtime loader timeout or hard preemption mechanism.
