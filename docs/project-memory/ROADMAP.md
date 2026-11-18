@@ -35,8 +35,9 @@
 - [x] Add prototype validation for physics provider batch input/output shape and finite numeric values (commit 33639ee0; Actions verification pending).
 
 ## Phase 3 — Core runtime
-- [ ] Define .dmod manifest and permissions schema.
-- [ ] Implement package validation and safe discovery.
+- [x] Define version-1 `.dmod` manifest and capability declaration schema in `mods/dreammod-package`.
+- [x] Implement side-effect-free manifest parsing/validation for schema version, strict fields, IDs, semantic versions/API ranges, safe entrypoint paths, allowlisted/unique capabilities, dependency IDs/ranges and manifest size/count limits.
+- [ ] Add safe archive validation and package discovery (reject traversal, symlinks, duplicate entries and resource-exhaustion archives before any extraction).
 - [ ] Implement interpreted runtime lifecycle, dependencies and deterministic load order.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
