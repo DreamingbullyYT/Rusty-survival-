@@ -93,10 +93,12 @@ impl PlayerSnapshotBatch {
             });
         }
 
-        // A contiguous UUID buffer avoids the per-node allocations of a tree set.
-        // The batch is capped at 256, so sorting this small buffer is predictable and cheap.
-        let mut uuids = Vec::with_capacity(players.len());
-        uuids.extend(players.iter().map(PlayerSnapshot::uuid));
+        // A fixed stack buffer avoids heap allocation during bounded batch validation.
+        let mut uuids = [0_u128; MAX_PLAYER_SNAPSHOT_BATCH];
+        for (slot, player) in uuids.iter_mut().zip(&players) {
+            *slot = player.uuid();
+        }
+        let uuids = &mut uuids[..players.len()];
         uuids.sort_unstable();
         if let Some(duplicate) = uuids.windows(2).find(|pair| pair[0] == pair[1]) {
             return Err(PlayerSnapshotError::DuplicatePlayer { uuid: duplicate[0] });
