@@ -99,3 +99,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Added `ModManager::read_asset(mod_id, path)` to expose validated `assets/` files from retained package memory without filesystem extraction.
 - The method checks the mod's Enabled state and explicit `assets.read` grant before looking up bytes, validates the requested path with the same archive-path rules used during inspection, and returns a borrowed immutable byte slice.
 - Tests cover awaiting approval, missing grant, successful byte read, traversal rejection and missing assets. Package workflow after commit `f90d0b1` is pending.
+
+### Asset API verification — 2026-11-18
+- Package run `44364618050` on commit `f90d0b1dfe`: PASS — all 43 tests, including the new capability-gated asset read test, rustfmt and Clippy.
+- PMCS run `44364715327` has completed its validator regression tests and structural/freshness validation successfully; post-job cleanup is finishing.
+- Core run `44363904945` has passed pinned Horizon checker build, native/API/host-WASM checks, mirror parity and formatting; Core unit tests are running. Overlay run `44363904976` remains in API-only prebuilt compilation.
