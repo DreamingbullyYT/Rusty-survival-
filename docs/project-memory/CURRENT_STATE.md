@@ -307,3 +307,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - `ModManager::read_asset` now reads a validated asset from the retained `.dmod` package without extracting it.
 - Reads require Enabled state plus explicit `assets.read`; requested paths are revalidated against archive traversal/portable-path rules.
 - Regression coverage includes denied-before-enable, denied-without-grant, successful bytes, traversal and missing-file cases. CI after commit `f90d0b1` pending.
+
+### Asset API CI status
+- Package run `44364618050`: PASS — 43 tests (including asset permission/path cases), rustfmt and Clippy.
+- PMCS run `44364715327`: validator regressions and structure/freshness validation passed; final job cleanup pending.
+- Core run `44363904945`: pinned SDK/checker, native API/host-WASM validation, mirror parity and formatting passed; Core tests in progress.
+- Overlay run `44363904976`: API-only compilation in progress; real host load still pending.
