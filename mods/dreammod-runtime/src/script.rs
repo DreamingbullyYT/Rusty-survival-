@@ -13,6 +13,8 @@ pub struct ExecutionLimits {
     pub max_string_size: usize,
     pub max_variables: usize,
     pub max_functions: usize,
+    pub max_expr_depth: usize,
+    pub max_function_expr_depth: usize,
 }
 
 impl Default for ExecutionLimits {
@@ -25,6 +27,8 @@ impl Default for ExecutionLimits {
             max_string_size: 64 * 1024,
             max_variables: 256,
             max_functions: 128,
+            max_expr_depth: 64,
+            max_function_expr_depth: 32,
         }
     }
 }
@@ -94,6 +98,10 @@ impl ScriptEngine for RhaiEngine {
         engine.set_max_string_size(self.limits.max_string_size);
         engine.set_max_variables(self.limits.max_variables);
         engine.set_max_functions(self.limits.max_functions);
+        engine.set_max_expr_depths(
+            self.limits.max_expr_depth,
+            self.limits.max_function_expr_depth,
+        );
 
         // Scripts receive only event data and return command data. They do not
         // get a filesystem module resolver, dynamic eval, or console functions.
@@ -228,13 +236,12 @@ mod tests {
     }
 
     #[test]
-    fn eval_symbol_is_not_available_to_scripts() {
+    fn eval_symbol_is_rejected_during_parsing() {
         let engine = RhaiEngine::default();
-        let program = engine
-            .parse_source(r#"fn on_load(event) { eval("1 + 1") }"#)
-            .unwrap();
-        let mut instance = engine.instantiate(program);
-
-        assert!(engine.call(&mut instance, "on_load", &json!({})).is_err());
+        assert!(
+            engine
+                .parse_source(r#"fn on_load(event) { eval("1 + 1") }"#)
+                .is_err()
+        );
     }
 }
