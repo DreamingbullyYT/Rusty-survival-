@@ -296,3 +296,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - `ModManager::require_capability` is now the package-side authorization closure target for Core player collection; tests exercise default-deny, explicit grant, activation and capability denial.
 - Added coverage for a dependency failure when an intermediate dependent was already Failed; the manager avoids trying to transition Failed → Failed and still propagates to descendants.
 - Latest package run `44364113419` passed its checks, but predates the final extra cascade regression; run after commit `4103668` pending. Core run `44363904945` and overlay run `44363904976` are still in progress.
+
+### Latest CI snapshot
+- ModManager/package: <status> PASS, run `44364198594`, 42 tests including all seven manager tests, rustfmt and Clippy.
+- PMCS: PASS, run `44364312080`.
+- Core: run `44363904945` still in progress at `cargo-horizon-mod` build.
+- Overlay: run `44363904976` still in progress at API-only prebuilt build; real host loader and overlay artifact steps have not run.
