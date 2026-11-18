@@ -38,3 +38,12 @@ These are foundational coordinate invariants, not a complete world/chunk model a
 - cargo clippy --workspace --all-targets -- -D warnings
 
 GitHub Actions runs the same checks in .github/workflows/engine-tests.yml.
+
+
+## Temporary Mojang reference artifact CI
+
+`.github/workflows/reference-artifact-smoke.yml` runs on engine pushes and pull requests. It downloads the official Minecraft Java 26.3 server jar into a unique GitHub Actions runner temporary directory, verifies the metadata SHA-1 and byte count, checks the bundled ZIP CRCs, runs the engine workspace tests and Clippy, and removes the entire temporary directory with an unconditional cleanup step.
+
+Successful smoke run 44331401582 verified a 62,294,556-byte server artifact with SHA-1 `33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c`. The engine workspace currently passed five coordinate tests and the testkit passed five fixture-contract tests.
+
+**This is not a differential parity harness.** The server jar is currently verified as a reference artifact but is not launched or queried by the Rust engine tests. No Java 26.3 behavior is captured or compared yet. A future oracle driver must use a legally obtained official artifact, record the exact version/hash and capture provenance, and compare normalized outputs to deterministic engine fixtures. Never upload the Mojang jar or include it in repository artifacts.
