@@ -1,3 +1,9 @@
+## 2026-11-18 — Fix Rhai host boundary and CI formatting
+- Corrected the prototype host boundary to convert Rust vectors to Rhai arrays before script calls, and convert script results back to Rust vectors.
+- Corrected the script's array length call to Rhai's `len()` method.
+- CI run 44283921499 stopped at rustfmt due solely to import ordering; corrected that in commit 92c3508. The earlier behavior run 44278072893 had two failures caused by the vector/array mismatch; the corrected behavior has not yet completed a passing CI run.
+- No final scripting language decision; no production runtime integration.
+
 ## 2026-11-18 — Verify Horizon API-only prebuilt route and harden CI
 - Traced pinned Horizon launcher Route::Api through prebuilt.rs and api_route.rs: API-only mods are built as separate dylibs against prebuilt SDK runtime/API slices; the existing client executable is returned unchanged. The host loads adjacent libraries from native-mods.json after SHA-256 and game/Rust identity checks.
 - Confirmed the current Hooks-only DreamMod Core shape qualifies for Route::Api; CI production of the versioned native build and clean startup remain unverified.
