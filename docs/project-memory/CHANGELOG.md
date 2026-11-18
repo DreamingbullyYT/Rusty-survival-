@@ -549,3 +549,7 @@
 ## 2026-11-18 — expose activated entrypoint source
 - Added state-only `ensure_enabled` and `ModManager::entrypoint_source` for borrowing validated script source after explicit activation.
 - Kept host privilege checks separate and capability-based; no interpreter execution added.
+
+### Entrypoint bridge verification — 2026-11-18
+- Package run `44365010182`: PASS — 44 tests, rustfmt and Clippy.
+- Overlay native host load test in `44363904976` remains in progress after successful API-only compilation and RUNPATH setup.
