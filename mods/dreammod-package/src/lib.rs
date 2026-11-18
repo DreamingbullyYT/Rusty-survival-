@@ -263,61 +263,120 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
         });
     }
 
-    let manifest_bytes = read_archive_contents(&mut archive, &entries)?;
+    validate_archive_preflight(&entries)?;
+    let manifest_bytes = read_archive_entry(&mut archive, 0, &entries[0], true)?;
     let manifest = parse_manifest(&manifest_bytes)
         .map_err(|error| ArchiveError::InvalidManifest(format!("{error:?}")))?;
     validate_archive_inventory(&entries, &manifest)?;
+    for (index, entry) in entries.iter().enumerate() {
+        if entry.kind != ArchiveEntryKind::Directory && entry.path != "manifest.json" {
+            read_archive_entry(&mut archive, index, entry, false)?;
+        }
+    }
     Ok(ValidatedPackage { manifest, entries })
 }
 
-fn read_archive_contents<R: Read + Seek>(
-    archive: &mut ZipArchive<R>,
-    entries: &[ArchiveEntry],
-) -> Result<Vec<u8>, ArchiveError> {
-    let mut manifest_bytes = None;
-    let mut scratch = [0_u8; 8 * 1024];
-
-    for (index, entry) in entries.iter().enumerate() {
+fn validate_archive_preflight(entries: &[ArchiveEntry]) -> Result<(), ArchiveError> {
+    if entries.len() > MAX_ARCHIVE_ENTRIES {
+        return Err(ArchiveError::TooManyEntries);
+    }
+    let mut seen = BTreeSet::new();
+    let mut total = 0_u64;
+    let mut manifest_count = 0;
+    for entry in entries {
+        if !valid_archive_path(&entry.path, entry.kind) {
+            return Err(ArchiveError::UnsafePath(entry.path.clone()));
+        }
+        let key = entry.path.trim_end_matches('/').to_ascii_lowercase();
+        if !seen.insert(key) {
+            return Err(ArchiveError::DuplicatePath(entry.path.clone()));
+        }
+        if matches!(entry.kind, ArchiveEntryKind::Symlink | ArchiveEntryKind::Other) {
+            return Err(ArchiveError::UnsupportedEntryType(entry.path.clone()));
+        }
+        if entry.encrypted {
+            return Err(ArchiveError::EncryptedEntry(entry.path.clone()));
+        }
         if entry.kind == ArchiveEntryKind::Directory {
+            if entry.uncompressed_bytes != 0
+                || entry.compressed_bytes != 0
+                || !(entry.path.starts_with("scripts/") || entry.path.starts_with("assets/"))
+            {
+                return Err(ArchiveError::UnsafePath(entry.path.clone()));
+            }
             continue;
         }
-        let mut file = archive
-            .by_index(index)
-            .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
-        let mut actual = 0_u64;
-        let mut captured = if entry.path == "manifest.json" {
-            Some(Vec::with_capacity(entry.uncompressed_bytes as usize))
-        } else {
-            None
-        };
-
-        loop {
-            let read = file
-                .read(&mut scratch)
-                .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
-            if read == 0 {
-                break;
-            }
-            actual = actual
-                .checked_add(read as u64)
-                .ok_or_else(|| ArchiveError::ContentSizeMismatch(entry.path.clone()))?;
-            if actual > entry.uncompressed_bytes || actual > MAX_ARCHIVE_FILE_BYTES {
-                return Err(ArchiveError::ContentSizeMismatch(entry.path.clone()));
-            }
-            if let Some(bytes) = captured.as_mut() {
-                bytes.extend_from_slice(&scratch[..read]);
-            }
+        if entry.uncompressed_bytes > MAX_ARCHIVE_FILE_BYTES {
+            return Err(ArchiveError::FileTooLarge(entry.path.clone()));
         }
+        total = total
+            .checked_add(entry.uncompressed_bytes)
+            .ok_or(ArchiveError::ArchiveTooLarge)?;
+        if total > MAX_ARCHIVE_UNCOMPRESSED_BYTES {
+            return Err(ArchiveError::ArchiveTooLarge);
+        }
+        if entry.uncompressed_bytes > 0
+            && (entry.compressed_bytes == 0
+                || entry.uncompressed_bytes
+                    > entry.compressed_bytes.saturating_mul(MAX_COMPRESSION_RATIO))
+        {
+            return Err(ArchiveError::SuspiciousCompressionRatio(entry.path.clone()));
+        }
+        if entry.path == "manifest.json" {
+            manifest_count += 1;
+            if entry.uncompressed_bytes > MAX_MANIFEST_BYTES as u64 {
+                return Err(ArchiveError::InvalidManifestEntrySize);
+            }
+        } else if entry.path.starts_with("scripts/") {
+            if !valid_relative_script_path(&entry.path) {
+                return Err(ArchiveError::UnsafePath(entry.path.clone()));
+            }
+        } else if !entry.path.starts_with("assets/") {
+            return Err(ArchiveError::UnexpectedPath(entry.path.clone()));
+        }
+    }
+    match manifest_count {
+        0 => Err(ArchiveError::MissingManifest),
+        1 => Ok(()),
+        _ => Err(ArchiveError::MultipleManifests),
+    }
+}
 
-        if actual != entry.uncompressed_bytes {
+fn read_archive_entry<R: Read + Seek>(
+    archive: &mut ZipArchive<R>,
+    index: usize,
+    entry: &ArchiveEntry,
+    capture: bool,
+) -> Result<Vec<u8>, ArchiveError> {
+    let mut file = archive
+        .by_index(index)
+        .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
+    let mut actual = 0_u64;
+    let mut output = Vec::new();
+    let mut scratch = [0_u8; 8 * 1024];
+
+    loop {
+        let read = file
+            .read(&mut scratch)
+            .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
+        if read == 0 {
+            break;
+        }
+        actual = actual
+            .checked_add(read as u64)
+            .ok_or_else(|| ArchiveError::ContentSizeMismatch(entry.path.clone()))?;
+        if actual > entry.uncompressed_bytes || actual > MAX_ARCHIVE_FILE_BYTES {
             return Err(ArchiveError::ContentSizeMismatch(entry.path.clone()));
         }
-        if let Some(bytes) = captured {
-            manifest_bytes = Some(bytes);
+        if capture {
+            output.extend_from_slice(&scratch[..read]);
         }
     }
 
-    manifest_bytes.ok_or(ArchiveError::MissingManifest)
+    if actual != entry.uncompressed_bytes {
+        return Err(ArchiveError::ContentSizeMismatch(entry.path.clone()));
+    }
+    Ok(output)
 }
 
 /// Validate untrusted ZIP metadata before opening or extracting any archive member.
