@@ -279,3 +279,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 ### ModManager cascade correction
 - Failure propagation now walks dependency-first load order (root dependency before dependent) to correctly cascade through multi-level dependency chains. The original reverse traversal could skip a grandchild in the same pass.
 - Run `44363310681` was against the pre-export module state and its 36 passing tests did not include `manager.rs`; the corrected manager must be verified in the new package workflow after commit `bb8806d`.
+
+## Verified ModManager and shared Core authorization — 2026-11-18
+- Package run `44363502581` on the corrected manager implementation passed formatting, all 41 unit tests (including all five `manager::tests`) and Clippy with warnings denied.
+- Core run `44362777239` passed the pinned Horizon `cargo-horizon-mod` build, native manifest/source/API/host-WASM checks, engine mirror parity, formatting, Core tests, source packaging and artifact upload.
+- Overlay run `44362776804` remains in progress at API-only prebuilt client compilation; its real-host no-overlay-env test has not run yet.
+- PMCS run `44363588460` is queued/pending at the time of this update; await its final result.
