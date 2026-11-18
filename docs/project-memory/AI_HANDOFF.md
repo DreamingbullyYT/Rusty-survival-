@@ -158,3 +158,6 @@ Core run `44363904945` is green: pinned Horizon checker, native API/host-WASM, e
 
 ## Entrypoint source bridge — 2026-11-18
 `ModLifecycle::ensure_enabled` checks activation without a fake `scripts.execute` capability. `ModManager::entrypoint_source` borrows the validated entrypoint bytes only after the mod is Enabled. Host operations remain protected by explicit named capabilities. Package CI after commit `ee903d7` is pending. This only exposes source bytes; no parser/interpreter/sandbox executes them.
+
+### Entrypoint bridge CI update
+Package run `44365010182` passed all 44 tests, rustfmt and Clippy. The new entrypoint source test passed. Overlay run `44363904976` has passed API-only compilation and Linux RUNPATH setup; the real native host load test is still running.
