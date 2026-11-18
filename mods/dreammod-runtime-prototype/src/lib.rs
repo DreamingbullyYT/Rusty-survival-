@@ -1,6 +1,6 @@
 //! Candidate runtime prototype. This is an evaluation harness, not the final
 //! DreamMod language decision or production sandbox.
-use rhai::{Array, AST, Engine, EvalAltResult, ParseError, Scope};
+use rhai::{AST, Array, Engine, EvalAltResult, ParseError, Scope};
 
 #[derive(Clone, Copy, Debug)]
 pub struct RuntimeLimits {
