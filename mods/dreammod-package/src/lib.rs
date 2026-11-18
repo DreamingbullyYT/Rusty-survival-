@@ -205,18 +205,27 @@ pub enum ArchiveError {
     InvalidManifestEntrySize,
 }
 
-/// A validated package inventory. Archive content is read and CRC-checked in memory;
-/// no filesystem extraction or capability grant occurs.
+/// A regular package file retained in bounded memory after size and CRC validation.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PackageFile {
+    pub path: String,
+    pub contents: Vec<u8>,
+}
+
+/// A validated package with its script/assets retained in memory.
+/// No filesystem extraction, capability grant or script execution occurs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ValidatedPackage {
     pub manifest: Manifest,
     pub entries: Vec<ArchiveEntry>,
+    /// Validated files under scripts/ and assets/, excluding manifest.json.
+    pub files: Vec<PackageFile>,
 }
 
 /// Parse and validate a complete package ZIP from memory.
 ///
 /// Only Stored and Deflate entries are accepted. Every regular file is streamed
-/// to EOF so the ZIP implementation can verify CRC; bytes are never written to disk.
+/// to EOF, CRC-checked, and retained in memory; bytes are never written to disk.
 pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
     if input.len() > MAX_ARCHIVE_INPUT_BYTES {
         return Err(ArchiveError::InputTooLarge);
@@ -270,21 +279,27 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
         .iter()
         .position(|entry| entry.path == "manifest.json")
         .ok_or(ArchiveError::MissingManifest)?;
-    let manifest_bytes = read_archive_entry(
-        &mut archive,
-        manifest_index,
-        &entries[manifest_index],
-        true,
-    )?;
+    let manifest_bytes =
+        read_archive_entry(&mut archive, manifest_index, &entries[manifest_index])?;
     let manifest = parse_manifest(&manifest_bytes)
         .map_err(|error| ArchiveError::InvalidManifest(format!("{error:?}")))?;
     validate_archive_inventory(&entries, &manifest)?;
+
+    let mut files = Vec::new();
     for (index, entry) in entries.iter().enumerate() {
         if entry.kind != ArchiveEntryKind::Directory && entry.path != "manifest.json" {
-            read_archive_entry(&mut archive, index, entry, false)?;
+            let contents = read_archive_entry(&mut archive, index, entry)?;
+            files.push(PackageFile {
+                path: entry.path.clone(),
+                contents,
+            });
         }
     }
-    Ok(ValidatedPackage { manifest, entries })
+    Ok(ValidatedPackage {
+        manifest,
+        entries,
+        files,
+    })
 }
 
 fn validate_archive_preflight(entries: &[ArchiveEntry]) -> Result<(), ArchiveError> {
@@ -357,8 +372,7 @@ fn read_archive_entry<R: Read + Seek>(
     archive: &mut ZipArchive<R>,
     index: usize,
     entry: &ArchiveEntry,
-    capture: bool,
-) -> Result<Vec<u8>, ArchiveError> {
+ ) -> Result<Vec<u8>, ArchiveError> {
     let mut file = archive
         .by_index(index)
         .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
@@ -379,9 +393,7 @@ fn read_archive_entry<R: Read + Seek>(
         if actual > entry.uncompressed_bytes || actual > MAX_ARCHIVE_FILE_BYTES {
             return Err(ArchiveError::ContentSizeMismatch(entry.path.clone()));
         }
-        if capture {
-            output.extend_from_slice(&scratch[..read]);
-        }
+        output.extend_from_slice(&scratch[..read]);
     }
 
     if actual != entry.uncompressed_bytes {
@@ -800,6 +812,25 @@ mod tests {
         let package = inspect_dmod(&bytes).unwrap();
         assert_eq!(package.manifest.id, "example.weather");
         assert_eq!(package.entries.len(), 3);
+        assert_eq!(package.files.len(), 2);
+        assert_eq!(
+            package
+                .files
+                .iter()
+                .find(|file| file.path == "scripts/main.dream")
+                .unwrap()
+                .contents,
+            b"fn init() {}"
+        );
+        assert_eq!(
+            package
+                .files
+                .iter()
+                .find(|file| file.path == "assets/icon.png")
+                .unwrap()
+                .contents,
+            b"fake-image-bytes"
+        );
     }
 
     #[test]
