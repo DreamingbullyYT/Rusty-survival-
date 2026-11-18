@@ -73,7 +73,10 @@ jobs:
         run: |
           set -euo pipefail
           cd .ci/horizon
-          DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt" \
+          export DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt"
+          # Linux resolves a dylib's sibling runtime dependencies through the loader search path.
+          # The overlay keeps Horizon's signed runtime libraries beside the mod dylib.
+          export LD_LIBRARY_PATH="$DREAMMOD_PREBUILT_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           cargo test -p horizon-mod-host --no-default-features native_libraries::dreammod_ci_loader_test::loads_dreammod_prebuilt_overlay -- --ignored --exact --nocapture
       - name: Inspect and archive the client overlay
         shell: bash
