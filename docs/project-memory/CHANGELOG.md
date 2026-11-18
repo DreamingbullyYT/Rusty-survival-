@@ -1,3 +1,7 @@
+## 2026-11-18 — Fix Rhai provider error conversion after CI type check
+- The runtime workflow 44289964423 passed formatting but found ambiguous conversion from EvalAltResult into Box<EvalAltResult> in the new provider output type check.
+- Replaced the ambiguous .into() with an explicit Box::new(EvalAltResult::ErrorMismatchDataType(...)) in commit 5bdd485. Follow-up runtime workflow pending.
+
 ## 2026-11-18 — Correct prebuilt test workspace selection and runtime formatting
 - API-only overlay run 44288685182 failed because Horizon's launcher is a separate Cargo workspace; `-p horizon-launcher` must run from `.ci/horizon/launcher`. Fixed in workflow commit 7a7cdb0 and expanded the Rust cache to cover both workspaces. Run 44289897914 is pending.
 - Rhai provider batch validation had rustfmt differences; run 44289702282 caught them. Formatting corrected in 99be124; run 44289964423 is pending.
