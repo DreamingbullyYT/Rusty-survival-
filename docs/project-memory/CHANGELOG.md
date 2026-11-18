@@ -1,3 +1,11 @@
+## 2026-11-18 — Add interpreted runtime candidate prototype
+- Added mods/dreammod-runtime-prototype using Rhai 1.27.0 as an evaluation-only AST interpreter candidate. The optional Grain bytecode feature and AST optimization are disabled.
+- Added tests for event-style dispatch, coarse batch host queries, script-side batched physics calculation and execution-operation limits.
+- Added a desktop microbenchmark comparing one batched interpreted algorithm with its native Rust equivalent; CI-host timings are diagnostic only, not device guarantees.
+- Added .github/workflows/dreammod-runtime-prototype.yml for tests and benchmark execution.
+- Verified the existing DreamMod Core pinned Horizon API check: Actions run 44249522292 succeeded. Runtime prototype workflow result is pending.
+- Rhai is not selected as the final language. No production .dmod loader, sandbox, Core integration or prebuilt game distribution is claimed.
+
 ## 2026-11-17 — Verify offline reference tooling checks
 - GitHub Actions run 44162815461 passed on commit `965287f36d9d8855e9f9f2f8e715c3e61d4ed58e`: all nine Python unit tests passed and the unconditional cleanup step confirmed the temporary directory was absent.
 - The artifact smoke workflow runs offline tests on matching pushes and only downloads the Mojang server jar on manual dispatch. The live download and deliberate-failure cleanup paths still require manual dispatch.
