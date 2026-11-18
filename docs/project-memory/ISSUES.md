@@ -271,3 +271,7 @@ Limitations / follow-up: the registry is not a Horizon resource manager. It only
 
 ### DM-038 verification note (2026-11-18)
 ModManager resource integration passed package CI run `44386150155` with 55 tests, formatting and strict Clippy. An additional regression now checks that duplicate IDs in one batch are rejected atomically with no partial reservations; the follow-up run after `51aa347d1140` is pending.
+
+
+### DM-038 latest verification / next host adapter target (2026-11-18)
+Follow-up package run `44386384391` passed all 55 tests, formatting and strict Clippy, including the duplicate batch rollback regression. Pinned Horizon SDK inspection found the actual client `register_texture_atlases` collect hook, called on initial client load and every resource reload before stitching. The hook requires declarations to be re-submitted each time and reads atlas definitions from mod assets. No DreamMod hook integration is implemented yet; Core's Hooks impl is still empty and there is no interpreter/coordinator.
