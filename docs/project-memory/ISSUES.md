@@ -104,5 +104,5 @@ Added CapabilityGate::from_approvals(), allows() and require(). It can only be c
 
 
 ## DM-022 — Owned player snapshot bridge contract
-Status: IMPLEMENTED
-Added `bridge::PlayerSnapshot`, an owned DTO containing UUID, validated player name, dimension identifier and finite bounded position. The type contains no Horizon references or handles. `HostAdapter::read_player_snapshot()` checks the `entities.read` grant and enabled lifecycle state before running the supplied host-read closure, then rejects invalid DTOs. Regression tests cover DTO validation and prove denied calls do not invoke the read closure. This is not yet a concrete Horizon `ServerHost` adapter, runtime script binding, sandbox or end-to-end player API. Source commits: `3e8baf1`, `8845d96`, `7bae3ea`; CI pending.
+Status: VERIFIED
+Added `bridge::PlayerSnapshot`, an owned DTO containing UUID, validated player name, dimension identifier and finite bounded position. The type contains no Horizon references or handles. `HostAdapter::read_player_snapshot()` checks the `entities.read` grant and enabled lifecycle state before running the supplied host-read closure, then rejects invalid DTOs. Regression tests cover DTO validation and prove denied calls do not invoke the read closure. This is not yet a concrete Horizon `ServerHost` adapter, runtime script binding, sandbox or end-to-end player API. Source commits: `3e8baf1`, `8845d96`, `7bae3ea`; package Actions run `44309091208` passed formatting, all tests and Clippy.
