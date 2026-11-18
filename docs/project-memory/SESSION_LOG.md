@@ -787,3 +787,14 @@ Next:
 - Verify the headless official launcher can install Nightly and execute native-build.
 - Inspect the actual output layout and adjust artifact packaging if the library/inventory is not adjacent to horizon-client.
 - Prove clean startup with a host process that loads the native library.
+
+## S-2026-11-18-15 — Define initial provider performance boundary
+Date: 2026-11-18
+Goal: Convert the measured interpreter performance gap into a concrete architecture constraint without prematurely abandoning source interpretation.
+Changes:
+- Updated DreamMod architecture to require coarse subsystem/event provider calls and keep high-frequency entity/vertex iteration and batch storage in Rust.
+- Recorded the current synthetic x86_64 benchmark: 265.955 ms Rhai AST vs 574.49 µs Rust for 50 × 10,000 items (462.94×). This is diagnostic only, not Android/ARM64 data.
+- Added a future explicit decision point for an optional CI-prebuilt native kernel tier for hot subsystem replacement. It would avoid player-side compilation but is not implemented and is separate from interpreted `.dmod` scripts.
+Next:
+- Finish the official Core source-package check and native-build workflow.
+- Design a provider interface and benchmark realistic event/batch traffic on ARM64 before committing to the final runtime.
