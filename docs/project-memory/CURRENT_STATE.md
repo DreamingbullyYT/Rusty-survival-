@@ -107,4 +107,4 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added CapabilityGate::from_approvals(), allows() and require().
 - The gate stores a private granted set, validates approvals through the manifest planner, and denies unapproved or unknown capabilities.
 - This is a reusable guard primitive only. DreamMod Core does not yet wrap Horizon host APIs with it, so end-to-end enforcement is not claimed.
-- Added gate regression tests. Package CI pending.
+- Added gate regression tests. Package Actions run 44300879584 passed all 22 tests and Clippy.
