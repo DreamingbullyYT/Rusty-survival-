@@ -19,7 +19,9 @@ DreamMod Core is built once as a trusted native .hmod mod against a pinned Horiz
 
 - Build DreamMod Core as a trusted native Horizon mod against a specific pinned Horizon revision, using the current .hmod/native route and horizon-mixins only where native source transformations are required. Current Horizon already has a substantial public mod API and native host; DreamMod must reuse and extend these rather than duplicate them.
 - Compile DreamMod Core once in the trusted CI/build pipeline against the pinned Horizon SDK.
-- Verify whether the stock native host can load the resulting prebuilt library, its SHA-256/build identity metadata and matching package manifest directly from the shipped distribution. The native host visibly supports loading adjacent prebuilt libraries, but the full CI-to-distribution path is not yet proven.
+- Keep the current Core API-only: no native.mixin, native.module, native.bridge, native.state, native.loop or internals dependency. The pinned launcher source routes this shape through Route::Api, reads only the prebuilt SDK runtime/API slices, compiles each mod as its own dynamic library, and returns the unchanged prebuilt horizon-client plus runtime/mod libraries.
+- Package the official native-build output as a versioned prebuilt game distribution, including native-mods.json. The stock native host validates adjacent library paths, SHA-256 and exact game/Rust identity before loading.
+- This is source-verified, not yet end-to-end verified: CI must produce the output, inspect the artifact and launch a clean game before the route is considered proven.
 - Produce a complete prebuilt Horizon distribution with DreamMod Core included; launcher only copies/installs files.
 - Pin Horizon revision, horizon-mixins revision, hooks/API revision, Rust toolchain and native library identity.
 - The launcher downloads and installs that finished distribution; it does not compile native .hmod source on the player's device.
@@ -148,7 +150,7 @@ The manifest must identify package ID, version, display name, entry points, requ
 ## 11. Development phases
 
 1. Audit and reuse the existing Horizon mod API/host, then pin a baseline.
-2. Build the smallest trusted native .hmod Core and prove CI-built library installation without launcher-side compilation.
+2. Build the smallest trusted API-only native .hmod Core through Horizon's Route::Api and prove CI-built library installation without launcher-side compilation.
 3. Prototype and benchmark candidate interpreted runtimes; select one with evidence.
 4. Define manifest, loader, lifecycle, capability model and diagnostics.
 5. Expose stable gameplay/event APIs and test with a minimal .dmod.
