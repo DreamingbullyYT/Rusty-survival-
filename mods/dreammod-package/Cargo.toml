@@ -6,6 +6,7 @@ publish = false
 description = "Versioned DreamMod package manifest, archive inspection and validation"
 
 [dependencies]
+dreammod-contract = { path = "../dreammod-contract" }
 semver = { version = "=1.0.27", features = ["serde"] }
 serde = { version = "=1.0.228", features = ["derive"] }
 serde_json = "=1.0.149"
