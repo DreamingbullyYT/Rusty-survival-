@@ -5,7 +5,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use crate::{
     lifecycle::{LifecycleError, LifecycleState, ModLifecycle},
-    resolve_load_order, DependencyError, Manifest, ValidatedPackage,
+    resolve_load_order, valid_archive_path, ArchiveEntryKind, DependencyError, Manifest,
+    ValidatedPackage,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -14,6 +15,8 @@ pub enum ModManagerError {
     UnknownMod(String),
     DependencyNotEnabled { mod_id: String, dependency: String },
     ActiveDependent { dependency: String, dependent: String },
+    InvalidAssetPath,
+    AssetNotFound(String),
     Lifecycle(LifecycleError),
 }
 
@@ -106,6 +109,33 @@ impl ModManager {
             .lifecycle
             .require(capability)
             .map_err(ModManagerError::Lifecycle)
+    }
+
+    /// Read an already-validated asset without extracting it from the package.
+    /// The requesting mod must be Enabled and hold the explicit assets.read grant.
+    pub fn read_asset(&self, id: &str, path: &str) -> Result<&[u8], ModManagerError> {
+        let managed = self
+            .mods
+            .get(id)
+            .ok_or_else(|| ModManagerError::UnknownMod(id.to_owned()))?;
+        managed
+            .lifecycle
+            .require("assets.read")
+            .map_err(ModManagerError::Lifecycle)?;
+
+        if !path.starts_with("assets/")
+            || !valid_archive_path(path, ArchiveEntryKind::File)
+        {
+            return Err(ModManagerError::InvalidAssetPath);
+        }
+
+        managed
+            .package
+            .files
+            .iter()
+            .find(|file| file.path == path)
+            .map(|file| file.contents.as_slice())
+            .ok_or_else(|| ModManagerError::AssetNotFound(path.to_owned()))
     }
 
     /// A dependent can only start after every declared dependency is enabled.
@@ -235,6 +265,50 @@ mod tests {
         assert_eq!(manager.load_order(), &["example.base", "example.addon"]);
         assert!(manager.package("example.addon").is_some());
         assert_eq!(manager.state("example.addon"), Ok(LifecycleState::AwaitingApproval));
+    }
+
+    #[test]
+    fn asset_reads_require_enabled_state_and_assets_read_capability() {
+        let mut asset_package = package("example.assets", &[], &["assets.read"]);
+        asset_package.files.push(PackageFile {
+            path: "assets/textures/icon.bin".into(),
+            contents: vec![1, 2, 3, 4],
+        });
+        let mut manager = ModManager::new(vec![asset_package]).unwrap();
+
+        assert_eq!(
+            manager.read_asset("example.assets", "assets/textures/icon.bin"),
+            Err(ModManagerError::Lifecycle(LifecycleError::NotEnabled))
+        );
+        manager.approve("example.assets", &[]).unwrap();
+        manager.enable("example.assets").unwrap();
+        assert_eq!(
+            manager.read_asset("example.assets", "assets/textures/icon.bin"),
+            Err(ModManagerError::Lifecycle(LifecycleError::CapabilityDenied(
+                "assets.read".into()
+            )))
+        );
+
+        let mut granted = package("example.assets", &[], &["assets.read"]);
+        granted.files.push(PackageFile {
+            path: "assets/textures/icon.bin".into(),
+            contents: vec![1, 2, 3, 4],
+        });
+        let mut manager = ModManager::new(vec![granted]).unwrap();
+        manager.approve("example.assets", &["assets.read".into()]).unwrap();
+        manager.enable("example.assets").unwrap();
+        assert_eq!(
+            manager.read_asset("example.assets", "assets/textures/icon.bin"),
+            Ok(&[1, 2, 3, 4][..])
+        );
+        assert_eq!(
+            manager.read_asset("example.assets", "assets/../secret"),
+            Err(ModManagerError::InvalidAssetPath)
+        );
+        assert_eq!(
+            manager.read_asset("example.assets", "assets/missing.bin"),
+            Err(ModManagerError::AssetNotFound("assets/missing.bin".into()))
+        );
     }
 
     #[test]
