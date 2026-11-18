@@ -230,3 +230,7 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 ### Entrypoint bridge CI
 - [x] Package run `44365010182` passed 44 tests, formatting and Clippy, including activation-gated entrypoint source access.
 - [ ] Complete native host loading in overlay run `44363904976` and archive/upload verification.
+
+### Overlay host-load harness
+- [x] Re-export `DREAMMOD_PREBUILT_DIR` in the loader step; add ELF/RUNPATH diagnostics and a 180-second timeout.
+- [ ] Verify the new overlay run passes host loading without `LD_LIBRARY_PATH`, then inspect/upload the artifact.
