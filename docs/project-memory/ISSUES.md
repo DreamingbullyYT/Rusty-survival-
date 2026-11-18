@@ -156,3 +156,8 @@ Actions run 44322745328 failed while compiling the CI-only tests injected into t
 - Package Actions run 44318172781 passed the Arc-backed batch implementation and tests; run 44317125357 passed the cooperative ZIP-inspection deadline.
 - PMCS run 44322745310 failed because the implementation commit was not accompanied by updates to all required memory documents. The validator's six regression tests passed. This update set records the actual CI evidence and remaining work.
 - No ARM64 benchmark or measured FPS change exists. Snapshot sharing is storage-level only; no dispatcher/cache exists.
+
+
+## DM-028 — Prebuilt compiler must match the SDK producer toolchain
+Status: INVESTIGATING
+Overlay run 44324363090 reached Horizon's API-only prebuilt compiler, then failed with E0514 because SDK crate mod_api was produced by a different rustc than the overlay workflow's 1.95.0. The exact pinned Horizon commit 0b14f8acfd97fa2c750e42795249dcc981178ca4 declares tools/ci/rust-version = 1.99.1 in its SDK publish workflow. Updated the DreamMod overlay workflow to install 1.99.1 and stamp the same value into overlay metadata (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7). Run 44328650675 is pending/in progress; verify whether the E0514 and generated crate::hooks errors disappear before changing Core source. Do not assume the second diagnostic is independent until rerun evidence is available.
