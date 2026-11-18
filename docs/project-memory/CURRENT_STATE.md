@@ -344,3 +344,12 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Overlay run `44365336841`: API-only build and ELF `$ORIGIN` RUNPATH setup passed; host-loader test exited 124 at its 180-second timeout while Cargo was still compiling Horizon dependencies (last observed: `horizon-mod-package`). This is a timeout, not evidence of a loader failure.
 - Workflow commit `a3d3eef30b8f3a30cad5273874518b8d499839f5` raises the host-test timeout to 900 seconds (job cap remains 90 minutes) to permit a cold dependency build. Run `44368761333` queued; loader result and artifact upload are still unverified.
 - Actual launcher runtime library search behavior remains a separate verification requirement.
+
+
+## Transactional resource ownership — 2026-11-18
+- Added `mods/dreammod-package/src/resources.rs` with a host-independent resource ID ownership registry and staged transactions.
+- Staged IDs remain invisible until commit; duplicate IDs, cross-mod conflicts, invalid names and quota overflow reject without partial registry mutation. Dropping an uncommitted transaction is rollback.
+- Added deterministic owner cleanup and limits of 1,024 IDs per mod / 16,384 globally.
+- This is bookkeeping only: no Horizon renderer/UI/resource registration occurs yet. A future host adapter must publish external resources only after successful reservation and release them during disable/failure cleanup.
+- Package workflow run `44385572845` on `3821c934975c` is validating format, tests and Clippy; result pending at documentation update time.
+- PMCS workflow for the resource implementation initially failed its freshness check because implementation changes were not accompanied by updates to all five required memory documents; this entry corrects that omission.
