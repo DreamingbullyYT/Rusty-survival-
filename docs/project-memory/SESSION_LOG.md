@@ -1443,3 +1443,27 @@ Next:
 - Inspect latest Actions for engine, Core, overlay and PMCS.
 - If host loading passes, inspect artifact layout and upload; then separately validate the actual launcher search-path behavior.
 - Add the next engine domain only with pinned Java 26.3 reference fixtures and deterministic tests.
+
+
+## S-2026-11-18-45 — Verify prebuilt host load and correct Core formatting
+Date: 2026-11-18
+Starting commit: 447597dd6702869adde47cd010d062ff53a8d4f2
+Changes:
+- Inspected DreamMod Core, overlay and PMCS Actions and retrieved the failing job logs.
+- Confirmed Core run 44341466411 passed pinned Horizon native/API/host-WASM validation and engine mirror parity, then failed only because rustfmt wanted the engine_bridge.rs import on one line.
+- Corrected that formatting in commit 42d9ac762502ad5ef3db9158a9885c99a24ae238.
+- Confirmed overlay run 44341466372 passed API-only compilation, real Horizon native-host loading, archive inspection and artifact upload.
+- Updated DM-031: the CI native-host loader issue is resolved for the test process, while actual launcher search-path behavior remains unverified.
+Verification:
+- Overlay 44341466372: PASS all steps.
+- PMCS 44341597122: PASS on the previous documented change set.
+- Core 44341466411: FAIL at rustfmt only; Core tests and packaging were skipped.
+- Core rerun 44361109477: pending.
+- PMCS 44361109707: failed because the prior code change was not accompanied by the five required memory documents in the same compared change range; this session appends the required records.
+Limitations:
+- No full launcher/game startup is verified. CI's explicit LD_LIBRARY_PATH does not prove the installed launcher uses the same loader configuration.
+- Core Hooks remain empty; no production .dmod interpreter, lifecycle adapter or live script execution exists.
+Next:
+- Verify Core rerun and PMCS after this documentation update.
+- Inspect overlay artifact metadata and separately establish the launcher's runtime-library search behavior.
+- Keep future engine growth fixture-driven; do not claim Minecraft parity from coordinate tests alone.
