@@ -85,3 +85,7 @@ Player reads cross the host boundary as a `PlayerSnapshotBatch`, capped at 256 u
 
 ## Allocation-free snapshot validation (2026-11-18)
 Duplicate UUID validation for the bounded 256-player snapshot batch now uses a fixed stack array of 256 u128 values and sort_unstable. This avoids heap allocation and preserves source order. Do not generalize the fixed buffer beyond the documented batch bound. The future dispatcher should reuse immutable snapshots within one event dispatch instead of repeating host reads, subject to thread/re-entrancy and invalidation rules.
+
+
+## Shared immutable batch ownership (2026-11-18)
+PlayerSnapshotBatch now owns Arc<[PlayerSnapshot]> in both Core and package contract. This permits cheap immutable sharing among authorized consumers without deep-copying names/dimensions/positions. It does not itself introduce a cache or dispatcher. Every recipient must pass its own lifecycle/capability check before access; no host handles or mutable snapshot references are shared.
