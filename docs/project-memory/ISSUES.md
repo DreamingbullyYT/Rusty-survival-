@@ -116,3 +116,8 @@ Added a Core-local owned snapshot DTO and bounded collector using the pinned `Se
 ## DM-024 — Bind Core player-read authorization to per-mod lifecycle
 Status: OPEN
 The Core collector now refuses to touch `ServerHost` until a `PlayerReadAuthorization` implementation grants `entities.read`. Regression tests verify callback non-invocation on denial and one invocation on success. This is only an interface seam: no implementation currently connects it to a particular package `ModLifecycle` instance. The future runtime must implement the trait using the mod's Enabled state and approved capability set, then ensure every script-triggered read passes through it. Source commit: `99929e3`. Core and overlay Actions are running; verify before claiming the change is compiled.
+
+
+## DM-025 — Execute Core snapshot unit tests in CI
+Status: OPEN
+Core-local regression tests now cover DTO validation and batch limits (source commit `ebe0914`). The current `cargo-horizon-mod check` proves Horizon host/WASM compilation but may not execute Rust unit tests. Add a compatible `cargo test` CI step once the generated pinned SDK workspace/dependency setup is confirmed; do not claim these tests ran until a workflow step explicitly executes them.
