@@ -195,3 +195,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Fixed Core workflow to install rustfmt (commit e47e8e0f858c9c9d09088db17d23a74584ae420a). Run 44313213891 passed Horizon source/API/host-WASM checks but stopped at formatting; unit tests were skipped.
 - This is not yet a complete runtime load timeout: future loader must pass the same deadline through every stage and poll it during long-running parsing/initialization. No async cancellation or script runtime exists yet.
 - No performance benchmark has been run; this is a targeted allocation reduction, not proof of FPS improvement.
+
+
+## Latest snapshot optimization (2026-11-18)
+- Replaced the temporary UUID Vec with a fixed [u128; 256] stack buffer in both Core and package PlayerSnapshotBatch validation. This removes the heap allocation for duplicate detection; original snapshot order and 256-item cap remain unchanged.
+- Core commit: b2185e8917e351dfd0408231e855efe47e6b3bfd. Package bridge commit: f3a55af3a332073db92df24de00e347bc55a3bb8.
+- Package deadline implementation CI passed in run 44317125357. The latest stack-buffer package/Core runs are pending.
+- Core formatting now targets only the DreamMod Core manifest, avoiding formatting generated Horizon SDK source under .horizon/sdk. Fresh Core run pending.
