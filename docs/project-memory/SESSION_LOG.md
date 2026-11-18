@@ -655,3 +655,29 @@ Verification:
 Next:
 - Inspect the corrected runtime CI run and PMCS validation.
 - Once benchmark is valid, compare another AST-interpreted candidate and begin native trait mod package integration.
+
+## S-2026-11-18-09 — Convert Core bootstrap to an official Horizon native trait package
+Date: 2026-11-18
+Commits:
+- Native manifest pin and metadata: e6af375efe89e0a265997f45da6c100612fadd33
+- Official check/package workflow: b58f0d94ade9f74ac92b4ddb0e8292d140a5d1de
+- YAML quoting correction: cc5c841945c13381f4d0ea67f925d83cce8a1f66
+Goal: Move from a bare Hooks API compile skeleton to a correctly described native trait mod package and verify it with Horizon's own tooling.
+Changes:
+- Added/updated `horizon-mod.toml` with `api = 0.2`, `capabilities = []`, `side = both`, `game = 26.3`, Horizon Nightly 2026-11-18 pin `0b14f8acfd97fa2c750e42795249dcc981178ca4`, and horizon-mixins pin `e59da9094f0c2fdda6c627fe9eff22dec6a906f0`.
+- Removed the unrelated `registries` capability from DreamMod Core; the bootstrap is not a content registry mod.
+- Verified current Nightly source still has the API-only Route::Api implementation and native library loader.
+- Reworked the Core workflow to install the pinned `cargo-horizon-mod` tool from the Horizon source checkout, install wasm32, run official package/source/API checks for host and wasm32, build the source .hmod and upload it as a temporary CI artifact.
+- The first workflow edit had invalid YAML quoting and produced a failed run with no jobs; corrected the quoting in commit cc5c841.
+Verification:
+- The new official Core workflow run 44284751206 is in progress at the time of this entry; no package check or artifact success is claimed yet.
+- The earlier direct source API cargo check (run 44249522292) is historical evidence only and used the previous source pin.
+- The current pinned Nightly source still exposes the API-only route in source; this does not prove the prebuilt native distribution yet.
+Not tested:
+- No completed official `cargo horizon-mod check` or source .hmod artifact yet.
+- No CI-built prebuilt native distribution or clean game startup.
+- No production .dmod loader or sandbox.
+Next:
+- Inspect run 44284751206 and fix package/toolchain issues.
+- Inspect the uploaded .hmod source artifact and build it through the official native-build/prebuilt API route.
+- Verify that a clean pinned Horizon game starts with DreamMod Core without player-side compilation.
