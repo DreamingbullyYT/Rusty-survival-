@@ -20,6 +20,8 @@ jobs:
   build-api-only-client-overlay:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: 2
     steps:
       - name: Check out DreamMod
         uses: actions/checkout@v4
@@ -62,7 +64,7 @@ jobs:
           DREAMMOD_MOD_DIR="$GITHUB_WORKSPACE/mods/dreammod-core" \
           DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt" \
           DREAMMOD_HORIZON_BUILD="0b14f8acfd97fa2c750e42795249dcc981178ca4" \
-          cargo test -p horizon-launcher native_mods::dreammod_api_route_ci::build_prebuilt_api_only_client_overlay -- --ignored --exact --nocapture
+          cargo test -p horizon-launcher --lib native_mods::dreammod_api_route_ci::build_prebuilt_api_only_client_overlay -- --ignored --exact --nocapture
       - name: Verify the real Horizon native host loads the prebuilt library
         shell: bash
         run: |
