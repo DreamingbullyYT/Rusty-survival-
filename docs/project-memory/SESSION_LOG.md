@@ -1176,3 +1176,21 @@ Limitations:
 - No concrete ServerHost closure is implemented in DreamMod Core; the DTO is not exposed to an interpreter. No production sandbox or end-to-end .dmod execution exists.
 Next:
 - Implement and compile the Core-side player snapshot reader against the pinned Horizon SDK. Verify the exact event and handle method signatures in CI before adding script bindings.
+
+
+## S-2026-11-18-31 — Add bounded player snapshot batches
+Date: 2026-11-18
+Commits:
+- Batch DTO and validation: 5a4c946076127857e01b2a461f21fc0a2fcaa9fc
+- Capability-gated batch read: 4397de1a28d536b0ffca448b553478ecae3467fb
+Goal: Keep player reads coarse-grained and bounded rather than crossing the host/interpreter boundary once per player.
+Changes:
+- Added PlayerSnapshotBatch with a 256-player cap and duplicate UUID rejection.
+- Added HostAdapter::read_player_snapshots(), checking entities.read once before the batch callback.
+- Added tests for batch bounds, duplicate IDs and denied callback non-invocation.
+Verification:
+- Package workflow for the latest source commit is queued; result pending.
+Limitations:
+- No concrete Horizon ServerHost batch collector or interpreter binding exists yet.
+Next:
+- Verify package CI, then implement the trusted Core-side batch collector using host.players().server_players() and owned values, with no Horizon handles escaping the hook.
