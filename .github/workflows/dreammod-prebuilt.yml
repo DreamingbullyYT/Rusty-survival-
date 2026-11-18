@@ -91,7 +91,7 @@ jobs:
           for row in receipt["libraries"]:
               library = out / row["file"]
               row["sha256"] = hashlib.sha256(library.read_bytes()).hexdigest()
-          receipt_path.write_text(json.dumps(receipt, indent=2) + "\\n", encoding="utf-8")
+          receipt_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
           PY
       - name: Verify the real Horizon native host loads the prebuilt library without overlay env
         shell: bash
