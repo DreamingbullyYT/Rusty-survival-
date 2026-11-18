@@ -1,8 +1,8 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: DREAMMOD_CORE_SKELETON_ADDED; CI_VERIFICATION_PENDING
-Repository HEAD: resolve dynamically from current main; last inspected project audit commit 21ff8bd96672d0304533170781f9f5f8d05d36aa
+Status: CORE_BOOTSTRAP_CI_VERIFIED; RHAl_CANDIDATE_PROTOTYPE_ADDED; PROTOTYPE_CI_PENDING
+Repository HEAD: resolve dynamically from current main; last inspected commit before this work: 25d839d79b5238207ed9829f202eae5cd947ffcb
 
 ## Direction
 - Active project: DreamMod, a deeply extensible interpreted modding runtime for Horizon.
@@ -17,12 +17,16 @@ Repository HEAD: resolve dynamically from current main; last inspected project a
 - New docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md: current Horizon mod API/host, native and WASM routes, pinned revisions, and prebuilt-library feasibility.
 - Added mods/dreammod-core as a minimal native .hmod Core bootstrap using Horizon's typed Hooks API.
 - Added .github/workflows/dreammod-core.yml to compile the Core source against the exact pinned Horizon source checkout.
+- Verified Core CI run 44249522292 on commit d6ca63ecea51facfaeda46e37e15e0664d188814: the pinned Horizon API `cargo check` passed.
+- Added `mods/dreammod-runtime-prototype`, an isolated Rhai AST-evaluator candidate with event dispatch, batch API, subsystem-algorithm and operation-budget tests.
+- Added `.github/workflows/dreammod-runtime-prototype.yml` to run candidate tests and a coarse desktop benchmark.
 - Existing Rust engine-core/testkit, reference tooling and Android Vulkan POC are historical artifacts from the previous project direction; they are not DreamMod functionality.
 
 ## Not implemented / not verified
-- Minimal native .hmod source skeleton exists; CI compile result is pending.
+- The minimal native `.hmod` source skeleton exists and its pinned-source API compile check is VERIFIED in CI run 44249522292.
+- The Rhai candidate prototype is IMPLEMENTED; its CI result is pending. It is not selected as the final language and is not integrated into DreamMod Core.
 - No prebuilt native library package has been produced or loaded.
-- No interpreter selected or integrated.
+- No production interpreter selected or integrated; the isolated Rhai candidate is only an evaluation prototype.
 - No .dmod manifest/schema, package loader, lifecycle, dependency resolver or hot reload.
 - No public DreamMod API, event bus, extension registry or subsystem replacement contract.
 - No sandbox, capability enforcement, execution/memory budgets or diagnostics.
@@ -31,9 +35,9 @@ Repository HEAD: resolve dynamically from current main; last inspected project a
 - No compatibility tests against a pinned current Horizon revision.
 
 ## Next actions
-1. Get the DreamMod Core API-check workflow green against the pinned Horizon source.
-2. Prove a CI-built native library can be shipped and loaded without launcher-side compilation.
-3. Evaluate interpreted scripting runtimes against the no-compilation requirement and benchmark representative calls.
+1. Verify the new Rhai candidate workflow and fix any compile/test failures.
+2. Compare Rhai and Starlark against the no-bytecode/no-JIT requirement and representative workloads.
+3. Prove a CI-built native library can be shipped and loaded without launcher-side compilation.
 4. Define the minimal package manifest, loader lifecycle and capability model.
 5. Implement one minimal .dmod end-to-end before broad API expansion.
 6. Design extension contracts for adding and replacing systems, then benchmark.
