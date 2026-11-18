@@ -400,3 +400,11 @@
 - DreamMod package Actions run 44309674771 passed on source commit 4397de1a28d536b0ffca448b553478ecae3467fb.
 - Formatting, all package tests and Clippy with -D warnings succeeded.
 - The batch remains a contract/policy primitive; no concrete Horizon collector or script binding is claimed.
+
+
+## 2026-11-18 — Add the first concrete Core-side Horizon player collector
+- Added `mods/dreammod-core/src/player_snapshot.rs`, using the pinned Horizon `ServerHost` player service and live `PlayerRef` reads.
+- Copies UUID, validated player name, dimension identifier and finite bounded position into DreamMod-owned DTOs.
+- Rejects more than 256 online players before per-player reads; rejects unavailable/stale fields, invalid identifiers/coordinates and duplicate UUIDs.
+- Does not retain Horizon handles or expose snapshots to scripts. No .dmod runtime or sandbox integration is implied.
+- Source commits: `7ecd981`, `b2362c6`. Core SDK check/build pending; PMCS validation previously failed because implementation changes lacked required memory updates.
