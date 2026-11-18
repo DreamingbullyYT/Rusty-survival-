@@ -335,7 +335,7 @@ mod authorization_tests {
     #[test]
     fn snapshot_batch_enforces_the_bounded_size() {
         let players = (0..=MAX_PLAYER_SNAPSHOT_BATCH)
-            .map(valid_snapshot)
+            .map(|uuid| valid_snapshot(uuid as u128))
             .collect();
         assert_eq!(
             PlayerSnapshotBatch::new(players),
