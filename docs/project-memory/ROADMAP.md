@@ -208,3 +208,9 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. [x] Revalidate asset namespace/path and test denied, allowed, traversal and missing cases.
 4. [ ] Verify package CI after commit `f90d0b1`.
 5. [ ] Add bounded decoding/registration transactions and cache ownership only after interpreter/runtime budgets are specified.
+
+### Asset API verification — 2026-11-18
+- [x] Package asset API tests: run `44364618050` passed all 43 tests, rustfmt and Clippy.
+- [x] PMCS validation: run `44364715327` passed regression and structure/freshness validation.
+- [ ] Core unit tests/package: run `44363904945` has passed pinned checker/API/host-WASM/mirror/format checks; unit tests still in progress.
+- [ ] Overlay API-only build and native host loading: run `44363904976` still compiling.
