@@ -568,3 +568,9 @@
 ### Overlay host-loader cold-build timeout — 2026-11-18
 - Run `44365336841` built the API-only overlay and applied `$ORIGIN` RUNPATH successfully, but the 180-second host-test timeout expired during dependency compilation (exit 124); this was not a loader failure.
 - Commit `a3d3eef30b8f3a30cad5273874518b8d499839f5` increases the host-test timeout to 900 seconds. Run `44368761333` queued; verification pending.
+
+
+### DreamMod resource ownership transaction layer — 2026-11-18
+- Added host-independent transactional resource ID ownership bookkeeping with strict IDs, duplicate/conflict rejection, atomic commit, drop rollback, owner cleanup, and per-mod/global quotas.
+- Exported the new module from the package crate. No external Horizon resource registration is claimed.
+- Package workflow run `44385572845` pending at the time of this entry; PMCS freshness failure on the preceding commit identified the missing memory updates, now appended to the required documents.
