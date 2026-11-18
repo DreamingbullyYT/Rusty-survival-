@@ -275,3 +275,7 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - It enforces dependency-before-dependent enable, prevents disabling an enabled dependency, and propagates failures transitively to dependents.
 - New tests cover these invariants. Package CI run `44363310681` and PMCS run `44363323071` are pending; do not mark verified until completed.
 - No `.dmod` interpreter or script execution, scheduler, registration transaction, or concrete Horizon runtime binding exists.
+
+### ModManager cascade correction
+- Failure propagation now walks dependency-first load order (root dependency before dependent) to correctly cascade through multi-level dependency chains. The original reverse traversal could skip a grandchild in the same pass.
+- Run `44363310681` was against the pre-export module state and its 36 passing tests did not include `manager.rs`; the corrected manager must be verified in the new package workflow after commit `bb8806d`.
