@@ -1073,3 +1073,18 @@ Limitations:
 - The gate is not yet wired into Horizon host APIs or DreamMod Core; it is not an end-to-end sandbox.
 Next:
 - Verify CI, then integrate the gate at the actual host-call boundary before adding lifecycle execution.
+
+
+## S-2026-11-18-27 — Verify default-deny host capability gate
+Date: 2026-11-18
+Commit: 5085971c93c3dbc2a0089e136e5f9a7aecc21a49
+Goal: Verify the capability guard helper before it is connected to Horizon host APIs.
+Changes:
+- Recorded the gate verification and retained the explicit limitation that it is not yet integrated into the host.
+Verification:
+- DreamMod package Actions run 44300879584: formatting SUCCESS, 22/22 tests SUCCESS, Clippy SUCCESS.
+- Approved capability succeeds; unapproved and unknown capabilities are denied.
+Limitations:
+- No Horizon host API wiring, permission UI, interpreter or production sandbox.
+Next:
+- Design a host adapter that checks CapabilityGate before every privileged operation, then add lifecycle states without executing scripts.
