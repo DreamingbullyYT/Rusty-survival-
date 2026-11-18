@@ -36,3 +36,7 @@ The former Minecraft Java Edition 26.3, protocol 777, data version 5023 and Andr
 
 ## Fixed-buffer snapshot implementation (2026-11-18)
 The Core/package duplicate UUID check uses a fixed stack array sized to MAX_PLAYER_SNAPSHOT_BATCH (256). This does not change public DTO fields, ordering, capability names, Horizon API signatures or package compatibility. It relies on the existing hard batch bound; any future increase must revisit stack usage and the scratch buffer size.
+
+
+## Arc-backed snapshot batches (2026-11-18)
+PlayerSnapshotBatch retains the same public getters, item ordering, field values and 256-player bound. Its internal storage changes from Vec to Arc<[PlayerSnapshot]>. Clone now shares immutable storage; no mutable access or Horizon handle is exposed. This is an internal Rust contract change, not a change to the .dmod manifest or script language.
