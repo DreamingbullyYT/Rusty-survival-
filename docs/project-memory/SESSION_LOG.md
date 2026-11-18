@@ -878,3 +878,19 @@ Verification:
 Next:
 - Inspect run 44289897914 and fix any remaining compiler/test harness errors.
 - Inspect run 44289964423 and ensure formatting, tests and Clippy pass.
+
+## S-2026-11-18-01 — Implement the first DreamMod manifest contract
+Date: 2026-11-18
+Commit: 8923ce6444b3a9c491c6a66c0f431852f5d4cfcd (workflow adjustment; crate commits immediately precede it)
+Goal: Establish a versioned, strict `.dmod` manifest boundary before archive loading or script execution.
+Changes:
+- Added standalone `mods/dreammod-package` crate with version-1 manifest parsing and validation.
+- Added checks for unknown fields/schema, mod IDs, semantic versions/API ranges, safe relative entrypoint paths, explicit capability allowlist/duplicates, dependency declarations and input/count limits.
+- Added dedicated package-contract GitHub Actions workflow for formatting, tests and Clippy; removed `--locked` because this initial crate has no committed Cargo.lock yet.
+Verification:
+- GitHub files and commit responses confirm the crate and workflow were published to `main`.
+- CI has not been inspected; tests and Clippy are PENDING, not VERIFIED.
+Limitations:
+- No ZIP/archive parsing or extraction, entrypoint existence check, capability granting, dependency resolver, runtime lifecycle, script execution or production sandbox.
+Next:
+- Inspect package-contract CI. Fix all failures before adding archive handling; then design a bounded, non-extracting ZIP inventory validator.
