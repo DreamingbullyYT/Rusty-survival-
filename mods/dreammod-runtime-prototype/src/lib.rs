@@ -113,12 +113,11 @@ impl RhaiPrototype {
             .into_iter()
             .map(|value| {
                 let number = value.as_float().map_err(|_| {
-                    EvalAltResult::ErrorMismatchDataType(
+                    Box::new(EvalAltResult::ErrorMismatchDataType(
                         "f64".into(),
                         value.type_name().into(),
                         rhai::Position::NONE,
-                    )
-                    .into()
+                    ))
                 })?;
                 if !number.is_finite() {
                     return Err(batch_error("physics provider returned a non-finite number"));
