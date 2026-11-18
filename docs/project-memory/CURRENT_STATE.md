@@ -373,3 +373,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Package workflow run `44386150155` on `d7bc8e4cc437`: PASS, 55 tests, formatting and Clippy with warnings denied.
 - Added one more regression proving a duplicate ID inside a single ModManager registration batch aborts the batch and leaves no IDs reserved. Renamed the foreign-namespace test to accurately describe what it asserts; it does not claim to test a cross-owner collision (that is covered directly by ResourceRegistry tests).
 - Follow-up package run after commit `51aa347d1140` is pending. PMCS validation for the preceding doc update is pending/queued; latest run `44386238578` has not started its job yet.
+
+
+### Resource lifecycle integration — latest verification — 2026-11-18
+- Follow-up package workflow `44386384391` on commit `51aa347d1140`: PASS. All 55 tests passed; rustfmt and Clippy with `-D warnings` passed.
+- The extra duplicate-ID batch regression passes and proves no partial reservation is left after rejection.
+- PMCS workflow for the preceding documentation commit `4a5db391947f` is still queued/pending with no job started at the time of this update; no PMCS pass is claimed for the latest docs yet.
+- Pinned Horizon SDK inspection confirmed `register_texture_atlases` is a client-side collect hook called on first client load and every resource reload before texture stitching. Its registration declarations must be re-submitted on each call; definitions are read from mod assets under `assets/<namespace>/atlases/<path>.json`. This is a verified integration target, not yet wired to DreamMod scripts or the manager.
