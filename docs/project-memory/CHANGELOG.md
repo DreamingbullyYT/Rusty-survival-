@@ -590,3 +590,9 @@
 ### Resource lifecycle integration verification — 2026-11-18
 - Package CI run `44386150155`: PASS — 55 tests, formatting, Clippy with warnings denied.
 - Added duplicate registration batch rollback regression in commit `51aa347d1140`; follow-up CI pending.
+
+
+### Resource lifecycle CI + pinned Horizon hook research — 2026-11-18
+- Package run `44386384391`: PASS — 55 tests, rustfmt and strict Clippy.
+- Pinned Horizon API research identified `register_texture_atlases` as a client registration/collect hook fired on initial client load and each resource reload before texture stitching. Mod declarations must be re-submitted on every call; atlas definitions live under the mod's `assets/<namespace>/atlases/` tree.
+- Core does not yet implement the hook or feed it script-driven declarations.
