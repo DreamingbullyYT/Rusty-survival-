@@ -2,7 +2,7 @@
 //!
 //! These values deliberately contain no Horizon handles, references or borrowed strings.
 
-pub const PLAYER_READ_CAPABILITY: &str = "entities.read";
+pub use dreammod_contract::PLAYER_READ_CAPABILITY;
 pub const MAX_PLAYER_NAME_BYTES: usize = 16;
 pub const MAX_PLAYER_SNAPSHOT_BATCH: usize = 256;
 pub const MAX_DIMENSION_ID_BYTES: usize = 255;
