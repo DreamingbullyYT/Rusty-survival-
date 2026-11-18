@@ -39,3 +39,9 @@ The active architecture is specified in docs/specs/DREAMMOD_ARCHITECTURE.md. The
 
 ## Continuity system
 PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update project memory with every meaningful implementation or architecture change.
+
+
+## Performance and load-budget rules (2026-11-18)
+- Keep hot gameplay work in trusted Rust/Horizon code; interpreted scripts use coarse-grained, bounded batch operations and event-driven callbacks.
+- Do not run one script callback per entity/item/block/vertex. Reuse one owned snapshot batch within a dispatch where safe; do not invent a tick cache before lifecycle/thread ownership is defined.
+- Benchmark every optimization against the pinned Horizon baseline. No FPS or slowdown target is considered achieved without representative ARM64 measurements.
