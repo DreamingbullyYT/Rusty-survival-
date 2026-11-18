@@ -1,3 +1,8 @@
+## 2026-11-18 — Record comparable Rhai AST benchmark
+- Corrected benchmark run 44284795812 passed: 10,000 items × 50 rounds, Rhai AST interpreter 265.955 ms, Rust native 574.49 µs, ratio 462.94×.
+- Both sides now clone their inputs and materialize/checksum their outputs, preventing the prior Rust-side work-elision bug.
+- This synthetic x86_64 CI result is not an Android benchmark. It indicates that arbitrary per-item script loops are unsuitable for hot physics/rendering paths without a very coarse/batched architecture; no final language selection is made.
+
 ## 2026-11-18 — Correct interpreter shortlist against the no-bytecode requirement
 - Rejected Starlark as a candidate for the strict product requirement: its public API parses source into AST, but its evaluator compiles that AST to bytecode before execution.
 - Added Sprite as a research-only reference: it uses a tree-walking AST interpreter with no bytecode/VM, but its current language/value surface is too limited for DreamMod to adopt directly.
