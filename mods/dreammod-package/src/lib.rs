@@ -10,6 +10,7 @@ use zip::{CompressionMethod, ZipArchive};
 
 pub mod bridge;
 pub mod lifecycle;
+pub mod manager;
 
 pub const MANIFEST_SCHEMA_VERSION: u32 = 1;
 pub const MAX_MANIFEST_BYTES: usize = 64 * 1024;
