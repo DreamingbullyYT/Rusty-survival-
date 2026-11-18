@@ -25,11 +25,7 @@ fn main() {
     let start = Instant::now();
     for _ in 0..ROUNDS {
         let output = program
-            .call_physics_batch(
-                positions.clone(),
-                velocities.clone(),
-                0.05,
-            )
+            .call_physics_batch(positions.clone(), velocities.clone(), 0.05)
             .expect("script evaluation");
         assert_eq!(output.len(), ITEMS);
     }
