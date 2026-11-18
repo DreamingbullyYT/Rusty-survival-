@@ -238,3 +238,6 @@ Added `ModManager::read_asset(mod_id, path)`. It checks Enabled state and explic
 
 ### DM-035 verification update (2026-11-18)
 Package run `44364618050` passed all 43 tests, rustfmt and Clippy, including the new asset permission/path regression. PMCS run `44364715327` passed validator regression and structure/freshness steps (job cleanup pending). Resource decoding and Horizon registration remain out of scope.
+
+### DM-034 Core verification update (2026-11-18)
+Core run `44363904945` passed the closure-based authorization implementation through the pinned Horizon checker, native manifest/source/API/host-WASM validation, mirror parity, formatting, Core unit tests, source package and upload. Overlay run `44363904976` passed API-only compilation and RUNPATH setup; real native host loading without overlay environment overrides is in progress. Keep DM-034 open until that host test passes and a live runtime hook call site exists.
