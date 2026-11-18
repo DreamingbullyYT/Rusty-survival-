@@ -99,3 +99,10 @@ Added plan_capability_grants(manifest, approved) as a pure deterministic planner
 ## DM-021 — Host capability gate primitive
 Status: VERIFIED
 Added CapabilityGate::from_approvals(), allows() and require(). It can only be constructed through a validated manifest and explicit approvals; its granted set is private, and unknown/unapproved capabilities are denied. This is not yet connected to Horizon's host API or the runtime, so no end-to-end enforcement claim is made. Actions run 44300879584 passed formatting, all 22 tests and Clippy on commit 5085971c93c3dbc2a0089e136e5f9a7aecc21a49.
+
+
+
+
+## DM-022 — Owned player snapshot bridge contract
+Status: IMPLEMENTED
+Added `bridge::PlayerSnapshot`, an owned DTO containing UUID, validated player name, dimension identifier and finite bounded position. The type contains no Horizon references or handles. `HostAdapter::read_player_snapshot()` checks the `entities.read` grant and enabled lifecycle state before running the supplied host-read closure, then rejects invalid DTOs. Regression tests cover DTO validation and prove denied calls do not invoke the read closure. This is not yet a concrete Horizon `ServerHost` adapter, runtime script binding, sandbox or end-to-end player API. Source commits: `3e8baf1`, `8845d96`, `7bae3ea`; CI pending.
