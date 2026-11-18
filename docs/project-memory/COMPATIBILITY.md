@@ -57,3 +57,6 @@ Core no longer imports any non-SDK crate for authorization; it accepts a generic
 - Package run `44364198594` passed on commit `4103668fee`: rustfmt, 42 unit tests, Clippy `-D warnings`.
 - PMCS run `44364312080` passed the updated memory set.
 - Closure-based Core integration is still pending the active Core and overlay builds.
+
+## In-memory asset reads (2026-11-18)
+Asset access is implemented in the standalone package crate using only Rust standard library data structures and the existing archive path validator. `read_asset` returns a borrowed `&[u8]` from the package retained by ModManager; it does not create a file or add Horizon SDK dependencies. Package CI after `f90d0b1` pending.
