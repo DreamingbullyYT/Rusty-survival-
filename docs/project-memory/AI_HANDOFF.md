@@ -15,9 +15,11 @@ Product: deeply extensible interpreted runtime modding API
 6. Treat source, Git history, reproducible tests, pinned upstream references and build logs as ground truth. Never invent progress.
 7. Horizon is the target engine. Integrate DreamMod through the current .hmod/native mod route and horizon-mixins where required and pinned supported interfaces; do not copy Horizon source into this repository.
 8. Current Horizon docs describe .hmod native packages, typed API injection points and native-only mixins/bridges/loop slots. The launcher normally compiles native mod source; the native host also loads prebuilt adjacent libraries with strict identity/hash checks. Verify the prebuilt distribution route.
+   - The minimal Core source/API check passed in Actions run 44249522292 at commit d6ca63ecea51facfaeda46e37e15e0664d188814. This was cargo check only, not a native build or game launch.
+   - An isolated Rhai 1.27.0 AST-evaluator candidate exists in mods/dreammod-runtime-prototype; Grain bytecode and AST optimization are disabled. It is not the final language choice or part of DreamMod Core. Its CI result is pending.
 9. The launcher distributes a prebuilt Horizon build with DreamMod Core already integrated. Launcher implementation is out of scope here.
 10. Ordinary .dmod packages must run as interpreted source at runtime. No per-mod Rust/native compilation, bytecode compilation, or game rebuild on the player's device.
-11. Do not select a scripting language until the evaluation and representative benchmarks justify it. Rhai is only a candidate.
+11. Do not select a scripting language until the evaluation and representative benchmarks justify it. Rhai and Starlark are candidates; the Rhai prototype is evaluation-only.
 12. Design broad, versioned extension contracts. Deep access does not mean unsafe raw pointers or unrestricted native process access for scripts.
 13. Scripts are sandboxed by default; capabilities, execution budgets, memory limits and fault isolation are mandatory.
 14. Before implementation, state intended change, affected modules, risks and verification plan.
