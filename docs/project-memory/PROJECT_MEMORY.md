@@ -55,3 +55,9 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 ## Shared immutable snapshots (2026-11-18)
 - PlayerSnapshotBatch stores its immutable player slice behind Arc<[PlayerSnapshot]>. Cloning a batch now increments the Arc reference count instead of deep-cloning player strings/records, enabling safe sharing within a dispatch after each mod's capability gate is checked.
 - No dispatcher/cache is implemented yet; do not share data with a mod before authorization.
+
+## Shared authorization contract (2026-11-18)
+- Added `mods/dreammod-contract`, a dependency-light crate with no third-party dependencies, defining the `PlayerReadAuthorization` trait and canonical `entities.read` capability identifier.
+- Both DreamMod Core and the package/lifecycle crate depend on this contract instead of defining unrelated authorization traits. The package `ModLifecycle` implements the shared trait by checking its Enabled state and explicit `entities.read` grant.
+- This establishes a compile-time seam without linking ZIP/JSON/semver package-inspection dependencies into trusted Horizon Core. It does not yet instantiate a runtime manager or execute `.dmod` scripts.
+- Verification is pending in Core, package and overlay Actions triggered by commits `28d55c1` and `7a9356a`.
