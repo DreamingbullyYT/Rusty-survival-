@@ -1,3 +1,7 @@
+## 2026-11-18 — Correct prebuilt test workspace selection and runtime formatting
+- API-only overlay run 44288685182 failed because Horizon's launcher is a separate Cargo workspace; `-p horizon-launcher` must run from `.ci/horizon/launcher`. Fixed in workflow commit 7a7cdb0 and expanded the Rust cache to cover both workspaces. Run 44289897914 is pending.
+- Rhai provider batch validation had rustfmt differences; run 44289702282 caught them. Formatting corrected in 99be124; run 44289964423 is pending.
+
 ## 2026-11-18 — Verify the Core source package and correct the prebuilt harness status
 - Official pinned cargo-horizon-mod check and .hmod source package workflow 44285877944 passed; the artifact was downloaded and inspected for manifest, source and uses.json.
 - The stock native-build CLI client/server paths require a prepared, licensed Minecraft 26.3 installation. No ownership check is bypassed and no Mojang assets are included in DreamMod artifacts.
