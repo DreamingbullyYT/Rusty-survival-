@@ -120,6 +120,59 @@ pub fn validate_manifest(manifest: &Manifest) -> Result<(), ManifestError> {
     Ok(())
 }
 
+/// A pure permission decision. The host must still enforce granted capabilities
+/// at every API boundary; this value does not itself confer runtime authority.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CapabilityPlan {
+    pub granted: BTreeSet<String>,
+    pub denied: BTreeSet<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CapabilityPlanError {
+    InvalidManifest,
+    UnknownCapability(String),
+    UnrequestedCapability(String),
+    DuplicateApproval(String),
+}
+
+/// Build an explicit capability plan from the manifest request and user approvals.
+///
+/// An empty approval list grants nothing. Approvals cannot add capabilities that
+/// the mod did not request, and all unapproved requests remain denied.
+pub fn plan_capability_grants(
+    manifest: &Manifest,
+    approved: &[String],
+) -> Result<CapabilityPlan, CapabilityPlanError> {
+    validate_manifest(manifest).map_err(|_| CapabilityPlanError::InvalidManifest)?;
+    let requested: BTreeSet<&str> = manifest.capabilities.iter().map(String::as_str).collect();
+    let mut granted = BTreeSet::new();
+
+    for capability in approved {
+        if !ALLOWED_CAPABILITIES.contains(&capability.as_str()) {
+            return Err(CapabilityPlanError::UnknownCapability(capability.clone()));
+        }
+        if !requested.contains(capability.as_str()) {
+            return Err(CapabilityPlanError::UnrequestedCapability(
+                capability.clone(),
+            ));
+        }
+        if !granted.insert(capability.clone()) {
+            return Err(CapabilityPlanError::DuplicateApproval(
+                capability.clone(),
+            ));
+        }
+    }
+
+    let denied = requested
+        .into_iter()
+        .filter(|capability| !granted.contains(*capability))
+        .map(str::to_owned)
+        .collect();
+
+    Ok(CapabilityPlan { granted, denied })
+}
+
 fn parse_version(value: &str, field: &'static str) -> Result<Version, ManifestError> {
     Version::parse(value).map_err(|_| ManifestError::InvalidVersion(field))
 }
@@ -680,6 +733,51 @@ mod tests {
                 ManifestError::InvalidEntrypoint
             );
         }
+    }
+
+    #[test]
+    fn capability_plan_grants_only_explicitly_approved_requests() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        let none = plan_capability_grants(&manifest, &[]).unwrap();
+        assert!(none.granted.is_empty());
+        assert_eq!(
+            none.denied,
+            BTreeSet::from(["events.listen".to_owned(), "world.read".to_owned()])
+        );
+
+        let partial =
+            plan_capability_grants(&manifest, &["events.listen".to_owned()]).unwrap();
+        assert_eq!(
+            partial.granted,
+            BTreeSet::from(["events.listen".to_owned()])
+        );
+        assert_eq!(partial.denied, BTreeSet::from(["world.read".to_owned()]));
+    }
+
+    #[test]
+    fn capability_plan_rejects_unrequested_unknown_and_duplicate_approvals() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        assert_eq!(
+            plan_capability_grants(&manifest, &["assets.read".to_owned()]),
+            Err(CapabilityPlanError::UnrequestedCapability(
+                "assets.read".to_owned()
+            ))
+        );
+        assert_eq!(
+            plan_capability_grants(&manifest, &["process.spawn".to_owned()]),
+            Err(CapabilityPlanError::UnknownCapability(
+                "process.spawn".to_owned()
+            ))
+        );
+        assert_eq!(
+            plan_capability_grants(
+                &manifest,
+                &["world.read".to_owned(), "world.read".to_owned()]
+            ),
+            Err(CapabilityPlanError::DuplicateApproval(
+                "world.read".to_owned()
+            ))
+        );
     }
 
     #[test]
