@@ -1,15 +1,22 @@
-# Minelib Hybrid
+# DreamMod
 
-Independent Android-first voxel game project using a hybrid strategy: selectively evaluate reusable Minelib components and implement missing systems behind clean interfaces.
+DreamMod is a deeply extensible, interpreted runtime modding platform integrated into a pinned Horizon build.
 
-## Project priorities
-1. Observable Minecraft Java Edition parity.
-2. Android as the first-class target.
-3. Strict separation of platform, runtime, world simulation, rendering, assets, audio, networking, and persistence.
-4. Reuse only after technical, license, and Android compatibility audits.
+## Core goals
+- Player-installed `.dmod` packages execute as interpreted source at runtime.
+- No Rust/native compilation, bytecode build, or game rebuild is required for ordinary mod installation or updates.
+- DreamMod Core is integrated into Horizon once at build time through HNMod/horizon-mixins; the launcher distributes the prebuilt game package.
+- Expose broad, versioned engine APIs and explicit replaceable subsystem contracts, including advanced domains such as AI, physics and rendering.
+- Keep scripts sandboxed by default, with explicit capabilities and execution budgets.
+
+## Repository scope
+This repository owns DreamMod Core integration source, interpreted runtime, mod-facing APIs, package format, compatibility tests and build documentation. The launcher is separate.
 
 ## Project memory
-Start with [AI_HANDOFF.md](docs/project-memory/AI_HANDOFF.md). The project-memory documents are mandatory for every contributor and AI agent.
+Read [AI_HANDOFF.md](docs/project-memory/AI_HANDOFF.md) first. The PMCS documents under `docs/project-memory/` are mandatory for every contributor and AI session.
 
-## Current status
-Repository reset and project bootstrap. No Minelib code has been imported. No Android build or parity claim has been verified yet.
+## Architecture
+See [DreamMod Architecture](docs/specs/DREAMMOD_ARCHITECTURE.md).
+
+## Status
+Architecture proposal only. No runtime, HNMod integration, loader, API or .dmod package has been implemented or verified.
