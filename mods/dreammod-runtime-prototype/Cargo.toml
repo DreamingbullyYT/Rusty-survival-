@@ -1,0 +1,13 @@
+[package]
+name = "dreammod-runtime-prototype"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Evaluation prototype for a source-interpreted DreamMod runtime"
+
+[dependencies]
+# Keep the Grain bytecode feature disabled. no_optimize keeps this prototype on
+# Rhai's AST-walking evaluator rather than enabling AST optimization.
+rhai = { version = "=1.27.0", default-features = true, features = ["sync", "no_optimize"] }
+
+[workspace]
