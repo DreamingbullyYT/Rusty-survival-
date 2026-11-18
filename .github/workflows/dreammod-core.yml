@@ -6,7 +6,6 @@ on:
     paths:
       - "mods/dreammod-core/**"
       - ".github/workflows/dreammod-core.yml"
-      - "docs/project-memory/**"
   pull_request:
     paths:
       - "mods/dreammod-core/**"
@@ -15,6 +14,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: dreammod-core-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   compile-against-pinned-horizon:
