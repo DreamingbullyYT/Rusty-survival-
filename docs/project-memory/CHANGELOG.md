@@ -1,3 +1,9 @@
+## 2026-11-18 — Verify the Core source package and correct the prebuilt harness status
+- Official pinned cargo-horizon-mod check and .hmod source package workflow 44285877944 passed; the artifact was downloaded and inspected for manifest, source and uses.json.
+- The stock native-build CLI client/server paths require a prepared, licensed Minecraft 26.3 installation. No ownership check is bypassed and no Mojang assets are included in DreamMod artifacts.
+- The current CI-only harness calls Horizon's exact prebuilt::compile(..., Route::Api, ...) with signed SDK client runtime/API slices, then tests the real host loader. Run 44288437986 exposed that overriding HOME hides Rustup; fixed in 67bc587. Run 44288685182 is pending.
+- Corrected Rhai limit descriptions: arrays/maps/strings are capped per value, not by aggregate per-mod heap accounting.
+
 ## 2026-11-18 — Replace blocked launcher CLI build with signed SDK API-route harness
 - Confirmed that both client-instance and standalone server-export `horizon-launcher native-build` commands require a prepared Minecraft 26.3 installation; the official launcher refuses to prepare without an authenticated owning account. We will not bypass this check.
 - Added `scripts/ci/patch_horizon_api_route.py`, which appends test-only harnesses to an ephemeral pinned Horizon checkout: one calls the exact internal `prebuilt::compile(..., Route::Api, ...)` with Horizon's signed SDK client runtime/API slices and writes the standard `native-mods.json`; the other calls the real `horizon-mod-host::native_libraries::load` against that overlay.
