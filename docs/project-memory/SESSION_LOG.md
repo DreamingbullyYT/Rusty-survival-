@@ -974,3 +974,20 @@ Limitations:
 - This verifies in-memory ZIP inspection and validation only. No files are extracted or installed; package contents are not yet retained for runtime use; no capabilities are granted and no script is executed.
 Next:
 - Add a bounded in-memory package-content representation that retains validated script/assets bytes, then design explicit install/permission/lifecycle boundaries before connecting an interpreter.
+
+
+## S-2026-11-18-21 — Make session ID validation legacy-aware
+Date: 2026-11-18
+Commit: pending
+Goal: Repair PMCS validation without rewriting the append-only historical session journal.
+Changes:
+- Confirmed the existing historical journal already contains repeated IDs from earlier sessions; the newly appended package-verification entry also reused an old ID.
+- Updated the validator to preserve legacy history but require every newly appended session ID to be unique against the entire prior journal and within the current update.
+- Added regression tests for duplicate IDs in one update and reuse of a legacy ID.
+- Kept the existing append-only diff check intact.
+Verification:
+- GitHub Actions PMCS regression run 44299535756 exposed the duplicate-ID issue; the fix and added tests are pending CI.
+Limitations:
+- Historical duplicate headings remain unchanged to preserve the append-only journal. New entries must use unique IDs.
+Next:
+- Verify PMCS regression tests and full structure/freshness validation, then resume the DreamMod package-content loader.
