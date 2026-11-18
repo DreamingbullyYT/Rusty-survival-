@@ -337,3 +337,11 @@
 - Updated validation to preserve legacy headings while rejecting any newly appended ID that duplicates another new ID or reuses an ID from the prior history.
 - Added negative tests for duplicate IDs in one update and reuse of a historical ID.
 - Full PMCS workflow verification is pending.
+
+
+## 2026-11-18 — Retain validated .dmod script and asset bytes in memory
+- Extended ValidatedPackage with bounded PackageFile records containing validated script and asset bytes.
+- The manifest is parsed separately; directory entries and manifest bytes are not retained as package files.
+- Each regular package file is streamed to EOF and CRC-checked before its bytes are returned. Existing 16 MiB per-file and 64 MiB aggregate uncompressed limits bound retained content.
+- Added real-ZIP fixture assertions for exact script and asset payloads.
+- No disk extraction, installation, capability grant or script execution is implemented. CI pending.
