@@ -512,3 +512,8 @@
 
 ### ModManager failure cascade correction — 2026-11-18
 - Corrected transitive failure propagation to process dependencies before their dependents. This ensures every level of a dependency chain is marked Failed in one pass.
+
+### Verification — 2026-11-18
+- Package workflow `44363502581`: PASS — formatting, 41 tests including manager regression tests, Clippy.
+- DreamMod Core workflow `44362777239`: PASS — pinned Horizon tooling, native API/host-WASM validation, engine mirror parity, formatting, tests and source artifact upload.
+- Overlay workflow `44362776804`: still compiling the API-only overlay; native host loading without environment overrides remains unverified.
