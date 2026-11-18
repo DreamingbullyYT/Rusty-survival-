@@ -164,12 +164,6 @@ where
 fn collect_online_players_unchecked(
     host: &mut dyn ServerHost,
 ) -> Result<PlayerSnapshotBatch, PlayerSnapshotError> {
-///
-/// The player list is capped before any per-player reads. Every Horizon handle is
-/// used only inside this function; returned snapshots own all their data.
-pub fn collect_online_players(
-    host: &mut dyn ServerHost,
-) -> Result<PlayerSnapshotBatch, PlayerSnapshotError> {
     let players = host.players().server_players();
     if players.len() > MAX_PLAYER_SNAPSHOT_BATCH {
         return Err(PlayerSnapshotError::TooManyPlayers {
