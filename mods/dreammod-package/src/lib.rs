@@ -283,6 +283,7 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
         read_archive_entry(&mut archive, manifest_index, &entries[manifest_index])?;
     let manifest = parse_manifest(&manifest_bytes)
         .map_err(|error| ArchiveError::InvalidManifest(format!("{error:?}")))?;
+    drop(manifest_bytes);
     validate_archive_inventory(&entries, &manifest)?;
 
     let mut files = Vec::new();
@@ -372,7 +373,7 @@ fn read_archive_entry<R: Read + Seek>(
     archive: &mut ZipArchive<R>,
     index: usize,
     entry: &ArchiveEntry,
- ) -> Result<Vec<u8>, ArchiveError> {
+) -> Result<Vec<u8>, ArchiveError> {
     let mut file = archive
         .by_index(index)
         .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
