@@ -11,7 +11,7 @@ DreamMod Core now pins the published Horizon Nightly `0b14f8acfd97fa2c750e427952
 
 The same `Route::Api` and adjacent native-library loader are present at the current Nightly commit (verified directly in `launcher/src/native_mods/prebuilt.rs`, `launcher/src/native_mods/api_route.rs` and `crates/horizon-mod-host/src/native_libraries.rs`). DreamMod Core's `horizon-mod.toml` has API 0.2 and `capabilities = ["registries"]`, which is required by the official native template and current manifest validator even for native API mods. It has no `native.mixin`, `native.module`, `native.bridge`, `native.state`, `native.loop` or `internals` declarations. It is therefore eligible for the API-only route, subject to a real build. The registries capability must be treated as a real permission in DreamMod's trust model.
 
-The current official command for a reproducible build against an installed base is:
+The current official command for a client build against an installed, prepared Minecraft instance is:
 
 ```sh
 horizon-launcher install nightly
@@ -20,7 +20,13 @@ horizon-launcher instance version DreamModCI nightly
 horizon-launcher native-build mods/dreammod-core --instance DreamModCI --trust-native-code --profile optimized
 ```
 
-The official launcher documentation says API-only mods need only the SDK's `runtime` and `api` slices; it returns a versioned native build with the unchanged game executable plus the compiled mod libraries and `native-mods.json`. It does not rebuild the engine. The `native-build` output must still be inspected and a clean game/host startup must still be proven. The CI source-package check currently underway is not that proof.
+The official launcher documentation says API-only mods need only the SDK's `runtime` and `api` slices; it returns a versioned native build with the unchanged game executable plus the compiled mod libraries and `native-mods.json`. It does not rebuild the engine. The client path requires a prepared Minecraft 26.3 installation owned by the user; `horizon-launcher prepare` refuses to download Mojang game files without an authenticated owning account. Do not bypass this check or redistribute Mojang files. For account-free CI proof of the same API-only native route, use the standalone server export:
+
+```sh
+horizon-launcher native-build mods/dreammod-core --server-output ./dreammod-server --version nightly-2026-11-18-0b14f8a --trust-native-code --profile optimized
+```
+
+This produces a standalone `horizon-engine` folder with the native inventory and mod libraries, without creating/selecting a client instance. The CI workflow now tests this server export first. It proves the API-only native build path, not a complete client install or game launch; those remain separate gates.
 
 Pinned current-baseline references:
 - [Nightly 2026-11-18 source](https://github.com/horizon-rust/horizon/tree/0b14f8acfd97fa2c750e42795249dcc981178ca4)
