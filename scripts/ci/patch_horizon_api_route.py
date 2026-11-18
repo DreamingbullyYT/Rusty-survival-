@@ -7,6 +7,7 @@ NATIVE_MODS_TEST = r"""
 #[cfg(test)]
 mod dreammod_api_route_ci {
     use super::*;
+    use horizon_platform::mod_package::dependencies;
     use horizon_platform::mod_package::manifest::Side;
     use std::env;
     use std::fs;
