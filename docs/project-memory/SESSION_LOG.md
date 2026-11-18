@@ -597,3 +597,28 @@ Next:
 - Verify the current runtime prototype and PMCS workflows.
 - Create a reproducible CI build using Horizon's official API-only native route and inspect the complete version folder/inventory.
 - Test that a clean pinned Horizon install starts with the shipped Core libraries without running native-build on the player device.
+
+## S-2026-11-18-06 — Correct Rhai host boundary and rerun candidate checks
+Date: 2026-11-18
+Commits:
+- Host boundary conversion: 961825d425a3621a0b2886d480458549b5495e6c
+- Import ordering correction: 92c3508b709e74ee0487644e60f0a3ff80e1a108
+Goal: Fix the first runtime prototype CI behavior failures and rerun the candidate validation pipeline.
+Changes:
+- Converted Rust Vec<f64> arguments into Rhai Array values before calling interpreted script functions, and converted returned Rhai Array values back to Vec<f64>.
+- Changed the script loop to use Rhai's array length method.
+- Inspected workflow logs: the earlier behavior run 44278072893 failed because Vec<f64> was passed as a Rust custom type rather than a Rhai array; `len` was consequently unavailable.
+- The first post-fix workflow run 44283921499 stopped at rustfmt because the new import order did not match rustfmt. Corrected import ordering in 92c3508.
+Verification:
+- `cargo fmt --check` passed before the import-order change in the earlier run but failed on the new import order in 44283921499; corrected, fresh workflow is required.
+- The fixed behavior tests have not yet completed successfully in CI.
+- PMCS validator regression tests passed in the run before the latest memory sync; the structural/freshness check flagged missing memory updates for the runtime code change. This session entry and state sync record the change, and PMCS must be checked again.
+Not tested:
+- No successful post-fix test suite, Clippy run or benchmark yet.
+- No Starlark comparison or ARM64 benchmark.
+- No production .dmod loader, sandbox or Core integration.
+- No CI-built prebuilt Horizon distribution or clean game startup.
+Next:
+- Verify the latest runtime and PMCS workflows.
+- Resolve remaining runtime test/Clippy issues before making any language decision.
+- Continue the reproducible native-build artifact and clean startup proof.
