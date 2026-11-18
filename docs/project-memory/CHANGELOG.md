@@ -394,3 +394,9 @@
 - Added `HostAdapter::read_player_snapshots()`, which performs one `entities.read` lifecycle/capability check before one batch host callback.
 - This is designed for one coarse native-to-script crossing per batch rather than one crossing per player. The concrete Horizon collector and script binding remain open.
 - Added tests for batch size, duplicate identities and authorization before the host callback. CI pending.
+
+
+## 2026-11-18 — Verify bounded player snapshot batch contract
+- DreamMod package Actions run 44309674771 passed on source commit 4397de1a28d536b0ffca448b553478ecae3467fb.
+- Formatting, all package tests and Clippy with -D warnings succeeded.
+- The batch remains a contract/policy primitive; no concrete Horizon collector or script binding is claimed.
