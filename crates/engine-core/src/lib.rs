@@ -6,4 +6,4 @@
 
 pub mod coordinates;
 
-pub use coordinates::{BlockPos, ChunkAddress, ChunkPos, CHUNK_WIDTH};
+pub use coordinates::{BlockPos, ChunkAddress, ChunkPos, SectionAddress, SectionPos, CHUNK_WIDTH};
