@@ -1467,3 +1467,24 @@ Next:
 - Verify Core rerun and PMCS after this documentation update.
 - Inspect overlay artifact metadata and separately establish the launcher's runtime-library search behavior.
 - Keep future engine growth fixture-driven; do not claim Minecraft parity from coordinate tests alone.
+
+
+## S-2026-11-18-46 — Verify DreamMod Core section bridge and inspect Linux overlay dependencies
+Date: 2026-11-18
+Changes:
+- Checked Core rerun 44361109477 after correcting engine_bridge.rs formatting in commit 42d9ac762502ad5ef3db9158a9885c99a24ae238.
+- Verified pinned Horizon native/API/host-WASM validation, byte-identical engine/HNMod source parity, rustfmt, all 12 Core unit tests, source .hmod packaging and artifact upload.
+- Downloaded and inspected overlay artifact 14445102997. Its receipt hash matched the mod library. ELF inspection showed libmod_vocab.so depends on libhorizon_mod_runtime.so but lacks RUNPATH; the mod library's own $ORIGIN RUNPATH does not cover that transitive dependency.
+- Audited pinned Horizon launcher code: native_libraries loads the mod with libloading, and Linux client_command does not explicitly add the overlay directory to LD_LIBRARY_PATH.
+- Updated the overlay workflow in commits 320b0bda and 4d2c910c to set $ORIGIN RUNPATH on bundled .so files, recalculate the native-mods.json library hash, and run the native-host test without inheriting an overlay LD_LIBRARY_PATH.
+Verification:
+- Core run 44361109477: PASS; 12 tests and source artifact upload passed.
+- Overlay run 44361815335: pending at the time of this entry; the new self-contained dynamic-loader test is not yet verified.
+- PMCS run 44361415616: PASS for the previous documented update.
+Limitations:
+- Core Hooks remain empty; the package/runtime is not wired to a live interpreter.
+- No complete .dmod sandbox, launcher-installed game startup or Java 26.3 differential engine test exists.
+Next:
+- Verify run 44361815335 through RUNPATH patch, host loader, archive inspection and upload.
+- If it passes, inspect the resulting artifact with LD_LIBRARY_PATH unset and confirm the native-mods.json hash matches.
+- Keep launcher/game startup separate from native-host unit-test evidence.
