@@ -54,3 +54,19 @@ The package crate now has a pure lifecycle policy helper: validation alone does 
 
 ## Historical architecture
 The former independent vanilla-engine architecture remains historical. Its Android, Minelib and Minecraft Java 26.3 decisions are not active DreamMod requirements.
+
+
+## Owned host-value boundary
+The first typed bridge contract is `bridge::PlayerSnapshot` in the package-contract crate.
+It contains only owned UUID/name/dimension/position values and rejects malformed identifiers
+and invalid coordinates. `HostAdapter::read_player_snapshot` requires an enabled lifecycle
+and the explicit `entities.read` grant before invoking the supplied Horizon read closure.
+This keeps the policy and data contract independently testable without linking the ZIP
+inspector into DreamMod Core.
+
+The concrete Core-side `ServerHost` reader is intentionally a separate next step: Core must
+copy Horizon handle data into the DTO while the hook's host borrow is valid, then drop every
+Horizon handle before any interpreted script receives the value. Do not make
+`dreammod-package` a Core dependency solely to reuse this policy primitive; the package
+inspector and runtime host should remain separable to avoid pulling ZIP/manifest machinery
+into the native engine unnecessarily.
