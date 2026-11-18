@@ -1526,3 +1526,19 @@ Next:
 - Core run `44362777239`: SUCCESS. Pinned `cargo-horizon-mod` build, native manifest/source/API/host-WASM validation, engine mirror parity, formatting, Core unit tests, source bundle packaging and artifact upload all passed.
 - Overlay run `44362776804`: still in progress at API-only compilation; no host load result yet.
 - PMCS run `44363588460`: pending.
+
+## S-2026-11-18-47 — Replace unsupported contract dependency with callback boundary
+Date: 2026-11-18
+Goal: Fix the real Horizon API-only overlay compile failure without weakening production validation.
+Changes:
+- Overlay run `44362776804` failed while staging/compiling DreamMod Core: `unresolved import dreammod_contract`. The SDK's native package staging did not include the local Cargo path dependency.
+- Removed the local `dreammod-contract` crate and removed it from Core/package Cargo manifests.
+- Changed Core player snapshot authorization to accept a one-shot closure, invoked before any `ServerHost` access.
+- Added `ModManager::require_capability(mod_id, capability)` as the package-side callback target. It enforces both enabled state and the explicit capability grant.
+- Removed the trait implementation tied to the unsupported external crate. The package retains its capability identifier and lifecycle checks.
+Verification:
+- Previous overlay run `44362776804` confirms the root cause; post-fix Core/package/overlay workflows are pending.
+Limitations:
+- The callback seam is not yet wired from a live ModManager instance into a real Horizon hook/context. No script interpreter or scheduler exists.
+Next:
+- Verify Core API-only prebuilt compilation and host loading, then design the runtime coordinator/hook ownership path.
