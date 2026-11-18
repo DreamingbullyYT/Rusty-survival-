@@ -243,3 +243,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - DreamMod Core exposes section coordinates and local Y through `engine_bridge::locate_block`. The HNMod copy is byte-identical to the engine source and is enforced by `check_engine_bridge_sync.py` in both workflows.
 - A first test run failed rustfmt and included an impossible overflow expectation for an address created from an `i32` block coordinate. That test was removed; canonical and mirrored files were formatted consistently. Latest engine and Core runs are pending.
 - Overlay run 44335372878 proved the API-only compile but failed in the real host loader because a sibling runtime dylib was not on the Linux loader path. Workflow run 44341223178 adds the overlay folder to `LD_LIBRARY_PATH`; verify it before claiming a successful load.
+
+
+## Verification refresh — 2026-11-18 (commit 42d9ac7)
+- API-only overlay run 44341466372: PASS for signed-SDK API-only compilation, real Horizon native-host loading, archive inspection and artifact upload. This is a native-host integration test, not a full launcher startup or licensed game launch.
+- Core run 44341466411: Horizon native/API/host-WASM validation and canonical/HNMod source parity passed; formatting failed only on import wrapping in engine_bridge.rs. Corrected in 42d9ac762502ad5ef3db9158a9885c99a24ae238. Core rerun 44361109477 is in progress.
+- PMCS run 44341597122 passed. PMCS run 44361109707 failed because the prior code change was not accompanied by all five required memory documents in its compared change range; the current update records the verified results and formatting correction.
+- No full launcher/game startup, production .dmod interpreter, runtime-to-Core lifecycle adapter, or live mod execution is verified.
