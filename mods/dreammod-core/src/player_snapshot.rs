@@ -3,6 +3,7 @@
 //! This module returns owned values only. No Horizon handle is retained in a snapshot.
 
 use mod_api::ServerHost;
+use std::sync::Arc;
 
 pub const MAX_PLAYER_SNAPSHOT_BATCH: usize = 256;
 pub const MAX_PLAYER_NAME_BYTES: usize = 16;
@@ -81,7 +82,7 @@ impl PlayerSnapshot {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PlayerSnapshotBatch {
-    players: Vec<PlayerSnapshot>,
+    players: Arc<[PlayerSnapshot]>,
 }
 
 impl PlayerSnapshotBatch {
@@ -104,7 +105,9 @@ impl PlayerSnapshotBatch {
             return Err(PlayerSnapshotError::DuplicatePlayer { uuid: duplicate[0] });
         }
 
-        Ok(Self { players })
+        Ok(Self {
+            players: Arc::from(players),
+        })
     }
 
     pub fn players(&self) -> &[PlayerSnapshot] {
@@ -311,6 +314,13 @@ mod authorization_tests {
                 Err(PlayerSnapshotError::InvalidPosition { uuid: 1 })
             ));
         }
+    }
+
+    #[test]
+    fn snapshot_batch_clone_shares_immutable_storage() {
+        let batch = PlayerSnapshotBatch::new(vec![valid_snapshot(7)]).unwrap();
+        let clone = batch.clone();
+        assert!(Arc::ptr_eq(&batch.players, &clone.players));
     }
 
     #[test]
