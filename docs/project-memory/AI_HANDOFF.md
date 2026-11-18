@@ -33,7 +33,7 @@ Product: deeply extensible interpreted runtime modding API
 - Support adding systems and replacing designated subsystems through explicit contracts.
 - Performance matters: keep hot loops native, use coarse-grained/batched script calls, benchmark replacement implementations.
 - Script sandbox and explicit capabilities are mandatory.
-- HNMod native code is trusted build-time code, not an untrusted mod sandbox.
+- DreamMod Core's prebuilt native library is trusted build-time code, not an untrusted script sandbox.
 - No launcher implementation in this repository.
 
 ## Historical work
