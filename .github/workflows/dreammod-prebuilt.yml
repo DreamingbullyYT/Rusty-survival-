@@ -64,33 +64,21 @@ jobs:
           fi
       - name: Install the pinned Nightly base
         run: '"$HORIZON_LAUNCHER" install nightly'
-      - name: Create a clean CI instance
-        run: |
-          "$HORIZON_LAUNCHER" instance create DreamModCI
-          "$HORIZON_LAUNCHER" instance version DreamModCI nightly-2026-11-18-0b14f8a
-      - name: Build DreamMod Core through the official native-build route
-        run: '"$HORIZON_LAUNCHER" native-build mods/dreammod-core --instance DreamModCI --trust-native-code --profile optimized'
-      - name: Inspect the prebuilt native build
+      - name: Build a standalone headless native distribution
+        run: '"$HORIZON_LAUNCHER" native-build mods/dreammod-core --server-output "$RUNNER_TEMP/dreammod-server" --version nightly-2026-11-18-0b14f8a --trust-native-code --profile optimized'
+      - name: Inspect the prebuilt native server distribution
         id: inspect
         shell: bash
         run: |
           set -euo pipefail
-          record=""
-          while IFS= read -r candidate; do
-            if grep -q 'dreammod_core' "$candidate"; then
-              record="$candidate"
-              break
-            fi
-          done < <(find "$HOME" -type f -name native-mods.json -print)
-          test -n "$record"
-          build_dir="$(dirname "$record")"
+          build_dir="$RUNNER_TEMP/dreammod-server"
           test -f "$build_dir/native-mods.json"
           grep -q 'dreammod_core' "$build_dir/native-mods.json"
           grep -q '0b14f8acfd97fa2c750e42795249dcc981178ca4' "$build_dir/native-mods.json"
           test -d "$build_dir/horizon-native-mods"
           mod_library="$(find "$build_dir/horizon-native-mods" -type f \\( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \\) -print -quit)"
           test -n "$mod_library"
-          test -f "$build_dir/horizon-client"
+          test -f "$build_dir/horizon-engine"
           echo "build_dir=$build_dir" >> "$GITHUB_OUTPUT"
           echo "mod_library=$mod_library" >> "$GITHUB_OUTPUT"
           echo "Native build directory: $build_dir"
@@ -102,7 +90,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p dist
-          tar -czf dist/dreammod-horizon-nightly-native.tar.gz -C "${{ steps.inspect.outputs.build_dir }}" .
+          tar -czf dist/dreammod-horizon-nightly-native-server.tar.gz -C "${{ steps.inspect.outputs.build_dir }}" .
           cp "${{ steps.inspect.outputs.build_dir }}/native-mods.json" dist/native-mods.json
           build_log="$(find "$HOME" -type f -path '*/native/build.log' -print -quit)"
           if [ -n "$build_log" ]; then cp "$build_log" dist/native-build.log; fi
