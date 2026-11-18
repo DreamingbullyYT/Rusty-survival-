@@ -1,6 +1,6 @@
 //! Coarse microbenchmark only. Results from CI hosts are not device guarantees.
 use dreammod_runtime_prototype::RhaiPrototype;
-use std::time::Instant;
+use std::{hint::black_box, time::Instant};
 
 const ITEMS: usize = 10_000;
 const ROUNDS: usize = 50;
@@ -13,7 +13,7 @@ fn main() {
         r#"
         fn physics_step(positions, velocities, delta_seconds) {
             let next = [];
-            for i in 0..positions.len {
+            for i in 0..positions.len() {
                 next.push(positions[i] + velocities[i] * delta_seconds);
             }
             next
@@ -25,20 +25,22 @@ fn main() {
     let start = Instant::now();
     for _ in 0..ROUNDS {
         let output = program
-            .call_physics_batch(positions.clone(), velocities.clone(), 0.05)
+            .call_physics_batch(black_box(positions.clone()), black_box(velocities.clone()), 0.05)
             .expect("script evaluation");
         assert_eq!(output.len(), ITEMS);
+        black_box(output);
     }
     let interpreted = start.elapsed();
 
     let start = Instant::now();
     for _ in 0..ROUNDS {
-        let output: Vec<f64> = positions
+        let output: Vec<f64> = black_box(&positions)
             .iter()
             .zip(&velocities)
             .map(|(position, velocity)| position + velocity * 0.05)
             .collect();
         assert_eq!(output.len(), ITEMS);
+        black_box(output);
     }
     let native = start.elapsed();
 
