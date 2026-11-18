@@ -3,7 +3,6 @@
 //! This module returns owned values only. No Horizon handle is retained in a snapshot.
 
 use mod_api::ServerHost;
-use std::collections::BTreeSet;
 
 pub const MAX_PLAYER_SNAPSHOT_BATCH: usize = 256;
 pub const MAX_PLAYER_NAME_BYTES: usize = 16;
@@ -93,13 +92,13 @@ impl PlayerSnapshotBatch {
             });
         }
 
-        let mut seen = BTreeSet::new();
-        for player in &players {
-            if !seen.insert(player.uuid()) {
-                return Err(PlayerSnapshotError::DuplicatePlayer {
-                    uuid: player.uuid(),
-                });
-            }
+        // A contiguous UUID buffer avoids the per-node allocations of a tree set.
+        // The batch is capped at 256, so sorting this small buffer is predictable and cheap.
+        let mut uuids = Vec::with_capacity(players.len());
+        uuids.extend(players.iter().map(PlayerSnapshot::uuid));
+        uuids.sort_unstable();
+        if let Some(duplicate) = uuids.windows(2).find(|pair| pair[0] == pair[1]) {
+            return Err(PlayerSnapshotError::DuplicatePlayer { uuid: duplicate[0] });
         }
 
         Ok(Self { players })
