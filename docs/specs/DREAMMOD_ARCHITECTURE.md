@@ -1,6 +1,6 @@
 # DreamMod — Architecture and Integration Plan
 
-Status: NATIVE CORE SOURCE PACKAGE ADDED; OFFICIAL PACKAGE CI PENDING; RHAI CANDIDATE TESTS/CLIPPY VERIFIED; PREBUILT DISTRIBUTION NOT VERIFIED
+Status: CORE SOURCE .HMOD PACKAGE VERIFIED; API-ONLY PREBUILT OVERLAY/HOST-LOADER CI IN PROGRESS; RHAI CANDIDATE PROVISIONAL
 Date: 2026-11-18
 Target engine: Horizon (upstream engine; reuse its .hmod/native mod API and host, with horizon-mixins only where required)
 Repository role: DreamMod runtime, API, package format, tests and integration source
@@ -21,12 +21,12 @@ DreamMod Core is built once as a trusted native .hmod mod against a pinned Horiz
 - Compile DreamMod Core once in the trusted CI/build pipeline against the pinned Horizon SDK.
 - Keep the current Core API-only: no native.mixin, native.module, native.bridge, native.state, native.loop or internals dependency. The pinned launcher source routes this shape through Route::Api, reads only the prebuilt SDK runtime/API slices, compiles each mod as its own dynamic library, and returns the unchanged prebuilt horizon-client plus runtime/mod libraries.
 - Package the official native-build output as a versioned prebuilt game distribution, including native-mods.json. The stock native host validates adjacent library paths, SHA-256 and exact game/Rust identity before loading.
-- This is source-verified, not yet end-to-end verified: CI must produce the output, inspect the artifact and launch a clean game before the route is considered proven.
+- The source package passed the official pinned cargo-horizon-mod check and produced an inspected .hmod artifact (Actions run 44285877944). A CI-only harness now calls the exact prebuilt::compile(..., Route::Api, ...) function with Horizon's signed SDK client runtime/API slices, writes the native inventory, and validates it through the real horizon-mod-host loader. The first attempt failed because CI overrode HOME and hid Rustup; fixed in 67bc587. Current run 44288685182 is pending. Even after it passes, the artifact is only an engine/native-library overlay, not a complete playable install; the user's licensed Minecraft 26.3 assets remain separate.
 - Produce a complete prebuilt Horizon distribution with DreamMod Core included; launcher only copies/installs files.
 - Pin Horizon revision, horizon-mixins revision, hooks/API revision, Rust toolchain and native library identity.
 - The launcher downloads and installs that finished distribution; it does not compile native .hmod source on the player's device.
 
-Current Horizon documentation describes .hmod native packages as Rust source that the launcher normally compiles for the selected game revision. The native host also has a loader for already-built adjacent dynamic libraries with SHA-256 and build-identity checks. Our intended route is to build DreamMod Core in CI and verify that prebuilt-library path end-to-end; a source .hmod archive alone is not enough. Current docs call the package .hmod, so do not assume the older .hnmod name is still the active package format. See docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md.
+Current Horizon documentation describes .hmod native packages as Rust source that the launcher normally compiles for the selected game revision. The native host also has a loader for already-built adjacent dynamic libraries with SHA-256 and build-identity checks. The official native-build CLI requires a prepared Minecraft 26.3 installation; the CI harness therefore calls the same internal API-only prebuilt compiler directly from a pinned Horizon source checkout, using signed SDK slices only. It does not fetch or redistribute Mojang assets. The generated overlay must still be installed beside a matching licensed base game. Current docs call the package .hmod, so do not assume the older .hnmod name is still the active package format. See docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md.
 
 ### Runtime
 
@@ -90,6 +90,8 @@ A subsystem is replaceable only if DreamMod can define its complete contract: in
 - Zero or near-zero script dispatch overhead when no mods subscribe to a hook.
 - Add per-mod execution budgets, memory limits, cancellation and fault reporting.
 - Never silently claim native-level performance for interpreted code.
+- Benchmark evidence: the current Rhai AST candidate took 265.955 ms versus 574.49 microseconds in Rust for 50 x 10,000 item updates (462.94x slower) on x86_64 CI. This is synthetic and not an ARM64 result, but it is a strong warning against per-entity/per-vertex script loops.
+- Initial script providers must run at coarse event/subsystem boundaries; Rust retains high-frequency iteration and batch storage. Current Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits, not aggregate per-mod heap accounting.
 
 ## 7. Security and trust
 
@@ -109,7 +111,7 @@ Initial shortlist:
 - **Sprite (research-only reference):** a small MIT tree-walking interpreter with no bytecode/VM, but its current value model and language surface are far too limited for DreamMod without substantial development. It is not adopted as a dependency.
 - **Starlark 0.14.x:** rejected for the strict no-bytecode rule. Its public API parses to AST, but its evaluator compiles the AST to bytecode before execution.
 
-The first Rhai evaluation prototype now exists at `mods/dreammod-runtime-prototype`. It covers event-style function calls, a coarse-grained batch host query, a batched physics-provider function, and an execution-operation budget. CI run 44283982705 passed formatting, four behavior/budget tests and Clippy. A first corrected desktop benchmark still showed a large interpreted-vs-native gap; the methodology was further tightened with equivalent input cloning and observable output checks, and the newest result is pending. Its existence is not a final language decision and it is not yet integrated into DreamMod Core.
+The first Rhai evaluation prototype exists at mods/dreammod-runtime-prototype. Formatting, behavior tests, Clippy and per-value resource-limit tests passed in Actions runs 44284795812 and 44285379104. The comparable synthetic x86_64 benchmark measured Rhai AST 265.955 ms vs Rust 574.49 microseconds for 50 x 10,000 item updates (462.94x). This is not Android data and warns against per-entity/per-vertex interpreted loops. Its array/map/string limits are per-value caps, not aggregate heap quotas. Rhai is not the final language and is not integrated into Core.
 
 Important terminology: parsing source into an AST is required by ordinary interpreters and is not native-code or bytecode compilation. The player must never run a native compiler, bytecode compiler/VM preparation step, JIT, or game rebuild for a `.dmod`. The prototype must keep Rhai's Grain feature disabled and must not serialize compiled executable artifacts.
 
@@ -170,9 +172,10 @@ The manifest must identify package ID, version, display name, entry points, requ
 
 ## 13. Current status
 
-- The minimal native `.hmod` Core bootstrap is implemented and its `cargo check` against pinned Horizon source passed in GitHub Actions run `44249522292` (commit `d6ca63ecea51facfaeda46e37e15e0664d188814`). This verifies API-level compilation only; it does not prove native library packaging or game startup.
-- `mods/dreammod-runtime-prototype` contains an initial Rhai AST-interpreter evaluation harness with tests and a coarse batch benchmark. It is a candidate prototype, not the production runtime and not yet part of DreamMod Core.
-- The runtime prototype CI workflow has been added; its result is pending.
-- No `.dmod` manifest/parser/loader, package lifecycle, production sandbox, capability enforcement, stable public API, subsystem registry, prebuilt native distribution or clean game startup proof exists yet.
-- No language decision has been made; Rhai and Starlark remain candidates.
-- No Android/ARM64 runtime benchmark has been performed.
+- Official pinned cargo-horizon-mod check and source .hmod package build passed in Actions run 44285877944. The artifact was downloaded and inspected; it contains horizon-mod.toml, Cargo.toml, src/lib.rs and uses.json, pinned to Horizon 0b14f8a/API 0.2.
+- The exact API-only Route::Api prebuilt path is source-verified in Horizon. The current CI-only harness calls prebuilt::compile with signed SDK client runtime/API slices and then tests the real horizon-mod-host native library loader. First run 44288437986 failed because CI overrode HOME and hid Rustup; fixed in 67bc587. Current run 44288685182 is pending.
+- A successful overlay will contain horizon-client, adjacent runtime/mod libraries and native-mods.json. It will not contain Mojang assets; a complete playable install still needs the user's matching licensed Minecraft 26.3 assets.
+- mods/dreammod-runtime-prototype contains a provisional Rhai AST evaluator candidate with tests and per-value/operation limits. The synthetic 10k-item loop was 462.94x slower than Rust on x86_64 CI. Rhai is not selected and is not integrated into Core.
+- No production .dmod manifest/parser/loader, package lifecycle, production sandbox, capability enforcement, stable public API, event bus, subsystem registry or AI/physics/rendering replacement implementation exists yet.
+- No aggregate per-mod heap accounting or Android/ARM64 runtime benchmark has been implemented.
+- No complete playable game launch with DreamMod Core has been verified.
