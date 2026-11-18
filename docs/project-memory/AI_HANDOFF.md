@@ -86,3 +86,9 @@ The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod 
 - This removes the temporary UUID heap allocation. Batch cap and connection order remain unchanged. No benchmark result is available.
 - Core fmt command now uses cargo fmt --manifest-path Cargo.toml -- --check so generated SDK sources are not reformatted.
 - Latest Core/package CI runs need checking; package CI for the 60-second archive deadline passed in run 44317125357.
+
+
+## Latest shared-snapshot optimization (2026-11-18)
+- Core PlayerSnapshotBatch uses Arc<[PlayerSnapshot]> (commit 3f629cc54a27992f9a7f402dfda3fcfa0505b4bf); package bridge equivalent uses Arc (commit 74310a797393ec319fb9192d931a7b860ba55ced).
+- Clone shares immutable backing storage; pointer-identity tests were added. This is not yet used by a dispatcher/cache. Always enforce per-mod capability checks before returning shared data.
+- Core/package CI runs 44318166133 and 44318172781 are pending. Previous Core run 44317880298 is still active on the preceding stack-buffer revision.
