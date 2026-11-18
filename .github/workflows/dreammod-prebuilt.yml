@@ -89,7 +89,7 @@ jobs:
             "target": "client",
             "horizon_commit": "0b14f8acfd97fa2c750e42795249dcc981178ca4",
             "horizon_nightly": "2026-11-18",
-            "rust_toolchain": "1.95.0",
+            "rust_toolchain": "1.99.1",
             "mod_id": "dreammod_core",
             "format": "Horizon native-mods.json + adjacent libraries",
             "contains_mojang_assets": false
