@@ -91,3 +91,10 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. Add per-dispatch immutable snapshot reuse only after scheduler thread ownership, re-entrancy and invalidation are explicit.
 4. Measure host-call batching on ARM64 before stating any FPS or slowdown target.
 5. Propagate the single 60-second monotonic deadline through every stage once the full .dmod loader exists.
+
+
+## Shared snapshot follow-up (2026-11-18)
+1. Verify Core/package CI for Arc-backed snapshot batches and pointer-identity tests.
+2. Implement per-dispatch snapshot reuse only once a scheduler exists and its thread/re-entrancy semantics are proven.
+3. Ensure each mod's capability is checked before exposing a shared immutable batch.
+4. Benchmark cloning and batch delivery at representative player counts on x86_64 and ARM64.
