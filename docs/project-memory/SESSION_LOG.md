@@ -761,3 +761,29 @@ Next:
 - Verify the new Core workflow after the manifest fix.
 - Run the official `horizon-launcher native-build` command in CI against the published Nightly SDK and upload the resulting native build folder.
 - Prove a clean client/host startup and inspect the native library inventory.
+
+## S-2026-11-18-14 — Add official Horizon prebuilt build workflow
+Date: 2026-11-18
+Commits:
+- Initial workflow: 2ae2738494e6c5f2897d4acf570db2c003a2d7f9
+- Pin/inventory verification: 01c696c86084991fceb9978cc9ae2cd24443312b
+- Checksum filename correction: f827ab905a7e664c9d75d791b03034cf76773e75
+- Headless shared-library dependencies: 6bd45dd533224b11bbfb2a59ee58a7481c8272cf
+Goal: Use the official Horizon Launcher in trusted CI to create the prebuilt native build overlay that the user's separate launcher can distribute.
+Changes:
+- Added a workflow pinned to Horizon Launcher 0.2.78. It downloads the Linux x86_64 tarball, verifies its SHA256SUMS entry, isolates HOME/XDG data, installs Nightly, creates an isolated instance and invokes `horizon-launcher native-build mods/dreammod-core --instance DreamModCI --trust-native-code --profile optimized`.
+- The workflow inspects native-mods.json, verifies the DreamMod Core ID and exact pinned Horizon commit, requires horizon-client and an adjacent native dynamic library, then archives the versioned native build overlay for 14 days.
+- The initial checksum check failed because sha256sum expected the original asset filename while the download was saved as launcher.tar.gz; corrected the checksum line with sed.
+- The next run found the launcher binary needed libxkbcommon-x11.so.0; added the relevant X11/XKB shared libraries and offscreen Qt mode for the headless runner.
+Verification:
+- Prebuilt workflow run 44286113386 failed at checksum verification; fixed in 01c696c.
+- Run 44286212788 passed download/checksum/extraction and HOME isolation, then failed at launcher startup due to missing libxkbcommon-x11.so.0; fix committed in 6bd45dd, fresh run pending.
+- Official Core package workflow run 44284751206 built the cargo-horizon-mod tool successfully but failed on the initial manifest's empty capabilities list. Current Horizon native template requires `capabilities = ["registries"]`; fixed in 9a5f9b5. Cached-tool rerun 44285877944 is in progress.
+Not tested:
+- No successful native-build output or uploaded prebuilt overlay yet.
+- No clean game or server startup with DreamMod Core.
+Next:
+- Verify the cached official package workflow and source .hmod artifact.
+- Verify the headless official launcher can install Nightly and execute native-build.
+- Inspect the actual output layout and adjust artifact packaging if the library/inventory is not adjacent to horizon-client.
+- Prove clean startup with a host process that loads the native library.
