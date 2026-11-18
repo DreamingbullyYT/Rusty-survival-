@@ -322,3 +322,11 @@
 - Added real ZIP fixture tests for valid packages, path traversal, malformed/truncated input and payload corruption.
 - Commits: 32d52810bb2181c7c6bb03a4f7152b402a8c8d9e, d7e7794567efb0cf1873686964fe47e7364ccbf4, 8bea071635acc45098bd4e93c5c66cbdf5296b30, 15c650a0e61ed3707e6ff76f784180f7f9115452, fc6af40387fa9b861b19ec7fb6b148046c83df8d, 6add01bb156b8ff0e826de40dbd7712a014daf41.
 - Verification: CI not yet inspected; no passing result claimed.
+
+
+## 2026-11-18 — Verify DreamMod package inspection CI and fix regressions
+- Inspected Actions run 44291904988 and found the path-traversal test inserted a literal backslash into JSON without escaping it. Corrected the fixture to JSON-escape backslashes; all 19 package tests then passed.
+- Clippy then reported a needless boolean branch in the archive path validator. Simplified the predicate and reran the complete workflow.
+- Final verification: Actions run 44299317538 on commit 4e983c04ea8f3a4085aa2e13b6b53d691c307564 passed formatting, all 19 tests and Clippy with `-D warnings`.
+- Updated source comments to accurately describe the in-memory ZIP inspector.
+- No filesystem extraction, installation, capability grant, script execution, or production sandbox is implemented.
