@@ -231,3 +231,7 @@ Package run `44364198594` on commit `4103668fee` passed rustfmt, all 42 unit tes
 
 ### DM-034 verification status
 Callback refactor is under verification. Package tests include the new callback method and pass in `44364198594`. Core run `44363904945` and overlay run `44363904976` remain in progress; do not close DM-034 until Core compiles and overlay API-only compilation plus real host loading pass.
+
+## DM-035 — Capability-gated asset read API
+Status: IMPLEMENTED — CI verification pending
+Added `ModManager::read_asset(mod_id, path)`. It checks Enabled state and explicit `assets.read`, restricts requests to validated `assets/` paths using archive path rules, and returns borrowed immutable bytes without extraction. Tests cover permission denial, successful read, traversal and missing asset. Package workflow after commit `f90d0b1` pending. Asset decoding, cache policy and Horizon resource registration are not implemented.
