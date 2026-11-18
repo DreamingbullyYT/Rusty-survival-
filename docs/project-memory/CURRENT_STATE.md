@@ -117,3 +117,11 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added regression tests for default-disabled behavior, approval/activation separation, capability denial, disable, fail-closed behavior, and invalid transitions.
 - Commits: `14a4bf8`, `6f1adf2`, `eae8f1c`.
 - Verification: pending the package workflow triggered by the latest source changes. This is a pure lifecycle policy helper, not a running script scheduler or Horizon integration.
+
+
+## Latest guarded host boundary (2026-11-18)
+- Added a generic `HostAdapter::invoke(capability, closure)` to the lifecycle module. It checks that the mod is Enabled and has the requested capability before invoking the supplied host operation; denied calls do not invoke the closure.
+- Added a 512-byte, control-character-free failure diagnostic limit.
+- Added tests for callback non-invocation on denial, successful authorized invocation, capability mismatch, and bounded failure reasons.
+- Commits: `7107022` and compile-structure correction `407a762`.
+- Verification: package CI pending. This is a reusable authorization boundary, not yet wired to concrete Horizon API functions. It does not make arbitrary host handles safe to expose.
