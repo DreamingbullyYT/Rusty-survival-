@@ -1,6 +1,6 @@
 # DreamMod — Architecture and Integration Plan
 
-Status: CORE SOURCE .HMOD PACKAGE VERIFIED; API-ONLY PREBUILT OVERLAY/HOST-LOADER CI IN PROGRESS; RHAI CANDIDATE PROVISIONAL
+Status: CORE SOURCE AND UNIT TESTS VERIFIED; API-ONLY PREBUILT OVERLAY CI HARNESS UNDER REPAIR; RHAI CANDIDATE PROVISIONAL
 Date: 2026-11-18
 Target engine: Horizon (upstream engine; reuse its .hmod/native mod API and host, with horizon-mixins only where required)
 Repository role: DreamMod runtime, API, package format, tests and integration source
@@ -179,3 +179,10 @@ The manifest must identify package ID, version, display name, entry points, requ
 - No production .dmod manifest/parser/loader, package lifecycle, production sandbox, capability enforcement, stable public API, event bus, subsystem registry or AI/physics/rendering replacement implementation exists yet.
 - No aggregate per-mod heap accounting or Android/ARM64 runtime benchmark has been implemented.
 - No complete playable game launch with DreamMod Core has been verified.
+
+
+## Verification refresh — 2026-11-18
+- Core run 44322745253 passed pinned Horizon native/API/host-WASM validation, formatting, unit tests and source packaging on HEAD 741f7ff15bb22a2b16b8a5a667fe471d3ee3ddc9.
+- Overlay run 44322745328 failed before artifact creation because the injected test used the UI-facing picker Route rather than prebuilt::Route; the patch now qualifies prebuilt::Route::Api. A fresh run is required.
+- The real native host-loader test did not execute in the failed overlay run. Do not claim a verified overlay or playable distribution.
+- Package Arc-backed batch CI run 44318172781 and archive-inspection deadline CI run 44317125357 passed. There is no measured performance gain, dispatcher/cache, or ARM64 benchmark.
