@@ -26,7 +26,7 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 - The minimal native `.hmod` source skeleton exists and its pinned-source API compile check is VERIFIED in CI run 44249522292.
 - The Rhai candidate prototype is IMPLEMENTED. CI run 44283982705 passed rustfmt, all 4 behavior/budget tests and Clippy. Its benchmark ran, but review showed the Rust-native workload was optimized away (371 ns for 500,000 outputs), so that timing is invalid. Commit 89ed3a5 added black_box guards; the follow-up rustfmt check found a line-wrap issue, corrected in 00a3360. A fresh benchmark run is pending. It is not selected as the final language and is not integrated into DreamMod Core.
 - Pinned Horizon source now confirms the API-only Route::Api build path: Core's current Hooks-only manifest qualifies, and the route returns the unchanged prebuilt client plus native libraries. No prebuilt native library package has yet been produced or loaded.
-- No production interpreter selected or integrated; the isolated Rhai candidate is only an evaluation prototype.
+- No production interpreter selected or integrated; the isolated Rhai candidate is only an evaluation prototype. Starlark was rejected for the strict no-bytecode rule; Sprite is only a research reference because its current language surface is too limited.
 - No .dmod manifest/schema, package loader, lifecycle, dependency resolver or hot reload.
 - No public DreamMod API, event bus, extension registry or subsystem replacement contract.
 - No sandbox, capability enforcement, execution/memory budgets or diagnostics.
@@ -36,9 +36,9 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 
 ## Next actions
 1. Verify the new official native package workflow (44284751206), fix any issues, and inspect the generated source .hmod artifact.
-2. Verify the black_box-protected benchmark (latest run 44284795812) and record diagnostic desktop timings; do not use the old 371 ns Rust result.
-2. Use the pinned official native-build pipeline to produce and inspect an API-only prebuilt distribution, then prove clean startup.
-3. Compare Rhai and Starlark against the no-bytecode/no-JIT requirement and representative workloads.
+2. Verify the newest benchmark (latest run 44284795812) with equivalent input cloning and observable outputs; do not use the old 371 ns Rust result.
+3. Use the pinned official native-build pipeline to produce and inspect an API-only prebuilt distribution, then prove clean startup.
+4. Evaluate the tiny Sprite tree-walker as a research reference only; Starlark is rejected because its evaluator compiles AST to bytecode.
 4. Define the minimal package manifest, loader lifecycle and capability model.
 5. Implement one minimal .dmod end-to-end before broad API expansion.
 6. Design extension contracts for adding and replacing systems, then benchmark.
