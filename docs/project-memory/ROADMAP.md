@@ -114,3 +114,14 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 2. [x] Change the overlay CI toolchain and artifact metadata from 1.95.0 to 1.99.1 (commit 96d2e740).
 3. [ ] Verify overlay run 44328650675 reaches successful API-only prebuilt compilation.
 4. [ ] If compile succeeds, verify the real Horizon native host loads the library and inspect/archive the overlay. If it fails, inspect the first new diagnostic before changing Core code.
+
+
+## Engine reference and HNMod integration follow-up — 2026-11-18
+1. [x] Make official Minecraft Java 26.3 acquisition automatic for engine push/PR CI, verify the downloaded archive, run existing engine tests/Clippy, and delete the jar in an unconditional cleanup step (run 44331401582 PASS).
+2. [ ] Add a real Java 26.3 oracle driver and differential fixtures. The current smoke workflow does not compare engine outputs with the game.
+3. [ ] Expand the engine beyond the current coordinate primitive only when each domain has a pinned 26.3 reference fixture and deterministic tests.
+4. [x] Verify DreamMod Core's native `.hmod` source check, unit tests and source packaging (run 44322745253 PASS).
+5. [ ] Wire the owned Core host collector through a concrete per-mod lifecycle/capability adapter and expose only bounded owned DTOs to the interpreted runtime.
+6. [ ] Connect the package/runtime layer to the trusted Core HNMod without duplicating the package DTOs or Horizon host functionality.
+7. [ ] Finish API-only overlay native-host loading, archive inspection and artifact upload (run 44330930078 pending).
+8. [ ] Full-game launch remains gated on the user's matching licensed Minecraft installation; never bypass Horizon's account/ownership checks or upload Mojang assets.
