@@ -28,7 +28,8 @@
 - [ ] Evaluate whether a tiny tree-walking interpreter can provide enough language features for DreamMod without creating an unmaintainable custom language.
 - [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem replacement on desktop and ARM64 devices.
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
-- [ ] Define execution budgets, memory quotas, cancellation and diagnostics.
+- [x] Add prototype operation/call-depth and aggregate array/map/string/variable/function limits plus an array-growth regression test (CI pending).
+- [ ] Define production execution budgets, exact memory quotas, cancellation and diagnostics.
 
 ## Phase 3 — Core runtime
 - [ ] Define .dmod manifest and permissions schema.
