@@ -43,3 +43,6 @@ PlayerSnapshotBatch retains the same public getters, item ordering, field values
 
 ## Shared authorization contract (2026-11-18)
 `dreammod-contract` is a local path dependency shared by the standalone Core and package crates. It intentionally has no third-party dependencies and uses Rust 2024 syntax compatible with the pinned Core toolchain 1.99.1. Core continues to compile against the exact pinned Horizon SDK; package validation uses stable Rust. Verify both workflows before treating the new dependency edge as compatible.
+
+## ModManager (2026-11-18)
+The manager is implemented in the standalone `dreammod-package` crate and uses the already-pinned SemVer dependency/resolver. It introduces no Horizon SDK dependency and no native host ABI. It uses standard-library `BTreeMap`/`BTreeSet` for deterministic ordering. Package CI run `44363310681` is pending; confirm stable Rust formatting, unit tests and Clippy before marking verified.
