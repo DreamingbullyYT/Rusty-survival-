@@ -152,6 +152,158 @@ fn valid_relative_script_path(path: &str) -> bool {
         && path.ends_with(".dream")
 }
 
+
+/// Limits applied to ZIP central-directory metadata before any entry is opened.
+pub const MAX_ARCHIVE_ENTRIES: usize = 1_024;
+pub const MAX_ARCHIVE_UNCOMPRESSED_BYTES: u64 = 64 * 1024 * 1024;
+pub const MAX_ARCHIVE_FILE_BYTES: u64 = 16 * 1024 * 1024;
+pub const MAX_COMPRESSION_RATIO: u64 = 100;
+pub const MAX_ARCHIVE_PATH_BYTES: usize = 240;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ArchiveEntryKind {
+    File,
+    Directory,
+    Symlink,
+    Other,
+}
+
+/// Metadata supplied by a ZIP central-directory reader. This validator never reads
+/// entry contents or extracts files; callers must validate before opening any entry.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ArchiveEntry {
+    pub path: String,
+    pub kind: ArchiveEntryKind,
+    pub compressed_bytes: u64,
+    pub uncompressed_bytes: u64,
+    pub encrypted: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ArchiveError {
+    TooManyEntries,
+    UnsafePath(String),
+    DuplicatePath(String),
+    UnsupportedEntryType(String),
+    EncryptedEntry(String),
+    UnexpectedPath(String),
+    FileTooLarge(String),
+    ArchiveTooLarge,
+    SuspiciousCompressionRatio(String),
+    MissingManifest,
+    MultipleManifests,
+    MissingEntrypoint(String),
+    InvalidManifestEntrySize,
+}
+
+/// Validate untrusted ZIP metadata before opening or extracting any archive member.
+/// The ZIP reader must separately reject malformed/overlapping local-file records.
+pub fn validate_archive_inventory(
+    entries: &[ArchiveEntry],
+    manifest: &Manifest,
+) -> Result<(), ArchiveError> {
+    if entries.len() > MAX_ARCHIVE_ENTRIES {
+        return Err(ArchiveError::TooManyEntries);
+    }
+
+    let mut seen = BTreeSet::new();
+    let mut total_uncompressed = 0_u64;
+    let mut manifest_count = 0_usize;
+    let mut entrypoint_found = false;
+
+    for entry in entries {
+        if !valid_archive_path(&entry.path, entry.kind) {
+            return Err(ArchiveError::UnsafePath(entry.path.clone()));
+        }
+        let key = entry.path.trim_end_matches('/').to_ascii_lowercase();
+        if !seen.insert(key) {
+            return Err(ArchiveError::DuplicatePath(entry.path.clone()));
+        }
+        if matches!(entry.kind, ArchiveEntryKind::Symlink | ArchiveEntryKind::Other) {
+            return Err(ArchiveError::UnsupportedEntryType(entry.path.clone()));
+        }
+        if entry.encrypted {
+            return Err(ArchiveError::EncryptedEntry(entry.path.clone()));
+        }
+        if entry.kind == ArchiveEntryKind::Directory {
+            if entry.uncompressed_bytes != 0 || entry.compressed_bytes != 0 {
+                return Err(ArchiveError::UnsafePath(entry.path.clone()));
+            }
+            continue;
+        }
+
+        if entry.uncompressed_bytes > MAX_ARCHIVE_FILE_BYTES {
+            return Err(ArchiveError::FileTooLarge(entry.path.clone()));
+        }
+        total_uncompressed = total_uncompressed
+            .checked_add(entry.uncompressed_bytes)
+            .ok_or(ArchiveError::ArchiveTooLarge)?;
+        if total_uncompressed > MAX_ARCHIVE_UNCOMPRESSED_BYTES {
+            return Err(ArchiveError::ArchiveTooLarge);
+        }
+        if entry.uncompressed_bytes > 0
+            && (entry.compressed_bytes == 0
+                || entry.uncompressed_bytes
+                    > entry.compressed_bytes.saturating_mul(MAX_COMPRESSION_RATIO))
+        {
+            return Err(ArchiveError::SuspiciousCompressionRatio(entry.path.clone()));
+        }
+
+        if entry.path == "manifest.json" {
+            manifest_count += 1;
+            if entry.uncompressed_bytes > MAX_MANIFEST_BYTES as u64 {
+                return Err(ArchiveError::InvalidManifestEntrySize);
+            }
+        } else if entry.path.starts_with("scripts/") {
+            if !valid_relative_script_path(&entry.path) {
+                return Err(ArchiveError::UnsafePath(entry.path.clone()));
+            }
+            if entry.path == manifest.entrypoint {
+                entrypoint_found = true;
+            }
+        } else if !entry.path.starts_with("assets/") {
+            return Err(ArchiveError::UnexpectedPath(entry.path.clone()));
+        }
+    }
+
+    match manifest_count {
+        0 => return Err(ArchiveError::MissingManifest),
+        1 => {}
+        _ => return Err(ArchiveError::MultipleManifests),
+    }
+    if !entrypoint_found {
+        return Err(ArchiveError::MissingEntrypoint(manifest.entrypoint.clone()));
+    }
+    Ok(())
+}
+
+fn valid_archive_path(path: &str, kind: ArchiveEntryKind) -> bool {
+    let normalized = if kind == ArchiveEntryKind::Directory {
+        path.strip_suffix('/').unwrap_or(path)
+    } else {
+        path
+    };
+    if normalized.is_empty()
+        || path.len() > MAX_ARCHIVE_PATH_BYTES
+        || path.starts_with('/')
+        || path.contains('\\')
+        || path.contains(':')
+        || path.chars().any(char::is_control)
+        || normalized.split('/').any(|part| {
+            part.is_empty()
+                || part == "."
+                || part == ".."
+                || part.starts_with('.')
+                || !part.bytes().all(|byte| {
+                    byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-' | b'.')
+                })
+        })
+    {
+        return false;
+    }
+    true
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -231,4 +383,85 @@ mod tests {
         let input = vec![b' '; MAX_MANIFEST_BYTES + 1];
         assert_eq!(parse_manifest(&input).unwrap_err(), ManifestError::TooLarge);
     }
+
+    fn archive_file(path: &str, size: u64) -> ArchiveEntry {
+        ArchiveEntry {
+            path: path.into(),
+            kind: ArchiveEntryKind::File,
+            compressed_bytes: size,
+            uncompressed_bytes: size,
+            encrypted: false,
+        }
+    }
+
+    fn valid_inventory() -> Vec<ArchiveEntry> {
+        vec![
+            archive_file("manifest.json", 300),
+            archive_file("scripts/main.dream", 100),
+            archive_file("assets/icon.png", 50),
+        ]
+    }
+
+    #[test]
+    fn accepts_safe_archive_inventory_and_requires_entrypoint() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        assert_eq!(validate_archive_inventory(&valid_inventory(), &manifest), Ok(()));
+        let mut missing = valid_inventory();
+        missing.remove(1);
+        assert_eq!(
+            validate_archive_inventory(&missing, &manifest),
+            Err(ArchiveError::MissingEntrypoint("scripts/main.dream".into()))
+        );
+    }
+
+    #[test]
+    fn rejects_traversal_absolute_and_nonportable_archive_paths() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        for path in ["../evil", "scripts/../../evil.dream", "/manifest.json", "C:/evil", "scripts\\\\evil.dream", "scripts/.hidden.dream"] {
+            let mut entries = valid_inventory();
+            entries[1].path = path.into();
+            assert!(matches!(validate_archive_inventory(&entries, &manifest), Err(ArchiveError::UnsafePath(_))));
+        }
+    }
+
+    #[test]
+    fn rejects_duplicate_casefolded_paths_and_unsupported_types() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        let mut duplicate = valid_inventory();
+        duplicate.push(archive_file("SCRIPTS/MAIN.DREAM", 100));
+        assert!(matches!(validate_archive_inventory(&duplicate, &manifest), Err(ArchiveError::DuplicatePath(_))));
+
+        let mut symlink = valid_inventory();
+        symlink[2].kind = ArchiveEntryKind::Symlink;
+        assert!(matches!(validate_archive_inventory(&symlink, &manifest), Err(ArchiveError::UnsupportedEntryType(_))));
+    }
+
+    #[test]
+    fn rejects_encryption_size_ratio_and_entry_count_abuse() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        let mut encrypted = valid_inventory();
+        encrypted[1].encrypted = true;
+        assert!(matches!(validate_archive_inventory(&encrypted, &manifest), Err(ArchiveError::EncryptedEntry(_))));
+
+        let mut bomb = valid_inventory();
+        bomb[1].uncompressed_bytes = 10_001;
+        bomb[1].compressed_bytes = 1;
+        assert!(matches!(validate_archive_inventory(&bomb, &manifest), Err(ArchiveError::SuspiciousCompressionRatio(_))));
+
+        let too_many = vec![archive_file("assets/file.bin", 1); MAX_ARCHIVE_ENTRIES + 1];
+        assert_eq!(validate_archive_inventory(&too_many, &manifest), Err(ArchiveError::TooManyEntries));
+    }
+
+    #[test]
+    fn rejects_missing_manifest_and_oversized_files() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        let mut missing = valid_inventory();
+        missing.remove(0);
+        assert_eq!(validate_archive_inventory(&missing, &manifest), Err(ArchiveError::MissingManifest));
+
+        let mut oversized = valid_inventory();
+        oversized[2].uncompressed_bytes = MAX_ARCHIVE_FILE_BYTES + 1;
+        assert!(matches!(validate_archive_inventory(&oversized, &manifest), Err(ArchiveError::FileTooLarge(_))));
+    }
+
 }
