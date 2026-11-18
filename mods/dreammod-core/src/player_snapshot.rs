@@ -2,6 +2,7 @@
 //!
 //! This module returns owned values only. No Horizon handle is retained in a snapshot.
 
+use dreammod_contract::PlayerReadAuthorization;
 use mod_api::ServerHost;
 use std::sync::Arc;
 
@@ -121,14 +122,6 @@ impl PlayerSnapshotBatch {
     pub fn is_empty(&self) -> bool {
         self.players.is_empty()
     }
-}
-
-/// Authorization contract implemented by the per-mod lifecycle adapter.
-/// Implementations must check both Enabled state and the explicit entities.read grant.
-pub trait PlayerReadAuthorization {
-    type Error;
-
-    fn require_entities_read(&self) -> Result<(), Self::Error>;
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
