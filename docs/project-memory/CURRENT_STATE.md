@@ -313,3 +313,7 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - PMCS run `44364715327`: validator regressions and structure/freshness validation passed; final job cleanup pending.
 - Core run `44363904945`: pinned SDK/checker, native API/host-WASM validation, mirror parity and formatting passed; Core tests in progress.
 - Overlay run `44363904976`: API-only compilation in progress; real host load still pending.
+
+### Core and overlay update
+- Core run `44363904945`: <badge>PASS</badge> — pinned Horizon tooling, native API/host-WASM checks, engine mirror parity, formatting, Core unit tests, source package and artifact upload all passed after the closure-based authorization change.
+- Overlay run `44363904976`: API-only prebuilt compile and `$ORIGIN` RUNPATH setup passed; real Horizon native host loading without overlay env is in progress. Archive inspection/upload pending.
