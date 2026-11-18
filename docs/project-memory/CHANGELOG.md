@@ -445,3 +445,9 @@
 - Core and package bridge now use a fixed 256-entry u128 stack scratch array plus sort_unstable to detect duplicate player UUIDs. The batch cap and output order are unchanged.
 - Core commit b2185e8917e351dfd0408231e855efe47e6b3bfd; package bridge commit f3a55af3a332073db92df24de00e347bc55a3bb8.
 - Core formatting now runs against the Core manifest only, excluding generated SDK sources. CI is pending for the latest changes.
+
+
+## 2026-11-18 — Share immutable player snapshot batches
+- Changed Core and package PlayerSnapshotBatch backing storage to Arc<[PlayerSnapshot]> so cloning a batch shares immutable data instead of deep-copying player records.
+- Added pointer-identity regression tests. Core commit 3f629cc54a27992f9a7f402dfda3fcfa0505b4bf; package commit 74310a797393ec319fb9192d931a7b860ba55ced.
+- CI pending. This enables cheap sharing but does not add a runtime dispatcher or cache.
