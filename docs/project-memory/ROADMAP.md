@@ -107,3 +107,10 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 4. [ ] Verify real Horizon native host loading and inspect the resulting overlay artifact. The host-loader step has not run successfully.
 5. [ ] Continue with capability/lifecycle wiring only after defining a concrete per-mod runtime owner; do not add a global snapshot cache without scheduler/thread/re-entrancy semantics.
 6. [ ] Add representative snapshot benchmarks, then ARM64 measurements. No FPS or throughput target is verified.
+
+
+## Prebuilt toolchain compatibility (2026-11-18)
+1. [x] Read the compiler version from the exact pinned Horizon SDK producer source: tools/ci/rust-version = 1.99.1.
+2. [x] Change the overlay CI toolchain and artifact metadata from 1.95.0 to 1.99.1 (commit 96d2e740).
+3. [ ] Verify overlay run 44328650675 reaches successful API-only prebuilt compilation.
+4. [ ] If compile succeeds, verify the real Horizon native host loads the library and inspect/archive the overlay. If it fails, inspect the first new diagnostic before changing Core code.
