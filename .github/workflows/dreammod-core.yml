@@ -34,16 +34,21 @@ jobs:
           path: .ci/horizon
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@1.95.0
+      - name: Cache pinned Horizon tooling build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ".ci/horizon -> target"
+          shared-key: horizon-nightly-0b14f8
       - name: Install WASM target for Horizon's native mod checker
         run: rustup target add wasm32-unknown-unknown
-      - name: Install cargo-horizon-mod from the pinned Horizon source
-        run: cargo install --path .ci/horizon/crates/cargo-horizon-mod --locked --root "$RUNNER_TEMP/horizon-tools"
+      - name: Build cargo-horizon-mod from the pinned Horizon source
+        run: cargo build --manifest-path .ci/horizon/Cargo.toml -p cargo-horizon-mod --release --locked
       - name: Check native mod manifest, source, API use and host/WASM compilation
         working-directory: mods/dreammod-core
-        run: '"$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod check'
+        run: '"$GITHUB_WORKSPACE/.ci/horizon/target/release/cargo-horizon-mod" horizon-mod check'
       - name: Package the native Core source bundle
         working-directory: mods/dreammod-core
-        run: '"$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod build'
+        run: '"$GITHUB_WORKSPACE/.ci/horizon/target/release/cargo-horizon-mod" horizon-mod build'
       - name: Upload validated native source bundle
         uses: actions/upload-artifact@v4
         with:
