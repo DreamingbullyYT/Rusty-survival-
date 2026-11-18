@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: CORE_SOURCE_PACKAGE_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HARNESS_IN_PROGRESS; DREAMMOD_PACKAGE_INSPECTOR_VERIFIED; RHAI_CANDIDATE_PROVISIONAL
+Status: CORE_SOURCE_AND_UNIT_TESTS_VERIFIED; API_ONLY_PREBUILT_OVERLAY_BLOCKED_ON_CI_HARNESS_TYPE; DREAMMOD_PACKAGE_INSPECTOR_VERIFIED; RHAI_CANDIDATE_PROVISIONAL
 Repository HEAD: resolve dynamically from `main`; latest verified package CI commit: `4e983c04ea8f3a4085aa2e13b6b53d691c307564`.
 
 ## Direction
@@ -209,3 +209,13 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Core commit: 3f629cc54a27992f9a7f402dfda3fcfa0505b4bf. Package commit: 74310a797393ec319fb9192d931a7b860ba55ced.
 - Added pointer-identity tests proving clones share the same Arc allocation. Package run 44318172781 and Core run 44318166133 are pending; previous Core run 44317880298 is still running against the earlier stack-buffer version.
 - Runtime dispatcher does not yet reuse snapshots. Capability checks must remain per mod before a shared snapshot is returned.
+
+
+## Verification refresh — 2026-11-18 (HEAD 741f7ff1)
+- DreamMod Core workflow run 44322745253 passed on HEAD 741f7ff15bb22a2b16b8a5a667fe471d3ee3ddc9. The pinned Horizon native/API/host-WASM check, Core formatting, Core unit tests and native source packaging all passed.
+- The Core test fixture type mismatch was fixed in commit 741f7ff15bb22a2b16b8a5a667fe471d3ee3ddc9; this is now covered by the successful run above.
+- Package workflow run 44318172781 passed on commit 74310a797393ec319fb9192d931a7b860ba55ced, including the Arc-backed immutable batch tests. The archive inspection deadline package CI had already passed in run 44317125357.
+- PMCS run 44322745310 failed because five required memory documents were not updated alongside the latest Core source/test changes. Its six validator regression tests passed; companion docs are being refreshed in this change set.
+- API-only overlay run 44322745328 failed before the real host-loader step. The CI-only test imported the public picker::Route (used for UI fit status) instead of the private prebuilt::Route required by sdk_cache::slices and prebuilt::compile. The pinned upstream source confirms the correct type is prebuilt::Route::Api; the test patch is corrected accordingly. No overlay artifact or host-loader success is claimed.
+- The Core authorization trait remains an integration seam; it is not yet backed by a concrete per-mod lifecycle adapter. There is still no production interpreter, .dmod loader, sandbox or dispatcher.
+- Arc-backed cloning and stack-buffer duplicate detection are implemented and regression-tested; no performance benchmark or FPS claim exists.
