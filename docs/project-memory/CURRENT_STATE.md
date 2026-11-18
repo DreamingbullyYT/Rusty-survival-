@@ -36,7 +36,7 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 
 ## Next actions
 1. Verify the new official native package workflow (44284751206), fix any issues, and inspect the generated source .hmod artifact.
-2. Verify the newest benchmark (latest run 44284795812) with equivalent input cloning and observable outputs; do not use the old 371 ns Rust result.
+2. Benchmark run 44284795812 now provides a comparable desktop diagnostic: 462.94× slower for a 10k-item interpreted loop. Treat this as a warning for hot subsystem loops, not an Android/device result.
 3. Use the pinned official native-build pipeline to produce and inspect an API-only prebuilt distribution, then prove clean startup.
 4. Evaluate the tiny Sprite tree-walker as a research reference only; Starlark is rejected because its evaluator compiles AST to bytecode.
 4. Define the minimal package manifest, loader lifecycle and capability model.
