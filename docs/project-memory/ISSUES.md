@@ -212,3 +212,9 @@ Added `dreammod-package::manager::ModManager`, which owns validated package byte
 
 ### DM-033 verification correction (2026-11-18)
 The first package workflow `44363310681` passed 36 tests but was triggered before `manager` was exported from `lib.rs`, so it did not compile or execute the new manager tests. During review, a cascade-order defect was found: reverse topological traversal could visit a grandchild before its intermediate dependency had been marked failed. Corrected to dependency-first traversal in commit `bb8806d`. The export-triggered and corrected package workflows must show the manager test names before DM-033 can be marked verified.
+
+### DM-024 verification update (2026-11-18)
+Shared authorization contract is verified by Core run `44362777239`: pinned Horizon checker build, native manifest/source/API/host-WASM checks, engine mirror parity, formatting, Core tests and source artifact upload all passed. The package-side lifecycle trait implementation is exercised by package run `44363502581` (41 tests passed). The actual runtime manager still does not connect these crates to executing scripts.
+
+### DM-033 verification update (2026-11-18)
+ModManager is verified by package run `44363502581`: rustfmt, all 41 tests including the five `manager::tests`, and Clippy with `-D warnings` passed. The cascade regression test passes after the topological-order correction. PMCS validation pending.
