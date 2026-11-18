@@ -1,5 +1,5 @@
-//! Strict, side-effect-free validation for the first DreamMod manifest contract.
-//! This crate does not open archives, extract files, grant capabilities or execute scripts.
+//! Strict, side-effect-free validation for DreamMod manifests and .dmod ZIP packages.
+//! This crate inspects archives in memory but never extracts files, grants capabilities or executes scripts.
 
 use semver::Version;
 use serde::Deserialize;
@@ -172,8 +172,7 @@ pub enum ArchiveEntryKind {
     Other,
 }
 
-/// Metadata supplied by a ZIP central-directory reader. This validator never reads
-/// entry contents or extracts files; callers must validate before opening any entry.
+/// Normalized metadata read from a ZIP central directory.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArchiveEntry {
     pub path: String,
@@ -391,8 +390,7 @@ fn read_archive_entry<R: Read + Seek>(
     Ok(output)
 }
 
-/// Validate untrusted ZIP metadata before opening or extracting any archive member.
-/// The ZIP reader must separately reject malformed/overlapping local-file records.
+/// Validate a normalized archive inventory against the parsed manifest.
 pub fn validate_archive_inventory(
     entries: &[ArchiveEntry],
     manifest: &Manifest,
@@ -665,8 +663,13 @@ mod tests {
             "assets/main.dream",
             "scripts/main.lua",
         ] {
-            let input = VALID.replace("scripts/main.dream", path);
-            assert_eq!(parse_manifest(input.as_bytes()).unwrap_err(), ManifestError::InvalidEntrypoint);
+            // Keep the test document valid JSON even when the path contains a backslash.
+            let json_path = path.replace('\\', "\\\\");
+            let input = VALID.replace("scripts/main.dream", &json_path);
+            assert_eq!(
+                parse_manifest(input.as_bytes()).unwrap_err(),
+                ManifestError::InvalidEntrypoint
+            );
         }
     }
 
