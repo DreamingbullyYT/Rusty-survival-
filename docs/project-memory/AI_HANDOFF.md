@@ -72,3 +72,10 @@ A duplicate function body was accidentally left during the authorization-gate re
 
 ## Core CI now executes tests
 The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod check` fetches/verifies the pinned SDK. Workflow commit `ffe93f0`. Confirm the first run succeeds; the SDK path and test harness have not yet been verified by this new step.
+
+
+## Current handoff — API optimization (2026-11-18)
+- Recent source commits: Core batch validation d650c58a9ee9b08a365cbe4f830a16e8510daaec; package bridge 5e8e58a77515b1f8ec6c5aa0511005c403b44dd5; archive load deadline b689551994c45b603fcab8f08c5708973c9f2c3b; Core rustfmt workflow fix e47e8e0f858c9c9d09088db17d23a74584ae420a.
+- Core run 44313213891 passed Horizon SDK native/API/host-WASM checks, then failed because rustfmt was missing; tests were skipped. The workflow now installs rustfmt. Check the new run.
+- The archive inspector has a cooperative 60-second monotonic deadline; the full runtime loader does not exist, so the full load transaction is not yet time-limited.
+- Verify package/Core CI. Do not claim a benchmark speedup. Next optimize API dispatch through batch reuse only after scheduler/thread semantics are designed.
