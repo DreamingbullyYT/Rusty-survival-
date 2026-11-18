@@ -907,3 +907,18 @@ Verification:
 Next:
 - Verify runtime tests, Clippy and benchmark after the explicit error conversion.
 - Continue monitoring API-only prebuilt overlay run 44289897914.
+
+## S-2026-11-18-02 — Add pre-extraction archive inventory policy
+Date: 2026-11-18
+Commit: 24bb7904b46671f74c90b1a1ed11b8b8c496fd67 (directory-root hardening; validator introduced in 93772ffc8df18d60da045c299175e97b3234bfe7)
+Goal: Define resource and path limits before a future ZIP reader opens untrusted package entries.
+Changes:
+- Added a metadata-only archive inventory validator to `dreammod-package`.
+- Enforced strict portable paths, approved roots, case-folded duplicate detection, entry/file/aggregate size limits, compression ratio limits, and rejection of symlink/unsupported/encrypted entries.
+- Required exactly one root `manifest.json` and the declared script entrypoint to be present in the inventory.
+Verification:
+- Changes were committed to `main`; dedicated GitHub Actions result has not been inspected and is PENDING.
+Limitations:
+- No ZIP parser, local-header/central-directory consistency check, CRC validation, extraction, package discovery, or real archive fixture tests yet. This policy is only as trustworthy as the metadata supplied by a future parser.
+Next:
+- Verify CI, then integrate a ZIP reader with strict archive-structure checks and fuzzable adversarial fixtures. Do not extract files before all validation passes.
