@@ -131,3 +131,12 @@ between ZIP entries and decompression chunks. A future complete DreamMod loader 
 one deadline at load start and pass it through dependency preparation, asset/script parsing
 and registration. The current deadline covers archive inspection only; it is not a complete
 runtime loader timeout or hard preemption mechanism.
+
+
+### Immutable snapshot sharing (2026-11-18)
+
+PlayerSnapshotBatch now stores an immutable Arc-backed slice in both Core and the package
+contract. Cloning a batch shares the same immutable records rather than deep-copying every
+player name, dimension and position. This prepares the dispatcher to share one owned batch
+among multiple mods after checking each mod's own entities.read permission. It does not
+implement dispatch caching, and it must never bypass per-mod authorization.
