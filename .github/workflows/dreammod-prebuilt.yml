@@ -32,7 +32,7 @@ jobs:
           cd "$RUNNER_TEMP/horizon-launcher"
           curl --fail --location --retry 3 --retry-delay 2 "$base/SHA256SUMS" -o SHA256SUMS
           curl --fail --location --retry 3 --retry-delay 2 "$base/horizon-launcher-linux-x86_64.tar.gz" -o launcher.tar.gz
-          grep 'horizon-launcher-linux-x86_64.tar.gz' SHA256SUMS | sha256sum --check -
+          grep 'horizon-launcher-linux-x86_64.tar.gz' SHA256SUMS | sed 's|horizon-launcher-linux-x86_64.tar.gz|launcher.tar.gz|' | sha256sum --check -
           mkdir extracted
           tar -xzf launcher.tar.gz -C extracted
           launcher="$(find extracted -type f -name horizon-launcher -perm -111 -print -quit)"
