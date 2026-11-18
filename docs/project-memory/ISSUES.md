@@ -93,4 +93,9 @@ inspect_dmod() now returns a ValidatedPackage containing parsed manifest metadat
 
 ## DM-020 — Explicit capability grant planning
 Status: VERIFIED
-Added plan_capability_grants(manifest, approved) as a pure deterministic planner. Empty approvals grant nothing; requested but unapproved capabilities remain denied; unknown, unrequested and duplicate approvals are rejected. The returned CapabilityPlan is not runtime authority: the future host must enforce capabilities at every API boundary. No launcher permission UI, sandbox or live capability enforcement is implemented. Regression tests passed; package Actions run 44300324687 passed all 21 tests and Clippy on commit d83b3491b747bc880b657e4cf17e259a8af2ff62.
+Added plan_capability_grants(manifest, approved) as a pure deterministic planner. Empty approvals grant nothing; requested but unapproved capabilities remain denied; unknown, unrequested and duplicate approvals are rejected. The returned CapabilityPlan is not runtime authority. Added CapabilityGate with private granted state and a require() check; it must still be wired into every Horizon host API boundary before enforcement can be claimed. No launcher permission UI, sandbox or live capability enforcement is implemented. Regression tests passed; package Actions run 44300324687 passed all 21 tests and Clippy on commit d83b3491b747bc880b657e4cf17e259a8af2ff62.
+
+
+## DM-021 — Host capability gate primitive
+Status: IMPLEMENTED — CI PENDING
+Added CapabilityGate::from_approvals(), allows() and require(). It can only be constructed through a validated manifest and explicit approvals; its granted set is private, and unknown/unapproved capabilities are denied. This is not yet connected to Horizon's host API or the runtime, so no end-to-end enforcement claim is made. Regression tests and package CI are pending.
