@@ -6,7 +6,7 @@ authors = ["DreamingbullyYT"]
 license = "MIT"
 api = "0.2"
 side = "both"
-capabilities = []
+capabilities = ["registries"]
 
 [native]
 game = "26.3"
