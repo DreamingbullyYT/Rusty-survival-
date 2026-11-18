@@ -1560,3 +1560,20 @@ Limitations:
 - Package run `44364198594` on commit `4103668fee` completed SUCCESS. Exact logs show 42 passing tests, including all seven manager tests (dependency order, callback authorization, dependency enable gate, disable protection, normal and already-failed transitive cascades, invalid graph); formatting and Clippy also passed.
 - PMCS run `44364312080` completed SUCCESS with all six validator regression tests and structural/freshness validation.
 - Core run `44363904945` was still building pinned `cargo-horizon-mod`; overlay run `44363904976` was still compiling the API-only route. Real native host loading remains unverified.
+
+## S-2026-11-18-49 — Add capability-gated in-memory asset reads
+Date: 2026-11-18
+Commit: `f90d0b1dfed66ce134acc4710db3b93d47b9e667`
+Goal: Expose `.dmod` assets to a future interpreted runtime without extracting them or leaking filesystem paths.
+Changes:
+- Added `ModManager::read_asset(mod_id, path)`.
+- Requires the target mod to be Enabled and hold the explicit `assets.read` grant.
+- Restricts reads to `assets/` and reuses the same safe archive-path validation used during package inspection.
+- Returns borrowed immutable bytes from the retained validated package; no extraction or copy.
+- Added tests for denied-before-enable, missing grant, successful byte read, traversal rejection and missing assets.
+Verification:
+- Package workflow after commit `f90d0b1` pending.
+Limitations:
+- No image/audio/model decoder, resource registration, cache policy, interpreter binding or per-script resource quota exists yet.
+Next:
+- Verify package tests and Clippy. Then define registration transactions/rollback before exposing asset bytes to actual scripts.
