@@ -117,3 +117,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 ### Entrypoint source verification — 2026-11-18
 - Package run `44365010182` on commit `ee903d7c76`: PASS — all 44 tests, including `entrypoint_source_is_borrowed_only_after_activation`, rustfmt and Clippy.
 - Overlay run `44363904976` has passed API-only compile and `$ORIGIN` setup; real Horizon host loading without overlay environment overrides remains in progress.
+
+### Overlay host-test harness correction (2026-11-18)
+- Workflow review found the host-load step did not re-export `DREAMMOD_PREBUILT_DIR` in its own step environment; per-step shell exports do not persist across GitHub Actions steps.
+- Updated `.github/workflows/dreammod-prebuilt.yml` to export the exact `$RUNNER_TEMP/dreammod-prebuilt` directory in the loader step, list files and ELF RUNPATHs for diagnostics, and bound the host-load test to 180 seconds.
+- Prior overlay run `44363904976` passed API-only compilation and `$ORIGIN` setup but was cancelled by this workflow correction while the host-test command was running. A new overlay run will verify the corrected environment contract.
