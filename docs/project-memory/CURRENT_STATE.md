@@ -57,3 +57,10 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 5. Integrate the runtime into Core using documented Horizon hooks (initial lifecycle/tick hooks first); external runtime dependencies may move Core from Route::Api to the registry build route, which must be verified in CI.
 6. Define subsystem replacement contracts incrementally; do not claim full physics/rendering replacement until the required Horizon extension points and performance are proven.
 7. Keep launcher implementation out of this repository.
+
+
+## Latest DreamMod runtime hardening (2026-11-18)
+- Added validation at the prototype physics provider boundary: equal input lengths, maximum 100,000 items, finite inputs, exact output length, numeric output and finite output.
+- Added negative regression tests for mismatched lengths, NaN/infinity, malformed output length and non-finite provider output.
+- Commit: 33639ee0d89627b7ad3342d694a2d26c1ff43fd5.
+- CI status: pending inspection; implementation is not yet VERIFIED by the workflow.
