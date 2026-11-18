@@ -563,3 +563,8 @@
 - Passed real Horizon `horizon-mod-host` load test with the prebuilt API-only DreamMod overlay and without `LD_LIBRARY_PATH`.
 - Verified archive contents and uploaded artifact `14459680134` (107,533,139 bytes; SHA-256 `f78e1f8bb687f6f976be9971fe9b5e51973960c7b9b60a149997db7f1b177355`).
 - PMCS regression workflow exposed accidental document truncation from earlier API writes; full PMCS documents restored from known-good commit `12db63cf4d`. Validator rerun required.
+
+
+### Overlay host-loader cold-build timeout — 2026-11-18
+- Run `44365336841` built the API-only overlay and applied `$ORIGIN` RUNPATH successfully, but the 180-second host-test timeout expired during dependency compilation (exit 124); this was not a loader failure.
+- Commit `a3d3eef30b8f3a30cad5273874518b8d499839f5` increases the host-test timeout to 900 seconds. Run `44368761333` queued; verification pending.
