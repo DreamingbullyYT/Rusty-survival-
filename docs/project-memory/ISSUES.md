@@ -248,3 +248,6 @@ Added `ModLifecycle::ensure_enabled` and `ModManager::entrypoint_source`. The me
 
 ### DM-036 verification update (2026-11-18)
 Package run `44365010182` passed all 44 tests, rustfmt and Clippy, including the activation-gated entrypoint source regression. The method only returns source bytes; interpreter execution remains unimplemented.
+
+### DM-031 host-loader test harness follow-up (2026-11-18)
+Found that `DREAMMOD_PREBUILT_DIR` was exported only in the overlay build step, not the separate host-load step. Since GitHub Actions steps have isolated environments, the loader test could not reliably locate the package. Fixed the workflow to export the path in the loader step, emit ELF/RUNPATH diagnostics, and use a 180-second timeout. New overlay run pending; launcher runtime readiness remains unproven.
