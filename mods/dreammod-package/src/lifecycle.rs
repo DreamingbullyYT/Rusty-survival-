@@ -12,9 +12,9 @@ pub enum LifecycleState {
     Failed,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub const MAX_FAILURE_REASON_BYTES: usize = 512;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LifecycleError {
     InvalidManifest,
     InvalidTransition { from: LifecycleState, operation: &'static str },
