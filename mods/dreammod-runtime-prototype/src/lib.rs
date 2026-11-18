@@ -1,6 +1,6 @@
 //! Candidate runtime prototype. This is an evaluation harness, not the final
 //! DreamMod language decision or production sandbox.
-use rhai::{AST, Engine, EvalAltResult, ParseError, Scope};
+use rhai::{Array, AST, Engine, EvalAltResult, ParseError, Scope};
 
 #[derive(Clone, Copy, Debug)]
 pub struct RuntimeLimits {
@@ -56,12 +56,27 @@ impl RhaiPrototype {
         velocities: Vec<f64>,
         delta_seconds: f64,
     ) -> Result<Vec<f64>, Box<EvalAltResult>> {
-        self.engine.call_fn(
+        let positions = positions.into_iter().map(Into::into).collect::<Array>();
+        let velocities = velocities.into_iter().map(Into::into).collect::<Array>();
+        let result: Array = self.engine.call_fn(
             &mut Scope::new(),
             &self.ast,
             "physics_step",
             (positions, velocities, delta_seconds),
-        )
+        )?;
+        result
+            .into_iter()
+            .map(|value| {
+                value.as_float().map_err(|_| {
+                    EvalAltResult::ErrorMismatchDataType(
+                        "f64".into(),
+                        value.type_name().into(),
+                        rhai::Position::NONE,
+                    )
+                    .into()
+                })
+            })
+            .collect()
     }
 
     pub fn run(&self) -> Result<(), Box<EvalAltResult>> {
@@ -75,7 +90,12 @@ pub fn engine_with_test_world_api() -> Engine {
     let mut engine = Engine::new();
     engine.set_max_operations(250_000);
     engine.set_max_call_levels(32);
-    engine.register_fn("world_health_batch", || vec![10_i64, 20, 30, 40]);
+    engine.register_fn("world_health_batch", || {
+        vec![10_i64, 20, 30, 40]
+            .into_iter()
+            .map(Into::into)
+            .collect::<Array>()
+    });
     engine
 }
 
@@ -119,7 +139,7 @@ mod tests {
             r#"
             fn physics_step(positions, velocities, delta_seconds) {
                 let next = [];
-                for i in 0..positions.len {
+                for i in 0..positions.len() {
                     next.push(positions[i] + velocities[i] * delta_seconds);
                 }
                 next
