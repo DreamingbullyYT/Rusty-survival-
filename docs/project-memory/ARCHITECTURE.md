@@ -37,7 +37,7 @@ Keep hot loops and bulk data processing in native engine code by default. Expose
 ## Security
 Scripts run sandboxed by default. Grant narrow capabilities explicitly. Do not expose arbitrary Rust pointers or native process privileges to ordinary scripts. HNMod/native integration code is trusted build-time code.
 
-The package crate now has a pure lifecycle policy helper: validation alone does not activate a mod; explicit approvals produce a Ready state, and a separate enable action is required. Disable and failure block capability checks. This helper is not yet wired to Horizon host calls and is not a sandbox.
+The package crate now has a pure lifecycle policy helper: validation alone does not activate a mod; explicit approvals produce a Ready state, and a separate enable action is required. Disable and failure block capability checks. A generic HostAdapter::invoke boundary now checks lifecycle and capability before invoking a supplied host callback. It is not yet wired to concrete Horizon host calls and is not a sandbox.
 
 ## Dependency and compatibility rules
 - Pin Horizon, horizon-mixins, hooks/API, Rust toolchain and build metadata.
