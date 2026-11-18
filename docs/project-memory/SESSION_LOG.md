@@ -700,3 +700,25 @@ Next:
 - Verify the corrected benchmark and decide whether Rhai's interpreted performance is acceptable for the intended extension contracts.
 - Inspect the official Core package workflow and its .hmod artifact.
 - Continue prebuilt API-only native distribution proof.
+
+## S-2026-11-18-11 — Record comparable interpreted/native benchmark
+Date: 2026-11-18
+Goal: Establish a fair first performance signal for the strict AST-interpreted candidate.
+Changes:
+- Updated the benchmark so both the Rhai and Rust paths clone equivalent 10,000-element input vectors, materialize 10,000 outputs per round and consume an output checksum through black_box.
+- The Rhai side includes the public API boundary conversion to/from Rhai arrays; the Rust side uses typed vectors. Both execute the same per-item position + velocity * delta operation.
+Verification:
+- Actions run 44284795812: SUCCESS. 50 rounds × 10,000 items: Rhai AST total 265.955429 ms; Rust native total 574.49 µs; ratio 462.94×.
+- This is a synthetic x86_64 GitHub-hosted runner result, not an Android/ARM64 measurement or a full-game benchmark.
+Interpretation:
+- The measured gap is too large to recommend interpreted per-entity/per-vertex loops in hot physics/rendering paths.
+- Keep engine hot loops native and investigate coarse subsystem provider boundaries, where scripts make a small number of large-grained decisions or invoke batched native operations.
+- Do not select Rhai as final solely because the functional tests pass; benchmark on ARM64 and with realistic host API traffic.
+Not tested:
+- No ARM64/Android benchmark.
+- No final language selection or production runtime integration.
+- No production .dmod loader, sandbox or Core integration.
+Next:
+- Inspect and complete the official native Core package workflow.
+- Verify prebuilt native build distribution and clean startup.
+- Prototype a coarse provider contract and test whether interpreted code can remain out of per-item hot loops.
