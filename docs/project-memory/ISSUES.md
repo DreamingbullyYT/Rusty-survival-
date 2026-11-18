@@ -8,7 +8,7 @@ Current Core baseline: Horizon Nightly 2026-11-18 `0b14f8acfd97fa2c750e42795249d
 
 ## DM-002 — .hmod build-time integration and prebuilt distribution
 Status: INVESTIGATING
-The current Core manifest is pinned to the published Nightly and uses the required `capabilities = ["registries"]` field from Horizon's official native template; it has no source mixins or internals. The official `cargo-horizon-mod check` workflow passed in run 44285877944 and uploaded a source `.hmod` artifact. A separate official-launcher prebuilt workflow was added; first run failed because the runner lacked `libxkbcommon-x11.so.0`, and headless GUI dependencies were added in 6bd45dd. Fresh prebuilt run is pending. Remaining work: pass source validation, run native-build, inspect the build folder/inventory and prove clean startup without player-side compilation.
+The current Core manifest is pinned to the published Nightly and uses the required `capabilities = ["registries"]` field from Horizon's official native template; it has no source mixins or internals. The official cargo-horizon-mod check workflow passed in run 44285877944 and uploaded a source .hmod artifact, which was downloaded and inspected. The stock launcher CLI requires prepared Minecraft 26.3 assets and refuses without an authenticated owning account; do not bypass this. The current CI-only harness calls the exact internal prebuilt::compile(..., Route::Api, ...) with signed SDK client runtime/API slices and validates the output through the real host loader. Run 44288437986 failed because the step overrode HOME and hid Rustup; fixed in 67bc587. Current run 44288685182 is in progress. Remaining work: pass the overlay build and host-loader test, inspect the artifact, then combine it with a matching licensed base installation.
 
 ## DM-003 — Interpreted language selection
 Status: INVESTIGATING
@@ -24,7 +24,7 @@ Interpreted callbacks are 462.94× slower than Rust in the current synthetic 10k
 
 ## DM-006 — Script sandbox and capabilities
 Status: OPEN
-Need per-mod isolation, explicit capability grants, exact memory accounting, safe resource access, cancellation and fault containment. The Rhai prototype now tests coarse limits (operations, call depth, aggregate arrays/maps/strings, variables and functions); production enforcement remains open.
+Need per-mod isolation, explicit capability grants, exact memory accounting, safe resource access, cancellation and fault containment. The Rhai prototype tests operation/call-depth limits, per-array/per-map/per-string caps, and variable/function counts. These are per-value/script limits, not aggregate per-mod heap accounting; production enforcement remains open.
 
 ## DM-007 — API stability and upstream compatibility
 Status: OPEN
@@ -46,9 +46,9 @@ Evidence: docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md (source route traced at Hori
 Required action: build a minimal native .hmod, produce the prebuilt library/inventory/package layout in CI, install it into a clean pinned Horizon distribution without running launcher native-build, and verify successful startup.
 
 
-## DM-011 — Compile the first DreamMod Core bootstrap against pinned Horizon
+## DM-011 — Compile and package the first DreamMod Core bootstrap against pinned Horizon
 Status: VERIFIED
-Historical direct API `cargo check` passed in run `44249522292` against an earlier Horizon source pin. The current native package has since moved to the published Nightly and is being checked with the official `cargo-horizon-mod` tool; that check has not passed yet. This issue is therefore INVESTIGATING, not a current verified build.
+The official pinned cargo-horizon-mod check and source .hmod build passed in run 44285877944. The artifact was downloaded and inspected; it contains the expected manifest, Cargo source and uses.json, pinned to Horizon 0b14f8a and API 0.2. This verifies source/API package compilation, not native dylib packaging or game startup.
 
 
 ## DM-012 — Validate the Rhai interpreted-source candidate
