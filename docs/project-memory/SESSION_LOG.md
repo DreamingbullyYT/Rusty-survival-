@@ -1520,3 +1520,9 @@ Next:
 - Inspected the exact package test log for run `44363310681`: 36 tests passed, but manager tests were absent because `pub mod manager` was committed in the subsequent `e11db6d` change.
 - Code review found the manager's first failure-cascade traversal used reverse topological order, which can visit a grandchild before the intermediate dependency has been marked failed. Corrected it to walk dependency-first order in commit `bb8806d`.
 - Require the next package run to compile `manager.rs` and execute its manager tests; do not cite the earlier 36-test pass as manager verification.
+
+### S-2026-11-18-46 verification addendum
+- Package run `44363502581`: SUCCESS. The exact log lists all five `manager::tests`; 41 total tests passed, then Clippy completed successfully with warnings denied. This is the first run that actually compiled and exercised the exported manager module after the cascade-order fix.
+- Core run `44362777239`: SUCCESS. Pinned `cargo-horizon-mod` build, native manifest/source/API/host-WASM validation, engine mirror parity, formatting, Core unit tests, source bundle packaging and artifact upload all passed.
+- Overlay run `44362776804`: still in progress at API-only compilation; no host load result yet.
+- PMCS run `44363588460`: pending.
