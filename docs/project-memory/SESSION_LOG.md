@@ -845,3 +845,22 @@ Implementation: reject unequal input lengths, batches above 100,000 items, non-f
 Verification: push to main triggers the existing runtime prototype workflow and PMCS workflow. Results were not available for inspection at the time of this entry; do not mark CI verified until confirmed.
 Risks/limits: prototype-only validation; the 100,000 item cap is a test boundary, not a production memory quota. No aggregate heap accounting, package sandbox or Core integration.
 Next: inspect Actions; then move toward a standalone runtime crate and a versioned manifest/permissions contract.
+
+
+## S-2026-11-18-18 — Verify source package artifact and correct CI/runtime status
+Date: 2026-11-18
+Goal: Synchronize project memory with actual artifacts and the current signed-SDK overlay test.
+Changes:
+- Downloaded and inspected Actions artifact 14419047604 from run 44285877944. It contains dreammod_core.hmod; the package contains horizon-mod.toml, Cargo.toml, src/lib.rs and uses.json. The manifest pins Horizon 0b14f8a, API 0.2, game 26.3 and the required registries capability.
+- Corrected memory status: the official pinned cargo-horizon-mod check and source .hmod package build are VERIFIED; the native dylib overlay and real host-loader test are still in progress.
+- The direct API-route harness calls Horizon's signed SDK cache/index/slice functions, prebuilt::compile(..., Route::Api, ...), library_record::collect, and the actual horizon-mod-host::native_libraries::load test. It produces a client engine/native-library overlay without Mojang assets; a complete playable install still needs a matching licensed base installation.
+- Fixed the first harness attempt's Rustup issue by preserving the runner's original HOME and isolating only XDG data/config/cache paths (commit 67bc587). The new run 44288685182 is in progress.
+- Corrected the documented scope of Rhai resource limits: max array/map/string sizes are per-value caps, with operation/call-depth/variable/function limits. They are not aggregate per-mod heap quotas.
+Verification:
+- Core source package workflow 44285877944: SUCCESS; .hmod artifact downloaded and inspected.
+- Runtime candidate behavior/Clippy and per-value budget tests: PASS in 44284795812 and 44285379104.
+- Current API-only prebuilt overlay workflow 44288685182: IN_PROGRESS; no overlay or host-loader success is claimed.
+Next:
+- Verify the direct API-route build and host-loader test; fix any Rust type/visibility or dynamic-library issues.
+- Once the overlay passes, inspect the artifact and record its exact hash/build identity.
+- Implement the production .dmod package schema/loader and interpreter abstraction as a separate runtime crate; keep Rhai provisional and preserve the no-player-compilation rule.
