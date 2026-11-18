@@ -2,7 +2,7 @@
 //! This module does not execute scripts or install files.
 
 use crate::{
-    bridge::{PLAYER_READ_CAPABILITY, PlayerSnapshot, SnapshotError},
+    bridge::{PLAYER_READ_CAPABILITY, PlayerSnapshot, PlayerSnapshotBatch, SnapshotError},
     CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage,
 };
 
@@ -152,6 +152,15 @@ impl<'a> HostAdapter<'a> {
         self.lifecycle.require(PLAYER_READ_CAPABILITY)?;
         operation().map_err(LifecycleError::InvalidSnapshot)
     }
+
+    /// Read a bounded player batch with one capability check and one host crossing.
+    pub fn read_player_snapshots(
+        &self,
+        operation: impl FnOnce() -> Result<PlayerSnapshotBatch, SnapshotError>,
+    ) -> Result<PlayerSnapshotBatch, LifecycleError> {
+        self.lifecycle.require(PLAYER_READ_CAPABILITY)?;
+        operation().map_err(LifecycleError::InvalidSnapshot)
+    }
 }
 
 #[cfg(test)]
@@ -252,6 +261,40 @@ mod tests {
             PlayerSnapshot::new(7, "bad name".into(), "minecraft:overworld".into(), [1.0, 64.0, 2.0])
         });
         assert_eq!(invalid, Err(LifecycleError::InvalidSnapshot(SnapshotError::InvalidPlayerName)));
+    }
+
+
+    #[test]
+    fn player_snapshot_batch_checks_permission_once_before_host_read() {
+        use std::cell::Cell;
+
+        let mut package = package();
+        package.manifest.capabilities = vec![PLAYER_READ_CAPABILITY.into()];
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        let calls = Cell::new(0);
+        let denied = HostAdapter::new(&lifecycle).read_player_snapshots(|| {
+            calls.set(calls.get() + 1);
+            PlayerSnapshotBatch::new(Vec::new())
+        });
+        assert_eq!(denied, Err(LifecycleError::NotEnabled));
+        assert_eq!(calls.get(), 0);
+
+        lifecycle.approve(&[PLAYER_READ_CAPABILITY.into()]).unwrap();
+        lifecycle.enable().unwrap();
+        let batch = HostAdapter::new(&lifecycle)
+            .read_player_snapshots(|| {
+                calls.set(calls.get() + 1);
+                let player = PlayerSnapshot::new(
+                    7,
+                    "Dreamer_7".into(),
+                    "minecraft:overworld".into(),
+                    [0.0; 3],
+                )?;
+                PlayerSnapshotBatch::new(vec![player])
+            })
+            .unwrap();
+        assert_eq!(batch.len(), 1);
+        assert_eq!(calls.get(), 1);
     }
 
     #[test]
