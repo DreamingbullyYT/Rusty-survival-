@@ -49,3 +49,10 @@ Date: 2026-11-18
 Status: ACCEPTED
 Decision: Do not lock Rhai or another runtime until no-compilation semantics, API ergonomics, Android support, sandboxing and representative benchmarks are evaluated.
 Reason: The choice affects the entire runtime and should be evidence-based.
+
+
+## Decision D-2026-11-18 — bounded batch validation and load deadline
+- Use a contiguous UUID scratch vector plus sort_unstable for duplicate detection in bounded (maximum 256) player snapshot batches; preserve original snapshot/connection order.
+- Use one monotonic 60-second deadline for a .dmod load transaction. Archive inspection polls it between entries and decompression chunks. A future loader must propagate the same deadline into script parsing, dependency preparation and registration; timeout must fail closed.
+- Do not claim hard preemption: synchronous stages must cooperatively poll the deadline. Cancellation/isolation for script execution is a separate runtime requirement.
+- Benchmark before claiming a measurable FPS gain.
