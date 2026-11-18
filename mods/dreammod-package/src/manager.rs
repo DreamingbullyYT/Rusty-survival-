@@ -21,6 +21,7 @@ pub enum ModManagerError {
     EntrypointNotFound(String),
     Lifecycle(LifecycleError),
     Resource(ResourceError),
+    ResourceNamespaceMismatch { mod_id: String, resource_id: String },
 }
 
 struct ManagedMod {
@@ -180,11 +181,18 @@ impl ModManager {
             .ensure_enabled()
             .map_err(ModManagerError::Lifecycle)?;
 
+        let namespace_prefix = format!("{id}:");
         let mut transaction = self
             .resources
             .begin(id.to_owned())
             .map_err(ModManagerError::Resource)?;
         for resource_id in resource_ids {
+            if !resource_id.starts_with(&namespace_prefix) {
+                return Err(ModManagerError::ResourceNamespaceMismatch {
+                    mod_id: id.to_owned(),
+                    resource_id: resource_id.clone(),
+                });
+            }
             transaction
                 .stage(resource_id.clone())
                 .map_err(ModManagerError::Resource)?;
@@ -515,6 +523,121 @@ mod tests {
         for id in ["example.base", "example.middle", "example.addon"] {
             assert_eq!(manager.state(id), Ok(LifecycleState::Failed));
         }
+    }
+
+    #[test]
+    fn resource_ids_register_only_for_enabled_mods_and_in_own_namespace() {
+        let mut manager = ModManager::new(vec![package("example.assets", &[], &[])])
+            .unwrap();
+        let ids = vec!["example.assets:block/stone".to_owned()];
+
+        assert_eq!(
+            manager.register_resource_ids("example.assets", &ids),
+            Err(ModManagerError::Lifecycle(LifecycleError::NotEnabled))
+        );
+        manager.approve("example.assets", &[]).unwrap();
+        manager.enable("example.assets").unwrap();
+        assert_eq!(
+            manager.register_resource_ids(
+                "example.assets",
+                &["other.mod:block/stone".to_owned()]
+            ),
+            Err(ModManagerError::ResourceNamespaceMismatch {
+                mod_id: "example.assets".into(),
+                resource_id: "other.mod:block/stone".into(),
+            })
+        );
+        assert_eq!(
+            manager.register_resource_ids("example.assets", &ids),
+            Ok(ids.clone())
+        );
+        assert_eq!(
+            manager.registered_resource_ids("example.assets"),
+            Ok(ids)
+        );
+    }
+
+    #[test]
+    fn resource_registration_is_atomic_and_rejects_cross_mod_conflicts() {
+        let mut manager = ModManager::new(vec![
+            package("example.first", &[], &[]),
+            package("example.second", &[], &[]),
+        ])
+        .unwrap();
+        for id in ["example.first", "example.second"] {
+            manager.approve(id, &[]).unwrap();
+            manager.enable(id).unwrap();
+        }
+        manager
+            .register_resource_ids(
+                "example.first",
+                &["example.first:shared".to_owned()],
+            )
+            .unwrap();
+
+        assert_eq!(
+            manager.register_resource_ids(
+                "example.second",
+                &[
+                    "example.second:new".to_owned(),
+                    "example.first:shared".to_owned(),
+                ],
+            ),
+            Err(ModManagerError::ResourceNamespaceMismatch {
+                mod_id: "example.second".into(),
+                resource_id: "example.first:shared".into(),
+            })
+        );
+        assert_eq!(
+            manager.registered_resource_ids("example.second"),
+            Ok(Vec::new())
+        );
+    }
+
+    #[test]
+    fn disable_releases_all_resource_ids_owned_by_mod() {
+        let mut manager = ModManager::new(vec![package("example.assets", &[], &[])])
+            .unwrap();
+        manager.approve("example.assets", &[]).unwrap();
+        manager.enable("example.assets").unwrap();
+        manager
+            .register_resource_ids(
+                "example.assets",
+                &[
+                    "example.assets:item/a".to_owned(),
+                    "example.assets:block/a".to_owned(),
+                ],
+            )
+            .unwrap();
+
+        assert_eq!(manager.registered_resource_ids("example.assets").unwrap().len(), 2);
+        manager.disable("example.assets").unwrap();
+        assert_eq!(manager.registered_resource_ids("example.assets"), Ok(Vec::new()));
+    }
+
+    #[test]
+    fn dependency_failure_releases_resources_for_entire_dependent_chain() {
+        let mut manager = ModManager::new(vec![
+            package("example.base", &[], &[]),
+            package("example.addon", &[( "example.base", "^1.0")], &[]),
+        ])
+        .unwrap();
+        for id in ["example.base", "example.addon"] {
+            manager.approve(id, &[]).unwrap();
+            manager.enable(id).unwrap();
+            manager
+                .register_resource_ids(
+                    id,
+                    &[format!("{id}:item/registered")],
+                )
+                .unwrap();
+        }
+
+        manager.fail("example.base", "host fault").unwrap();
+        assert_eq!(manager.registered_resource_ids("example.base"), Ok(Vec::new()));
+        assert_eq!(manager.registered_resource_ids("example.addon"), Ok(Vec::new()));
+        assert_eq!(manager.state("example.base"), Ok(LifecycleState::Failed));
+        assert_eq!(manager.state("example.addon"), Ok(LifecycleState::Failed));
     }
 
     #[test]
