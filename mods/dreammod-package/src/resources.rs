@@ -253,25 +253,32 @@ mod tests {
     #[test]
     fn enforces_per_mod_and_global_quotas() {
         let mut registry = ResourceRegistry::new();
-        let mut per_mod = registry.begin("example.large").unwrap();
+        for owner_index in 0..16 {
+            let owner = format!("example.large{owner_index}");
+            let mut tx = registry.begin(owner).unwrap();
+            for index in 0..MAX_RESOURCES_PER_MOD {
+                tx.stage(format!("example:owner{owner_index}/r{index}")).unwrap();
+            }
+            tx.commit(&mut registry).unwrap();
+        }
+        assert_eq!(registry.len(), MAX_REGISTERED_RESOURCES);
+
+        let mut per_mod = registry.begin("example.permod").unwrap();
         for index in 0..MAX_RESOURCES_PER_MOD {
-            per_mod.stage(format!("example:r{index}")).unwrap();
+            per_mod.stage(format!("permod:r{index}")).unwrap();
         }
         assert_eq!(
-            per_mod.stage("example:overflow"),
+            per_mod.stage("permod:overflow"),
             Err(ResourceError::PerModLimit { maximum: MAX_RESOURCES_PER_MOD })
         );
-        per_mod.commit(&mut registry).unwrap();
 
         let mut global = registry.begin("example.second").unwrap();
-        for index in 0..(MAX_REGISTERED_RESOURCES - MAX_RESOURCES_PER_MOD) {
-            global.stage(format!("second:r{index}")).unwrap();
-        }
+        global.stage("second:one").unwrap();
         assert_eq!(
             global.commit(&mut registry),
             Err(ResourceError::GlobalLimit { maximum: MAX_REGISTERED_RESOURCES })
         );
-        assert_eq!(registry.len(), MAX_RESOURCES_PER_MOD);
+        assert_eq!(registry.len(), MAX_REGISTERED_RESOURCES);
     }
 
     #[test]
