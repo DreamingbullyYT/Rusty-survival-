@@ -7,6 +7,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Cursor, Read, Seek};
 use zip::{CompressionMethod, ZipArchive};
 
+pub mod lifecycle;
+
 pub const MANIFEST_SCHEMA_VERSION: u32 = 1;
 pub const MAX_MANIFEST_BYTES: usize = 64 * 1024;
 pub const MAX_DEPENDENCIES: usize = 128;
