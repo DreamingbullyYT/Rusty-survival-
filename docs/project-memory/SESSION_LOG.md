@@ -1136,7 +1136,7 @@ Changes:
 - Inspected the pinned Horizon mod API and its modding guide: Hooks, ServerHost/ClientHost, Wire values, explicit load phases, server_tick phase semantics, Send + Sync and cross-thread/re-entrant constraints.
 - Added docs/dreammod/HORIZON_HOST_BRIDGE.md with the verified upstream surface, adapter rules, initial integration sequence and explicit implementation gaps.
 Verification:
-- DreamMod package workflow run 44304258172 was observed in progress for the code commit; do not treat it as passed until a completed result is checked.
+- DreamMod package Actions run 44304258172: SUCCESS. Formatting, all package tests and Clippy with `-D warnings` passed on code commit d9a524f6ff0b4ef6124abf2c0fdd8aaebdc19747.
 Limitations:
 - HostAdapter remains a generic policy guard. No concrete Horizon host operation is routed through it; it is not a sandbox and does not execute scripts.
 Next:
