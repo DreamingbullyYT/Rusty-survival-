@@ -74,6 +74,7 @@ jobs:
           build_dir="$(dirname "$record")"
           test -f "$build_dir/native-mods.json"
           grep -q 'dreammod_core' "$build_dir/native-mods.json"
+          grep -q '0b14f8acfd97fa2c750e42795249dcc981178ca4' "$build_dir/native-mods.json"
           test -d "$build_dir/horizon-native-mods"
           mod_library="$(find "$build_dir/horizon-native-mods" -type f \\( -name '*.so' -o -name '*.dylib' -o -name '*.dll' \\) -print -quit)"
           test -n "$mod_library"
@@ -91,6 +92,8 @@ jobs:
           mkdir -p dist
           tar -czf dist/dreammod-horizon-nightly-native.tar.gz -C "${{ steps.inspect.outputs.build_dir }}" .
           cp "${{ steps.inspect.outputs.build_dir }}/native-mods.json" dist/native-mods.json
+          build_log="$(find "$HOME" -type f -path '*/native/build.log' -print -quit)"
+          if [ -n "$build_log" ]; then cp "$build_log" dist/native-build.log; fi
       - name: Upload CI-built native distribution
         uses: actions/upload-artifact@v4
         with:
