@@ -38,7 +38,7 @@
 - [x] Define version-1 `.dmod` manifest and capability declaration schema in `mods/dreammod-package`.
 - [x] Implement side-effect-free manifest parsing/validation for schema version, strict fields, IDs, semantic versions/API ranges, safe entrypoint paths, allowlisted/unique capabilities, dependency IDs/ranges and manifest size/count limits.
 - [x] Add a side-effect-free archive inventory policy that rejects traversal, non-portable paths, case-folded duplicates, symlinks/other types, encrypted entries, unapproved roots, missing manifest/entrypoint and resource-exhaustion metadata before any extraction (ZIP parser integration and CI verification remain open).
-- [ ] Integrate a ZIP central-directory reader that proves metadata is trustworthy and validates local-header consistency before opening entries; never extract to disk.
+- [x] Integrate an in-memory ZIP reader with strict local-header/central-directory consistency checks, bounded metadata preflight and CRC-checked streaming; no filesystem extraction.
 - [x] Implement deterministic dependency validation and load-order planning (runtime lifecycle remains open).
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
