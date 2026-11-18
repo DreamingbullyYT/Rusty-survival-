@@ -55,6 +55,15 @@ impl ResourceRegistry {
         self.owners.is_empty()
     }
 
+    /// Return identifiers owned by one mod in deterministic lexicographic order.
+    pub fn ids_for_owner(&self, owner: &str) -> Vec<String> {
+        self.owners
+            .iter()
+            .filter(|(_, registered_owner)| registered_owner.as_str() == owner)
+            .map(|(id, _)| id.clone())
+            .collect()
+    }
+
     /// Release every committed identifier belonging to one mod.
     /// Returns removed identifiers in deterministic lexicographic order.
     pub fn remove_owner(&mut self, owner: &str) -> Vec<String> {
