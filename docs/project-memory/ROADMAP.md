@@ -134,3 +134,11 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 5. [ ] Verify Core formatting, tests and pinned Horizon source packaging after adding the section bridge.
 6. [ ] Verify API-only overlay compilation and real native-host loading with the runtime dylib search path configured. The previous host test failed on a missing sibling `libhorizon_mod_runtime.so`; the workflow now sets `LD_LIBRARY_PATH` but the rerun is pending.
 7. [ ] Define chunk section storage and block-state representation only after pinning the Java 26.3 reference behavior and test fixtures. Do not infer dimension height or palette serialization from this coordinate contract.
+
+
+## Verification follow-up — 2026-11-18
+1. [x] Verify API-only prebuilt compilation, real Horizon native-host loading, archive inspection and upload (overlay run 44341466372 PASS).
+2. [ ] Verify DreamMod Core formatting, unit tests and source packaging after the import-format correction (run 44361109477 pending).
+3. [ ] Verify whether the actual distributed launcher configures a native library search path equivalent to the successful CI host test; do not infer full launch readiness from CI's LD_LIBRARY_PATH.
+4. [ ] Wire the Core collector through a concrete per-mod lifecycle/capability adapter and interpreted runtime; current Hooks remain empty.
+5. [ ] Build production .dmod interpreter/loader/sandbox; none is implemented.
