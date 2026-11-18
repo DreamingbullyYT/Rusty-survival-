@@ -1315,3 +1315,23 @@ Limitations:
 - No interpreter/scheduler or ARM64 benchmark exists; no FPS improvement is measured.
 Next:
 - Verify both workflows, then add a benchmark for snapshot batch validation and design immutable per-dispatch batch reuse with explicit thread/invalidation rules.
+
+
+## S-2026-11-18-39 — Remove temporary heap allocation from player batch validation
+Date: 2026-11-18
+Commits:
+- Core fixed scratch buffer: b2185e8917e351dfd0408231e855efe47e6b3bfd
+- Package fixed scratch buffer: f3a55af3a332073db92df24de00e347bc55a3bb8
+Goal: Remove the remaining temporary heap allocation from bounded duplicate UUID validation.
+Changes:
+- Replaced the temporary Vec<u128> with a fixed [u128; 256] stack array in Core and package PlayerSnapshotBatch validation.
+- Only the populated prefix is sorted; the original snapshot order is unchanged. The 256-player cap is checked before slicing.
+- Updated Core formatting to run only on the Core manifest, avoiding generated SDK source formatting differences.
+Verification:
+- Package CI for the 60-second deadline passed in run 44317125357. New package run 44317885243 and Core run 44317880298 are pending for the stack-buffer implementation.
+- No benchmark or FPS improvement is claimed.
+Limitations:
+- No real interpreter dispatcher exists yet, so per-dispatch snapshot reuse remains architectural work, not implemented behavior.
+- The 60-second deadline currently bounds ZIP inspection only, not a complete mod load transaction.
+Next:
+- Verify both latest workflows, add batch benchmarks, then design per-dispatch immutable snapshot reuse with explicit thread and invalidation rules.
