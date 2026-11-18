@@ -42,7 +42,8 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 - No verified prebuilt client overlay or successful native-host load yet.
 - No complete game launch with DreamMod Core.
 - `mods/dreammod-package` now defines and validates the version-1 JSON manifest contract (strict fields, semantic versions/API range, safe script entrypoint, capability allowlist, dependency declarations and size/count limits); its new CI workflow has not yet been inspected.
-- No ZIP/archive loader, dependency resolver, runtime lifecycle or hot reload.
+- `dreammod-package` now validates an untrusted archive inventory before entries are opened: bounded entry count/expanded sizes/ratio, strict portable paths, case-folded duplicate detection, symlink/other/encrypted-entry rejection, approved `scripts/` and `assets/` roots, exactly one manifest and an existing declared entrypoint. This is metadata-policy code only; no ZIP parser is integrated, and CI is pending.
+- No ZIP reader/extractor, dependency resolver, runtime lifecycle or hot reload.
 - No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
 - The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
 - Rhai is not the final language choice and is not integrated into Core.
