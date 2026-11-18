@@ -91,6 +91,23 @@ impl ModManager {
             .map_err(ModManagerError::Lifecycle)
     }
 
+    /// Check one mod's enabled state and explicit grant before a Core callback.
+    /// Callers can pass this method as the authorization closure to Core APIs.
+    pub fn require_capability(
+        &self,
+        id: &str,
+        capability: &str,
+    ) -> Result<(), ModManagerError> {
+        let managed = self
+            .mods
+            .get(id)
+            .ok_or_else(|| ModManagerError::UnknownMod(id.to_owned()))?;
+        managed
+            .lifecycle
+            .require(capability)
+            .map_err(ModManagerError::Lifecycle)
+    }
+
     /// A dependent can only start after every declared dependency is enabled.
     pub fn enable(&mut self, id: &str) -> Result<(), ModManagerError> {
         let required = self
@@ -216,6 +233,38 @@ mod tests {
         assert_eq!(manager.load_order(), &["example.base", "example.addon"]);
         assert!(manager.package("example.addon").is_some());
         assert_eq!(manager.state("example.addon"), Ok(LifecycleState::AwaitingApproval));
+    }
+
+    #[test]
+    fn capability_check_can_be_used_as_core_authorization_callback() {
+        let mut manager = ModManager::new(vec![package(
+            "example.reader",
+            &[],
+            &["entities.read"],
+        )])
+        .unwrap();
+        assert_eq!(
+            manager.require_capability("example.reader", "entities.read"),
+            Err(ModManagerError::Lifecycle(LifecycleError::NotEnabled))
+        );
+        manager
+            .approve("example.reader", &["entities.read".into()])
+            .unwrap();
+        assert_eq!(
+            manager.require_capability("example.reader", "entities.read"),
+            Err(ModManagerError::Lifecycle(LifecycleError::NotEnabled))
+        );
+        manager.enable("example.reader").unwrap();
+        assert_eq!(
+            manager.require_capability("example.reader", "entities.read"),
+            Ok(())
+        );
+        assert_eq!(
+            manager.require_capability("example.reader", "world.write"),
+            Err(ModManagerError::Lifecycle(LifecycleError::CapabilityDenied(
+                "world.write".into()
+            )))
+        );
     }
 
     #[test]
