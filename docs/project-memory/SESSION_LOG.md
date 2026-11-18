@@ -1008,3 +1008,20 @@ Limitations:
 - The package bytes are held in memory only; there is no install path, capability grant, interpreter execution or production sandbox.
 Next:
 - Verify package CI, then define the trust/permission boundary before any script can execute.
+
+
+## S-2026-11-18-23 — Verify retained package contents and PMCS migration
+Date: 2026-11-18
+Commit: 2dd019b4a370fec853ec19849c4538f6cce9be44 (package code); PMCS updates follow.
+Goal: Verify that validated .dmod payload bytes are retained safely and project continuity checks remain green.
+Changes:
+- Confirmed the package inspector returns the exact script and asset bytes in memory after ZIP validation.
+- Updated current state, roadmap, issues and changelog with the package verification result.
+- Confirmed the legacy-aware session ID migration preserves append-only history while rejecting duplicate/reused new IDs.
+Verification:
+- DreamMod package Actions run 44300015439: formatting SUCCESS, 19/19 tests SUCCESS, Clippy SUCCESS.
+- PMCS Actions run 44300145443: regression tests SUCCESS and structure/freshness validation SUCCESS.
+Limitations:
+- No filesystem installation, permission grant, script execution or production sandbox.
+Next:
+- Define the package trust/permission boundary and a pluggable runtime input contract before implementing execution.
