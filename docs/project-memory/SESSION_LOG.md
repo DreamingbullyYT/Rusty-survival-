@@ -644,3 +644,14 @@ Next:
 - Inspect the corrected benchmark run and ensure the two sides do equivalent observable work.
 - Add Starlark as a competing interpreted-source candidate and compare with the same host boundary/workloads.
 - Continue native API mod packaging and CI-built prebuilt distribution proof.
+
+## S-2026-11-18-08 — Finish benchmark formatting correction
+Date: 2026-11-18
+Commit: 00a3360bd33d53c54ec75543da83798e0fdc9c30
+Changes:
+- Applied rustfmt's exact line wrapping to the black_box-protected benchmark call after CI run 44284293061 stopped at formatting.
+Verification:
+- Fresh runtime workflow 44284388165 and PMCS workflow 44284388228 are queued; no test or benchmark result is claimed yet.
+Next:
+- Inspect the corrected runtime CI run and PMCS validation.
+- Once benchmark is valid, compare another AST-interpreted candidate and begin native trait mod package integration.
