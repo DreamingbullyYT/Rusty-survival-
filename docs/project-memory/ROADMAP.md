@@ -20,7 +20,8 @@
 - [x] Establish initial candidate shortlist (Rhai AST evaluator and Starlark AST interpreter); final selection remains OPEN.
 - [x] Add an isolated Rhai AST-evaluator prototype with typed test host calls and an explicit operation budget.
 - [x] Add tests for event-style dispatch, batch world query and script-side batch physics replacement.
-- [ ] Verify the runtime prototype workflow after the Vec-to-Rhai-Array fix and import-order formatting correction; behavior tests, Clippy and benchmark still need a passing run.
+- [x] Verify runtime formatting, 4 behavior/budget tests and Clippy after the Vec-to-Rhai-Array fix (Actions run 44283982705).
+- [ ] Rerun the benchmark after adding black_box guards; the previous native timing was optimized away and is invalid.
 - [ ] Compare Starlark with the same representative workloads.
 - [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem replacement on desktop and ARM64 devices.
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
