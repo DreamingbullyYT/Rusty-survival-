@@ -622,3 +622,25 @@ Next:
 - Verify the latest runtime and PMCS workflows.
 - Resolve remaining runtime test/Clippy issues before making any language decision.
 - Continue the reproducible native-build artifact and clean startup proof.
+
+## S-2026-11-18-07 — Verify Rhai tests and correct benchmark methodology
+Date: 2026-11-18
+Commits:
+- Benchmark anti-optimization correction: 89ed3a56bc209431b860811340c8c7446d7e65ad
+Goal: Verify the interpreted runtime candidate after the host-boundary fix and ensure its benchmark measures actual work.
+Changes:
+- Confirmed Actions run 44283982705 completed successfully: formatting passed, 4 tests passed (event dispatch, batched host query, batched physics algorithm, infinite-loop operation budget), and Clippy passed with warnings denied.
+- Inspected benchmark output and rejected its apparent 1,070,530x interpreted/native ratio. The Rust-native path took only 371 ns for 500,000 output values because the optimizer eliminated unused output calculations.
+- Added std::hint::black_box around benchmark inputs and outputs so both implementations must materialize observable results; corrected the script's len() call.
+Verification:
+- Runtime tests and Clippy: VERIFIED in Actions run 44283982705.
+- Benchmark anti-optimization correction: IMPLEMENTED in commit 89ed3a5; fresh CI timing pending.
+- No performance conclusion is drawn from the invalid previous measurement.
+Not tested:
+- No ARM64/Android benchmark.
+- No Starlark comparison or final language choice.
+- No production .dmod loader, sandbox, Core integration or native prebuilt distribution.
+Next:
+- Inspect the corrected benchmark run and ensure the two sides do equivalent observable work.
+- Add Starlark as a competing interpreted-source candidate and compare with the same host boundary/workloads.
+- Continue native API mod packaging and CI-built prebuilt distribution proof.
