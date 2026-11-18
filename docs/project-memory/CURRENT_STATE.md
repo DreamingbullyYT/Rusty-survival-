@@ -45,7 +45,7 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - inspect_dmod() now parses actual ZIP input in memory, performs metadata preflight and local-header consistency validation, checks the manifest and declared entrypoint, and streams regular entries to EOF for actual-size and CRC validation. Validated script/asset bytes are retained in a bounded Vec<PackageFile>; no filesystem extraction occurs.
 - Dedicated package CI passed on commit `4e983c04ea8f3a4085aa2e13b6b53d691c307564`, Actions run `44299317538`: formatting step, all 19 unit tests, and Clippy with `-D warnings` succeeded.
 - PMCS session-log validation is legacy-aware: old duplicate headings are preserved, while new entries must be unique against all prior IDs; regression tests passed in Actions runs 44299837834 and 44300145443; latest full PMCS validation is green.
-- No filesystem installation, runtime capability enforcement, script execution, or production sandbox exists. The package layer retains validated script/asset bytes in memory and now computes a pure explicit capability plan from requested capabilities plus caller-supplied approvals; this plan does not itself confer authority. Actions run 44300015439 passed on commit 2dd019b4a370fec853ec19849c4538f6cce9be44: formatting, all 19 tests, and Clippy. Capability-planner CI passed in Actions run 44300324687 on commit d83b3491b747bc880b657e4cf17e259a8af2ff62: 21 tests and Clippy.
+- No filesystem installation, runtime capability enforcement, script execution, or production sandbox exists. The package layer retains validated script/asset bytes in memory, computes a pure explicit capability plan, and provides a default-deny CapabilityGate constructible only from a validated manifest plus explicit approvals. It is a host-side helper, not yet wired into Horizon API calls. Actions run 44300015439 passed on commit 2dd019b4a370fec853ec19849c4538f6cce9be44: formatting, all 19 tests, and Clippy. Capability-planner CI passed in Actions run 44300324687 on commit d83b3491b747bc880b657e4cf17e259a8af2ff62: 21 tests and Clippy.
 - No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
 - The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
 - Rhai is not the final language choice and is not integrated into Core.
@@ -101,3 +101,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Empty approvals grant nothing; requested-but-unapproved capabilities remain denied; unknown, unrequested and duplicate approvals are rejected.
 - The plan is data only. The runtime host must enforce every grant at each API boundary; no capability is actually activated by this crate.
 - Regression tests cover default-deny, partial grants and invalid approvals. Package CI run 44300324687 passed all 21 tests and Clippy.
+
+
+## Latest host capability gate helper (2026-11-18)
+- Added CapabilityGate::from_approvals(), allows() and require().
+- The gate stores a private granted set, validates approvals through the manifest planner, and denies unapproved or unknown capabilities.
+- This is a reusable guard primitive only. DreamMod Core does not yet wrap Horizon host APIs with it, so end-to-end enforcement is not claimed.
+- Added gate regression tests. Package CI pending.
