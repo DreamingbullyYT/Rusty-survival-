@@ -264,3 +264,10 @@ Scope note: current registry is metadata bookkeeping only; no Horizon resource i
 7. [ ] Verify pinned Horizon SDK resource registration APIs before implementing any external host adapter.
 
 Scope: internal resource ID reservations only; no live Horizon resources are registered.
+
+
+### Resource lifecycle test follow-up
+- [x] Initial integration run `44386150155`: 55 tests, rustfmt and strict Clippy passed.
+- [x] Add duplicate-ID batch rollback regression and accurate test naming.
+- [ ] Verify package workflow after `51aa347d1140`.
+- [ ] Verify latest PMCS validator run after the full five-file update.
