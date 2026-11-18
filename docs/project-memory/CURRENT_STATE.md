@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: CORE_SOURCE_AND_UNIT_TESTS_VERIFIED; API_ONLY_PREBUILT_OVERLAY_BLOCKED_ON_CI_HARNESS_TYPE; DREAMMOD_PACKAGE_INSPECTOR_VERIFIED; RHAI_CANDIDATE_PROVISIONAL
+Status: ENGINE_REFERENCE_SMOKE_AND_UNIT_TESTS_VERIFIED; DREAMMOD_CORE_SOURCE_HMOD_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HOST_LOAD_PENDING; DREAMMOD_PACKAGE_INSPECTOR_VERIFIED; RHAI_CANDIDATE_PROVISIONAL
 Repository HEAD: resolve dynamically from `main`; latest verified package CI commit: `4e983c04ea8f3a4085aa2e13b6b53d691c307564`.
 
 ## Direction
@@ -226,3 +226,13 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Inspected the exact pinned Horizon source at 0b14f8acfd97fa2c750e42795249dcc981178ca4: tools/ci/rust-version is 1.99.1, which is the compiler used to produce the signed SDK. Updated .github/workflows/dreammod-prebuilt.yml to use 1.99.1 and to record that exact compiler in overlay metadata (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7).
 - Overlay rerun 44328650675 is in progress. It has not yet reached the prebuilt compile step; no result is claimed for the rustc mismatch or the secondary generated crate::hooks error.
 - PMCS run 44328650216 passed all validator regression tests and freshness checks on commit 96d2e740.
+
+
+## Engine reference smoke verification — 2026-11-18
+- Added push/PR-triggered workflow `.github/workflows/reference-artifact-smoke.yml`: it runs offline downloader security tests, downloads official Minecraft Java 26.3 into a unique `RUNNER_TEMP` directory, verifies the bundled server ZIP/CRCs, runs workspace formatting/tests/Clippy, and deletes the temporary directory with `if: always()`.
+- First workflow revision failed before job creation because `runner.temp` was referenced in job-level environment. Corrected it to step-level environment; successful run: 44331401582 on commit `bada0f033ca31a8fd6ad4f46dcd58a907227bd8f`.
+- Run 44331401582 downloaded 62,294,556 bytes; official metadata SHA-1 verified as `33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c`. ZIP CRC inspection passed. Engine workspace tests passed: 5 coordinate tests + 5 testkit contract tests; formatting and Clippy passed; cleanup confirmed the temporary directory was absent.
+- This is artifact-integrity smoke plus existing engine unit tests, NOT a differential comparison against Minecraft behavior. The engine still implements only horizontal block-to-chunk mapping; a real Java 26.3 oracle/harness and captured vanilla fixtures remain open.
+- Existing native Core workflow run 44322745253 passed the pinned Horizon SDK check, Core tests and source `.hmod` packaging. The Core `Hooks` implementation remains empty; player snapshot collection is not yet connected to the DreamMod runtime or script API.
+- Prebuilt overlay run 44328650675 completed API-only compilation successfully with Rust 1.99.1, but was cancelled during the real native-host loader step when a newer commit arrived. A clean rerun, 44330930078, is building the overlay; host loading, archive inspection and artifact upload remain unverified.
+- Overlay metadata compiler field was corrected to 1.99.1 in commit `d23bc48fd1e606ef2191e0b4f059ec50451c14b9`. PMCS validation passed in run 44331401564.
