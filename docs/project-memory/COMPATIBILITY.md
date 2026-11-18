@@ -52,3 +52,8 @@ The pinned Horizon prebuilt SDK stages the HNMod package source but does not sta
 
 ### Closure-based authorization bridge (2026-11-18)
 Core no longer imports any non-SDK crate for authorization; it accepts a generic one-shot closure. Package ModManager exposes `require_capability` and can supply that closure. The callback signature uses ordinary Rust `FnOnce() -> Result<(), E>` and introduces no ABI or Horizon SDK dependency. The latest extra manager test is in commit `4103668`; post-commit package verification pending.
+
+### Latest package/PMCS verification
+- Package run `44364198594` passed on commit `4103668fee`: rustfmt, 42 unit tests, Clippy `-D warnings`.
+- PMCS run `44364312080` passed the updated memory set.
+- Closure-based Core integration is still pending the active Core and overlay builds.
