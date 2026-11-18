@@ -991,3 +991,20 @@ Limitations:
 - Historical duplicate headings remain unchanged to preserve the append-only journal. New entries must use unique IDs.
 Next:
 - Verify PMCS regression tests and full structure/freshness validation, then resume the DreamMod package-content loader.
+
+
+## S-2026-11-18-22 — Retain validated package files in memory
+Date: 2026-11-18
+Commit: 2dd019b4a370fec853ec19849c4538f6cce9be44
+Goal: Make the verified .dmod inspector return usable script and asset contents without extracting them to disk.
+Changes:
+- Added PackageFile and a files collection to ValidatedPackage.
+- Retain regular files under the already-approved scripts/ and assets/ roots only after streaming to EOF, validating actual decompressed length and CRC.
+- Keep manifest.json as parsed metadata rather than duplicate retained payload; drop its temporary byte buffer after parsing.
+- Added fixture assertions for exact script and asset bytes and updated the crate description.
+Verification:
+- Package workflow pending for this change.
+Limitations:
+- The package bytes are held in memory only; there is no install path, capability grant, interpreter execution or production sandbox.
+Next:
+- Verify package CI, then define the trust/permission boundary before any script can execute.
