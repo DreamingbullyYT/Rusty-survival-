@@ -47,9 +47,10 @@ impl PlayerSnapshot {
             return Err(PlayerSnapshotError::InvalidDimension { uuid });
         }
 
-        if position.iter().any(|value| {
-            !value.is_finite() || value.abs() > MAX_WORLD_COORDINATE
-        }) {
+        if position
+            .iter()
+            .any(|value| !value.is_finite() || value.abs() > MAX_WORLD_COORDINATE)
+        {
             return Err(PlayerSnapshotError::InvalidPosition { uuid });
         }
 
@@ -202,16 +203,15 @@ fn valid_dimension_id(value: &str) -> bool {
     !namespace.is_empty()
         && !path.is_empty()
         && !path.contains(':')
-        && namespace
-            .bytes()
-            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || matches!(byte, b'_' | b'-' | b'.'))
+        && namespace.bytes().all(|byte| {
+            byte.is_ascii_lowercase() || byte.is_ascii_digit() || matches!(byte, b'_' | b'-' | b'.')
+        })
         && path.bytes().all(|byte| {
             byte.is_ascii_lowercase()
                 || byte.is_ascii_digit()
                 || matches!(byte, b'_' | b'-' | b'.' | b'/')
         })
 }
-
 
 #[cfg(test)]
 mod authorization_tests {
@@ -226,7 +226,11 @@ mod authorization_tests {
         type Error = &'static str;
 
         fn require_entities_read(&self) -> Result<(), Self::Error> {
-            if self.allowed { Ok(()) } else { Err("entities.read denied") }
+            if self.allowed {
+                Ok(())
+            } else {
+                Err("entities.read denied")
+            }
         }
     }
 
@@ -239,7 +243,9 @@ mod authorization_tests {
         });
         assert_eq!(
             result,
-            Err(AuthorizedPlayerReadError::PermissionDenied("entities.read denied"))
+            Err(AuthorizedPlayerReadError::PermissionDenied(
+                "entities.read denied"
+            ))
         );
         assert_eq!(calls.get(), 0);
     }
@@ -276,7 +282,14 @@ mod authorization_tests {
 
     #[test]
     fn snapshot_rejects_invalid_dimension_identifiers() {
-        for dimension in ["", "overworld", ":path", "minecraft:", "Minecraft:overworld", "minecraft:a:b"] {
+        for dimension in [
+            "",
+            "overworld",
+            ":path",
+            "minecraft:",
+            "Minecraft:overworld",
+            "minecraft:a:b",
+        ] {
             assert!(matches!(
                 PlayerSnapshot::new(1, "Dreamer".into(), dimension.into(), [0.0; 3]),
                 Err(PlayerSnapshotError::InvalidDimension { uuid: 1 })
@@ -320,5 +333,4 @@ mod authorization_tests {
             })
         );
     }
-
 }
