@@ -111,3 +111,8 @@ Added `bridge::PlayerSnapshot`, an owned DTO containing UUID, validated player n
 ## DM-023 — Concrete Core-side online-player collector
 Status: IMPLEMENTED — SDK verification pending
 Added a Core-local owned snapshot DTO and bounded collector using the pinned `ServerHost::players().server_players()` service. The collector rejects batches above 256 before reading, preserves connection order, reads each player's name/dimension/entity position while the host borrow is valid, and copies only owned values. It rejects unavailable handles/fields, invalid names/dimensions/coordinates and duplicate UUIDs. No Horizon handle escapes. The collector is not yet called by the .dmod runtime and does not itself enforce per-mod capabilities; the runtime must call it only after an `entities.read` grant is checked. Source commits: `7ecd981`, `b2362c6`. Core SDK check pending in Actions run 44310547586.
+
+
+## DM-024 — Bind Core player-read authorization to per-mod lifecycle
+Status: OPEN
+The Core collector now refuses to touch `ServerHost` until a `PlayerReadAuthorization` implementation grants `entities.read`. Regression tests verify callback non-invocation on denial and one invocation on success. This is only an interface seam: no implementation currently connects it to a particular package `ModLifecycle` instance. The future runtime must implement the trait using the mod's Enabled state and approved capability set, then ensure every script-triggered read passes through it. Source commit: `99929e3`. Core and overlay Actions are running; verify before claiming the change is compiled.
