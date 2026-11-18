@@ -228,6 +228,9 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
     if archive.len() > MAX_ARCHIVE_ENTRIES {
         return Err(ArchiveError::TooManyEntries);
     }
+    archive
+        .validate_header_consistency()
+        .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
 
     let mut entries = Vec::with_capacity(archive.len());
     for index in 0..archive.len() {
@@ -810,6 +813,23 @@ mod tests {
         assert!(matches!(
             inspect_dmod(&bytes),
             Err(ArchiveError::UnsafePath(_))
+        ));
+    }
+
+    #[test]
+    fn rejects_payload_corruption_via_zip_crc_check() {
+        let mut bytes = zip_fixture(&[
+            ("manifest.json", VALID.as_bytes()),
+            ("scripts/main.dream", b"payload-to-corrupt"),
+        ]);
+        let offset = bytes
+            .windows(b"payload-to-corrupt".len())
+            .position(|window| window == b"payload-to-corrupt")
+            .unwrap();
+        bytes[offset] ^= 0x01;
+        assert!(matches!(
+            inspect_dmod(&bytes),
+            Err(ArchiveError::InvalidZip(_))
         ));
     }
 
