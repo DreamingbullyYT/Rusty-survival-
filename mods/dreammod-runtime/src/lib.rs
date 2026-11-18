@@ -16,7 +16,8 @@ pub use manifest::{
 pub use package::{DmodPackage, PackageError, PackageLimits, PackageLoader};
 pub use runtime::{
     AllowAllForTests, AuthorizedCommand, CommandAuthorizer, CommandEnvelope,
-    DenyAll, DispatchReport, DreamModRuntime, LoadReport, PermissionPolicy,
+    DeniedOperation, DenyAll, DispatchReport, DreamModRuntime, LoadReport,
+    PermissionPolicy, ProviderMode, ProviderRegistration, RegisteredProvider,
     RuntimeConfig, RuntimeError, RuntimeEvent, RuntimeSide, ScriptFailure,
 };
 pub use script::{ExecutionLimits, RhaiEngine, ScriptEngine, ScriptError};
