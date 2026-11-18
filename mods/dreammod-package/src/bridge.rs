@@ -89,11 +89,13 @@ impl PlayerSnapshotBatch {
             return Err(SnapshotError::BatchTooLarge);
         }
 
-        let mut seen = std::collections::BTreeSet::new();
-        for player in &players {
-            if !seen.insert(player.uuid()) {
-                return Err(SnapshotError::DuplicatePlayer(player.uuid()));
-            }
+        // Keep duplicate detection cache-friendly and allocation-bounded:
+        // one contiguous UUID buffer instead of a tree node per inserted player.
+        let mut uuids = Vec::with_capacity(players.len());
+        uuids.extend(players.iter().map(PlayerSnapshot::uuid));
+        uuids.sort_unstable();
+        if let Some(duplicate) = uuids.windows(2).find(|pair| pair[0] == pair[1]) {
+            return Err(SnapshotError::DuplicatePlayer(duplicate[0]));
         }
 
         Ok(Self { players })
