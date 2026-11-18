@@ -69,3 +69,9 @@ Use Arc<[PlayerSnapshot]> as PlayerSnapshotBatch backing storage. Cloning a batc
 - Decision: use a minimal `dreammod-contract` crate for the player-read authorization trait and capability identifier. Both Core and package/lifecycle depend on it.
 - Rationale: Core must not inherit ZIP, JSON, semver or archive-inspection dependencies merely to check per-mod authorization; a shared trait avoids duplicate contracts and supports a future runtime owner.
 - Consequence: this is an integration seam, not proof that a runtime manager currently connects the two crates. The package lifecycle remains separate from Horizon host handles. Revisit only if the public capability model is redesigned.
+
+## DECISION — centralize package lifecycle ownership in ModManager (2026-11-18)
+- Decision: introduce one deterministic `ModManager` owning validated package contents, dependency edges and one `ModLifecycle` per package.
+- Enable is dependency-first; disabling a dependency with an enabled dependent is rejected; failure cascades transitively and fail-closed.
+- Rationale: keep lifecycle decisions centralized and deterministic before adding an interpreter or host registrations.
+- Consequence: manager does not execute scripts or interact with Horizon. A future runtime layer must implement transactional registration and cleanup without bypassing per-mod lifecycle authorization.
