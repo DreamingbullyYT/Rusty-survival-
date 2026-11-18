@@ -1,7 +1,7 @@
-//! DreamMod Core: native bootstrap for the interpreted .dmod runtime.
-//! This first milestone verifies the native mod ABI before adding runtime features.
+//! DreamMod Core: trusted Horizon native bootstrap and engine bridge.
 use mod_api::Hooks;
 
+pub mod engine_bridge;
 pub mod player_snapshot;
 
 #[derive(Default)]
