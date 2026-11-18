@@ -498,3 +498,8 @@
 - Updated Core's player snapshot collector to consume the shared contract.
 - Implemented the contract for package `ModLifecycle`, enforcing both enabled state and capability approval.
 - Kept archive inspection dependencies isolated from the native Core crate. CI verification pending.
+
+## Verification follow-up — shared lifecycle contract (2026-11-18)
+- Package `bridge.rs` now re-exports the canonical `PLAYER_READ_CAPABILITY` from `dreammod-contract` rather than defining a second identifier.
+- Added a regression test proving the package `ModLifecycle` implementation of `PlayerReadAuthorization` denies awaiting approval, missing grants, disabled and failed states, and allows only an enabled mod with the explicit `entities.read` grant.
+- Verification of this test and the Core dependency is running in Actions; do not mark verified until those runs finish.
