@@ -451,3 +451,11 @@
 - Changed Core and package PlayerSnapshotBatch backing storage to Arc<[PlayerSnapshot]> so cloning a batch shares immutable data instead of deep-copying player records.
 - Added pointer-identity regression tests. Core commit 3f629cc54a27992f9a7f402dfda3fcfa0505b4bf; package commit 74310a797393ec319fb9192d931a7b860ba55ced.
 - CI pending. This enables cheap sharing but does not add a runtime dispatcher or cache.
+
+
+## 2026-11-18 — Verify Core snapshot implementation and correct overlay test route
+- Core workflow run 44322745253 passed on HEAD 741f7ff15bb22a2b16b8a5a667fe471d3ee3ddc9: pinned Horizon native/API/host-WASM validation, formatting, unit tests and native source packaging.
+- The earlier Core unit-test fixture mismatch was corrected by explicitly converting the test UUID range value to u128; the corrected test suite passed in the run above.
+- Package Arc-backed snapshot CI run 44318172781 passed; archive inspection deadline CI run 44317125357 passed.
+- PMCS run 44322745310 failed because required companion memory documents were missing; this change set records the actual CI evidence and remaining work.
+- Overlay run 44322745328 failed at compile time because the injected test referred to the UI-facing picker Route instead of prebuilt::Route. The patch script now qualifies the API route correctly. No overlay or host-loader success is claimed until a fresh run passes.
