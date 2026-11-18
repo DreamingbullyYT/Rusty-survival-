@@ -114,3 +114,6 @@ an implementation backed by a particular `ModLifecycle` instance. The runtime
 must provide that adapter and call this collector per mod; do not treat the
 current seam as end-to-end permission enforcement. No script binding, interpreter,
 scheduler or sandbox exists yet.
+
+
+Core-local tests now cover malformed player names/dimension IDs, non-finite and out-of-range coordinates, duplicate UUIDs, the 256-player limit, and authorization-before-operation behavior. The Core workflow now explicitly runs `cargo fmt --all -- --check` and `cargo test` after the pinned SDK check. The first run of this new test step is pending; source presence is not test verification.
