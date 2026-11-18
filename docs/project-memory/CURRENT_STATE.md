@@ -44,8 +44,8 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - `mods/dreammod-package` defines and validates the version-1 JSON manifest contract, capability declarations, dependency declarations, and deterministic dependency-first load order.
 - inspect_dmod() now parses actual ZIP input in memory, performs metadata preflight and local-header consistency validation, checks the manifest and declared entrypoint, and streams regular entries to EOF for actual-size and CRC validation. Validated script/asset bytes are retained in a bounded Vec<PackageFile>; no filesystem extraction occurs.
 - Dedicated package CI passed on commit `4e983c04ea8f3a4085aa2e13b6b53d691c307564`, Actions run `44299317538`: formatting step, all 19 unit tests, and Clippy with `-D warnings` succeeded.
-- PMCS session-log validation is legacy-aware: old duplicate headings are preserved, while new entries must be unique against all prior IDs; regression tests passed in Actions run 44299837834.
-- No filesystem installation, capability grant, script execution, or production sandbox exists. The package layer now retains validated script/asset bytes in memory but does not expose an execution API.
+- PMCS session-log validation is legacy-aware: old duplicate headings are preserved, while new entries must be unique against all prior IDs; regression tests passed in Actions runs 44299837834 and 44300145443; latest full PMCS validation is green.
+- No filesystem installation, capability grant, script execution, or production sandbox exists. The package layer now retains validated script/asset bytes in memory but does not expose an execution API. Actions run 44300015439 passed on commit 2dd019b4a370fec853ec19849c4538f6cce9be44: formatting, all 19 tests, and Clippy.
 - No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
 - The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
 - Rhai is not the final language choice and is not integrated into Core.
