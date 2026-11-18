@@ -69,3 +69,8 @@ A standalone `mods/dreammod-package` crate parses a strict version-1 JSON manife
 ## DM-015 — Safe .dmod archive ingestion
 Status: IMPLEMENTED
 Added a metadata-only archive inventory validator in `mods/dreammod-package`. It applies entry-count, per-file and aggregate expanded-size limits; compression-ratio limits; strict portable relative paths; case-insensitive duplicate detection; rejects symlinks, unsupported types and encrypted entries; limits file roots to `manifest.json`, `scripts/` and `assets/`; and requires one manifest plus the declared script entrypoint. The validator consumes metadata supplied by a future ZIP reader and does not open ZIP records or extract files. CI status is pending; no end-to-end ZIP parsing or zip-bomb resistance claim is made.
+
+
+## DM-016 — Deterministic dependency planning
+Status: IMPLEMENTED
+Added a bounded, side-effect-free dependency planner to `dreammod-package`. It validates each manifest, rejects duplicate installed IDs, missing dependencies and semver mismatches, detects cycles, and emits a stable dependency-first order with lexicographic tie-breaking. It does not install, execute or grant capabilities. Unit tests cover order, missing/incompatible dependencies, cycles and duplicate IDs. CI result is pending inspection.
