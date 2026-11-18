@@ -104,3 +104,6 @@ The real Horizon prebuilt compiler stages the HNMod source package but does not 
 
 ## In-memory asset access
 `ModManager::read_asset(mod_id, path)` provides a narrow read-only asset API over validated package files. It accepts only paths under `assets/`, reuses the archive's portable path validation, checks the requesting mod's Enabled state and `assets.read` grant before lookup, and returns a borrowed immutable byte slice. No extraction or filesystem write occurs. The interpreter/host adapter must still impose per-call byte/CPU budgets and decide how resource formats are decoded; this method only exposes validated raw bytes.
+
+## Entry-point source access
+The trusted interpreter can obtain the validated entrypoint via `ModManager::entrypoint_source` only after activation. `ModLifecycle::ensure_enabled` is intentionally separate from capability checks: executing a mod's own entrypoint is controlled by explicit mod enablement, while access to privileged host operations remains guarded by named capabilities. The method returns borrowed bytes from the validated in-memory package and does not parse or execute them.
