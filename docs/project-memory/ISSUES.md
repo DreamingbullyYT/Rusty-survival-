@@ -59,3 +59,8 @@ Added `mods/dreammod-runtime-prototype` and a dedicated workflow. Rhai 1.27.0 AS
 ## DM-013 — Validate script provider batch boundaries
 Status: IMPLEMENTED
 The Rhai evaluation prototype now rejects mismatched position/velocity lengths, batches above 100,000 items, non-finite inputs, wrong-sized provider output, non-numeric output and non-finite output. Focused regression tests were added in commit 33639ee0d89627b7ad3342d694a2d26c1ff43fd5. Actions result pending inspection. This is prototype boundary validation, not production sandboxing or aggregate memory accounting.
+
+
+## DM-014 — Versioned .dmod manifest contract
+Status: IMPLEMENTED
+A standalone `mods/dreammod-package` crate parses a strict version-1 JSON manifest, rejects unknown fields/schema versions, validates reverse-DNS-style mod IDs, semantic versions and API compatibility ranges, restricts entrypoints to relative `scripts/*.dream` paths, allowlists and de-duplicates capabilities, validates dependency IDs/ranges, and caps manifest bytes and collection counts. The dedicated CI workflow was added but its result has not yet been inspected. This does not open ZIP files, verify that the entrypoint exists in an archive, grant permissions, resolve dependencies or execute scripts.
