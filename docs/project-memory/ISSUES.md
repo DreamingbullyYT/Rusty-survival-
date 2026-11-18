@@ -198,3 +198,8 @@ The previous overlay run 44341466372 passed only after the test process exported
 ## DM-032 — Three-axis section coordinate contract
 Status: VERIFIED
 DreamMod Core run 44361109477 passed pinned Horizon native/API/host-WASM checks, byte-identical engine/HNMod mirror validation, rustfmt, all 12 Core unit tests and native source bundle packaging/upload. The contract is geometric only; it does not define world height, section storage, palette serialization, block states or parity with Java 26.3.
+
+## DM-024 — Bind Core player-read authorization to per-mod lifecycle
+Status: IMPLEMENTED — CI verification pending
+Added `mods/dreammod-contract`, a dependency-light shared crate defining `PlayerReadAuthorization` and the canonical `entities.read` capability identifier. Core's online-player collector consumes this trait; `dreammod-package::ModLifecycle` implements it by checking both Enabled state and the explicit capability grant. This avoids linking package ZIP/JSON/semver dependencies into Core. The type-level bridge is implemented, but no runtime manager currently owns and supplies lifecycle instances to Core, and no script binding exists. Commits: `543aba6`, `77c2762`, `1c1314e`, `84f6daa`, `28d55c1`, `7a9356a`. Verify Core/package/overlay Actions before marking VERIFIED.
+
