@@ -4,14 +4,14 @@
 Project: DreamMod
 Repository: DreamingbullyYT/Rusty-survival-
 Target engine: Horizon
-Integration: pinned HNMod/horizon-mixins build-time integration
+Integration: pinned pinned Horizon .hmod/native integration with the existing mod API and host
 Runtime model: interpreted .dmod source, no per-mod compilation on player devices
 
 ## Mission
 Build a powerful, deeply extensible runtime modding platform for Horizon. Mods can add gameplay and engine systems, customize existing behavior, and replace designated subsystems through versioned contracts. Ordinary .dmod packages are loaded and interpreted at runtime without Rust/native compilation, bytecode compilation or a game rebuild on the player's device.
 
 ## Distribution model
-1. DreamMod Core is integrated into a pinned Horizon revision during the trusted build pipeline through HNMod/horizon-mixins.
+1. DreamMod Core is built in CI as a trusted native .hmod mod against a pinned Horizon SDK; use the existing mod API/host and native route. Use horizon-mixins only where an extension point is missing.
 2. The resulting prebuilt Horizon distribution contains DreamMod Core.
 3. The separate launcher installs and updates that prebuilt distribution.
 4. Player-installed .dmod packages contain interpreted source and assets; they are dynamically loaded by DreamMod.
