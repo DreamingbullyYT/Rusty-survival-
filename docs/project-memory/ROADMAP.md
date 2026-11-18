@@ -189,3 +189,9 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. [x] Expose `ModManager::require_capability` for per-mod lifecycle+grant checks and add a callback-oriented regression test.
 4. [ ] Verify package, Core and overlay Actions after the callback refactor.
 5. [ ] Implement the runtime coordinator and invoke Core collection from a real supported Horizon host hook/context.
+
+### Callback hardening verification
+- [x] Expose `ModManager::require_capability` as the callback target for Core's closure-based authorization.
+- [x] Add lifecycle/capability callback regression coverage.
+- [x] Handle already-Failed intermediate dependents during transitive failure propagation.
+- [ ] Verify package run after commit `4103668`; recheck Core `44363904945` and overlay `44363904976`.
