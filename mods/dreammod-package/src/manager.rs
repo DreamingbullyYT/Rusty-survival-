@@ -121,20 +121,7 @@ impl ModManager {
             .ok_or_else(|| ModManagerError::UnknownMod(id.to_owned()))?;
         managed
             .lifecycle
-            .require("scripts.execute")
-            .or_else(|error| {
-                if error == LifecycleError::CapabilityDenied("scripts.execute".into()) {
-                    // Script execution is controlled by Enabled state, not a manifest
-                    // capability; scripts.execute is not a user-grantable capability.
-                    if managed.lifecycle.state() == LifecycleState::Enabled {
-                        Ok(())
-                    } else {
-                        Err(error)
-                    }
-                } else {
-                    Err(error)
-                }
-            })
+            .ensure_enabled()
             .map_err(ModManagerError::Lifecycle)?;
         let entrypoint = &managed.package.manifest.entrypoint;
         managed
