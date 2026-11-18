@@ -56,3 +56,7 @@ Reason: The choice affects the entire runtime and should be evidence-based.
 - Use one monotonic 60-second deadline for a .dmod load transaction. Archive inspection polls it between entries and decompression chunks. A future loader must propagate the same deadline into script parsing, dependency preparation and registration; timeout must fail closed.
 - Do not claim hard preemption: synchronous stages must cooperatively poll the deadline. Cancellation/isolation for script execution is a separate runtime requirement.
 - Benchmark before claiming a measurable FPS gain.
+
+
+## Decision D-2026-11-18-02 — fixed stack scratch for player batches
+Use a fixed [u128; 256] stack scratch array for duplicate UUID detection in Core and package snapshot batches. Sort only the populated prefix; preserve the original player order. This is bounded by the existing 256-player cap and removes one temporary heap allocation. No performance gain is claimed until benchmarked.
