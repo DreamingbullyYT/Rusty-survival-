@@ -24,7 +24,7 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 
 ## Not implemented / not verified
 - The minimal native `.hmod` source skeleton exists and its pinned-source API compile check is VERIFIED in CI run 44249522292.
-- The Rhai candidate prototype is IMPLEMENTED. CI run 44283982705 passed rustfmt, all 4 behavior/budget tests and Clippy. Its benchmark ran, but review showed the Rust-native workload was optimized away (371 ns for 500,000 outputs), so that timing is invalid. Commit 89ed3a5 adds black_box guards and the corrected benchmark is pending a fresh run. It is not selected as the final language and is not integrated into DreamMod Core.
+- The Rhai candidate prototype is IMPLEMENTED. CI run 44283982705 passed rustfmt, all 4 behavior/budget tests and Clippy. Its benchmark ran, but review showed the Rust-native workload was optimized away (371 ns for 500,000 outputs), so that timing is invalid. Commit 89ed3a5 added black_box guards; the follow-up rustfmt check found a line-wrap issue, corrected in 00a3360. A fresh benchmark run is pending. It is not selected as the final language and is not integrated into DreamMod Core.
 - Pinned Horizon source now confirms the API-only Route::Api build path: Core's current Hooks-only manifest qualifies, and the route returns the unchanged prebuilt client plus native libraries. No prebuilt native library package has yet been produced or loaded.
 - No production interpreter selected or integrated; the isolated Rhai candidate is only an evaluation prototype.
 - No .dmod manifest/schema, package loader, lifecycle, dependency resolver or hot reload.
