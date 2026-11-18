@@ -798,3 +798,20 @@ Changes:
 Next:
 - Finish the official Core source-package check and native-build workflow.
 - Design a provider interface and benchmark realistic event/batch traffic on ARM64 before committing to the final runtime.
+
+## S-2026-11-18-16 — Switch prebuilt proof to account-free server export
+Date: 2026-11-18
+Goal: Keep the official prebuilt native build proof reproducible without handling Minecraft account credentials or bypassing ownership checks.
+Changes:
+- Verified that `horizon-launcher install nightly` installs exact tag `nightly-2026-11-18-0b14f8a` and that an instance can be pinned to that exact tag.
+- The client native-build path refuses an unprepared instance. `horizon-launcher prepare` then refused because the isolated CI HOME has no Minecraft 26.3 installation and no authenticated owning account. This is expected ownership behavior; do not bypass it or download/redistribute Mojang files.
+- Reworked the CI build to use the official server export mode: `horizon-launcher native-build mods/dreammod-core --server-output <folder> --version nightly-2026-11-18-0b14f8a --trust-native-code --profile optimized`.
+- The server export is standalone and should contain `horizon-engine`, `native-mods.json` and the DreamMod Core native library. It proves the API-only native build path without an account, but not a client install.
+- Renamed the CI artifact to `dreammod-horizon-nightly-native-server`.
+Verification:
+- Client instance native-build failed because the version was not prepared; `prepare` failed because Minecraft 26.3 was not present and no owning account was signed in.
+- Account-free server-export workflow is pending; no native library artifact is claimed yet.
+Next:
+- Verify the server export completes and inspect its exact folder layout/inventory.
+- If the library is present, run a headless engine smoke test where possible.
+- Keep client overlay gated on a prepared licensed Minecraft 26.3 directory; never add credentials or bypass ownership checks.
