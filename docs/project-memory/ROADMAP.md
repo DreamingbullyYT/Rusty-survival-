@@ -10,8 +10,9 @@
 - [x] Pin initial Horizon and horizon-mixins revisions in the Core manifest.
 - [x] Add minimal native .hmod Core source and pinned-source compile workflow.
 - [x] Source-verify Horizon's API-only prebuilt native library route (the CI artifact and clean startup proof remain open).
+- [ ] Pass official `cargo horizon-mod check` and package a native source `.hmod` in CI.
 - [ ] Produce, inspect and launch a CI-built API-only native distribution.
-- [x] Pin Horizon revision, horizon-mixins revision and API version for the bootstrap.
+- [x] Pin Horizon Nightly 2026-11-18, horizon-mixins revision and API version in the native trait mod manifest.
 - [x] Get the minimal Core bootstrap CI compile check passing (Actions run 44249522292; pinned Horizon API cargo check succeeded).
 - [ ] Produce and verify a prebuilt Horizon package containing the bootstrap.
 - [ ] Confirm ordinary installation does not invoke native mod compilation on the player device.
