@@ -25,6 +25,7 @@
 - [x] Add black_box guards after detecting that the first Rust-native benchmark result was optimized away.
 - [x] Run the comparable benchmark with equal input cloning and observable output checks (Actions 44284795812: 462.94× slower than native for a 10k-item loop on x86_64 CI).
 - [ ] Design/benchmark a coarse provider boundary that minimizes script crossings and retains native hot loops; test on ARM64 before selecting a language.
+- [ ] Decide explicitly whether a future optional CI-prebuilt native kernel tier is allowed for hot subsystem replacements; keep it separate from interpreted `.dmod` scripts.
 - [ ] Evaluate whether a tiny tree-walking interpreter can provide enough language features for DreamMod without creating an unmaintainable custom language.
 - [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem replacement on desktop and ARM64 devices.
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
