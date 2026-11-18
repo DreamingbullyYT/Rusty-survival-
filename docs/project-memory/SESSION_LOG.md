@@ -1246,3 +1246,19 @@ Limitations:
 - No implementation connects PlayerReadAuthorization to a concrete per-mod ModLifecycle instance yet. No interpreter, script binding or sandbox exists.
 Next:
 - Verify latest Core workflow. Then implement the per-mod lifecycle adapter and test it against the package lifecycle contract before exposing player data to scripts.
+
+
+## S-2026-11-18-35 — Add Core snapshot validation tests
+Date: 2026-11-18
+Commit: ebe09145849063ade0e01f18e55a23bec18cd4e4
+Goal: Ensure the Core-local DTO enforces the same input and batch constraints as the package contract.
+Changes:
+- Added tests for invalid Minecraft player names and malformed dimension identifiers.
+- Added tests for NaN, infinite and out-of-range coordinates.
+- Added tests for duplicate player UUIDs and the 256-player batch cap.
+Verification:
+- The source change triggers the Core workflow. No claim is made that tests executed until the workflow includes/runs cargo test; cargo-horizon-mod check is currently the known host/WASM validation command.
+Limitations:
+- These tests do not exercise a live ServerHost. The collector's actual pinned SDK compilation was verified by Core workflow 44310547586 before the latest authorization/test edits.
+Next:
+- Verify latest Core compile and investigate a safe cargo test CI step against the generated SDK.
