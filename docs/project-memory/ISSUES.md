@@ -4,15 +4,15 @@ Status vocabulary: OPEN, INVESTIGATING, IMPLEMENTED, VERIFIED, BLOCKED.
 
 ## DM-001 — Horizon baseline and integration pin
 Status: IMPLEMENTED
-Initial baseline pinned for the Core bootstrap: Horizon `1c45cf95d8431a7b49d94df007f7e75a890370c9`, horizon-mixins `e59da9094f0c2fdda6c627fe9eff22dec6a906f0`, mod API `0.2`, game `26.3`. Re-audit before every upstream compatibility update; this is not a claim of compatibility with newer Horizon revisions.
+Current Core baseline: Horizon Nightly 2026-11-18 `0b14f8acfd97fa2c750e42795249dcc981178ca4`, matching SDK `sdk-0b14f8acfd97fa2c750e42795249dcc981178ca4`, horizon-mixins `e59da9094f0c2fdda6c627fe9eff22dec6a906f0`, mod API `0.2`, game `26.3`. Re-audit before every upstream compatibility update.
 
 ## DM-002 — .hmod build-time integration and prebuilt distribution
 Status: INVESTIGATING
-The minimal `.hmod` Core source compiles against the pinned Horizon API in CI (run 44249522292). This is only `cargo check`, not a native library build or game launch. Pinned Horizon source confirms the Route::Api path for API-only mods: it compiles mod dylibs against prebuilt runtime/API slices and returns the unchanged game executable plus libraries; installation writes native-mods.json, which the host validates and loads. Remaining work: run the official native-build pipeline in CI, inspect the output/inventory and prove clean startup without player-side compilation.
+The current Core manifest is pinned to the published Nightly and is API-only (`capabilities = []`, no native source patches or internals). A new workflow uses pinned `cargo-horizon-mod` to validate, compile and package the source `.hmod`; run 44284751206 is still building the tool. The official `horizon-launcher native-build` command can build this mod against the installed Nightly SDK in trusted CI. Remaining work: run that pipeline, inspect the native build folder/inventory and prove clean startup without player-side compilation.
 
 ## DM-003 — Interpreted language selection
 Status: INVESTIGATING
-Added an isolated Rhai 1.27.0 AST-evaluator prototype with Grain bytecode disabled and AST optimization disabled. It is not the production runtime and not the final language decision. Compare with Starlark 0.14.x and verify source parsing, execution model, Android/ARM64, throughput, API ergonomics, sandboxing, diagnostics and maintenance. Do not add bytecode, JIT or player-side native compilation.
+Added an isolated Rhai 1.27.0 AST-evaluator prototype with Grain bytecode disabled and AST optimization disabled. It is not the production runtime and not the final language decision. Starlark was rejected because its evaluator compiles AST to bytecode. Sprite is a research-only tiny tree-walker reference, too limited to adopt directly. Rhai tests/Clippy passed in 44284795812; a comparable 10k-item batch benchmark was 462.94× slower than native on x86_64 CI. New array/map/string/variable/function budgets and an array-growth test were added; verify them in 44285379104. Keep Rhai provisional. Do not add bytecode, JIT or player-side native compilation.
 
 ## DM-004 — Deep subsystem replacement boundaries
 Status: OPEN
@@ -24,7 +24,7 @@ Interpreted callbacks may be too slow at per-entity/per-vertex frequency. Use ba
 
 ## DM-006 — Script sandbox and capabilities
 Status: OPEN
-Need per-mod isolation, explicit capability grants, memory/execution budgets, safe resource access, cancellation and fault containment.
+Need per-mod isolation, explicit capability grants, exact memory accounting, safe resource access, cancellation and fault containment. The Rhai prototype now tests coarse limits (operations, call depth, aggregate arrays/maps/strings, variables and functions); production enforcement remains open.
 
 ## DM-007 — API stability and upstream compatibility
 Status: OPEN
@@ -42,7 +42,7 @@ Existing engine-core, testkit, Mojang artifact tooling, Minelib audits and Andro
 ## DM-010 — Reuse existing Horizon mod platform and prebuilt native loading
 Status: INVESTIGATING
 Horizon already provides a typed mod API, native host, content/native/WASM package routes, hooks, Parts, attachments, capabilities, API injection points and native mixins/bridges/loop slots. Do not duplicate these. The existing WASM runtime uses a child-process Wasmtime compilation path on the player's machine when the module cache is cold, so it does not meet strict interpreted-source/no-compilation requirements. Native .hmod source is normally compiled by the launcher, but the native host also loads adjacent prebuilt libraries with SHA-256 and build identity checks. A CI-built DreamMod Core native library may be shippable without local compilation; this end-to-end path is not yet proven.
-Evidence: docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md (Horizon 1c45cf95d8431a7b49d94df007f7e75a890370c9; horizon-mixins e59da9094f0c2fdda6c627fe9eff22dec6a906f0).
+Evidence: docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md (source route traced at Horizon `1c45cf...` and rechecked at current Nightly `0b14f8acfd97fa2c750e42795249dcc981178ca4`; horizon-mixins `e59da9094f0c2fdda6c627fe9eff22dec6a906f0`).
 Required action: build a minimal native .hmod, produce the prebuilt library/inventory/package layout in CI, install it into a clean pinned Horizon distribution without running launcher native-build, and verify successful startup.
 
 
