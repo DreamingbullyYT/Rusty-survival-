@@ -522,3 +522,7 @@
 - Replaced the unsupported local Cargo contract dependency with a one-shot authorization callback in Core player collection.
 - Added `ModManager::require_capability` so the package lifecycle check can be passed directly as the Core authorization closure.
 - Removed the unused `dreammod-contract` crate and dependencies. Live hook/runtime wiring remains unimplemented.
+
+### Callback and cascade hardening — 2026-11-18
+- Added a public per-mod capability check on ModManager for use as Core's authorization closure.
+- Hardened failure propagation when an intermediate dependent was already Failed and added a regression test.
