@@ -289,3 +289,9 @@
 - Added regression tests for mismatched inputs, NaN/infinite inputs, wrong-sized outputs and non-finite outputs.
 - Commit: 33639ee0d89627b7ad3342d694a2d26c1ff43fd5.
 - Verification: GitHub Actions was triggered by the main push; its result has not yet been inspected. No production sandbox or full runtime is claimed.
+
+## 2026-11-18 — Add the first versioned DreamMod package contract
+- Added standalone `mods/dreammod-package` with a strict version-1 `manifest.json` model and side-effect-free validation.
+- Validates schema/unknown fields, reverse-DNS-style IDs, semantic versions and API ranges, safe relative script entrypoint, explicit capability allowlist, duplicate capabilities, dependency IDs/ranges, and manifest/count limits.
+- Added `.github/workflows/dreammod-package.yml` for formatting, tests and Clippy. CI result is pending; no passing result is claimed.
+- This is manifest validation only: no archive parsing/extraction, capability granting, dependency resolution, script execution or production sandbox.
