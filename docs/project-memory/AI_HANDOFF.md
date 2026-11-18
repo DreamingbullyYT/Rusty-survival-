@@ -79,3 +79,10 @@ The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod 
 - Core run 44313213891 passed Horizon SDK native/API/host-WASM checks, then failed because rustfmt was missing; tests were skipped. The workflow now installs rustfmt. Check the new run.
 - The archive inspector has a cooperative 60-second monotonic deadline; the full runtime loader does not exist, so the full load transaction is not yet time-limited.
 - Verify package/Core CI. Do not claim a benchmark speedup. Next optimize API dispatch through batch reuse only after scheduler/thread semantics are designed.
+
+
+## Latest optimization follow-up (2026-11-18)
+- Core snapshot validator now uses a fixed [u128; 256] stack buffer for duplicate detection (commit b2185e8917e351dfd0408231e855efe47e6b3bfd); package bridge equivalent is f3a55af3a332073db92df24de00e347bc55a3bb8.
+- This removes the temporary UUID heap allocation. Batch cap and connection order remain unchanged. No benchmark result is available.
+- Core fmt command now uses cargo fmt --manifest-path Cargo.toml -- --check so generated SDK sources are not reformatted.
+- Latest Core/package CI runs need checking; package CI for the 60-second archive deadline passed in run 44317125357.
