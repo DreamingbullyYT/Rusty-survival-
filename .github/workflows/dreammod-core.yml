@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: horizon-rust/horizon
-          ref: 1c45cf95d8431a7b49d94df007f7e75a890370c9
+          ref: 0b14f8acfd97fa2c750e42795249dcc981178ca4
           path: .ci/horizon
       - name: Install Rust
         uses: dtolnay/rust-toolchain@1.95.0
