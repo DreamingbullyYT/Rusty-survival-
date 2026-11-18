@@ -579,3 +579,9 @@
 ### Resource registry lint cleanup — 2026-11-18
 - Addressed strict Clippy findings: use `saturating_add` for quota arithmetic and remove unused `mut` from rollback test setup.
 - Behavior unchanged; follow-up package CI pending.
+
+
+### ModManager resource lifecycle integration — 2026-11-18
+- Integrated transactional resource reservations into ModManager: Enabled-only registration, per-mod namespace enforcement, deterministic owner inspection, cleanup on disable, and cleanup across failure cascades.
+- Added lifecycle integration regression tests. Package run `44386150155` and PMCS run `44386149892` pending at entry time.
+- No actual Horizon resource publication is implemented or claimed.
