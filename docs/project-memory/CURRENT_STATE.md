@@ -186,3 +186,12 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added explicit formatting and `cargo test` steps to the Core workflow after `cargo-horizon-mod check` has fetched the pinned SDK.
 - Workflow commit: `ffe93f053ab6a0a0df99953a1206262661e8b111`.
 - This is not yet verified; check the first workflow run for dependency-path/test-harness issues.
+
+
+## API optimization and load deadline (2026-11-18)
+- Optimized duplicate UUID validation in Core and package PlayerSnapshotBatch: replace BTreeSet node insertions with one contiguous UUID vector plus sort_unstable/adjacent duplicate detection. The batch cap remains 256 and connection order remains unchanged.
+- Core commit: d650c58a9ee9b08a365cbe4f830a16e8510daaec. Package bridge commit: 5e8e58a77515b1f8ec6c5aa0511005c403b44dd5.
+- Added a cooperative 60-second monotonic deadline to .dmod ZIP inspection. inspect_dmod() uses the default budget; inspect_dmod_with_deadline() lets a future loader share one deadline across validation, script parsing and registration. Archive reader checks between entries and decompression chunks. Commit: b689551994c45b603fcab8f08c5708973c9f2c3b. CI pending.
+- Fixed Core workflow to install rustfmt (commit e47e8e0f858c9c9d09088db17d23a74584ae420a). Run 44313213891 passed Horizon source/API/host-WASM checks but stopped at formatting; unit tests were skipped.
+- This is not yet a complete runtime load timeout: future loader must pass the same deadline through every stage and poll it during long-running parsing/initialization. No async cancellation or script runtime exists yet.
+- No performance benchmark has been run; this is a targeted allocation reduction, not proof of FPS improvement.
