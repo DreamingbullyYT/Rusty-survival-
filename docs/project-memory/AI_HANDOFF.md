@@ -117,3 +117,6 @@ The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod 
 - Overlay compiler issue E0514 was resolved by matching pinned Horizon's Rust 1.99.1. Run 44328650675 completed prebuilt compile but got cancelled during host loading. Current full rerun 44330930078 must finish host-loader, archive inspection and upload before claiming verified overlay.
 - Metadata compiler value was corrected to 1.99.1 in d23bc48. PMCS run 44331401564 passed.
 - Next: inspect 44330930078; then design a minimal real Java 26.3 oracle for the engine's first coordinate contract, rather than adding fake parity tests. Do not bypass Mojang ownership checks or redistribute assets.
+
+## Latest integration increment — shared lifecycle authorization (2026-11-18)
+A small crate `mods/dreammod-contract` now defines `PlayerReadAuthorization` and `PLAYER_READ_CAPABILITY` without third-party dependencies. `mods/dreammod-core` depends on it and the Core player collector uses its trait. `mods/dreammod-package` also depends on it; `ModLifecycle` implements the trait via `require("entities.read")`, which checks Enabled state and the explicit grant. This keeps ZIP/serde/semver dependencies out of Core. Verify Actions runs 44362777239 (Core), 44362757352 (package), 44362776804 (overlay) and 44362787017 (PMCS). This is not yet an actual runtime manager or script execution path.
