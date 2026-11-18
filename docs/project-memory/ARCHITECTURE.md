@@ -6,7 +6,7 @@ Target engine: Horizon.
 ## Build and distribution layers
 - Upstream Horizon remains the engine.
 - DreamMod Core is integrated once into a pinned Horizon build through the current `.hmod` native-mod route; use horizon-mixins only for required native source transformations.
-- The build pipeline emits a prebuilt game distribution containing DreamMod Core.
+- The build pipeline emits a prebuilt game distribution containing DreamMod Core. Current API-only Core is eligible for Horizon's source-verified Route::Api: the game executable remains unchanged and Core is compiled into adjacent dynamic libraries.
 - The separate launcher installs and updates that distribution.
 
 ## Runtime layers
@@ -47,6 +47,7 @@ Scripts run sandboxed by default. Grant narrow capabilities explicitly. Do not e
 ## Current implementation notes
 - `mods/dreammod-core` is a no-op native Hooks bootstrap and passed the pinned Horizon API compile check in CI run `44249522292`.
 - `mods/dreammod-runtime-prototype` is an isolated Rhai AST-evaluator candidate harness; it is not yet integrated into Core and does not establish a final language choice.
+- Pinned Horizon launcher source confirms an API-only native build route that compiles mod dylibs against prebuilt SDK runtime/API slices without rebuilding the engine. CI output packaging and clean startup are still unverified.
 - The prebuilt native library distribution path, `.dmod` loader and production security layer remain unverified/unimplemented.
 
 ## Historical architecture
