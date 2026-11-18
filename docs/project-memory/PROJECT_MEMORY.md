@@ -35,7 +35,7 @@ Current Horizon docs describe .hmod as the package format. Native source is norm
 - Existing Minelib/vanilla-engine work is historical, not the active product direction.
 
 ## Architecture
-The active architecture is specified in docs/specs/DREAMMOD_ARCHITECTURE.md. The previous engine architecture and Minecraft Java 26.3 parity work are superseded for active development, but remain in Git history and existing records for traceability.
+The active architecture is specified in docs/specs/DREAMMOD_ARCHITECTURE.md. The minimal Horizon Hooks bootstrap passed a pinned-source API compile check in CI. An isolated Rhai AST-evaluator prototype is being evaluated; it is not the selected language or part of Core yet. The previous engine architecture and Minecraft Java 26.3 parity work are superseded for active development, but remain in Git history and existing records for traceability.
 
 ## Continuity system
 PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update project memory with every meaningful implementation or architecture change.
