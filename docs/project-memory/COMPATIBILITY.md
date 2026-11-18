@@ -69,3 +69,6 @@ The closure-based authorization callback compiled and passed all Core checks aga
 
 ### Entrypoint bridge verification
 Package run `44365010182` passed all 44 tests, rustfmt and Clippy after adding the activation-gated entrypoint source API. No Horizon SDK dependency was introduced.
+
+### Overlay host-load test environment
+The workflow now re-exports the overlay path inside the host-load step because GitHub Actions does not persist shell-local variables between steps. It also emits ELF RUNPATH diagnostics and bounds the test. No launcher source/ABI change was made.
