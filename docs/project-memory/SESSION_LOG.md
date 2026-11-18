@@ -1194,3 +1194,16 @@ Limitations:
 - No concrete Horizon ServerHost batch collector or interpreter binding exists yet.
 Next:
 - Verify package CI, then implement the trusted Core-side batch collector using host.players().server_players() and owned values, with no Horizon handles escaping the hook.
+
+
+## S-2026-11-18-32 — Verify bounded player snapshot batches
+Date: 2026-11-18
+Commit: 4397de1a28d536b0ffca448b553478ecae3467fb
+Goal: Record verification of the bounded player batch DTO and capability-gated read.
+Verification:
+- DreamMod package Actions run 44309674771: SUCCESS.
+- Rust formatting, all package tests and Clippy with -D warnings passed.
+Limitations:
+- The tests verify the package contract and guard only; no Horizon ServerHost collector, interpreter binding or sandbox exists.
+Next:
+- Build the Core-side collector against the pinned Horizon SDK, then test host access and ownership before adding any script-visible API.
