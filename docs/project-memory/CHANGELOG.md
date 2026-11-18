@@ -1,3 +1,8 @@
+## 2026-11-18 — Verify Rhai prototype tests and correct benchmark methodology
+- Runtime Actions run 44283982705 passed formatting, all 4 behavior/budget tests and Clippy.
+- Reviewed its benchmark output and rejected the apparent 1,070,530x ratio: the Rust-native workload was optimized away (371 ns for 500,000 outputs), making the comparison invalid.
+- Added black_box guards around inputs and outputs and corrected the benchmark script's array length call in commit 89ed3a5. A fresh benchmark is pending; no device performance claim is made.
+
 ## 2026-11-18 — Fix Rhai host boundary and CI formatting
 - Corrected the prototype host boundary to convert Rust vectors to Rhai arrays before script calls, and convert script results back to Rust vectors.
 - Corrected the script's array length call to Rhai's `len()` method.
