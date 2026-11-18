@@ -1679,3 +1679,19 @@ Changes:
 Verification:
 - Prior run `44385572845` passed all 51 unit tests and formatting, but Clippy failed on these two findings.
 - Follow-up package workflow after `d1d89c64aad8` pending; no clean CI pass claimed yet.
+
+
+## S-2026-11-18-55 — ModManager resource lifecycle integration
+Date: 2026-11-18
+Commits: `980e3041fc1b3fc67683fb8902d5c36ef12cf696`, `fe5bcaf4645a7cac358513297207dbf71092a955`, `d7bc8e4cc437d20f2c21d890eb943e690c572298`
+Goal: Connect the transactional resource registry to the existing mod manager lifecycle.
+Changes:
+- ModManager now owns a ResourceRegistry and exposes atomic `register_resource_ids` for Enabled mods.
+- Enforces that every resource ID uses the registering mod's own namespace, avoiding cross-mod namespace claims.
+- Added deterministic owner-scoped resource listing.
+- Successful disable removes the mod's reservations; fail removes reservations for the faulting mod and every transitive dependent.
+- Added regression tests for activation gating, namespace enforcement, registration visibility, disable cleanup and failure-chain cleanup.
+Verification:
+- Package workflow run `44386150155` on `d7bc8e4cc437` and PMCS run `44386149892` were pending at the time of this log entry. Do not mark them passed until completed.
+Limitations:
+- This is still a host-independent reservation registry. No Horizon asset, renderer, UI, texture, sound or other resource is registered in the live game. External publication/rollback must be implemented only after confirming the pinned Horizon APIs.
