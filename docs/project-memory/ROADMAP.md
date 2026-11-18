@@ -23,7 +23,8 @@
 - [x] Add tests for event-style dispatch, batch world query and script-side batch physics replacement.
 - [x] Verify runtime formatting, 4 behavior/budget tests and Clippy after the Vec-to-Rhai-Array fix (Actions run 44283982705).
 - [x] Add black_box guards after detecting that the first Rust-native benchmark result was optimized away.
-- [ ] Verify the newest benchmark with equal input cloning and observable output checks; then decide whether Rhai is fast enough for supported subsystem replacement.
+- [x] Run the comparable benchmark with equal input cloning and observable output checks (Actions 44284795812: 462.94× slower than native for a 10k-item loop on x86_64 CI).
+- [ ] Design/benchmark a coarse provider boundary that minimizes script crossings and retains native hot loops; test on ARM64 before selecting a language.
 - [ ] Evaluate whether a tiny tree-walking interpreter can provide enough language features for DreamMod without creating an unmaintainable custom language.
 - [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem replacement on desktop and ARM64 devices.
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
