@@ -264,7 +264,16 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
     }
 
     validate_archive_preflight(&entries)?;
-    let manifest_bytes = read_archive_entry(&mut archive, 0, &entries[0], true)?;
+    let manifest_index = entries
+        .iter()
+        .position(|entry| entry.path == "manifest.json")
+        .ok_or(ArchiveError::MissingManifest)?;
+    let manifest_bytes = read_archive_entry(
+        &mut archive,
+        manifest_index,
+        &entries[manifest_index],
+        true,
+    )?;
     let manifest = parse_manifest(&manifest_bytes)
         .map_err(|error| ArchiveError::InvalidManifest(format!("{error:?}")))?;
     validate_archive_inventory(&entries, &manifest)?;
@@ -591,6 +600,8 @@ pub fn resolve_load_order(manifests: &[Manifest]) -> Result<Vec<String>, Depende
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Write;
+    use zip::write::{SimpleFileOptions, ZipWriter};
 
     const VALID: &str = r#"{
         "schema_version": 1,
@@ -764,6 +775,58 @@ mod tests {
             resolve_load_order(&duplicate),
             Err(DependencyError::DuplicateModId("example.same".into()))
         );
+    }
+
+    fn zip_fixture(entries: &[(&str, &[u8])]) -> Vec<u8> {
+        let cursor = Cursor::new(Vec::new());
+        let mut writer = ZipWriter::new(cursor);
+        let options = SimpleFileOptions::default().compression_method(CompressionMethod::Stored);
+        for (path, contents) in entries {
+            writer.start_file(*path, options).unwrap();
+            writer.write_all(contents).unwrap();
+        }
+        writer.finish().unwrap().into_inner()
+    }
+
+    #[test]
+    fn inspects_a_real_dmod_zip_without_extracting() {
+        let bytes = zip_fixture(&[
+            ("scripts/main.dream", b"fn init() {}"),
+            ("assets/icon.png", b"fake-image-bytes"),
+            ("manifest.json", VALID.as_bytes()),
+        ]);
+        let package = inspect_dmod(&bytes).unwrap();
+        assert_eq!(package.manifest.id, "example.weather");
+        assert_eq!(package.entries.len(), 3);
+    }
+
+    #[test]
+    fn rejects_real_zip_path_traversal_before_reading_payloads() {
+        let bytes = zip_fixture(&[
+            ("manifest.json", VALID.as_bytes()),
+            ("scripts/main.dream", b"ok"),
+            ("assets/../escape", b"no"),
+        ]);
+        assert!(matches!(
+            inspect_dmod(&bytes),
+            Err(ArchiveError::UnsafePath(_))
+        ));
+    }
+
+    #[test]
+    fn rejects_truncated_and_non_zip_inputs() {
+        assert!(matches!(
+            inspect_dmod(b"not a zip"),
+            Err(ArchiveError::InvalidZip(_))
+        ));
+        let bytes = zip_fixture(&[
+            ("manifest.json", VALID.as_bytes()),
+            ("scripts/main.dream", b"ok"),
+        ]);
+        assert!(matches!(
+            inspect_dmod(&bytes[..bytes.len() - 4]),
+            Err(ArchiveError::InvalidZip(_))
+        ));
     }
 
     fn archive_file(path: &str, size: u64) -> ArchiveEntry {
