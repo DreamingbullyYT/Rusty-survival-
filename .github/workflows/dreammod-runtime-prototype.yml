@@ -1,0 +1,32 @@
+name: DreamMod Runtime Prototype
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mods/dreammod-runtime-prototype/**"
+      - ".github/workflows/dreammod-runtime-prototype.yml"
+      - "docs/specs/DREAMMOD_ARCHITECTURE.md"
+      - "docs/project-memory/**"
+  pull_request:
+    paths:
+      - "mods/dreammod-runtime-prototype/**"
+      - ".github/workflows/dreammod-runtime-prototype.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-interpreted-runtime-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out DreamMod
+        uses: actions/checkout@v4
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@1.95.0
+      - name: Run runtime behavior and budget tests
+        run: cargo test --manifest-path mods/dreammod-runtime-prototype/Cargo.toml
+      - name: Run coarse batch benchmark
+        run: cargo run --release --manifest-path mods/dreammod-runtime-prototype/Cargo.toml --example benchmark
