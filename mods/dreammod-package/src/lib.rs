@@ -146,12 +146,13 @@ fn valid_relative_script_path(path: &str) -> bool {
         return false;
     }
     let mut parts = path.split('/');
-    let Some(first) = parts.next() else { return false };
+    let Some(first) = parts.next() else {
+        return false;
+    };
     first == "scripts"
         && parts.all(|part| !part.is_empty() && part != "." && part != "..")
         && path.ends_with(".dream")
 }
-
 
 /// Limits applied to ZIP central-directory metadata before any entry is opened.
 pub const MAX_ARCHIVE_ENTRIES: usize = 1_024;
@@ -219,7 +220,10 @@ pub fn validate_archive_inventory(
         if !seen.insert(key) {
             return Err(ArchiveError::DuplicatePath(entry.path.clone()));
         }
-        if matches!(entry.kind, ArchiveEntryKind::Symlink | ArchiveEntryKind::Other) {
+        if matches!(
+            entry.kind,
+            ArchiveEntryKind::Symlink | ArchiveEntryKind::Other
+        ) {
             return Err(ArchiveError::UnsupportedEntryType(entry.path.clone()));
         }
         if entry.encrypted {
@@ -297,9 +301,9 @@ fn valid_archive_path(path: &str, kind: ArchiveEntryKind) -> bool {
                 || part == "."
                 || part == ".."
                 || part.starts_with('.')
-                || !part.bytes().all(|byte| {
-                    byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-' | b'.')
-                })
+                || !part
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-' | b'.'))
         })
     {
         return false;
@@ -337,7 +341,10 @@ mod tests {
             ManifestError::UnsupportedSchema(2)
         );
         let input = VALID.replace("\"name\":", "\"unexpected\": true, \"name\":");
-        assert!(matches!(parse_manifest(input.as_bytes()), Err(ManifestError::InvalidJson(_))));
+        assert!(matches!(
+            parse_manifest(input.as_bytes()),
+            Err(ManifestError::InvalidJson(_))
+        ));
     }
 
     #[test]
@@ -359,7 +366,14 @@ mod tests {
 
     #[test]
     fn rejects_path_traversal_and_non_script_entrypoints() {
-        for path in ["../main.dream", "scripts/../../evil.dream", "/scripts/main.dream", "scripts\\main.dream", "assets/main.dream", "scripts/main.lua"] {
+        for path in [
+            "../main.dream",
+            "scripts/../../evil.dream",
+            "/scripts/main.dream",
+            "scripts\\main.dream",
+            "assets/main.dream",
+            "scripts/main.lua",
+        ] {
             let input = VALID.replace("scripts/main.dream", path);
             assert_eq!(parse_manifest(input.as_bytes()).unwrap_err(), ManifestError::InvalidEntrypoint);
         }
@@ -368,17 +382,29 @@ mod tests {
     #[test]
     fn rejects_unknown_and_duplicate_capabilities() {
         let unknown = VALID.replace("world.read", "process.spawn");
-        assert_eq!(parse_manifest(unknown.as_bytes()).unwrap_err(), ManifestError::UnknownCapability("process.spawn".into()));
+        assert_eq!(
+            parse_manifest(unknown.as_bytes()).unwrap_err(),
+            ManifestError::UnknownCapability("process.spawn".into())
+        );
         let duplicate = VALID.replace("\"world.read\"", "\"events.listen\"");
-        assert_eq!(parse_manifest(duplicate.as_bytes()).unwrap_err(), ManifestError::DuplicateCapability("events.listen".into()));
+        assert_eq!(
+            parse_manifest(duplicate.as_bytes()).unwrap_err(),
+            ManifestError::DuplicateCapability("events.listen".into())
+        );
     }
 
     #[test]
     fn rejects_self_dependencies_and_invalid_dependency_ranges() {
         let self_dep = VALID.replace("example.base", "example.weather");
-        assert_eq!(parse_manifest(self_dep.as_bytes()).unwrap_err(), ManifestError::InvalidDependencyId("example.weather".into()));
+        assert_eq!(
+            parse_manifest(self_dep.as_bytes()).unwrap_err(),
+            ManifestError::InvalidDependencyId("example.weather".into())
+        );
         let bad_range = VALID.replace("^1.0.0", "latest");
-        assert_eq!(parse_manifest(bad_range.as_bytes()).unwrap_err(), ManifestError::InvalidDependencyRange("example.base".into()));
+        assert_eq!(
+            parse_manifest(bad_range.as_bytes()).unwrap_err(),
+            ManifestError::InvalidDependencyRange("example.base".into())
+        );
     }
 
     #[test]
@@ -408,7 +434,10 @@ mod tests {
     #[test]
     fn accepts_safe_archive_inventory_and_requires_entrypoint() {
         let manifest = parse_manifest(VALID.as_bytes()).unwrap();
-        assert_eq!(validate_archive_inventory(&valid_inventory(), &manifest), Ok(()));
+        assert_eq!(
+            validate_archive_inventory(&valid_inventory(), &manifest),
+            Ok(())
+        );
         let mut missing = valid_inventory();
         missing.remove(1);
         assert_eq!(
@@ -432,11 +461,17 @@ mod tests {
         let manifest = parse_manifest(VALID.as_bytes()).unwrap();
         let mut duplicate = valid_inventory();
         duplicate.push(archive_file("SCRIPTS/MAIN.DREAM", 100));
-        assert!(matches!(validate_archive_inventory(&duplicate, &manifest), Err(ArchiveError::DuplicatePath(_))));
+        assert!(matches!(
+            validate_archive_inventory(&duplicate, &manifest),
+            Err(ArchiveError::DuplicatePath(_))
+        ));
 
         let mut symlink = valid_inventory();
         symlink[2].kind = ArchiveEntryKind::Symlink;
-        assert!(matches!(validate_archive_inventory(&symlink, &manifest), Err(ArchiveError::UnsupportedEntryType(_))));
+        assert!(matches!(
+            validate_archive_inventory(&symlink, &manifest),
+            Err(ArchiveError::UnsupportedEntryType(_))
+        ));
     }
 
     #[test]
@@ -444,15 +479,24 @@ mod tests {
         let manifest = parse_manifest(VALID.as_bytes()).unwrap();
         let mut encrypted = valid_inventory();
         encrypted[1].encrypted = true;
-        assert!(matches!(validate_archive_inventory(&encrypted, &manifest), Err(ArchiveError::EncryptedEntry(_))));
+        assert!(matches!(
+            validate_archive_inventory(&encrypted, &manifest),
+            Err(ArchiveError::EncryptedEntry(_))
+        ));
 
         let mut bomb = valid_inventory();
         bomb[1].uncompressed_bytes = 10_001;
         bomb[1].compressed_bytes = 1;
-        assert!(matches!(validate_archive_inventory(&bomb, &manifest), Err(ArchiveError::SuspiciousCompressionRatio(_))));
+        assert!(matches!(
+            validate_archive_inventory(&bomb, &manifest),
+            Err(ArchiveError::SuspiciousCompressionRatio(_))
+        ));
 
         let too_many = vec![archive_file("assets/file.bin", 1); MAX_ARCHIVE_ENTRIES + 1];
-        assert_eq!(validate_archive_inventory(&too_many, &manifest), Err(ArchiveError::TooManyEntries));
+        assert_eq!(
+            validate_archive_inventory(&too_many, &manifest),
+            Err(ArchiveError::TooManyEntries)
+        );
     }
 
     #[test]
@@ -460,11 +504,16 @@ mod tests {
         let manifest = parse_manifest(VALID.as_bytes()).unwrap();
         let mut missing = valid_inventory();
         missing.remove(0);
-        assert_eq!(validate_archive_inventory(&missing, &manifest), Err(ArchiveError::MissingManifest));
+        assert_eq!(
+            validate_archive_inventory(&missing, &manifest),
+            Err(ArchiveError::MissingManifest)
+        );
 
         let mut oversized = valid_inventory();
         oversized[2].uncompressed_bytes = MAX_ARCHIVE_FILE_BYTES + 1;
-        assert!(matches!(validate_archive_inventory(&oversized, &manifest), Err(ArchiveError::FileTooLarge(_))));
+        assert!(matches!(
+            validate_archive_inventory(&oversized, &manifest),
+            Err(ArchiveError::FileTooLarge(_))
+        ));
     }
-
 }
