@@ -1262,3 +1262,19 @@ Limitations:
 - These tests do not exercise a live ServerHost. The collector's actual pinned SDK compilation was verified by Core workflow 44310547586 before the latest authorization/test edits.
 Next:
 - Verify latest Core compile and investigate a safe cargo test CI step against the generated SDK.
+
+
+## S-2026-11-18-36 — Correct the gated collector source regression
+Date: 2026-11-18
+Commit: eadd1aa545851d487da4e2ff2f37edfbec327dfb
+Goal: Restore valid source structure and ensure the public player collector remains permission-gated.
+Changes:
+- Replaced the full malformed collector section.
+- Kept the Horizon read implementation private and callable only through the public function after PlayerReadAuthorization succeeds.
+Verification:
+- The Core workflow for the intermediate source commit is not valid evidence because it targeted the malformed version.
+- A new Core workflow is triggered by eadd1aa; its result must be checked.
+Limitations:
+- No live ServerHost unit test or .dmod runtime integration exists.
+Next:
+- Verify the corrected Core workflow and confirm test compilation/execution separately.
