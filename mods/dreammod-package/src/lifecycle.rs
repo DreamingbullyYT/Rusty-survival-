@@ -1,8 +1,10 @@
 //! Pure, default-disabled lifecycle policy for validated DreamMod packages.
 //! This module does not execute scripts or install files.
 
+use dreammod_contract::{PlayerReadAuthorization, PLAYER_READ_CAPABILITY};
+
 use crate::{
-    bridge::{PLAYER_READ_CAPABILITY, PlayerSnapshot, PlayerSnapshotBatch, SnapshotError},
+    bridge::{PlayerSnapshot, PlayerSnapshotBatch, SnapshotError},
     CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage,
 };
 
@@ -36,6 +38,14 @@ pub struct ModLifecycle {
     state: LifecycleState,
     gate: Option<CapabilityGate>,
     failure: Option<String>,
+}
+
+impl PlayerReadAuthorization for ModLifecycle {
+    type Error = LifecycleError;
+
+    fn require_entities_read(&self) -> Result<(), Self::Error> {
+        self.require(PLAYER_READ_CAPABILITY)
+    }
 }
 
 impl ModLifecycle {
