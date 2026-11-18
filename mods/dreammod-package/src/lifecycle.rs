@@ -100,11 +100,19 @@ impl ModLifecycle {
         Ok(())
     }
 
+    /// Check activation state without requiring a manifest capability.
+    /// Used for the mod's own entrypoint and lifecycle-owned operations.
+    pub fn ensure_enabled(&self) -> Result<(), LifecycleError> {
+        if self.state == LifecycleState::Enabled {
+            Ok(())
+        } else {
+            Err(LifecycleError::NotEnabled)
+        }
+    }
+
     /// Enforce both activation state and the per-mod capability grant.
     pub fn require(&self, capability: &str) -> Result<(), LifecycleError> {
-        if self.state != LifecycleState::Enabled {
-            return Err(LifecycleError::NotEnabled);
-        }
+        self.ensure_enabled()?;
         self.gate
             .as_ref()
             .ok_or(LifecycleError::NotEnabled)?
