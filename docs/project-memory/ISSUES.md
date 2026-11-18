@@ -92,5 +92,5 @@ inspect_dmod() now returns a ValidatedPackage containing parsed manifest metadat
 
 
 ## DM-020 — Explicit capability grant planning
-Status: IMPLEMENTED — CI PENDING
-Added plan_capability_grants(manifest, approved) as a pure deterministic planner. Empty approvals grant nothing; requested but unapproved capabilities remain denied; unknown, unrequested and duplicate approvals are rejected. The returned CapabilityPlan is not runtime authority: the future host must enforce capabilities at every API boundary. No launcher permission UI, sandbox or live capability enforcement is implemented. Regression tests and package CI are pending.
+Status: VERIFIED
+Added plan_capability_grants(manifest, approved) as a pure deterministic planner. Empty approvals grant nothing; requested but unapproved capabilities remain denied; unknown, unrequested and duplicate approvals are rejected. The returned CapabilityPlan is not runtime authority: the future host must enforce capabilities at every API boundary. No launcher permission UI, sandbox or live capability enforcement is implemented. Regression tests passed; package Actions run 44300324687 passed all 21 tests and Clippy on commit d83b3491b747bc880b657e4cf17e259a8af2ff62.
