@@ -1,3 +1,6 @@
+## 2026-11-18 — Finish formatting correction for benchmark guard
+- Applied rustfmt's required line wrapping to the corrected benchmark in commit 00a3360; fresh workflow run is pending.
+
 ## 2026-11-18 — Verify Rhai prototype tests and correct benchmark methodology
 - Runtime Actions run 44283982705 passed formatting, all 4 behavior/budget tests and Clippy.
 - Reviewed its benchmark output and rejected the apparent 1,070,530x ratio: the Rust-native workload was optimized away (371 ns for 500,000 outputs), making the comparison invalid.
