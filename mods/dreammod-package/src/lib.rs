@@ -136,6 +136,40 @@ pub enum CapabilityPlanError {
     DuplicateApproval(String),
 }
 
+/// A host-side gate that can only be constructed from a validated manifest
+/// and an explicit approval list. Hosts must consult it before each privileged call.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CapabilityGate {
+    granted: BTreeSet<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CapabilityDenied(pub String);
+
+impl CapabilityGate {
+    pub fn from_approvals(
+        manifest: &Manifest,
+        approved: &[String],
+    ) -> Result<Self, CapabilityPlanError> {
+        let plan = plan_capability_grants(manifest, approved)?;
+        Ok(Self {
+            granted: plan.granted,
+        })
+    }
+
+    pub fn allows(&self, capability: &str) -> bool {
+        ALLOWED_CAPABILITIES.contains(&capability) && self.granted.contains(capability)
+    }
+
+    pub fn require(&self, capability: &str) -> Result<(), CapabilityDenied> {
+        if self.allows(capability) {
+            Ok(())
+        } else {
+            Err(CapabilityDenied(capability.to_owned()))
+        }
+    }
+}
+
 /// Build an explicit capability plan from the manifest request and user approvals.
 ///
 /// An empty approval list grants nothing. Approvals cannot add capabilities that
@@ -752,6 +786,25 @@ mod tests {
             BTreeSet::from(["events.listen".to_owned()])
         );
         assert_eq!(partial.denied, BTreeSet::from(["world.read".to_owned()]));
+    }
+
+    #[test]
+    fn capability_gate_enforces_only_approved_manifest_requests() {
+        let manifest = parse_manifest(VALID.as_bytes()).unwrap();
+        let gate =
+            CapabilityGate::from_approvals(&manifest, &["events.listen".to_owned()]).unwrap();
+        assert!(gate.allows("events.listen"));
+        assert!(!gate.allows("world.read"));
+        assert!(!gate.allows("process.spawn"));
+        assert_eq!(gate.require("events.listen"), Ok(()));
+        assert_eq!(
+            gate.require("world.read"),
+            Err(CapabilityDenied("world.read".to_owned()))
+        );
+        assert_eq!(
+            gate.require("process.spawn"),
+            Err(CapabilityDenied("process.spawn".to_owned()))
+        );
     }
 
     #[test]
