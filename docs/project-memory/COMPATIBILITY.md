@@ -32,3 +32,7 @@ The former Minecraft Java Edition 26.3, protocol 777, data version 5023 and Andr
 - The snapshot optimization does not alter the public DTO, field values, ordering, batch maximum or Horizon API signatures.
 - The 60-second load deadline is a package-inspection policy, not a change to Horizon's own .hmod loader. The future DreamMod loader must propagate one monotonic deadline across all .dmod load stages.
 - No script language/runtime compatibility change and no measured performance claim is made.
+
+
+## Fixed-buffer snapshot implementation (2026-11-18)
+The Core/package duplicate UUID check uses a fixed stack array sized to MAX_PLAYER_SNAPSHOT_BATCH (256). This does not change public DTO fields, ordering, capability names, Horizon API signatures or package compatibility. It relies on the existing hard batch bound; any future increase must revisit stack usage and the scratch buffer size.
