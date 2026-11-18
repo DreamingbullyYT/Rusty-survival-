@@ -304,3 +304,11 @@
 - Added a bounded metadata-only archive validator to `dreammod-package`.
 - Rejects traversal/non-portable paths, case-folded duplicates, symlinks/unsupported/encrypted entries, unapproved file roots, excessive entry count/file size/aggregate expanded size/compression ratio, missing/duplicate manifest and missing script entrypoint.
 - No ZIP parser or extraction code is integrated; central-directory/local-header consistency and actual archive handling remain future work. CI pending.
+
+
+## 2026-11-18 — Add deterministic dependency planning
+- Added a bounded dependency planner for installed `.dmod` manifests.
+- Validates duplicate IDs, missing dependencies and semver requirements; detects cycles; returns stable dependency-first order.
+- Added regression tests for deterministic ordering and invalid dependency graphs.
+- Commit: 1817a3b4b9a3f4ae974793c2d46c9cbce65b3fe6.
+- Verification: Actions status has not yet been inspected; no passing result is claimed.
