@@ -558,7 +558,7 @@ mod tests {
     }
 
     #[test]
-    fn resource_registration_is_atomic_and_rejects_cross_mod_conflicts() {
+    fn resource_registration_is_atomic_and_rejects_foreign_namespaces() {
         let mut manager = ModManager::new(vec![
             package("example.first", &[], &[]),
             package("example.second", &[], &[]),
@@ -587,6 +587,22 @@ mod tests {
                 mod_id: "example.second".into(),
                 resource_id: "example.first:shared".into(),
             })
+        );
+        assert_eq!(
+            manager.registered_resource_ids("example.second"),
+            Ok(Vec::new())
+        );
+        assert_eq!(
+            manager.register_resource_ids(
+                "example.second",
+                &[
+                    "example.second:duplicate".to_owned(),
+                    "example.second:duplicate".to_owned(),
+                ],
+            ),
+            Err(ModManagerError::Resource(
+                ResourceError::DuplicateInTransaction("example.second:duplicate".into())
+            ))
         );
         assert_eq!(
             manager.registered_resource_ids("example.second"),
