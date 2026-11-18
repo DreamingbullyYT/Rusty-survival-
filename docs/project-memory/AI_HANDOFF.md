@@ -126,3 +126,9 @@ A small crate `mods/dreammod-contract` now defines `PlayerReadAuthorization` and
 
 ### ModManager verification caveat
 The first package run `44363310681` predates `pub mod manager` and therefore did not include the manager's tests despite passing the existing 36 tests. A review then caught and fixed transitive failure propagation order: `manager.rs` now walks dependency-first load order. Verify the latest package run after `bb8806d` and confirm the five `manager::tests` execute and pass.
+
+### Latest verification results — 2026-11-18
+- Package run `44363502581` is green: rustfmt, 41 tests including the five ModManager tests, and Clippy `-D warnings`.
+- Core run `44362777239` is green: pinned Horizon tooling, native manifest/API/host-WASM checks, engine mirror parity, formatting, Core tests, source package and upload.
+- Overlay run `44362776804` is still in API-only compilation. Do not claim host loading or normal launcher readiness until its no-overlay-environment host test and the actual launcher path are verified.
+- PMCS run `44363588460` is pending.
