@@ -49,7 +49,7 @@
 - [x] Add a generic guarded host adapter that checks activation and capability before invoking a host callback; add bounded failure diagnostics. Concrete Horizon API wiring remains open.
 - [x] Extend guard regression coverage so disabled and failed mods cannot invoke host callbacks; package CI run 44304258172 passed formatting, tests and Clippy.
 - [x] Define an owned, validated player snapshot DTO and a typed `entities.read` adapter gate; concrete Horizon host implementation and runtime exposure remain open.
-- [x] Add a bounded player snapshot batch (256 max) with duplicate-UUID rejection and one capability check per batch; concrete Horizon collector and script binding remain open.
+- [x] Add a bounded player snapshot batch (256 max) with duplicate-UUID rejection and one capability check per batch; concrete Horizon collector and script binding remain open; package Actions run 44309674771 passed formatting, tests and Clippy.
 - [x] Inspect the exact pinned Horizon Hooks/Host/phase surface and record the bridge contract in docs/dreammod/HORIZON_HOST_BRIDGE.md; concrete adapters remain open.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
