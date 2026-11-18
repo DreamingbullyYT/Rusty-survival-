@@ -40,3 +40,6 @@ The Core/package duplicate UUID check uses a fixed stack array sized to MAX_PLAY
 
 ## Arc-backed snapshot batches (2026-11-18)
 PlayerSnapshotBatch retains the same public getters, item ordering, field values and 256-player bound. Its internal storage changes from Vec to Arc<[PlayerSnapshot]>. Clone now shares immutable storage; no mutable access or Horizon handle is exposed. This is an internal Rust contract change, not a change to the .dmod manifest or script language.
+
+## Shared authorization contract (2026-11-18)
+`dreammod-contract` is a local path dependency shared by the standalone Core and package crates. It intentionally has no third-party dependencies and uses Rust 2024 syntax compatible with the pinned Core toolchain 1.99.1. Core continues to compile against the exact pinned Horizon SDK; package validation uses stable Rust. Verify both workflows before treating the new dependency edge as compatible.
