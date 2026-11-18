@@ -75,3 +75,9 @@ Use Arc<[PlayerSnapshot]> as PlayerSnapshotBatch backing storage. Cloning a batc
 - Enable is dependency-first; disabling a dependency with an enabled dependent is rejected; failure cascades transitively and fail-closed.
 - Rationale: keep lifecycle decisions centralized and deterministic before adding an interpreter or host registrations.
 - Consequence: manager does not execute scripts or interact with Horizon. A future runtime layer must implement transactional registration and cleanup without bypassing per-mod lifecycle authorization.
+
+## DECISION — use a callback rather than a local Cargo contract crate for Core authorization (2026-11-18)
+- Decision: Core player collection accepts a one-shot authorization closure; package `ModManager::require_capability` supplies the per-mod lifecycle/grant check.
+- Evidence: overlay run `44362776804` failed because Horizon's prebuilt source staging did not include the local `dreammod-contract` Cargo dependency.
+- Rationale: the HNMod source package must compile using only dependencies supported by Horizon's signed SDK and its native package format. A closure keeps the boundary typed without adding an unsupported external crate.
+- Consequence: the callback is a seam, not a live integration. A future runtime coordinator must call the Core collector from a valid host context and supply the manager callback.
