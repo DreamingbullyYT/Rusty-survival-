@@ -367,3 +367,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added manager tests for pre-enable denial, namespace enforcement, registration, disable cleanup, and failure-cascade cleanup. Registry-level tests continue to cover duplicate IDs, atomic conflict rejection, drop rollback and quotas.
 - Implementation commits: `980e3041fc1b`, `fe5bcaf4645a`, `d7bc8e4cc437`. Package workflow `44386150155` and PMCS workflow `44386149892` are pending at the time of this update.
 - Important boundary: these are internal ID reservations only. They do not register actual Horizon resources or perform external side effects; a future adapter must stage/publish/rollback real host resources safely.
+
+
+### Resource lifecycle integration CI and regression hardening — 2026-11-18
+- Package workflow run `44386150155` on `d7bc8e4cc437`: PASS, 55 tests, formatting and Clippy with warnings denied.
+- Added one more regression proving a duplicate ID inside a single ModManager registration batch aborts the batch and leaves no IDs reserved. Renamed the foreign-namespace test to accurately describe what it asserts; it does not claim to test a cross-owner collision (that is covered directly by ResourceRegistry tests).
+- Follow-up package run after commit `51aa347d1140` is pending. PMCS validation for the preceding doc update is pending/queued; latest run `44386238578` has not started its job yet.
