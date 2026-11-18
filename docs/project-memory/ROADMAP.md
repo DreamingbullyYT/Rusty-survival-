@@ -158,3 +158,10 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 4. [ ] Verify package/Core/overlay Actions for this dependency change.
 5. [ ] Add a runtime manager that owns one `ModLifecycle` per validated package and supplies the matching lifecycle reference to each Core host operation.
 6. [ ] Expose only owned bounded DTOs to the chosen interpreted runtime after per-mod authorization. No interpreter or script binding exists yet.
+
+## Authorization contract verification follow-up — 2026-11-18
+1. [x] Re-export the single canonical `entities.read` capability identifier from the shared contract crate.
+2. [x] Add a trait-level test for all lifecycle states and explicit-grant behavior.
+3. [ ] Confirm package workflow `44362952060` passes.
+4. [ ] Confirm Core workflow `44362777239` passes pinned SDK check, formatting and tests.
+5. [ ] Confirm overlay workflow `44362776804` passes native host loading without overlay environment overrides.
