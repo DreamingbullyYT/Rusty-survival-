@@ -815,3 +815,23 @@ Next:
 - Verify the server export completes and inspect its exact folder layout/inventory.
 - If the library is present, run a headless engine smoke test where possible.
 - Keep client overlay gated on a prepared licensed Minecraft 26.3 directory; never add credentials or bypass ownership checks.
+
+## S-2026-11-18-17 — Build client overlay from signed SDK slices and test the real host loader
+Date: 2026-11-18
+Commit: ea9d81551aa6a43b35bc1e6bed05746fd8fef759
+Goal: Produce the API-only client engine/native-library overlay without downloading Mojang assets or bypassing Horizon's ownership check.
+Changes:
+- Confirmed that both client-instance and standalone server-export `horizon-launcher native-build` paths require a prepared Minecraft 26.3 installation. `prepare` correctly refuses without an authenticated owning account. No attempt will be made to bypass this or redistribute Mojang assets.
+- Added `scripts/ci/patch_horizon_api_route.py`, a test-only patcher for an ephemeral checkout of the exact Horizon Nightly source. It appends a test module to `launcher/src/native_mods.rs` that uses Horizon's own signed `sdk_cache::index` and `sdk_cache::slices`, then calls the exact `prebuilt::compile(..., Route::Api, ...)` function. It copies the prebuilt `horizon-client`, all adjacent runtime/mod libraries, and writes the native inventory with Horizon's `library_record::collect`.
+- The patcher also adds a test to `crates/horizon-mod-host/src/native_libraries.rs` that calls the real `load` function on the generated overlay and asserts exactly one DreamMod Core native entry is loaded. This validates library identity, hashes, exports and runtime dependencies without needing Mojang game assets.
+- Replaced the previous launcher CLI/server export workflow with this signed-SDK client overlay build and real host-loader smoke test. Artifact explicitly records that it contains no Mojang assets.
+Verification:
+- Official Core source package workflow 44285877944: SUCCESS; generated `.hmod` source package was uploaded and inspected. It contains `horizon-mod.toml`, `Cargo.toml`, `src/lib.rs`, and `uses.json`; manifest pins Horizon 0b14f8a and required registries capability.
+- New API-route overlay workflow 44288437986 is in progress. No client overlay artifact or host-loader pass is claimed yet.
+Not tested:
+- No complete playable game launch; Mojang assets remain with the licensed user's installation.
+- No ARM64/Android build of the overlay.
+Next:
+- Verify the test-only harness compiles and the signed SDK slices are fetched.
+- Fix any Rust API/type or loader issues found by CI.
+- Once the overlay passes the host loader, upload it and document how the user's launcher applies it to a matching base version.
