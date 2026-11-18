@@ -37,3 +37,10 @@ Manifest, permissions, dependency resolution, deterministic load order, enable/d
 ## DM-009 — Historical engine prototype scope
 Status: INVESTIGATING
 Existing engine-core, testkit, Mojang artifact tooling, Minelib audits and Android Vulkan POC were built for the former independent-engine direction. Preserve them for history; do not treat them as DreamMod implementation or extend them without a new explicit scope decision.
+
+
+## DM-010 — Reuse existing Horizon mod platform and prebuilt native loading
+Status: INVESTIGATING
+Horizon already provides a typed mod API, native host, content/native/WASM package routes, hooks, Parts, attachments, capabilities, API injection points and native mixins/bridges/loop slots. Do not duplicate these. The existing WASM runtime uses a child-process Wasmtime compilation path on the player's machine when the module cache is cold, so it does not meet strict interpreted-source/no-compilation requirements. Native .hmod source is normally compiled by the launcher, but the native host also loads adjacent prebuilt libraries with SHA-256 and build identity checks. A CI-built DreamMod Core native library may be shippable without local compilation; this end-to-end path is not yet proven.
+Evidence: docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md (Horizon 1c45cf95d8431a7b49d94df007f7e75a890370c9; horizon-mixins e59da9094f0c2fdda6c627fe9eff22dec6a906f0).
+Required action: build a minimal native .hmod, produce the prebuilt library/inventory/package layout in CI, install it into a clean pinned Horizon distribution without running launcher native-build, and verify successful startup.
