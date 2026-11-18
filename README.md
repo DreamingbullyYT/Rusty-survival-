@@ -13,4 +13,4 @@ This repository owns DreamMod Core, runtime, mod-facing APIs, package format, te
 
 Read [AI_HANDOFF.md](docs/project-memory/AI_HANDOFF.md), [architecture](docs/specs/DREAMMOD_ARCHITECTURE.md) and [Horizon platform audit](docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md).
 
-**Status:** minimal native .hmod Core bootstrap exists; pinned-source CI compile is pending. No interpreter, .dmod loader, prebuilt native distribution or full DreamMod API is verified.
+**Status:** native `.hmod` Core bootstrap compiles against pinned Horizon in CI. An isolated Rhai AST-interpreter evaluation prototype has been added, but its CI run is pending and Rhai is not the final language choice. No `.dmod` loader, production sandbox, prebuilt native distribution or game startup is verified.
