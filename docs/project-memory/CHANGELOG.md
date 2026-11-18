@@ -271,3 +271,11 @@
 - Added a no-op typed Hooks implementation; no script runtime or public DreamMod API exists yet.
 - Added a GitHub Actions workflow that compiles the Core against the pinned Horizon source checkout.
 - CI result pending. No native library was prebuilt or loaded; no .dmod package was executed.
+
+
+## 2026-11-18 — Harden the interpreted physics provider boundary
+- Added pre-dispatch validation for equal position/velocity lengths, a fixed maximum batch size, and finite numeric inputs.
+- Validate provider output length, numeric type and finite values before returning results to the host.
+- Added regression tests for mismatched inputs, NaN/infinite inputs, wrong-sized outputs and non-finite outputs.
+- Commit: 33639ee0d89627b7ad3342d694a2d26c1ff43fd5.
+- Verification: GitHub Actions was triggered by the main push; its result has not yet been inspected. No production sandbox or full runtime is claimed.
