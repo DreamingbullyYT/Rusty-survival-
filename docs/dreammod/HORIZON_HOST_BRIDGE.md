@@ -82,3 +82,8 @@ Still not implemented: DreamMod Core does not yet supply the closure using
 `ServerHost`/Horizon handles, and no interpreter can receive the DTO. The next
 integration step is to compile a narrowly scoped Core bridge against the pinned SDK,
 then test it through Horizon's hook/host test facilities before exposing it to scripts.
+
+
+### Bounded batch reads
+
+`PlayerSnapshotBatch` holds at most 256 unique player snapshots. Duplicate UUIDs are rejected, preserving one record per player identity. `HostAdapter::read_player_snapshots()` checks `entities.read` once before one bounded host callback. A Core collector should use Horizon's `host.players().server_players()` in connection order, copy each player's UUID, name, dimension and position while the host borrow is valid, and return the owned batch. It must not retain `PlayerRef` or `EntityRef` values or call the interpreter once per player. The 256 cap is a per-call work/memory bound, not a claim that every server can have at most 256 players; larger sets need explicit paging.
