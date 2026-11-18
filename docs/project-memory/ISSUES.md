@@ -245,3 +245,6 @@ Core run `44363904945` passed the closure-based authorization implementation thr
 ## DM-036 — Activated entrypoint source access
 Status: IMPLEMENTED — CI verification pending
 Added `ModLifecycle::ensure_enabled` and `ModManager::entrypoint_source`. The method returns borrowed entrypoint bytes only after explicit activation, without introducing a synthetic capability. A regression test covers pre-enable denial and post-enable access. Package CI after `ee903d7` pending. The source is not parsed or executed yet.
+
+### DM-036 verification update (2026-11-18)
+Package run `44365010182` passed all 44 tests, rustfmt and Clippy, including the activation-gated entrypoint source regression. The method only returns source bytes; interpreter execution remains unimplemented.
