@@ -50,3 +50,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 ## Allocation-free bounded validation (2026-11-18)
 - For player snapshot batches (maximum 256), duplicate UUID validation uses a fixed stack array of 256 u128 values and sort_unstable. It allocates no heap memory for duplicate detection and preserves original snapshot order.
 - This is a bounded implementation detail, not a measured FPS claim. Keep hot-path script APIs batch-first and benchmark on ARM64.
+
+
+## Shared immutable snapshots (2026-11-18)
+- PlayerSnapshotBatch stores its immutable player slice behind Arc<[PlayerSnapshot]>. Cloning a batch now increments the Arc reference count instead of deep-cloning player strings/records, enabling safe sharing within a dispatch after each mod's capability gate is checked.
+- No dispatcher/cache is implemented yet; do not share data with a mod before authorization.
