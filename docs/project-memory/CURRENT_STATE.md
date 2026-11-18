@@ -135,3 +135,13 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added `docs/dreammod/HORIZON_HOST_BRIDGE.md` documenting the verified API surface and rules for owned values, phase/side checks, per-operation capability checks and batched calls.
 - The generic HostAdapter is still not connected to concrete Horizon APIs; no script runtime, sandbox, scheduler or end-to-end .dmod execution exists.
 - Latest relevant commits: source `d9a524f`; host bridge doc `d016ea5`; roadmap `16c1898`; session log `2c87f41`.
+
+
+
+
+## Owned player snapshot bridge contract (2026-11-18)
+- Added `mods/dreammod-package/src/bridge.rs` with an owned `PlayerSnapshot` containing UUID, a bounded Minecraft player name, a validated dimension identifier and finite bounded position coordinates.
+- The DTO stores only owned values; no Horizon handle, reference or borrowed string can cross this boundary.
+- Added `HostAdapter::read_player_snapshot()`. It checks `entities.read` and the enabled lifecycle state before invoking the host-read closure, then returns only a validated DTO.
+- Tests cover valid DTO creation, malformed names/dimensions, NaN/out-of-range positions, denied callback non-invocation and invalid snapshot rejection.
+- This is a typed contract and policy guard only. DreamMod Core does not yet implement the closure with `ServerHost`, and no script receives snapshots yet. Package CI is pending.
