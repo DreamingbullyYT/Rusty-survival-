@@ -46,6 +46,12 @@ jobs:
       - name: Check native mod manifest, source, API use and host/WASM compilation
         working-directory: mods/dreammod-core
         run: '"$GITHUB_WORKSPACE/.ci/horizon/target/release/cargo-horizon-mod" horizon-mod check'
+      - name: Check Core formatting
+        working-directory: mods/dreammod-core
+        run: cargo fmt --all -- --check
+      - name: Run Core unit tests against the verified pinned SDK
+        working-directory: mods/dreammod-core
+        run: cargo test
       - name: Package the native Core source bundle
         working-directory: mods/dreammod-core
         run: '"$GITHUB_WORKSPACE/.ci/horizon/target/release/cargo-horizon-mod" horizon-mod build'
