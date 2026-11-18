@@ -25,7 +25,7 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 ## Not implemented / not verified
 - The minimal native `.hmod` source skeleton exists and its pinned-source API compile check is VERIFIED in CI run 44249522292.
 - The Rhai candidate prototype is IMPLEMENTED; its CI result is pending. It is not selected as the final language and is not integrated into DreamMod Core.
-- No prebuilt native library package has been produced or loaded.
+- Pinned Horizon source now confirms the API-only Route::Api build path: Core's current Hooks-only manifest qualifies, and the route returns the unchanged prebuilt client plus native libraries. No prebuilt native library package has yet been produced or loaded.
 - No production interpreter selected or integrated; the isolated Rhai candidate is only an evaluation prototype.
 - No .dmod manifest/schema, package loader, lifecycle, dependency resolver or hot reload.
 - No public DreamMod API, event bus, extension registry or subsystem replacement contract.
@@ -35,9 +35,9 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 - No compatibility tests against a pinned current Horizon revision.
 
 ## Next actions
-1. Verify the new Rhai candidate workflow and fix any compile/test failures.
-2. Compare Rhai and Starlark against the no-bytecode/no-JIT requirement and representative workloads.
-3. Prove a CI-built native library can be shipped and loaded without launcher-side compilation.
+1. Verify the corrected Rhai candidate workflow and fix any compile/test failures.
+2. Use the pinned official native-build pipeline to produce and inspect an API-only prebuilt distribution, then prove clean startup.
+3. Compare Rhai and Starlark against the no-bytecode/no-JIT requirement and representative workloads.
 4. Define the minimal package manifest, loader lifecycle and capability model.
 5. Implement one minimal .dmod end-to-end before broad API expansion.
 6. Design extension contracts for adding and replacing systems, then benchmark.
