@@ -62,7 +62,23 @@ Evidence:
 - [Native library loader](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/crates/horizon-mod-host/src/native_libraries.rs)
 - [Native package runtime](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/crates/horizon-mod-package/src/runtime.rs)
 
-Potential route to verify: build DreamMod Core as a trusted native Horizon mod in CI against the pinned Horizon SDK, then ship the resulting prebuilt library, its checked inventory metadata and matching package manifest inside the prebuilt game distribution. The launcher would only install/copy the files. This is a hypothesis pending a reproducible package-build-and-launch proof; do not claim it works until verified.
+### Confirmed source-level prebuilt API route
+The pinned launcher source contains a dedicated `Route::Api` for native mods that use only the public typed mod API and do not require native mixins, private game internals or registry dependency compilation. `prebuilt::compile` routes such mods to `launcher/src/native_mods/api_route.rs`. That function:
+- reads the prebuilt SDK's runtime and API slices (it does not read or build the engine source slice),
+- compiles each mod as its own dynamic library against the pinned API metadata and runtime dependency libraries,
+- returns the unchanged prebuilt `horizon-client` executable plus the runtime and mod dynamic libraries.
+
+The native build installation path then installs that executable and library set into a versioned native build and writes `native-mods.json`. At game startup, `crates/horizon-mod-host/src/native_libraries.rs` reads that record, verifies safe adjacent file names, SHA-256 and exact game/Rust compiler identity, then loads the libraries and their exported mod entries. This is a concrete source-level match for DreamMod Core's current shape: it implements typed Hooks and declares no `native.mixin`, `native.module`, `native.bridge`, `native.state`, `native.loop` or `internals` dependency, so it should qualify for `Route::Api`.
+
+Implication: we do not need to rebuild Horizon's engine for the current API-only Core. CI can use the official pinned native-build pipeline to produce the versioned prebuilt client plus DreamMod Core libraries and inventory; the separate launcher can distribute/install that completed version. If Core later adds private internals or native source transformations, Horizon may choose the Engine/Registry route instead; that still belongs in trusted CI, never on the player's device.
+
+This is now source-verified, but the actual output still needs a reproducible CI build, artifact inspection and clean game-start proof. Do not claim end-to-end success until those pass.
+
+Pinned implementation sources:
+- [Native route selection and prebuilt compiler](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/launcher/src/native_mods/prebuilt.rs)
+- [API-only native library build](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/launcher/src/native_mods/api_route.rs)
+- [Launcher native build pipeline](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/launcher/src/native_mods.rs)
+- [Runtime native library inventory and loader](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/crates/horizon-mod-host/src/native_libraries.rs)
 
 ## 5. Native route and mixins
 
@@ -84,7 +100,7 @@ The older term HNMod must not be treated as proof that the current public packag
 
 ## 7. Open technical questions
 
-- Can a CI-built native .hmod produce a library/inventory/package layout that the stock pinned Horizon host loads unchanged?
+- Can CI run the official pinned `native-build` pipeline in a clean environment, package its API-only prebuilt output and launch it successfully?
 - Does the prebuilt game distribution include the native host entrypoint and support the intended native inventory on each target platform?
 - What is the minimum bridge from the script interpreter into `mod_api::Hooks`, `Host`, `Registrar` and native extension points?
 - Which APIs are already available to WASM but require native access for performance or internals?
@@ -93,4 +109,4 @@ The older term HNMod must not be treated as proof that the current public packag
 
 ## 8. Limits of this audit
 
-This was source/documentation inspection only. No Horizon checkout was compiled, no .hmod was built, no prebuilt native library was assembled, no runtime was launched, and no script interpreter was benchmarked. All integration feasibility claims remain OPEN until a working proof exists.
+This was source/documentation inspection plus source-level route tracing. The API-only prebuilt route is confirmed in source, but no CI native-build output has been produced, no prebuilt native library was assembled, no clean game startup was performed, and no production script interpreter was benchmarked. End-to-end distribution and startup remain OPEN.
