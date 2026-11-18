@@ -175,3 +175,8 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added Core-local unit tests for player name/dimension/position validation, duplicate UUID rejection and the 256-player batch limit.
 - Source commit: `ebe09145849063ade0e01f18e55a23bec18cd4e4`.
 - Core workflow must be checked; the existing Horizon checker validates host/WASM compilation, but whether it executes `#[cfg(test)]` tests is not assumed.
+
+
+## Gated collector source correction (2026-11-18)
+- Fixed a duplicate-function/source-structure regression in the collector refactor. The unchecked Horizon read is now private and called only after the public authorization gate succeeds.
+- Corrected source commit: `eadd1aa545851d487da4e2ff2f37edfbec327dfb`. New Core Actions must verify this commit; earlier in-flight runs target the intermediate source.
