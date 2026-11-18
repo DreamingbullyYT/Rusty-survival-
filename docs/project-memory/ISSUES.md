@@ -62,20 +62,20 @@ The Rhai evaluation prototype now rejects mismatched position/velocity lengths, 
 
 
 ## DM-014 — Versioned .dmod manifest contract
-Status: IMPLEMENTED
-A standalone `mods/dreammod-package` crate parses a strict version-1 JSON manifest, rejects unknown fields/schema versions, validates reverse-DNS-style mod IDs, semantic versions and API compatibility ranges, restricts entrypoints to relative `scripts/*.dream` paths, allowlists and de-duplicates capabilities, validates dependency IDs/ranges, and caps manifest bytes and collection counts. The dedicated CI workflow was added but its result has not yet been inspected. This does not open ZIP files, verify that the entrypoint exists in an archive, grant permissions, resolve dependencies or execute scripts.
+Status: VERIFIED
+A standalone `mods/dreammod-package` crate parses a strict version-1 JSON manifest, rejects unknown fields/schema versions, validates reverse-DNS-style mod IDs, semantic versions and API compatibility ranges, restricts entrypoints to relative `scripts/*.dream` paths, allowlists and de-duplicates capabilities, validates dependency IDs/ranges, and caps manifest bytes and collection counts. The dedicated package workflow passed in Actions run 44299317538 (commit 4e983c0). ZIP inspection and dependency planning are tracked separately; this manifest parser does not grant permissions or execute scripts.
 
 
 ## DM-015 — Safe .dmod archive ingestion
-Status: IMPLEMENTED
-Added a metadata-only archive inventory validator in `mods/dreammod-package`. It applies entry-count, per-file and aggregate expanded-size limits; compression-ratio limits; strict portable relative paths; case-insensitive duplicate detection; rejects symlinks, unsupported types and encrypted entries; limits file roots to `manifest.json`, `scripts/` and `assets/`; and requires one manifest plus the declared script entrypoint. The validator consumes metadata supplied by a future ZIP reader and does not open ZIP records or extract files. CI status is pending; no end-to-end ZIP parsing or zip-bomb resistance claim is made.
+Status: VERIFIED
+Added a metadata preflight validator and integrated it with the in-memory ZIP reader in `mods/dreammod-package`. It applies entry-count, per-file and aggregate expanded-size limits; compression-ratio limits; strict portable relative paths; case-insensitive duplicate detection; rejects symlinks, unsupported types and encrypted entries; limits file roots to `manifest.json`, `scripts/` and `assets/`; and requires one manifest plus the declared script entrypoint. The validator is called before decompression by `inspect_dmod()`. It does not extract files. Package CI passed in run 44299317538; actual decompressed output is bounded and CRC-checked. This is not a claim of complete protection against every ZIP parser vulnerability.
 
 
 ## DM-016 — Deterministic dependency planning
-Status: IMPLEMENTED
-Added a bounded, side-effect-free dependency planner to `dreammod-package`. It validates each manifest, rejects duplicate installed IDs, missing dependencies and semver mismatches, detects cycles, and emits a stable dependency-first order with lexicographic tie-breaking. It does not install, execute or grant capabilities. Unit tests cover order, missing/incompatible dependencies, cycles and duplicate IDs. CI result is pending inspection.
+Status: VERIFIED
+Added a bounded, side-effect-free dependency planner to `dreammod-package`. It validates each manifest, rejects duplicate installed IDs, missing dependencies and semver mismatches, detects cycles, and emits a stable dependency-first order with lexicographic tie-breaking. It does not install, execute or grant capabilities. Unit tests cover order, missing/incompatible dependencies, cycles and duplicate IDs. Package CI passed in run 44299317538.
 
 
 ## DM-017 — Real in-memory .dmod ZIP inspection
-Status: IMPLEMENTED — CI PENDING
-Added an exact-pinned ZIP reader dependency and inspect_dmod(). It bounds compressed input, validates archive header consistency before member access, accepts only Stored/Deflate, performs metadata preflight before decompression, reads and parses the manifest, validates the declared script entrypoint, then streams all regular members to EOF in fixed-size chunks for actual-size and CRC validation. No files are extracted. Tests cover real valid ZIPs, traversal, truncated/non-ZIP input and payload corruption. The dedicated GitHub Actions result has not yet been inspected; do not treat this as VERIFIED until CI passes.
+Status: VERIFIED
+Added an exact-pinned ZIP reader dependency and inspect_dmod(). It bounds compressed input, validates archive header consistency before member access, accepts only Stored/Deflate, performs metadata preflight before decompression, reads and parses the manifest, validates the declared script entrypoint, then streams all regular members to EOF in fixed-size chunks for actual-size and CRC validation. No files are extracted. Tests cover real valid ZIPs, traversal, truncated/non-ZIP input and payload corruption. GitHub Actions run 44299317538 passed on commit 4e983c04ea8f3a4085aa2e13b6b53d691c307564: formatting, all 19 tests, and Clippy with `-D warnings`. The initial test failure was a malformed JSON fixture for a Windows path; after correcting its JSON escaping, tests passed. Clippy then identified a needless boolean branch in the path validator; it was simplified and the complete workflow passed.
