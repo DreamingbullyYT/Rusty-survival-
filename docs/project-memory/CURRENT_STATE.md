@@ -1,8 +1,8 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: CORE_SOURCE_PACKAGE_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HARNESS_IN_PROGRESS; DREAMMOD_MANIFEST_CONTRACT_CI_PENDING; RHAI_CANDIDATE_PROVISIONAL
-Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
+Status: CORE_SOURCE_PACKAGE_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HARNESS_IN_PROGRESS; DREAMMOD_PACKAGE_INSPECTOR_VERIFIED; RHAI_CANDIDATE_PROVISIONAL
+Repository HEAD at last inspection: 4e983c04ea8f3a4085aa2e13b6b53d691c307564
 
 ## Direction
 - Active project: DreamMod, a deeply extensible interpreted modding runtime for Horizon.
@@ -41,9 +41,10 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 ## Not implemented / not verified
 - No verified prebuilt client overlay or successful native-host load yet.
 - No complete game launch with DreamMod Core.
-- `mods/dreammod-package` now defines and validates the version-1 JSON manifest contract (strict fields, semantic versions/API range, safe script entrypoint, capability allowlist, dependency declarations and size/count limits); its new CI workflow has not yet been inspected.
-- `dreammod-package` now validates an untrusted archive inventory before entries are opened: bounded entry count/expanded sizes/ratio, strict portable paths, case-folded duplicate detection, symlink/other/encrypted-entry rejection, approved `scripts/` and `assets/` roots, exactly one manifest and an existing declared entrypoint. This is metadata-policy code only; no ZIP parser is integrated, and CI is pending.
-- No ZIP reader/extractor, dependency resolver, runtime lifecycle or hot reload.
+- `mods/dreammod-package` defines and validates the version-1 JSON manifest contract, capability declarations, dependency declarations, and deterministic dependency-first load order.
+- `inspect_dmod()` now parses actual ZIP input in memory, performs metadata preflight and local-header consistency validation, checks the manifest and declared entrypoint, and streams regular entries to EOF for actual-size and CRC validation. It never extracts files.
+- Dedicated package CI passed on commit `4e983c04ea8f3a4085aa2e13b6b53d691c307564`, Actions run `44299317538`: formatting step, all 19 unit tests, and Clippy with `-D warnings` succeeded.
+- No filesystem installation, content retention for runtime use, capability grant, script execution, or production sandbox exists.
 - No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
 - The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
 - Rhai is not the final language choice and is not integrated into Core.
@@ -54,7 +55,7 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 ## Next actions
 1. Verify run 44288685182. Fix any Rust API/test harness or host-loader failures.
 2. Inspect the client overlay artifact and its inventory; verify the real Horizon host loader accepts it.
-3. Extend the standalone package contract with hostile-archive validation (without extracting files), then dependency resolution and lifecycle; keep interpreter integration behind a pluggable interface.
+3. Extend the package layer from verified ZIP inspection to a bounded in-memory package-content representation; keep extraction/install and script execution separate until trust and sandbox boundaries are designed.
 4. Keep Rhai provisional; expose only coarse-grained/batched host contracts and benchmark realistic workloads on ARM64.
 5. Integrate the runtime into Core using documented Horizon hooks (initial lifecycle/tick hooks first); external runtime dependencies may move Core from Route::Api to the registry build route, which must be verified in CI.
 6. Define subsystem replacement contracts incrementally; do not claim full physics/rendering replacement until the required Horizon extension points and performance are proven.
