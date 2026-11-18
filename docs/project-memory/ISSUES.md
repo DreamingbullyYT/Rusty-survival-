@@ -235,3 +235,6 @@ Callback refactor is under verification. Package tests include the new callback 
 ## DM-035 — Capability-gated asset read API
 Status: IMPLEMENTED — CI verification pending
 Added `ModManager::read_asset(mod_id, path)`. It checks Enabled state and explicit `assets.read`, restricts requests to validated `assets/` paths using archive path rules, and returns borrowed immutable bytes without extraction. Tests cover permission denial, successful read, traversal and missing asset. Package workflow after commit `f90d0b1` pending. Asset decoding, cache policy and Horizon resource registration are not implemented.
+
+### DM-035 verification update (2026-11-18)
+Package run `44364618050` passed all 43 tests, rustfmt and Clippy, including the new asset permission/path regression. PMCS run `44364715327` passed validator regression and structure/freshness steps (job cleanup pending). Resource decoding and Horizon registration remain out of scope.
