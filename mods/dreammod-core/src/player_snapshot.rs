@@ -2,7 +2,6 @@
 //!
 //! This module returns owned values only. No Horizon handle is retained in a snapshot.
 
-use dreammod_contract::PlayerReadAuthorization;
 use mod_api::ServerHost;
 use std::sync::Arc;
 
@@ -133,29 +132,22 @@ pub enum AuthorizedPlayerReadError<E> {
 /// Runs a player-read operation only after the caller's per-mod permission gate passes.
 /// This helper deliberately accepts an operation closure so denial can be tested without
 /// constructing a live Horizon ServerHost.
-pub fn with_player_read_authorization<G, T>(
-    gate: &G,
+pub fn with_player_read_authorization<E, T>(
+    authorize: impl FnOnce() -> Result<(), E>,
     operation: impl FnOnce() -> Result<T, PlayerSnapshotError>,
-) -> Result<T, AuthorizedPlayerReadError<G::Error>>
-where
-    G: PlayerReadAuthorization,
-{
-    gate.require_entities_read()
-        .map_err(AuthorizedPlayerReadError::PermissionDenied)?;
+) -> Result<T, AuthorizedPlayerReadError<E>> {
+    authorize().map_err(AuthorizedPlayerReadError::PermissionDenied)?;
     operation().map_err(AuthorizedPlayerReadError::Collection)
 }
 
 /// Collects the server's online players in Horizon's connection order, but only after
 /// the supplied per-mod lifecycle adapter confirms entities.read.
 /// The gate is checked once for the entire bounded batch, before touching ServerHost.
-pub fn collect_online_players<G>(
+pub fn collect_online_players<E>(
     host: &mut dyn ServerHost,
-    gate: &G,
-) -> Result<PlayerSnapshotBatch, AuthorizedPlayerReadError<G::Error>>
-where
-    G: PlayerReadAuthorization,
-{
-    with_player_read_authorization(gate, || collect_online_players_unchecked(host))
+    authorize: impl FnOnce() -> Result<(), E>,
+) -> Result<PlayerSnapshotBatch, AuthorizedPlayerReadError<E>> {
+    with_player_read_authorization(authorize, || collect_online_players_unchecked(host))
 }
 
 /// Internal collector. Never expose this directly to the script/runtime layer.
@@ -216,29 +208,16 @@ mod authorization_tests {
     use super::*;
     use std::cell::Cell;
 
-    struct TestGate {
-        allowed: bool,
-    }
-
-    impl PlayerReadAuthorization for TestGate {
-        type Error = &'static str;
-
-        fn require_entities_read(&self) -> Result<(), Self::Error> {
-            if self.allowed {
-                Ok(())
-            } else {
-                Err("entities.read denied")
-            }
-        }
-    }
-
     #[test]
     fn denied_player_read_never_invokes_host_operation() {
         let calls = Cell::new(0);
-        let result = with_player_read_authorization(&TestGate { allowed: false }, || {
-            calls.set(calls.get() + 1);
-            Ok(())
-        });
+        let result = with_player_read_authorization(
+            || Err("entities.read denied"),
+            || {
+                calls.set(calls.get() + 1);
+                Ok(())
+            },
+        );
         assert_eq!(
             result,
             Err(AuthorizedPlayerReadError::PermissionDenied(
@@ -251,10 +230,13 @@ mod authorization_tests {
     #[test]
     fn authorized_player_read_invokes_operation_once() {
         let calls = Cell::new(0);
-        let result = with_player_read_authorization(&TestGate { allowed: true }, || {
-            calls.set(calls.get() + 1);
-            Ok(42)
-        });
+        let result = with_player_read_authorization(
+            || Ok::<(), &'static str>(()),
+            || {
+                calls.set(calls.get() + 1);
+                Ok(42)
+            },
+        );
         assert_eq!(result, Ok(42));
         assert_eq!(calls.get(), 1);
     }
