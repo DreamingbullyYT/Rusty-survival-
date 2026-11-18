@@ -192,6 +192,19 @@ mod tests {
             .invoke("world.write", || calls.set(calls.get() + 1));
         assert_eq!(denied, Err(LifecycleError::CapabilityDenied("world.write".into())));
         assert_eq!(calls.get(), 1);
+
+        lifecycle.disable().unwrap();
+        let denied = HostAdapter::new(&lifecycle)
+            .invoke("world.read", || calls.set(calls.get() + 1));
+        assert_eq!(denied, Err(LifecycleError::NotEnabled));
+        assert_eq!(calls.get(), 1);
+
+        lifecycle.enable().unwrap();
+        lifecycle.fail("script fault").unwrap();
+        let denied = HostAdapter::new(&lifecycle)
+            .invoke("world.read", || calls.set(calls.get() + 1));
+        assert_eq!(denied, Err(LifecycleError::NotEnabled));
+        assert_eq!(calls.get(), 1);
     }
 
     #[test]
@@ -203,7 +216,7 @@ mod tests {
             Err(LifecycleError::FailureReasonTooLong)
         );
         assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
-        assert_eq!(lifecycle.fail("bad\\nreason"), Err(LifecycleError::FailureReasonTooLong));
+        assert_eq!(lifecycle.fail("bad\nreason"), Err(LifecycleError::FailureReasonTooLong));
         assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
     }
 
