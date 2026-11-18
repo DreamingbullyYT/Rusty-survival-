@@ -98,3 +98,6 @@ The per-mod authorization boundary now has a small shared crate at `mods/dreammo
 
 ## Authorization boundary — packaging-compatible callback
 The real Horizon prebuilt compiler stages the HNMod source package but does not automatically stage arbitrary local Cargo path dependencies. The attempted `dreammod-contract` dependency failed with `unresolved import` in overlay run `44362776804`, so that crate was removed. Core now accepts an authorization closure in `with_player_read_authorization` / `collect_online_players`; the closure runs before any host access. The package-side `ModManager::require_capability(mod_id, capability)` checks the matching lifecycle and explicit grant and is designed to be passed directly as that callback. This avoids non-SDK dependencies in the HNMod source package. A live coordinator/hook call site remains future work.
+
+### Callback bridge and failure-state behavior
+`ModManager::require_capability` is the package-side callback target for Core's one-shot authorization closure. The manager regression suite covers the callback across approval/activation/grant states. During failure propagation, already-Failed intermediate dependents are recorded as failed without attempting an invalid second Failed transition; their descendants are still failed in topological order.
