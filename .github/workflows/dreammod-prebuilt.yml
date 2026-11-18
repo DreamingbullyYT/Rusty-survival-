@@ -55,11 +55,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/horizon-home" "$RUNNER_TEMP/dreammod-prebuilt"
-          export HOME="$RUNNER_TEMP/horizon-home"
-          export XDG_CONFIG_HOME="$HOME/.config"
-          export XDG_DATA_HOME="$HOME/.local/share"
-          export XDG_CACHE_HOME="$HOME/.cache"
+          mkdir -p "$RUNNER_TEMP/horizon-xdg/config" "$RUNNER_TEMP/horizon-xdg/data" "$RUNNER_TEMP/horizon-xdg/cache" "$RUNNER_TEMP/dreammod-prebuilt"
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/horizon-xdg/config"
+          export XDG_DATA_HOME="$RUNNER_TEMP/horizon-xdg/data"
+          export XDG_CACHE_HOME="$RUNNER_TEMP/horizon-xdg/cache"
           cd .ci/horizon
           DREAMMOD_MOD_DIR="$GITHUB_WORKSPACE/mods/dreammod-core" \
           DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt" \
