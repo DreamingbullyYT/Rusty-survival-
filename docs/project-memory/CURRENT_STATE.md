@@ -144,4 +144,4 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - The DTO stores only owned values; no Horizon handle, reference or borrowed string can cross this boundary.
 - Added `HostAdapter::read_player_snapshot()`. It checks `entities.read` and the enabled lifecycle state before invoking the host-read closure, then returns only a validated DTO.
 - Tests cover valid DTO creation, malformed names/dimensions, NaN/out-of-range positions, denied callback non-invocation and invalid snapshot rejection.
-- This is a typed contract and policy guard only. DreamMod Core does not yet implement the closure with `ServerHost`, and no script receives snapshots yet. Package CI is pending.
+- This is a typed contract and policy guard only. DreamMod Core does not yet implement the closure with `ServerHost`, and no script receives snapshots yet. Package Actions run 44309091208 passed formatting, all package tests and Clippy on commit `7bae3eaad6128ff815e657541dd3cd1880dca485`.
