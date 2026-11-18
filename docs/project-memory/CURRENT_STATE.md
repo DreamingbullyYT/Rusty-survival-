@@ -202,3 +202,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Core commit: b2185e8917e351dfd0408231e855efe47e6b3bfd. Package bridge commit: f3a55af3a332073db92df24de00e347bc55a3bb8.
 - Package deadline implementation CI passed in run 44317125357. The latest stack-buffer package/Core runs are pending.
 - Core formatting now targets only the DreamMod Core manifest, avoiding formatting generated Horizon SDK source under .horizon/sdk. Fresh Core run pending.
+
+
+## Shared batch storage (2026-11-18)
+- Core and package PlayerSnapshotBatch now store players as Arc<[PlayerSnapshot]>. Batch clones share immutable backing storage instead of deep-copying every player record.
+- Core commit: 3f629cc54a27992f9a7f402dfda3fcfa0505b4bf. Package commit: 74310a797393ec319fb9192d931a7b860ba55ced.
+- Added pointer-identity tests proving clones share the same Arc allocation. Package run 44318172781 and Core run 44318166133 are pending; previous Core run 44317880298 is still running against the earlier stack-buffer version.
+- Runtime dispatcher does not yet reuse snapshots. Capability checks must remain per mod before a shared snapshot is returned.
