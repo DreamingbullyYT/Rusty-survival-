@@ -740,3 +740,24 @@ Next:
 - Verify the resource-budget regression and Clippy in CI.
 - Keep the 462.94x desktop interpreted/native result as a warning against hot per-item loops; prototype a coarse provider boundary.
 - Continue the official native-build pipeline and prebuilt distribution proof.
+
+## S-2026-11-18-13 — Correct required native capability and optimize Core CI
+Date: 2026-11-18
+Commits:
+- Manifest capability correction: 9a5f9b5abe23ce0648840ded5f3b5e31f1eea57d
+- Cached Horizon tool build: 1747cd5728fa7189e1ec8db105953333b43eed6e
+Goal: Fix the official native package validation failure and make repeated CI runs cheaper.
+Changes:
+- Inspected the current Horizon native template and Manifest validator. The official native template always includes `capabilities = ["registries"]`; the current validator rejects an empty list even when `[native]` is present. DreamMod Core now includes this required capability. Treat it as a real permission in the future trust UI; do not claim the Core requests no permissions.
+- Replaced `cargo install --path` with a cached workspace `cargo build --release -p cargo-horizon-mod` and added `Swatinem/rust-cache` scoped to the pinned Horizon checkout.
+Verification:
+- Official Core workflow 44284751206 successfully built and installed the pinned `cargo-horizon-mod` tool, then failed at manifest validation with `a content mod has capabilities = ["registries"]`. The manifest fix is committed; fresh official validation/build is pending.
+- Runtime resource-budget tests, formatting and Clippy passed in run 44285379104.
+- PMCS validator regression tests and structural validation passed in run 44285628749 before these latest changes; the new five-document memory update is being recorded after the implementation commit.
+Not tested:
+- No successful official package check or .hmod source artifact yet.
+- No native-build distribution, artifact inspection or clean game startup.
+Next:
+- Verify the new Core workflow after the manifest fix.
+- Run the official `horizon-launcher native-build` command in CI against the published Nightly SDK and upload the resulting native build folder.
+- Prove a clean client/host startup and inspect the native library inventory.
