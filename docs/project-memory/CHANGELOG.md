@@ -330,3 +330,10 @@
 - Final verification: Actions run 44299317538 on commit 4e983c04ea8f3a4085aa2e13b6b53d691c307564 passed formatting, all 19 tests and Clippy with `-D warnings`.
 - Updated source comments to accurately describe the in-memory ZIP inspector.
 - No filesystem extraction, installation, capability grant, script execution, or production sandbox is implemented.
+
+
+## 2026-11-18 — Make PMCS session ID checks compatible with legacy history
+- PMCS regression run 44299535756 exposed repeated identifiers already present in the historical append-only session log; a new entry had reused one of those identifiers.
+- Updated validation to preserve legacy headings while rejecting any newly appended ID that duplicates another new ID or reuses an ID from the prior history.
+- Added negative tests for duplicate IDs in one update and reuse of a historical ID.
+- Full PMCS workflow verification is pending.
