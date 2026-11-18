@@ -61,3 +61,10 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Both DreamMod Core and the package/lifecycle crate depend on this contract instead of defining unrelated authorization traits. The package `ModLifecycle` implements the shared trait by checking its Enabled state and explicit `entities.read` grant.
 - This establishes a compile-time seam without linking ZIP/JSON/semver package-inspection dependencies into trusted Horizon Core. It does not yet instantiate a runtime manager or execute `.dmod` scripts.
 - Verification is pending in Core, package and overlay Actions triggered by commits `28d55c1` and `7a9356a`.
+
+## Deterministic ModManager (2026-11-18)
+- Added `mods/dreammod-package/src/manager.rs` and exported `manager::ModManager`.
+- The manager owns validated `.dmod` package contents and one `ModLifecycle` per mod ID. It validates the full dependency graph up front and retains the deterministic dependency-first load order from `resolve_load_order`.
+- Approval remains per-mod and does not activate. Enable requires every declared dependency to be Enabled. Disable refuses while a direct dependent remains Enabled. A failure propagates fail-closed through transitive dependents in reverse load order.
+- Regression tests cover dependency-first ordering, package retention, enable ordering, disable protection, transitive failure propagation and invalid graphs.
+- This is lifecycle/dependency orchestration only: no interpreter, script scheduling, host registration or Horizon runtime manager exists yet. Package workflow run `44363310681` and PMCS run `44363323071` are pending.
