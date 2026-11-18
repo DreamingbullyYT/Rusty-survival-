@@ -20,25 +20,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  compile-against-pinned-horizon:
+  validate-and-package-native-core:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Check out DreamMod
         uses: actions/checkout@v4
-      - name: Check out pinned Horizon source
+      - name: Check out pinned Horizon tooling
         uses: actions/checkout@v4
         with:
           repository: horizon-rust/horizon
           ref: 0b14f8acfd97fa2c750e42795249dcc981178ca4
           path: .ci/horizon
-      - name: Install Rust
+      - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@1.95.0
-      - name: Stage Core against pinned API source
-        shell: bash
-        run: |
-          mkdir -p .ci/horizon/mods
-          cp -R mods/dreammod-core .ci/horizon/mods/dreammod-core
-          sed -i 's#path = ".horizon/sdk/api/crates/horizon-mod-api"#path = "../../crates/horizon-mod-api"#' .ci/horizon/mods/dreammod-core/Cargo.toml
-      - name: Compile against Horizon mod API
-        run: cargo check --manifest-path .ci/horizon/mods/dreammod-core/Cargo.toml
+      - name: Install WASM target for Horizon's native mod checker
+        run: rustup target add wasm32-unknown-unknown
+      - name: Install cargo-horizon-mod from the pinned Horizon source
+        run: cargo install --path .ci/horizon/crates/cargo-horizon-mod --locked --root "$RUNNER_TEMP/horizon-tools"
+      - name: Check native mod manifest, source, API use and host/WASM compilation
+        working-directory: mods/dreammod-core
+        run: "$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod check
+      - name: Package the native Core source bundle
+        working-directory: mods/dreammod-core
+        run: "$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod build
+      - name: Upload validated native source bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: dreammod-core-source-hmod
+          path: mods/dreammod-core/target/horizon-mod/dreammod_core.hmod
+          if-no-files-found: error
+          retention-days: 7
