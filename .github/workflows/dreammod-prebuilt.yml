@@ -64,10 +64,12 @@ jobs:
           fi
       - name: Install the pinned Nightly base
         run: '"$HORIZON_LAUNCHER" install nightly'
+      - name: Prepare the pinned Nightly game files
+        run: '"$HORIZON_LAUNCHER" prepare --version nightly-2026-11-18-0b14f8a'
       - name: Create a clean CI instance
         run: |
           "$HORIZON_LAUNCHER" instance create DreamModCI
-          "$HORIZON_LAUNCHER" instance version DreamModCI nightly
+          "$HORIZON_LAUNCHER" instance version DreamModCI nightly-2026-11-18-0b14f8a
       - name: Build DreamMod Core through the official native-build route
         run: '"$HORIZON_LAUNCHER" native-build mods/dreammod-core --instance DreamModCI --trust-native-code --profile optimized'
       - name: Inspect the prebuilt native build
