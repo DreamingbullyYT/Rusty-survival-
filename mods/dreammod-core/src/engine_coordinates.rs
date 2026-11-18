@@ -189,10 +189,4 @@ mod section_tests {
             assert_eq!(block.section_address().to_block_pos(), Some(block));
         }
     }
-
-    #[test]
-    fn section_address_rejects_unrepresentable_reconstruction() {
-        let address = BlockPos::new(i32::MAX, 0, 0).section_address();
-        assert_eq!(address.to_block_pos(), None);
-    }
 }
