@@ -108,3 +108,12 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - The gate stores a private granted set, validates approvals through the manifest planner, and denies unapproved or unknown capabilities.
 - This is a reusable guard primitive only. DreamMod Core does not yet wrap Horizon host APIs with it, so end-to-end enforcement is not claimed.
 - Added gate regression tests. Package Actions run 44300879584 passed all 22 tests and Clippy.
+
+
+## Latest explicit mod lifecycle policy (2026-11-18)
+- Added `mods/dreammod-package/src/lifecycle.rs` and exported it from the package crate.
+- A validated package starts in `AwaitingApproval`; explicit capability approvals move it only to `Ready`; a separate explicit `enable()` is required before privileged calls can pass.
+- `disable()` blocks all capability checks. `fail()` discards the gate and makes the instance terminal/failed.
+- Added regression tests for default-disabled behavior, approval/activation separation, capability denial, disable, fail-closed behavior, and invalid transitions.
+- Commits: `14a4bf8`, `6f1adf2`, `eae8f1c`.
+- Verification: pending the package workflow triggered by the latest source changes. This is a pure lifecycle policy helper, not a running script scheduler or Horizon integration.
