@@ -1,14 +1,14 @@
 use std::{
     collections::BTreeMap,
     fs::File,
-    io::{Read, Write},
+    io::Read,
     path::Path,
     sync::Arc,
 };
 
 use sha2::{Digest, Sha256};
 use thiserror::Error;
-use zip::{CompressionMethod, ZipArchive};
+use zip::ZipArchive;
 
 use crate::manifest::{is_safe_relative_path, ManifestError, ModManifest};
 
@@ -239,7 +239,7 @@ mod tests {
     use std::io::Write;
 
     use tempfile::NamedTempFile;
-    use zip::{write::SimpleFileOptions, ZipWriter};
+    use zip::{write::SimpleFileOptions, CompressionMethod, ZipWriter};
 
     use super::*;
 
