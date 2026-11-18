@@ -180,3 +180,12 @@ Overlay run 44335372878 successfully compiled the API-only prebuilt client overl
 ## DM-032 — Three-axis section coordinate contract
 Status: IMPLEMENTED; CI VERIFICATION PENDING
 Added three-axis section mapping to engine-core and exposed it through the DreamMod Core bridge. Negative coordinates use Euclidean division and local coordinates remain 0..15. The model does not define section storage encoding, dimension bounds, chunk serialization or world state. Canonical and HNMod mirror sources must remain byte-identical. Latest formatting/test corrections are committed; inspect current engine/Core/overlay Actions before marking VERIFIED.
+
+
+## DM-031 — Native host test must resolve sibling Horizon runtime libraries
+Status: VERIFIED FOR CI HOST TEST; LAUNCHER STARTUP OPEN
+Overlay run 44341466372 passed the real Horizon native-host loader test after the workflow added the overlay directory to LD_LIBRARY_PATH; archive inspection and upload also passed. This proves the CI test process can load the overlay. It does not establish that the distributed launcher sets an equivalent search path or that a full game starts with the overlay. Keep launcher startup as a separate verification gate.
+
+## DM-032 — Three-axis section coordinate contract
+Status: IMPLEMENTED; CORE RERUN PENDING
+The canonical engine coordinate module and HNMod mirror remain byte-identical in Core/overlay CI. Core run 44341466411 passed pinned Horizon API checks and mirror parity but stopped at rustfmt import wrapping in engine_bridge.rs; fixed in commit 42d9ac762502ad5ef3db9158a9885c99a24ae238. Verify Core rerun 44361109477 before marking the Core tests/package verified.
