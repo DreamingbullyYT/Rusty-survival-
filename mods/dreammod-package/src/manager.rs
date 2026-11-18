@@ -17,6 +17,7 @@ pub enum ModManagerError {
     ActiveDependent { dependency: String, dependent: String },
     InvalidAssetPath,
     AssetNotFound(String),
+    EntrypointNotFound(String),
     Lifecycle(LifecycleError),
 }
 
@@ -109,6 +110,40 @@ impl ModManager {
             .lifecycle
             .require(capability)
             .map_err(ModManagerError::Lifecycle)
+    }
+
+    /// Borrow the validated entrypoint source for the trusted interpreter.
+    /// A script cannot be obtained from a package until its mod is Enabled.
+    pub fn entrypoint_source(&self, id: &str) -> Result<&[u8], ModManagerError> {
+        let managed = self
+            .mods
+            .get(id)
+            .ok_or_else(|| ModManagerError::UnknownMod(id.to_owned()))?;
+        managed
+            .lifecycle
+            .require("scripts.execute")
+            .or_else(|error| {
+                if error == LifecycleError::CapabilityDenied("scripts.execute".into()) {
+                    // Script execution is controlled by Enabled state, not a manifest
+                    // capability; scripts.execute is not a user-grantable capability.
+                    if managed.lifecycle.state() == LifecycleState::Enabled {
+                        Ok(())
+                    } else {
+                        Err(error)
+                    }
+                } else {
+                    Err(error)
+                }
+            })
+            .map_err(ModManagerError::Lifecycle)?;
+        let entrypoint = &managed.package.manifest.entrypoint;
+        managed
+            .package
+            .files
+            .iter()
+            .find(|file| &file.path == entrypoint)
+            .map(|file| file.contents.as_slice())
+            .ok_or_else(|| ModManagerError::EntrypointNotFound(entrypoint.clone()))
     }
 
     /// Read an already-validated asset without extracting it from the package.
@@ -265,6 +300,28 @@ mod tests {
         assert_eq!(manager.load_order(), &["example.base", "example.addon"]);
         assert!(manager.package("example.addon").is_some());
         assert_eq!(manager.state("example.addon"), Ok(LifecycleState::AwaitingApproval));
+    }
+
+    #[test]
+    fn entrypoint_source_is_borrowed_only_after_activation() {
+        let mut script_package = package("example.script", &[], &[]);
+        script_package.files[0].contents = b"print('hello')".to_vec();
+        let mut manager = ModManager::new(vec![script_package]).unwrap();
+
+        assert_eq!(
+            manager.entrypoint_source("example.script"),
+            Err(ModManagerError::Lifecycle(LifecycleError::NotEnabled))
+        );
+        manager.approve("example.script", &[]).unwrap();
+        assert_eq!(
+            manager.entrypoint_source("example.script"),
+            Err(ModManagerError::Lifecycle(LifecycleError::NotEnabled))
+        );
+        manager.enable("example.script").unwrap();
+        assert_eq!(
+            manager.entrypoint_source("example.script"),
+            Ok(&b"print('hello')"[..])
+        );
     }
 
     #[test]
