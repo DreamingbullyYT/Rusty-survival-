@@ -74,3 +74,14 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 - The resolver is a pure planning function: it does not load, execute, grant capabilities or mutate installed packages.
 - Commit: 1817a3b4b9a3f4ae974793c2d46c9cbce65b3fe6.
 - CI status: not yet inspected; tests are added but not claimed as passing.
+
+
+## Latest .dmod ZIP reader implementation (2026-11-18)
+- Added a real in-memory ZIP inspector in mods/dreammod-package using the exact-pinned zip 9.6.1 crate with only Deflate enabled.
+- Rejects oversized compressed input, invalid ZIP structures, invalid UTF-8 names, unsupported compression, encrypted entries, symlinks/unsupported types, unsafe paths, duplicate names, excessive expanded sizes and suspicious compression ratios.
+- Calls the ZIP reader validate_header_consistency() before opening members, checking local-header/central-directory consistency, duplicate local records and overlapping entry ranges.
+- Reads the manifest first after metadata preflight, validates the declared entrypoint, then streams every remaining regular entry to EOF in bounded chunks so CRC and actual decompressed sizes are checked. No filesystem extraction occurs.
+- Added real ZIP fixture tests for valid packages, traversal, truncated/non-ZIP input and payload corruption.
+- Commits: 32d52810bb2181c7c6bb03a4f7152b402a8c8d9e, d7e7794567efb0cf1873686964fe47e7364ccbf4, 8bea071635acc45098bd4e93c5c66cbdf5296b30, 15c650a0e61ed3707e6ff76f784180f7f9115452, fc6af40387fa9b861b19ec7fb6b148046c83df8d and 6add01bb156b8ff0e826de40dbd7712a014daf41.
+- CI status: not yet verified. The implementation is committed but must pass the dedicated workflow before it is treated as verified.
+- Limitations: package inspection is in-memory and bounded; it does not install files, grant capabilities, execute scripts, or establish a production sandbox.
