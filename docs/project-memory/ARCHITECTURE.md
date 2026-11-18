@@ -110,3 +110,9 @@ The trusted interpreter can obtain the validated entrypoint via `ModManager::ent
 
 ### CI host-load harness environment
 GitHub Actions steps do not share shell-local exports. The host loader test must explicitly set `DREAMMOD_PREBUILT_DIR` again in its own step; the workflow now does so, prints the packaged ELF files and RUNPATHs, and enforces a 180-second timeout. This is test-harness plumbing, not a change to the launcher runtime contract.
+
+
+## Horizon client resource registration boundary (pinned 2026-11-18 SDK)
+The pinned Horizon revision exposes a real client hook, `Hooks::register_texture_atlases`, declared in `crates/horizon-mod-vocab/src/hooks/register_texture_atlases.rs` and forwarded by `crates/horizon-client/src/game/native_hooks/register_texture_atlases.rs`. It is a collect hook with a `RegistrationContext`; it runs on initial client load and on every resource reload before texture stitching. Mod atlas declarations must be submitted again on every call. Each atlas identifier is in the mod's namespace; the definition resolves from `assets/<namespace>/atlases/<path>.json`. Horizon refuses its own `minecraft` and `horizon` namespaces, caps registrations at 32 atlases and 4096 sprites across mods, and skips malformed/duplicate declarations or entries over the budget. Resource packs can override atlas definitions just as they can vanilla definitions.
+
+DreamMod currently has no live hook implementation: `mods/dreammod-core/src/lib.rs` still implements an empty `Hooks` trait, and the package `ModManager` is not wired into Core. A future bridge must provide a bounded, immutable snapshot of approved/enabled mod declarations to the hook and re-submit it on every reload. Do not call this dynamic in-game registration until that bridge and reload behavior are implemented and tested. The current `ResourceRegistry` is only an internal ID reservation/ownership ledger; it does not invoke this Horizon API.
