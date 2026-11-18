@@ -89,3 +89,6 @@ Duplicate UUID validation for the bounded 256-player snapshot batch now uses a f
 
 ## Shared immutable batch ownership (2026-11-18)
 PlayerSnapshotBatch now owns Arc<[PlayerSnapshot]> in both Core and package contract. This permits cheap immutable sharing among authorized consumers without deep-copying names/dimensions/positions. It does not itself introduce a cache or dispatcher. Every recipient must pass its own lifecycle/capability check before access; no host handles or mutable snapshot references are shared.
+
+## Shared authorization contract (2026-11-18)
+The per-mod authorization boundary now has a small shared crate at `mods/dreammod-contract`. It contains only the `PlayerReadAuthorization` trait and `PLAYER_READ_CAPABILITY` constant, with no third-party dependencies. The package crate implements the trait for `ModLifecycle`; Core consumes the trait in its gated player collector. This avoids a Core → package-inspector dependency edge and keeps ZIP parsing outside the trusted native HNMod. The integration is compile-time only until a future runtime manager owns `ModLifecycle` instances and passes the matching instance to each Core operation.
