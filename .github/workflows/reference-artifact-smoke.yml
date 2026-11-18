@@ -4,8 +4,11 @@ on:
   push:
     branches: [main]
     paths:
+      - "Cargo.toml"
+      - "Cargo.lock"
       - "crates/**"
       - "tools/**"
+      - ".github/workflows/engine-tests.yml"
       - ".github/workflows/reference-artifact-smoke.yml"
   pull_request:
     branches: [main]
