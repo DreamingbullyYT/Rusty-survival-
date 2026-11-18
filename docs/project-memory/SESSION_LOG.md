@@ -1587,3 +1587,19 @@ Next:
 ### S-2026-11-18-47 verification addendum
 - Core run `44363904945` completed SUCCESS after removal of the unsupported local contract crate and conversion to the closure-based authorization API. Pinned Horizon checker build, native manifest/source/API/host-WASM checks, engine mirror parity, formatting, Core unit tests, source bundle packaging and upload all passed.
 - Overlay run `44363904976` passed API-only prebuilt compilation and Linux `$ORIGIN` RUNPATH setup. The real Horizon native host load test without overlay environment overrides was in progress; archive inspection and upload pending.
+
+## S-2026-11-18-50 — Add activated entrypoint source access
+Date: 2026-11-18
+Commits: `b085c47eeb` (initial method), `be02358531` (state-only lifecycle check), `ee903d7c76` (corrected manager gate)
+Goal: Create the smallest safe source handoff from validated `.dmod` packages to a future trusted interpreter.
+Changes:
+- Added `ModLifecycle::ensure_enabled`, separating activation state from named capability grants.
+- Added `ModManager::entrypoint_source`, returning a borrowed slice of the manifest entrypoint only after explicit activation.
+- Avoided inventing a `scripts.execute` capability; privileged host operations continue to require named explicit grants.
+- Added a regression test for denial before enable and success after enable.
+Verification:
+- Package workflow after commit `ee903d7` pending.
+Limitations:
+- No script parser/interpreter, sandbox, instruction/memory budget, scheduling or execution has been added.
+Next:
+- Verify package CI. Then design the runtime execution contract and sandbox limits before selecting an interpreter.
