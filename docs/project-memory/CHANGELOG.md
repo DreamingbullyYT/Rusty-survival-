@@ -1,3 +1,9 @@
+## 2026-11-18 — Verify Horizon API-only prebuilt route and harden CI
+- Traced pinned Horizon launcher Route::Api through prebuilt.rs and api_route.rs: API-only mods are built as separate dylibs against prebuilt SDK runtime/API slices; the existing client executable is returned unchanged. The host loads adjacent libraries from native-mods.json after SHA-256 and game/Rust identity checks.
+- Confirmed the current Hooks-only DreamMod Core shape qualifies for Route::Api; CI production of the versioned native build and clean startup remain unverified.
+- Fixed the Rhai prototype's feature-gated optimizer import and added rustfmt/clippy components to its workflow. The corrected run is pending.
+- Fixed PMCS append-only validation for appending to the historical session log that lacked a final newline; regression suite run 44277791784 passed.
+
 ## 2026-11-18 — Add interpreted runtime candidate prototype
 - Added mods/dreammod-runtime-prototype using Rhai 1.27.0 as an evaluation-only AST interpreter candidate. The optional Grain bytecode feature and AST optimization are disabled.
 - Added tests for event-style dispatch, coarse batch host queries, script-side batched physics calculation and execution-operation limits.
