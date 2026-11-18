@@ -87,3 +87,8 @@ Use Arc<[PlayerSnapshot]> as PlayerSnapshotBatch backing storage. Cloning a batc
 - Rationale: `.dmod` assets should be usable without extraction, duplicate allocation or filesystem path exposure.
 - Security: require Enabled + `assets.read`, restrict to `assets/`, reuse archive path validation, and return immutable borrowed bytes.
 - Consequence: this is raw package-byte access only; resource decoding, caching, texture registration and per-script budgets remain future host/runtime responsibilities.
+
+## DECISION — gate a mod's own entrypoint by activation, not a synthetic capability (2026-11-18)
+- Decision: provide `ModLifecycle::ensure_enabled` and gate `ModManager::entrypoint_source` on Enabled state.
+- Rationale: a mod's own entrypoint is the code being activated; it should not require an artificial user-grantable `scripts.execute` permission that is absent from the capability allowlist.
+- Privileged host calls remain independently gated by explicit manifest capabilities. Parsing, sandboxing and execution budgets remain future work.
