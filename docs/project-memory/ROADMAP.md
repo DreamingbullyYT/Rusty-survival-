@@ -6,9 +6,10 @@
 - [x] Define the initial DreamMod architecture and HNMod/prebuilt-distribution model.
 
 ## Phase 1 — Horizon integration research
-- [ ] Inspect current Horizon source/docs and identify exact supported HNMod integration entry points.
+- [ ] [x] Audit current Horizon mod API/host, package formats, native route and WASM runtime.
+- [ ] Identify exact native .hmod build and prebuilt library packaging path.
 - [ ] Pin Horizon revision, horizon-mixins revision, hooks/API revision and Rust toolchain.
-- [ ] Build a minimal HNMod that embeds a no-op DreamMod Core bootstrap.
+- [ ] Build a minimal native .hmod that embeds a no-op DreamMod Core bootstrap.
 - [ ] Produce and verify a prebuilt Horizon package containing the bootstrap.
 - [ ] Confirm ordinary installation does not invoke native mod compilation on the player device.
 
