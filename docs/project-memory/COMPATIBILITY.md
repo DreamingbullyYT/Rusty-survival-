@@ -26,3 +26,9 @@ DreamMod Core is integrated at build time. A Core native integration update requ
 
 ## Historical compatibility records
 The former Minecraft Java Edition 26.3, protocol 777, data version 5023 and Android-first standalone-engine records describe a superseded prototype direction. They are not DreamMod compatibility claims.
+
+
+## Performance/load compatibility notes (2026-11-18)
+- The snapshot optimization does not alter the public DTO, field values, ordering, batch maximum or Horizon API signatures.
+- The 60-second load deadline is a package-inspection policy, not a change to Horizon's own .hmod loader. The future DreamMod loader must propagate one monotonic deadline across all .dmod load stages.
+- No script language/runtime compatibility change and no measured performance claim is made.
