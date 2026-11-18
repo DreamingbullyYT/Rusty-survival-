@@ -182,3 +182,10 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 - [x] Package/ModManager: run `44363502581` passed formatting, 41 tests (including manager tests), and Clippy.
 - [x] DreamMod Core/shared authorization: run `44362777239` passed pinned Horizon SDK/tooling validation, source/API/host-WASM checks, mirror parity, formatting, tests and source packaging.
 - [ ] Prebuilt overlay host-load verification: run `44362776804` remains in API-only compilation; require the real-host load test without overlay environment overrides.
+
+## Authorization callback integration follow-up — 2026-11-18
+1. [x] Remove the local Cargo contract dependency rejected by Horizon prebuilt source staging.
+2. [x] Make Core player collection accept a one-shot authorization closure checked before host access.
+3. [x] Expose `ModManager::require_capability` for per-mod lifecycle+grant checks and add a callback-oriented regression test.
+4. [ ] Verify package, Core and overlay Actions after the callback refactor.
+5. [ ] Implement the runtime coordinator and invoke Core collection from a real supported Horizon host hook/context.
