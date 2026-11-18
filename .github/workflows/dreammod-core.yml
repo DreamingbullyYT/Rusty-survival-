@@ -40,10 +40,10 @@ jobs:
         run: cargo install --path .ci/horizon/crates/cargo-horizon-mod --locked --root "$RUNNER_TEMP/horizon-tools"
       - name: Check native mod manifest, source, API use and host/WASM compilation
         working-directory: mods/dreammod-core
-        run: "$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod check
+        run: '"$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod check'
       - name: Package the native Core source bundle
         working-directory: mods/dreammod-core
-        run: "$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod build
+        run: '"$RUNNER_TEMP/horizon-tools/bin/cargo-horizon-mod" horizon-mod build'
       - name: Upload validated native source bundle
         uses: actions/upload-artifact@v4
         with:
