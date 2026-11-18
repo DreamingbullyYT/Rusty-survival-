@@ -38,6 +38,10 @@ jobs:
           launcher="$(find extracted -type f -name horizon-launcher -perm -111 -print -quit)"
           test -n "$launcher"
           echo "HORIZON_LAUNCHER=$RUNNER_TEMP/horizon-launcher/$launcher" >> "$GITHUB_ENV"
+      - name: Install headless desktop runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-x11-0 libxcb-xkb1 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-sync1 libxcb-xfixes0 libxcb-xinerama0 libxcb-xinput0
       - name: Isolate Horizon Launcher data
         shell: bash
         run: |
@@ -49,7 +53,15 @@ jobs:
             echo "XDG_CONFIG_HOME=$home/.config"
             echo "XDG_DATA_HOME=$home/.local/share"
             echo "XDG_CACHE_HOME=$home/.cache"
+            echo "QT_QPA_PLATFORM=offscreen"
           } >> "$GITHUB_ENV"
+      - name: Check launcher shared libraries
+        run: |
+          ldd "$HORIZON_LAUNCHER"
+          if ldd "$HORIZON_LAUNCHER" | grep -q "not found"; then
+            echo "Horizon Launcher has unresolved shared libraries" >&2
+            exit 1
+          fi
       - name: Install the pinned Nightly base
         run: '"$HORIZON_LAUNCHER" install nightly'
       - name: Create a clean CI instance
