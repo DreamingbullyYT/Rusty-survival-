@@ -8,7 +8,7 @@ Current Core baseline: Horizon Nightly 2026-11-18 `0b14f8acfd97fa2c750e42795249d
 
 ## DM-002 — .hmod build-time integration and prebuilt distribution
 Status: INVESTIGATING
-The current Core manifest is pinned to the published Nightly and is API-only (`capabilities = []`, no native source patches or internals). A new workflow uses pinned `cargo-horizon-mod` to validate, compile and package the source `.hmod`; run 44284751206 failed at manifest validation because the initial manifest omitted the required `registries` capability. Fixed in 9a5f9b5; the workflow now uses a cached workspace build and must be rerun. The official `horizon-launcher native-build` command can build this mod against the installed Nightly SDK in trusted CI. Remaining work: run that pipeline, inspect the native build folder/inventory and prove clean startup without player-side compilation.
+The current Core manifest is pinned to the published Nightly and uses the required `capabilities = ["registries"]` field from Horizon's official native template; it has no source mixins or internals. The first official `cargo-horizon-mod check` run built the tool successfully but rejected the initial empty capabilities list; fixed in 9a5f9b5. The cached-tool workflow is rerunning (44285877944). A separate official-launcher prebuilt workflow was added; first run failed because the runner lacked `libxkbcommon-x11.so.0`, and headless GUI dependencies were added in 6bd45dd. Fresh prebuilt run is pending. Remaining work: pass source validation, run native-build, inspect the build folder/inventory and prove clean startup without player-side compilation.
 
 ## DM-003 — Interpreted language selection
 Status: INVESTIGATING
@@ -48,9 +48,9 @@ Required action: build a minimal native .hmod, produce the prebuilt library/inve
 
 ## DM-011 — Compile the first DreamMod Core bootstrap against pinned Horizon
 Status: VERIFIED
-The minimal native `.hmod` source package under `mods/dreammod-core` passed `cargo check` against the exact Horizon source commit pinned in `horizon-mod.toml`. GitHub Actions run `44249522292`, job `134616491803`, step `Compile against Horizon mod API`: success. This verifies source/API compilation only; it does not build a distributable native library or launch the game.
+Historical direct API `cargo check` passed in run `44249522292` against an earlier Horizon source pin. The current native package has since moved to the published Nightly and is being checked with the official `cargo-horizon-mod` tool; that check has not passed yet. This issue is therefore INVESTIGATING, not a current verified build.
 
 
 ## DM-012 — Validate the Rhai interpreted-source candidate
 Status: INVESTIGATING
-Added `mods/dreammod-runtime-prototype` and a dedicated workflow. The prototype uses Rhai 1.27.0 with `no_optimize` and without the optional Grain bytecode feature; it exercises event-style calls, batch host APIs, a script-side batch physics algorithm and operation limits. Await CI results, compare Starlark, inspect memory/CPU behavior and test ARM64 before any language decision.
+Added `mods/dreammod-runtime-prototype` and a dedicated workflow. Rhai 1.27.0 AST evaluation uses `no_optimize` and excludes Grain bytecode. Formatting, four behavior tests, Clippy and resource-limit tests passed (runs 44284795812 and 44285379104). The comparable 10k-item benchmark was 462.94× slower than native on x86_64 CI. Starlark was rejected because it compiles AST to bytecode; Sprite remains research-only due to its tiny feature set. Keep Rhai provisional, design coarse provider APIs and benchmark ARM64 before any language decision.
