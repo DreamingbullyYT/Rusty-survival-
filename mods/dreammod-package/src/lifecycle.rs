@@ -1,7 +1,10 @@
 //! Pure, default-disabled lifecycle policy for validated DreamMod packages.
 //! This module does not execute scripts or install files.
 
-use crate::{CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage};
+use crate::{
+    bridge::{PLAYER_READ_CAPABILITY, PlayerSnapshot, SnapshotError},
+    CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LifecycleState {
@@ -22,6 +25,7 @@ pub enum LifecycleError {
     NotEnabled,
     CapabilityDenied(String),
     FailureReasonTooLong,
+    InvalidSnapshot(SnapshotError),
 }
 
 /// Tracks one package's explicit approval and activation state.
@@ -138,6 +142,16 @@ impl<'a> HostAdapter<'a> {
         self.lifecycle.require(capability)?;
         Ok(operation())
     }
+
+    /// Read one owned player snapshot. The Horizon callback runs only after
+    /// the explicit entities.read grant has been checked.
+    pub fn read_player_snapshot(
+        &self,
+        operation: impl FnOnce() -> Result<PlayerSnapshot, SnapshotError>,
+    ) -> Result<PlayerSnapshot, LifecycleError> {
+        self.lifecycle.require(PLAYER_READ_CAPABILITY)?;
+        operation().map_err(LifecycleError::InvalidSnapshot)
+    }
 }
 
 #[cfg(test)]
@@ -205,6 +219,39 @@ mod tests {
             .invoke("world.read", || calls.set(calls.get() + 1));
         assert_eq!(denied, Err(LifecycleError::NotEnabled));
         assert_eq!(calls.get(), 1);
+    }
+
+
+    #[test]
+    fn player_snapshot_adapter_checks_permission_before_reading() {
+        use std::cell::Cell;
+
+        let mut package = package();
+        package.manifest.capabilities = vec![PLAYER_READ_CAPABILITY.into()];
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+        let calls = Cell::new(0);
+        let denied = HostAdapter::new(&lifecycle).read_player_snapshot(|| {
+            calls.set(calls.get() + 1);
+            PlayerSnapshot::new(7, "Dreamer_7".into(), "minecraft:overworld".into(), [1.0, 64.0, 2.0])
+        });
+        assert_eq!(denied, Err(LifecycleError::NotEnabled));
+        assert_eq!(calls.get(), 0);
+
+        lifecycle.approve(&[PLAYER_READ_CAPABILITY.into()]).unwrap();
+        lifecycle.enable().unwrap();
+        let snapshot = HostAdapter::new(&lifecycle)
+            .read_player_snapshot(|| {
+                calls.set(calls.get() + 1);
+                PlayerSnapshot::new(7, "Dreamer_7".into(), "minecraft:overworld".into(), [1.0, 64.0, 2.0])
+            })
+            .unwrap();
+        assert_eq!(snapshot.name(), "Dreamer_7");
+        assert_eq!(calls.get(), 1);
+
+        let invalid = HostAdapter::new(&lifecycle).read_player_snapshot(|| {
+            PlayerSnapshot::new(7, "bad name".into(), "minecraft:overworld".into(), [1.0, 64.0, 2.0])
+        });
+        assert_eq!(invalid, Err(LifecycleError::InvalidSnapshot(SnapshotError::InvalidPlayerName)));
     }
 
     #[test]
