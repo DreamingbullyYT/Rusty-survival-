@@ -6,6 +6,11 @@ use rhai::{AST, Array, Engine, EvalAltResult, ParseError, Scope};
 pub struct RuntimeLimits {
     pub max_operations: u64,
     pub max_call_levels: usize,
+    pub max_array_items: usize,
+    pub max_map_entries: usize,
+    pub max_string_bytes: usize,
+    pub max_variables: usize,
+    pub max_functions: usize,
 }
 
 impl Default for RuntimeLimits {
@@ -13,6 +18,11 @@ impl Default for RuntimeLimits {
         Self {
             max_operations: 250_000,
             max_call_levels: 32,
+            max_array_items: 100_000,
+            max_map_entries: 16_384,
+            max_string_bytes: 1_048_576,
+            max_variables: 1_024,
+            max_functions: 256,
         }
     }
 }
@@ -33,6 +43,11 @@ impl RhaiPrototype {
         let mut engine = Engine::new();
         engine.set_max_operations(limits.max_operations);
         engine.set_max_call_levels(limits.max_call_levels);
+        engine.set_max_array_size(limits.max_array_items);
+        engine.set_max_map_size(limits.max_map_entries);
+        engine.set_max_string_size(limits.max_string_bytes);
+        engine.set_max_variables(limits.max_variables);
+        engine.set_max_functions(limits.max_functions);
 
         // No filesystem, network, process or native-library functions are registered.
         // Production DreamMod will expose only capability-gated host functions.
@@ -90,6 +105,11 @@ pub fn engine_with_test_world_api() -> Engine {
     let mut engine = Engine::new();
     engine.set_max_operations(250_000);
     engine.set_max_call_levels(32);
+    engine.set_max_array_size(100_000);
+    engine.set_max_map_size(16_384);
+    engine.set_max_string_size(1_048_576);
+    engine.set_max_variables(1_024);
+    engine.set_max_functions(256);
     engine.register_fn("world_health_batch", || {
         vec![10_i64, 20, 30, 40]
             .into_iter()
@@ -156,12 +176,27 @@ mod tests {
     }
 
     #[test]
+    fn array_budget_stops_unbounded_script_allocation() {
+        let program = RhaiPrototype::parse_with_limits(
+            "let values = []; for i in 0..32 { values.push(i); }",
+            RuntimeLimits {
+                max_array_items: 8,
+                ..RuntimeLimits::default()
+            },
+        )
+        .unwrap();
+
+        assert!(program.run().is_err());
+    }
+
+    #[test]
     fn execution_budget_stops_an_infinite_loop() {
         let program = RhaiPrototype::parse_with_limits(
             "loop { }",
             RuntimeLimits {
                 max_operations: 128,
                 max_call_levels: 8,
+                ..RuntimeLimits::default()
             },
         )
         .unwrap();
