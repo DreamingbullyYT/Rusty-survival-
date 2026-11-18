@@ -181,3 +181,11 @@
 - Updated active project memory, compatibility policy, roadmap and README. The former Minelib/standalone Minecraft Java 26.3 engine direction is marked superseded/historical, not deleted.
 - No HNMod, interpreter, loader, API, .dmod package or runtime build has been implemented in this documentation-only change.
 - Verification: repository files and PMCS validator requirements inspected; GitHub Actions validation pending.
+
+
+## 2026-11-18 — Audit Horizon's existing mod platform
+- Inspected Horizon main commit 1c45cf95d8431a7b49d94df007f7e75a890370c9 and horizon-mixins commit e59da9094f0c2fdda6c627fe9eff22dec6a906f0.
+- Found an existing typed mod API/host with Hooks, Hosts, Parts, attachments, capabilities, API injection points and native-only mixins/bridges/loop slots; DreamMod should reuse and extend it.
+- Confirmed the current WASM runtime has a child-process compilation path and Wasmtime module compilation/cache, so it does not meet the strict interpreted-source/no-player-compilation requirement.
+- Confirmed native host code loads prebuilt adjacent dynamic libraries and validates SHA-256/build identity; a CI-built DreamMod Core library may be distributable without player-side compilation, but end-to-end proof remains pending.
+- Added docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md and updated DreamMod architecture/PMCS. No Horizon code was changed and no build was run.
