@@ -8,7 +8,7 @@ Current Core baseline: Horizon Nightly 2026-11-18 `0b14f8acfd97fa2c750e42795249d
 
 ## DM-002 — .hmod build-time integration and prebuilt distribution
 Status: INVESTIGATING
-The current Core manifest is pinned to the published Nightly and uses the required `capabilities = ["registries"]` field from Horizon's official native template; it has no source mixins or internals. The first official `cargo-horizon-mod check` run built the tool successfully but rejected the initial empty capabilities list; fixed in 9a5f9b5. The cached-tool workflow is rerunning (44285877944). A separate official-launcher prebuilt workflow was added; first run failed because the runner lacked `libxkbcommon-x11.so.0`, and headless GUI dependencies were added in 6bd45dd. Fresh prebuilt run is pending. Remaining work: pass source validation, run native-build, inspect the build folder/inventory and prove clean startup without player-side compilation.
+The current Core manifest is pinned to the published Nightly and uses the required `capabilities = ["registries"]` field from Horizon's official native template; it has no source mixins or internals. The official `cargo-horizon-mod check` workflow passed in run 44285877944 and uploaded a source `.hmod` artifact. A separate official-launcher prebuilt workflow was added; first run failed because the runner lacked `libxkbcommon-x11.so.0`, and headless GUI dependencies were added in 6bd45dd. Fresh prebuilt run is pending. Remaining work: pass source validation, run native-build, inspect the build folder/inventory and prove clean startup without player-side compilation.
 
 ## DM-003 — Interpreted language selection
 Status: INVESTIGATING
