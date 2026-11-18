@@ -1,6 +1,6 @@
 # Horizon host bridge contract
 
-Status: API SURFACE INSPECTED AT THE PINNED REVISION; DREAMMOD BRIDGE NOT IMPLEMENTED.
+Status: PINNED SDK COLLECTOR IMPLEMENTED AND CORE CHECK VERIFIED; PER-MOD LIFECYCLE WIRING AND SCRIPT EXPOSURE REMAIN OPEN.
 
 Pinned upstream source: `horizon-rust/horizon@0b14f8acfd97fa2c750e42795249dcc981178ca4`.
 The SDK is fetched by the pinned `cargo-horizon-mod` workflow and is intentionally not committed under
@@ -87,3 +87,30 @@ then test it through Horizon's hook/host test facilities before exposing it to s
 ### Bounded batch reads
 
 `PlayerSnapshotBatch` holds at most 256 unique player snapshots. Duplicate UUIDs are rejected, preserving one record per player identity. `HostAdapter::read_player_snapshots()` checks `entities.read` once before one bounded host callback. A Core collector should use Horizon's `host.players().server_players()` in connection order, copy each player's UUID, name, dimension and position while the host borrow is valid, and return the owned batch. It must not retain `PlayerRef` or `EntityRef` values or call the interpreter once per player. The 256 cap is a per-call work/memory bound, not a claim that every server can have at most 256 players; larger sets need explicit paging.
+
+
+## Core collector and authorization seam (2026-11-18)
+
+The Core module `mods/dreammod-core/src/player_snapshot.rs` now implements the
+bounded collector against the pinned SDK:
+
+- Reads `ServerHost::players().server_players()` in Horizon connection order.
+- Rejects more than 256 players before per-player field reads.
+- Copies UUID, name, dimension identifier and entity position into owned values.
+- Rejects unavailable/stale fields, invalid names/identifiers/coordinates and duplicate UUIDs.
+- Does not retain Horizon handles in the returned batch.
+
+The collector's public entry point now requires a `PlayerReadAuthorization`
+implementation. It checks `entities.read` before touching the host and runs one
+bounded collection operation after authorization. Regression tests cover denied
+callback non-invocation and exactly-one invocation when authorized.
+
+Core workflow run 44310547586 passed the pinned `cargo-horizon-mod` build,
+native mod manifest/source/API validation, host/WASM compilation and source
+bundle packaging on commit `b2362c6a1347390f4f330655fb0823e8563d94d8`.
+
+Important limitation: `PlayerReadAuthorization` is an interface seam, not yet
+an implementation backed by a particular `ModLifecycle` instance. The runtime
+must provide that adapter and call this collector per mod; do not treat the
+current seam as end-to-end permission enforcement. No script binding, interpreter,
+scheduler or sandbox exists yet.
