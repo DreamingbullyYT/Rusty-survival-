@@ -97,5 +97,5 @@ Added plan_capability_grants(manifest, approved) as a pure deterministic planner
 
 
 ## DM-021 — Host capability gate primitive
-Status: IMPLEMENTED — CI PENDING
-Added CapabilityGate::from_approvals(), allows() and require(). It can only be constructed through a validated manifest and explicit approvals; its granted set is private, and unknown/unapproved capabilities are denied. This is not yet connected to Horizon's host API or the runtime, so no end-to-end enforcement claim is made. Regression tests and package CI are pending.
+Status: VERIFIED
+Added CapabilityGate::from_approvals(), allows() and require(). It can only be constructed through a validated manifest and explicit approvals; its granted set is private, and unknown/unapproved capabilities are denied. This is not yet connected to Horizon's host API or the runtime, so no end-to-end enforcement claim is made. Actions run 44300879584 passed formatting, all 22 tests and Clippy on commit 5085971c93c3dbc2a0089e136e5f9a7aecc21a49.
