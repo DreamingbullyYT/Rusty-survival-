@@ -72,3 +72,9 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 ### ModManager cascade-order correction (2026-11-18)
 - Corrected failure propagation to walk the dependency-first topological order, so a failed root is propagated to its intermediate dependent before that dependent's own dependents are visited. Reverse order was incorrect for a multi-level chain.
 - The transitive cascade regression test is the required guard. The first package run `44363310681` passed but did not include manager tests because the manager module export was committed afterward; the export-triggered run must be inspected, and the corrected run must show the manager tests executing.
+
+### Verification update — ModManager and Core authorization (2026-11-18)
+- Package run `44363502581` passed: rustfmt, 41 unit tests (five manager tests included), and Clippy `-D warnings`. The transitive failure cascade test passed after the topological-order correction.
+- Core run `44362777239` passed all pinned Horizon tooling/API/host-WASM checks, HNMod engine source parity, formatting, Core tests, source bundle packaging and upload.
+- Overlay run `44362776804` remains in progress at API-only compilation; no claim is made about real launcher loading from this run.
+- PMCS run `44363588460` is pending.
