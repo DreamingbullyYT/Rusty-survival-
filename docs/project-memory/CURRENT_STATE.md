@@ -317,3 +317,8 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 ### Core and overlay update
 - Core run `44363904945`: PASS — pinned Horizon tooling, native API/host-WASM checks, engine mirror parity, formatting, Core unit tests, source package and artifact upload all passed after the closure-based authorization change.
 - Overlay run `44363904976`: API-only prebuilt compile and `$ORIGIN` RUNPATH setup passed; real Horizon native host loading without overlay env is in progress. Archive inspection/upload pending.
+
+## Entry-point source bridge — 2026-11-18
+- `ModLifecycle::ensure_enabled` checks activation state without inventing a `scripts.execute` capability.
+- `ModManager::entrypoint_source` returns a borrowed slice of the validated entrypoint only when the mod is Enabled. Host API permissions remain separately capability-gated.
+- Regression test covers denied before enable and allowed after enable. Package workflow after `ee903d7` pending.
