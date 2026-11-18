@@ -574,3 +574,8 @@
 - Added host-independent transactional resource ID ownership bookkeeping with strict IDs, duplicate/conflict rejection, atomic commit, drop rollback, owner cleanup, and per-mod/global quotas.
 - Exported the new module from the package crate. No external Horizon resource registration is claimed.
 - Package workflow run `44385572845` pending at the time of this entry; PMCS freshness failure on the preceding commit identified the missing memory updates, now appended to the required documents.
+
+
+### Resource registry lint cleanup — 2026-11-18
+- Addressed strict Clippy findings: use `saturating_add` for quota arithmetic and remove unused `mut` from rollback test setup.
+- Behavior unchanged; follow-up package CI pending.
