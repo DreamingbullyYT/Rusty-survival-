@@ -1,0 +1,8 @@
+[package]
+name = "dreammod-contract"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "Dependency-light shared authorization contracts for DreamMod"
+
+[workspace]
