@@ -24,7 +24,7 @@ mod dreammod_api_route_ci {
         let build_id = env::var("DREAMMOD_HORIZON_BUILD").expect("DREAMMOD_HORIZON_BUILD");
 
         // Use Horizon's own signed SDK index and slice unpacker. No Minecraft assets or account
-        // are involved: Route::Api needs only the signed runtime and API slices.
+        // are involved: prebuilt::Route::Api needs only the signed runtime and API slices.
         let base = sdk_cache::Base::from_env();
         let keys = horizon_release_sign::sdk_keys_for("horizon-rust/horizon");
         let sdk = sdk_cache::index(&base, &build_id, &keys).expect("verify pinned SDK");
@@ -35,7 +35,7 @@ mod dreammod_api_route_ci {
             &_lease,
             &sdk,
             &base,
-            Route::Api,
+            prebuilt::Route::Api,
             Target::Client,
             &|_| {},
         )
@@ -80,14 +80,14 @@ mod dreammod_api_route_ci {
             &package,
             &builds,
             &mod_dir,
-            Route::Api,
+            prebuilt::Route::Api,
             &projects,
             &declared,
             &resolution,
             None,
             &|_, _, _| {},
         )
-        .expect("compile DreamMod through Horizon Route::Api");
+        .expect("compile DreamMod through Horizon prebuilt::Route::Api");
 
         fs::copy(&executable, output.join(backend::CLIENT)).expect("copy prebuilt client");
         for library in &installed {
