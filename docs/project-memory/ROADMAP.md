@@ -165,3 +165,12 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. [ ] Confirm package workflow `44362952060` passes.
 4. [ ] Confirm Core workflow `44362777239` passes pinned SDK check, formatting and tests.
 5. [ ] Confirm overlay workflow `44362776804` passes native host loading without overlay environment overrides.
+
+## ModManager milestone — 2026-11-18
+1. [x] Add deterministic manager owning validated packages and per-mod lifecycle state.
+2. [x] Require dependencies to be Enabled before enabling dependents.
+3. [x] Prevent disabling a dependency while a direct dependent remains Enabled.
+4. [x] Cascade failures to transitive dependents in reverse dependency order.
+5. [ ] Verify package workflow `44363310681` and PMCS `44363323071`.
+6. [ ] Design transactional host registration/unregistration with rollback and resource quotas.
+7. [ ] Choose and embed the interpreted language/runtime only after sandbox and execution-budget evaluation.
