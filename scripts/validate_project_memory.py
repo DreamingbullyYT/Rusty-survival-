@@ -65,8 +65,16 @@ def validate_session_log(base: str | None, errors: list[str]) -> None:
         errors.append("SESSION_LOG.md contains duplicate session IDs.")
     if base:
         diff = git("diff", "--unified=0", f"{base}...HEAD", "--", str(MEMORY / "SESSION_LOG.md"))
-        removed = [line for line in diff.splitlines() if line.startswith("-") and not line.startswith("---")]
-        if removed:
+        diff_lines = diff.splitlines()
+        removed = [line[1:] for line in diff_lines if line.startswith("-") and not line.startswith("---")]
+        added = [line[1:] for line in diff_lines if line.startswith("+") and not line.startswith("+++")]
+        # Appending to a legacy file without a final newline makes Git represent the
+        # unchanged former last line as delete+add. Treat identical lines as preserved.
+        from collections import Counter
+        removed_counts = Counter(removed)
+        added_counts = Counter(added)
+        changed = any(count > added_counts[line] for line, count in removed_counts.items())
+        if changed:
             errors.append("SESSION_LOG.md is append-only: existing lines were removed or edited.")
 
 
