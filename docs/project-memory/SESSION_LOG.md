@@ -864,3 +864,17 @@ Next:
 - Verify the direct API-route build and host-loader test; fix any Rust type/visibility or dynamic-library issues.
 - Once the overlay passes, inspect the artifact and record its exact hash/build identity.
 - Implement the production .dmod package schema/loader and interpreter abstraction as a separate runtime crate; keep Rhai provisional and preserve the no-player-compilation rule.
+
+## S-2026-11-18-19 — Fix prebuilt workspace invocation and runtime formatting
+Date: 2026-11-18
+Goal: Correct CI failures without weakening verification.
+Changes:
+- The API-only overlay run 44288685182 failed because Horizon's launcher is a separate Cargo workspace; the root workspace has no package named horizon-launcher. Updated the workflow to run cargo test from .ci/horizon/launcher and cache both launcher/root workspaces (commit 7a7cdb0).
+- The runtime prototype workflow 44289702282 caught rustfmt differences in the newly added provider batch validation. Applied rustfmt-equivalent line wrapping in commit 99be124.
+Verification:
+- PMCS validator regression tests passed in run 44289964314, but base-diff validation failed because the code-only formatting commit 99be124 was not accompanied by fresh memory docs relative to that run's base. This session entry and required memory files synchronize the record.
+- New prebuilt overlay run 44289897914 is in progress.
+- New runtime prototype run 44289964423 is in progress.
+Next:
+- Inspect run 44289897914 and fix any remaining compiler/test harness errors.
+- Inspect run 44289964423 and ensure formatting, tests and Clippy pass.
