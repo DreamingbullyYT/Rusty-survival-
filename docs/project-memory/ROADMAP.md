@@ -44,7 +44,7 @@
 - [x] Verify the standalone package contract workflow: formatting, 19 unit tests and Clippy passed on commit 4e983c0 (Actions run 44299317538).
 - [x] Verify bounded in-memory retention of validated script/asset bytes; Actions run 44300015439 passed formatting, 19 tests and Clippy.
 - [x] Add pure default-deny capability grant planning with explicit approval input (Actions run 44300324687 passed 21 tests and Clippy).
-- [x] Add a private-state CapabilityGate guard helper; wiring it into actual Horizon host API calls remains open (CI pending).
+- [x] Add a private-state CapabilityGate guard helper; Actions run 44300879584 passed 22 tests and Clippy. Wiring it into actual Horizon host API calls remains open.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
 
