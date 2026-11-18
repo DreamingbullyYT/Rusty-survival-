@@ -183,7 +183,7 @@ mod tests {
 
     #[test]
     fn dropping_uncommitted_transaction_rolls_back_everything() {
-        let mut registry = ResourceRegistry::new();
+        let registry = ResourceRegistry::new();
         {
             let mut tx = registry.begin("example.mod").unwrap();
             tx.stage("example:block/a").unwrap();
