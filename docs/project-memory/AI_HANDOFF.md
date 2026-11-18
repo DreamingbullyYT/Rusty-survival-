@@ -135,3 +135,6 @@ The first package run `44363310681` predates `pub mod manager` and therefore did
 
 ## Authorization bridge correction — callback boundary (2026-11-18)
 The local `dreammod-contract` crate was removed after overlay run `44362776804` proved Horizon's prebuilt source staging does not carry arbitrary Cargo path dependencies (`unresolved import dreammod_contract`). Core's `with_player_read_authorization` and `collect_online_players` now accept a one-shot authorization closure. Package `ModManager::require_capability(mod_id, capability)` performs the per-mod lifecycle/grant check and can be passed as that closure. This is not yet called from a real runtime hook; a coordinator must own ModManager and invoke Core at a supported Horizon host context. Verify post-fix package/Core/overlay workflows.
+
+### Latest callback hardening
+`ModManager::require_capability` is now the package-side callback for Core's closure-based player authorization. A new test covers grant+activation states. Failure propagation also handles an intermediate dependent that was already Failed without trying to fail it twice, while cascading to its descendants. Commit `4103668` adds this final regression; verify its package workflow. Core run `44363904945` and overlay `44363904976` are still in progress.
