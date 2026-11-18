@@ -75,3 +75,11 @@
 
 ## Exit criteria before engine implementation
 This heading is retained for PMCS compatibility; the former standalone engine exit criteria are superseded. Active implementation may begin after Phase 1 integration points and the runtime prototype plan are evidence-backed.
+
+
+## Next — performance and bounded loading (2026-11-18)
+1. Verify package CI for the new 60-second deadline and contiguous UUID validation.
+2. Verify Core CI after installing rustfmt; confirm cargo test actually executes.
+3. Add realistic benchmark fixtures for snapshot batch validation and host-call batching; later measure ARM64 before making FPS claims.
+4. When the runtime loader exists, create one deadline at load start and pass it through dependency resolution, asset/script parsing and registration. Poll cooperatively and fail the mod closed on expiry; do not block the game thread.
+5. Only then add immutable per-dispatch snapshot reuse with explicit invalidation/thread rules.
