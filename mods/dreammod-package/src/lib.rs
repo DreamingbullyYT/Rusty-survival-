@@ -5,6 +5,7 @@ use semver::Version;
 use serde::Deserialize;
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Cursor, Read, Seek};
+use std::time::{Duration, Instant};
 use zip::{CompressionMethod, ZipArchive};
 
 pub mod bridge;
@@ -14,6 +15,8 @@ pub const MANIFEST_SCHEMA_VERSION: u32 = 1;
 pub const MAX_MANIFEST_BYTES: usize = 64 * 1024;
 pub const MAX_DEPENDENCIES: usize = 128;
 pub const MAX_CAPABILITIES: usize = 64;
+/// Cooperative upper bound for validating one .dmod package.
+pub const MOD_LOAD_TIMEOUT: Duration = Duration::from_secs(60);
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
@@ -293,6 +296,7 @@ pub enum ArchiveError {
     MultipleManifests,
     MissingEntrypoint(String),
     InvalidManifestEntrySize,
+    LoadTimeout,
 }
 
 /// A regular package file retained in bounded memory after size and CRC validation.
@@ -317,6 +321,19 @@ pub struct ValidatedPackage {
 /// Only Stored and Deflate entries are accepted. Every regular file is streamed
 /// to EOF, CRC-checked, and retained in memory; bytes are never written to disk.
 pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
+    inspect_dmod_with_deadline(input, Instant::now() + MOD_LOAD_TIMEOUT)
+}
+
+/// Inspect a package using a caller-owned monotonic deadline.
+///
+/// A loader should create one deadline for the complete load transaction and pass
+/// it through package inspection and every later parse/registration stage. This
+/// function cooperatively checks it between archive entries and decompression chunks.
+pub fn inspect_dmod_with_deadline(
+    input: &[u8],
+    deadline: Instant,
+) -> Result<ValidatedPackage, ArchiveError> {
+    ensure_before_deadline(deadline)?;
     if input.len() > MAX_ARCHIVE_INPUT_BYTES {
         return Err(ArchiveError::InputTooLarge);
     }
@@ -332,6 +349,7 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
 
     let mut entries = Vec::with_capacity(archive.len());
     for index in 0..archive.len() {
+        ensure_before_deadline(deadline)?;
         let file = archive
             .by_index(index)
             .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
@@ -369,8 +387,12 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
         .iter()
         .position(|entry| entry.path == "manifest.json")
         .ok_or(ArchiveError::MissingManifest)?;
-    let manifest_bytes =
-        read_archive_entry(&mut archive, manifest_index, &entries[manifest_index])?;
+    let manifest_bytes = read_archive_entry(
+        &mut archive,
+        manifest_index,
+        &entries[manifest_index],
+        deadline,
+    )?;
     let manifest = parse_manifest(&manifest_bytes)
         .map_err(|error| ArchiveError::InvalidManifest(format!("{error:?}")))?;
     drop(manifest_bytes);
@@ -378,8 +400,9 @@ pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
 
     let mut files = Vec::new();
     for (index, entry) in entries.iter().enumerate() {
+        ensure_before_deadline(deadline)?;
         if entry.kind != ArchiveEntryKind::Directory && entry.path != "manifest.json" {
-            let contents = read_archive_entry(&mut archive, index, entry)?;
+            let contents = read_archive_entry(&mut archive, index, entry, deadline)?;
             files.push(PackageFile {
                 path: entry.path.clone(),
                 contents,
@@ -459,11 +482,21 @@ fn validate_archive_preflight(entries: &[ArchiveEntry]) -> Result<(), ArchiveErr
     }
 }
 
+fn ensure_before_deadline(deadline: Instant) -> Result<(), ArchiveError> {
+    if Instant::now() >= deadline {
+        Err(ArchiveError::LoadTimeout)
+    } else {
+        Ok(())
+    }
+}
+
 fn read_archive_entry<R: Read + Seek>(
     archive: &mut ZipArchive<R>,
     index: usize,
     entry: &ArchiveEntry,
+    deadline: Instant,
 ) -> Result<Vec<u8>, ArchiveError> {
+    ensure_before_deadline(deadline)?;
     let mut file = archive
         .by_index(index)
         .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
@@ -472,6 +505,7 @@ fn read_archive_entry<R: Read + Seek>(
     let mut scratch = [0_u8; 8 * 1024];
 
     loop {
+        ensure_before_deadline(deadline)?;
         let read = file
             .read(&mut scratch)
             .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
@@ -1016,6 +1050,21 @@ mod tests {
             inspect_dmod(&bytes),
             Err(ArchiveError::InvalidZip(_))
         ));
+    }
+
+    #[test]
+    fn package_inspection_respects_an_expired_load_deadline() {
+        let bytes = zip_fixture(&[
+            ("manifest.json", VALID.as_bytes()),
+            ("scripts/main.dream", b"ok"),
+        ]);
+        let expired = Instant::now()
+            .checked_sub(Duration::from_secs(1))
+            .expect("one second before now is representable");
+        assert_eq!(
+            inspect_dmod_with_deadline(&bytes, expired),
+            Err(ArchiveError::LoadTimeout)
+        );
     }
 
     #[test]
