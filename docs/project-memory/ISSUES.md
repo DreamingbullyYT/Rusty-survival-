@@ -251,3 +251,9 @@ Package run `44365010182` passed all 44 tests, rustfmt and Clippy, including the
 
 ### DM-031 host-loader test harness follow-up (2026-11-18)
 Found that `DREAMMOD_PREBUILT_DIR` was exported only in the overlay build step, not the separate host-load step. Since GitHub Actions steps have isolated environments, the loader test could not reliably locate the package. Fixed the workflow to export the path in the loader step, emit ELF/RUNPATH diagnostics, and use a 180-second timeout. New overlay run pending; launcher runtime readiness remains unproven.
+
+
+### DM-037 — Transactional resource ownership bookkeeping (2026-11-18)
+Added `ResourceRegistry` / `ResourceTransaction` as a host-independent reservation layer. It validates namespaced IDs, rejects duplicates and cross-mod conflicts atomically, enforces 1,024-per-mod and 16,384-global quotas, and supports deterministic owner cleanup. Dropping a staged transaction performs rollback because no registry mutation occurs before commit.
+
+Limitations: this does not register real Horizon assets, renderer/UI resources, or game resources; it does not yet attach cleanup to `ModManager::disable/fail`. A future adapter must commit reservations before external publication and release them on every disable/failure path. Package CI run `44385572845` was pending during this update.
