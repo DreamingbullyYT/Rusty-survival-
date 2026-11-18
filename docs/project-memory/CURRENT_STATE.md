@@ -152,3 +152,12 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added `HostAdapter::read_player_snapshots()` so one `entities.read` authorization check protects one bounded batch callback, avoiding per-player interpreter/native crossings.
 - Tests cover the batch limit, duplicate identities and callback non-invocation when authorization fails. Batch package Actions run 44309674771 passed formatting, all package tests and Clippy on commit `4397de1a28d536b0ffca448b553478ecae3467fb`.
 - No concrete Horizon host collector or script-visible batch API exists yet.
+
+
+## First concrete Core-side player collector (2026-11-18)
+- Added `mods/dreammod-core/src/player_snapshot.rs` and exported it from Core.
+- The collector calls the pinned Horizon `ServerHost::players().server_players()`, checks the 256-player cap before reading individual players, then copies UUID, name, dimension and entity position into owned DreamMod values.
+- It rejects missing/stale reads, malformed names/dimension identifiers, non-finite/out-of-range coordinates and duplicate UUIDs. The returned batch preserves Horizon connection order.
+- It stores no Horizon handle or borrowed host reference in the result. It is a public Core-side collector function, not yet called by a script runtime.
+- Source commits: `7ecd981babec69a5081aecacd25f7b36629f71ea`, `b2362c6a1347390f4f330655fb0823e8563d94d8`.
+- Verification: pinned SDK Core workflow run 44310547586 is building cargo-horizon-mod; host/WASM check and package steps have not run yet. PMCS run 44310547866 failed because required memory files were not updated in the same change; this entry and companion updates address that failure.
