@@ -195,3 +195,9 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 - [x] Add lifecycle/capability callback regression coverage.
 - [x] Handle already-Failed intermediate dependents during transitive failure propagation.
 - [ ] Verify package run after commit `4103668`; recheck Core `44363904945` and overlay `44363904976`.
+
+### Latest CI snapshot — 2026-11-18
+- [x] ModManager package verification: run `44364198594` passed rustfmt, 42 tests (including all seven manager tests), and Clippy.
+- [x] PMCS validation: run `44364312080` passed.
+- [ ] Callback refactor Core verification: run `44363904945` still building `cargo-horizon-mod`.
+- [ ] Overlay API-only build and native host loading: run `44363904976` still compiling API-only overlay.
