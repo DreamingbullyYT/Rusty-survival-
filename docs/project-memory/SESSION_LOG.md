@@ -1293,3 +1293,25 @@ Limitations:
 - Unit tests do not replace a live ServerHost integration test or prove per-mod runtime wiring.
 Next:
 - Check DreamMod Core Actions and fix any test/build errors reported.
+
+
+## S-2026-11-18-38 — Optimize bounded host snapshots and add package load deadline
+Date: 2026-11-18
+Commits:
+- Core snapshot validation: d650c58a9ee9b08a365cbe4f830a16e8510daaec
+- Package bridge validation: 5e8e58a77515b1f8ec6c5aa0511005c403b44dd5
+- Cooperative 60-second archive deadline: b689551994c45b603fcab8f08c5708973c9f2c3b
+- Core workflow rustfmt installation: e47e8e0f858c9c9d09088db17d23a74584ae420a
+Goal: Reduce avoidable batch-validation allocation overhead and bound package archive inspection without blocking the game thread.
+Changes:
+- Replaced BTreeSet duplicate UUID detection in both Core and package bridge with a contiguous UUID buffer, sort_unstable, and adjacent duplicate detection. The 256-player cap and original snapshot order are unchanged.
+- Added MOD_LOAD_TIMEOUT (60 seconds), inspect_dmod_with_deadline(), cooperative deadline checks between archive entries and decompression chunks, and an expired-deadline regression test. inspect_dmod() starts with the default 60-second deadline.
+- Fixed Core CI setup to install rustfmt after run 44313213891 showed that the pinned SDK/API check passed but formatting stopped the job before unit tests.
+Verification:
+- Pending fresh package and Core Actions runs. No test pass or benchmark speedup is claimed yet.
+- Previous Core run 44313213891: Horizon native source/API/host-WASM check succeeded; formatting failed because rustfmt was missing; Core unit tests were skipped.
+Limitations:
+- The deadline currently covers package archive inspection only. The future loader must propagate the same monotonic deadline through dependency preparation, script parsing and registration, with cooperative cancellation at each stage.
+- No interpreter/scheduler or ARM64 benchmark exists; no FPS improvement is measured.
+Next:
+- Verify both workflows, then add a benchmark for snapshot batch validation and design immutable per-dispatch batch reuse with explicit thread/invalidation rules.
