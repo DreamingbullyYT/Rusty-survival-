@@ -56,3 +56,7 @@ At the end of a work session, update CURRENT_STATE.md, ISSUES.md, ROADMAP.md, CH
 
 ## 2026-11-18 Core player collector update
 The first concrete Core-side collector now exists at `mods/dreammod-core/src/player_snapshot.rs`. It uses `ServerHost::players().server_players()`, then `PlayerRef::uuid/name/dimension` and `EntityRef::position`, and returns only owned bounded DTOs. The list is rejected above 256 before reads. It is not yet called by an interpreter and does not independently enforce .dmod grants; the future runtime must pass through the lifecycle capability gate before calling it. Source commits `7ecd981` and `b2362c6`. Check Actions run 44310547586 before claiming compilation. PMCS run 44310547866 failed due missing memory updates; companion docs are now being added.
+
+
+## 2026-11-18 authorization seam
+Core player collection now takes a `PlayerReadAuthorization` argument. Implementations must check the specific mod's Enabled lifecycle state and `entities.read` grant. The helper runs the collection closure only after this check; unit regressions cover denial and one authorized call. This trait is not yet implemented by a real per-mod lifecycle adapter, so do not claim end-to-end permission enforcement. Source commit `99929e3`; Core workflow run 44312568247 and API-only overlay run 44312568292 are running.
