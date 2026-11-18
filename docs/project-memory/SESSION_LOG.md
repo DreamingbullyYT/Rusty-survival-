@@ -1495,3 +1495,23 @@ Next:
 - Added regression coverage that calls the shared trait directly and verifies default-deny, explicit grant, separate enable, disable and fail-closed behavior.
 - Package/Core/overlay CI is pending. The earlier PMCS run `44362787017` failed because the required memory documents were not updated after later source commits; the memory update is now being appended after the latest code changes.
 - No interpreter, scheduler, actual runtime manager, script binding or end-to-end `.dmod` execution is implemented.
+
+## S-2026-11-18-46 — Add deterministic ModManager
+Date: 2026-11-18
+Commit: `b3e3f76dce` (manager), `e11db6d9e9` (module export)
+Goal: Centralize validated package ownership and per-mod lifecycle/dependency transitions before implementing a script runtime.
+Changes:
+- Added `mods/dreammod-package/src/manager.rs` and exported it from the package crate.
+- Manager construction validates the complete dependency graph and retains deterministic dependency-first load order.
+- Manager owns validated package contents and one `ModLifecycle` per package.
+- Explicit approval remains separate from activation. A mod cannot enable until every declared dependency is Enabled.
+- Disabling a dependency is rejected while a direct dependent remains Enabled.
+- A mod failure cascades fail-closed to transitive dependents in reverse load order.
+- Added tests for dependency order, package retention, enable ordering, disable protection, failure cascade and invalid graphs.
+Verification:
+- Package workflow `44363310681`: in progress at the time of the entry; formatting, tests and Clippy pending.
+- PMCS workflow `44363323071`: pending.
+Limitations:
+- No interpreter, script scheduler, transactional resource registration, runtime quotas or concrete Horizon host integration was added.
+Next:
+- Verify package/PMCS workflows. Then design a registration transaction API (prepare/commit/rollback) and tests before connecting runtime scripts to Core.
