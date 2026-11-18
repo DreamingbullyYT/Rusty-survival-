@@ -150,5 +150,5 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 ## Bounded player batch contract (2026-11-18)
 - Added `PlayerSnapshotBatch` with a hard cap of 256 snapshots and duplicate UUID rejection.
 - Added `HostAdapter::read_player_snapshots()` so one `entities.read` authorization check protects one bounded batch callback, avoiding per-player interpreter/native crossings.
-- Tests cover the batch limit, duplicate identities and callback non-invocation when authorization fails. Latest batch package CI is pending.
+- Tests cover the batch limit, duplicate identities and callback non-invocation when authorization fails. Batch package Actions run 44309674771 passed formatting, all package tests and Clippy on commit `4397de1a28d536b0ffca448b553478ecae3467fb`.
 - No concrete Horizon host collector or script-visible batch API exists yet.
