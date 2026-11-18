@@ -123,3 +123,6 @@ A small crate `mods/dreammod-contract` now defines `PlayerReadAuthorization` and
 
 ## Latest package orchestration increment — ModManager (2026-11-18)
 `mods/dreammod-package/src/manager.rs` now provides `ModManager`, exported by the package crate. It owns validated packages and per-mod lifecycles, validates dependency graphs before construction, preserves deterministic dependency-first order, enforces dependencies enabled before dependents, blocks disabling dependencies with enabled direct dependents, and cascades failures to transitive dependents. Regression tests were added. Verify package Actions `44363310681` and PMCS `44363323071`. This manager is not an interpreter, script scheduler, transactional host-registration system or Horizon runtime adapter.
+
+### ModManager verification caveat
+The first package run `44363310681` predates `pub mod manager` and therefore did not include the manager's tests despite passing the existing 36 tests. A review then caught and fixed transitive failure propagation order: `manager.rs` now walks dependency-first load order. Verify the latest package run after `bb8806d` and confirm the five `manager::tests` execute and pass.
