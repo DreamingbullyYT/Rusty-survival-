@@ -2,7 +2,7 @@
 //! This module does not execute scripts or install files.
 
 use crate::{
-    bridge::{PlayerSnapshot, PlayerSnapshotBatch, SnapshotError},
+    bridge::{PlayerSnapshot, PlayerSnapshotBatch, SnapshotError, PLAYER_READ_CAPABILITY},
     CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage,
 };
 
