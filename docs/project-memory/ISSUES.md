@@ -189,3 +189,12 @@ Overlay run 44341466372 passed the real Horizon native-host loader test after th
 ## DM-032 — Three-axis section coordinate contract
 Status: IMPLEMENTED; CORE RERUN PENDING
 The canonical engine coordinate module and HNMod mirror remain byte-identical in Core/overlay CI. Core run 44341466411 passed pinned Horizon API checks and mirror parity but stopped at rustfmt import wrapping in engine_bridge.rs; fixed in commit 42d9ac762502ad5ef3db9158a9885c99a24ae238. Verify Core rerun 44361109477 before marking the Core tests/package verified.
+
+
+## DM-031 — Native host runtime dependency search path
+Status: INVESTIGATING; CI SELF-CONTAINED RUN PENDING
+The previous overlay run 44341466372 passed only after the test process exported LD_LIBRARY_PATH to the overlay directory. Inspection of the uploaded artifact showed libmod_vocab.so has NEEDED libhorizon_mod_runtime.so but no RUNPATH, while the pinned Horizon Linux launcher starts the client without explicitly setting LD_LIBRARY_PATH. Workflow commit 4d2c910c applies $ORIGIN RUNPATH to bundled ELF shared libraries, updates the native-mods.json SHA-256, and removes the inherited overlay path for the host-loader test. Verify run 44361815335 before changing this status. Full game startup remains a separate gate.
+
+## DM-032 — Three-axis section coordinate contract
+Status: VERIFIED
+DreamMod Core run 44361109477 passed pinned Horizon native/API/host-WASM checks, byte-identical engine/HNMod mirror validation, rustfmt, all 12 Core unit tests and native source bundle packaging/upload. The contract is geometric only; it does not define world height, section storage, palette serialization, block states or parity with Java 26.3.
