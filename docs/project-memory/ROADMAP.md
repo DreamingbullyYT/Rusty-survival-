@@ -45,6 +45,7 @@
 - [x] Verify bounded in-memory retention of validated script/asset bytes; Actions run 44300015439 passed formatting, 19 tests and Clippy.
 - [x] Add pure default-deny capability grant planning with explicit approval input (Actions run 44300324687 passed 21 tests and Clippy).
 - [x] Add a private-state CapabilityGate guard helper; Actions run 44300879584 passed 22 tests and Clippy. Wiring it into actual Horizon host API calls remains open.
+- [x] Add a default-disabled lifecycle policy: validated → awaiting approval → ready → explicitly enabled; disable blocks calls and failure discards grants. Four lifecycle regression tests added; CI pending.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
 
