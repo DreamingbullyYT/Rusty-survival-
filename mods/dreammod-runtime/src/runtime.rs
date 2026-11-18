@@ -146,10 +146,7 @@ pub trait CommandAuthorizer {
 
     /// Return the capability required to register/replace a subsystem provider.
     /// Unknown subsystems must return None.
-    fn required_provider_capability(
-        &self,
-        provider: &ProviderRegistration,
-    ) -> Option<Capability>;
+    fn required_provider_capability(&self, provider: &ProviderRegistration) -> Option<Capability>;
 }
 
 #[derive(Clone, Debug, Default)]
@@ -441,8 +438,8 @@ fn collect_response<A: CommandAuthorizer>(
         ));
     }
 
-    let response: ScriptResponse =
-        serde_json::from_value(value).map_err(|error| format!("invalid script response: {error}"))?;
+    let response: ScriptResponse = serde_json::from_value(value)
+        .map_err(|error| format!("invalid script response: {error}"))?;
     if response.commands.len() > config.max_commands_per_event {
         return Err("script emitted too many commands".to_owned());
     }
@@ -581,10 +578,7 @@ fn resolve_load_order(
                 actual: api_version.clone(),
             });
         }
-        if by_id
-            .insert(package.manifest.id.clone(), package)
-            .is_some()
-        {
+        if by_id.insert(package.manifest.id.clone(), package).is_some() {
             return Err(RuntimeError::DuplicateMod(package.manifest.id.clone()));
         }
     }
@@ -770,10 +764,7 @@ mod tests {
 
     #[test]
     fn dispatches_commands_and_registers_subsystem_provider() {
-        let mut runtime = DreamModRuntime::new(
-            RhaiEngine::default(),
-            RuntimeConfig::default(),
-        );
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
         let mod_package = package(
             "dreammod.example",
             r#"
