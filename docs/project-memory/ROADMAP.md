@@ -83,3 +83,11 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. Add realistic benchmark fixtures for snapshot batch validation and host-call batching; later measure ARM64 before making FPS claims.
 4. When the runtime loader exists, create one deadline at load start and pass it through dependency resolution, asset/script parsing and registration. Poll cooperatively and fail the mod closed on expiry; do not block the game thread.
 5. Only then add immutable per-dispatch snapshot reuse with explicit invalidation/thread rules.
+
+
+## Next optimization steps (2026-11-18)
+1. Verify Core and package CI for the fixed stack-buffer duplicate check.
+2. Benchmark snapshot construction and duplicate validation at representative batch sizes (0, 1, 32, 128, 256).
+3. Add per-dispatch immutable snapshot reuse only after scheduler thread ownership, re-entrancy and invalidation are explicit.
+4. Measure host-call batching on ARM64 before stating any FPS or slowdown target.
+5. Propagate the single 60-second monotonic deadline through every stage once the full .dmod loader exists.
