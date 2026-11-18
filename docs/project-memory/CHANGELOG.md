@@ -439,3 +439,9 @@
 - Added a cooperative 60-second monotonic deadline to .dmod archive inspection, including checks between entries and decompression chunks, plus an expired-deadline regression test.
 - Fixed Core CI toolchain setup to install rustfmt after run 44313213891 exposed a missing component (Horizon check had passed; tests did not run).
 - Verification pending: package and Core Actions must pass before these changes are marked verified. No performance benchmark has been run.
+
+
+## 2026-11-18 — Remove heap allocation from snapshot duplicate checks
+- Core and package bridge now use a fixed 256-entry u128 stack scratch array plus sort_unstable to detect duplicate player UUIDs. The batch cap and output order are unchanged.
+- Core commit b2185e8917e351dfd0408231e855efe47e6b3bfd; package bridge commit f3a55af3a332073db92df24de00e347bc55a3bb8.
+- Core formatting now runs against the Core manifest only, excluding generated SDK sources. CI is pending for the latest changes.
