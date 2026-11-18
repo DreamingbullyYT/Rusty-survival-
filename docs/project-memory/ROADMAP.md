@@ -142,3 +142,11 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. [ ] Verify whether the actual distributed launcher configures a native library search path equivalent to the successful CI host test; do not infer full launch readiness from CI's LD_LIBRARY_PATH.
 4. [ ] Wire the Core collector through a concrete per-mod lifecycle/capability adapter and interpreted runtime; current Hooks remain empty.
 5. [ ] Build production .dmod interpreter/loader/sandbox; none is implemented.
+
+
+## Verification follow-up — 2026-11-18 (Core pass)
+1. [x] Verify Core native/API/host-WASM checks, mirror parity, formatting, unit tests and source packaging (run 44361109477 PASS; 12 tests; artifact 14454406903).
+2. [ ] Verify self-contained Linux overlay dependencies with $ORIGIN RUNPATH and no inherited overlay LD_LIBRARY_PATH (run 44361815335 pending).
+3. [ ] Verify actual launcher/game startup on a matching licensed installation after the native-host test is self-contained.
+4. [ ] Wire Core player collection through a concrete per-mod lifecycle/capability adapter and interpreted runtime; current Hooks remain empty.
+5. [ ] Implement the production .dmod interpreter, loader and sandbox; current prototype is not production integration.
