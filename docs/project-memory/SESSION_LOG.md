@@ -1105,3 +1105,19 @@ Limitations:
 - This is policy/state tracking only. It does not execute scripts, install packages, schedule lifecycle callbacks, or enforce permissions at actual Horizon host API boundaries.
 Next:
 - Verify package CI, then design the host adapter so every privileged Horizon call consults the lifecycle gate.
+
+
+## S-2026-11-18-07 — Guarded host operation boundary
+Date: 2026-11-18
+Commit: 407a7628abbf7f381a6f992272047103924112f9
+Goal: Ensure a host operation callback cannot run unless lifecycle and capability checks succeed.
+Changes:
+- Added generic HostAdapter::invoke(capability, callback), which checks Enabled state and the explicit grant before invoking the callback.
+- Added regression tests proving denied operations never invoke callbacks and authorized operations do.
+- Bounded failure diagnostics to 512 bytes and rejected control characters.
+Verification:
+- Package workflow triggered by code changes; CI status pending inspection.
+Limitations:
+- Generic host boundary only. No concrete Horizon API calls are routed through it yet; no sandbox, scheduler, or script execution.
+Next:
+- Verify CI, inspect the exact pinned Horizon Hooks/API extension points, then implement narrowly scoped adapters that route each supported host operation through this guard.
