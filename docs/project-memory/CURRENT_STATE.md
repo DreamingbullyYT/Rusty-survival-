@@ -145,3 +145,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added `HostAdapter::read_player_snapshot()`. It checks `entities.read` and the enabled lifecycle state before invoking the host-read closure, then returns only a validated DTO.
 - Tests cover valid DTO creation, malformed names/dimensions, NaN/out-of-range positions, denied callback non-invocation and invalid snapshot rejection.
 - This is a typed contract and policy guard only. DreamMod Core does not yet implement the closure with `ServerHost`, and no script receives snapshots yet. Package Actions run 44309091208 passed formatting, all package tests and Clippy on commit `7bae3eaad6128ff815e657541dd3cd1880dca485`.
+
+
+## Bounded player batch contract (2026-11-18)
+- Added `PlayerSnapshotBatch` with a hard cap of 256 snapshots and duplicate UUID rejection.
+- Added `HostAdapter::read_player_snapshots()` so one `entities.read` authorization check protects one bounded batch callback, avoiding per-player interpreter/native crossings.
+- Tests cover the batch limit, duplicate identities and callback non-invocation when authorization fails. Latest batch package CI is pending.
+- No concrete Horizon host collector or script-visible batch API exists yet.
