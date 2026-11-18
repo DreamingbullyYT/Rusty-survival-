@@ -160,9 +160,21 @@ impl SectionAddress {
     /// Reconstructs the absolute block position, returning None on integer overflow.
     #[must_use]
     pub fn to_block_pos(self) -> Option<BlockPos> {
-        let x = self.section.x.checked_mul(CHUNK_WIDTH)?.checked_add(i32::from(self.local_x))?;
-        let y = self.section.y.checked_mul(CHUNK_WIDTH)?.checked_add(i32::from(self.local_y))?;
-        let z = self.section.z.checked_mul(CHUNK_WIDTH)?.checked_add(i32::from(self.local_z))?;
+        let x = self
+            .section
+            .x
+            .checked_mul(CHUNK_WIDTH)?
+            .checked_add(i32::from(self.local_x))?;
+        let y = self
+            .section
+            .y
+            .checked_mul(CHUNK_WIDTH)?
+            .checked_add(i32::from(self.local_y))?;
+        let z = self
+            .section
+            .z
+            .checked_mul(CHUNK_WIDTH)?
+            .checked_add(i32::from(self.local_z))?;
         Some(BlockPos::new(x, y, z))
     }
 }
@@ -175,7 +187,10 @@ mod section_tests {
     fn section_address_uses_euclidean_division_on_all_axes() {
         let address = BlockPos::new(-1, -17, 16).section_address();
         assert_eq!(address.section(), SectionPos::new(-1, -2, 1));
-        assert_eq!((address.local_x(), address.local_y(), address.local_z()), (15, 15, 0));
+        assert_eq!(
+            (address.local_x(), address.local_y(), address.local_z()),
+            (15, 15, 0)
+        );
     }
 
     #[test]
