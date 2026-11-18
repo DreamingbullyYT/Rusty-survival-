@@ -1,9 +1,9 @@
 # Horizon Mod Platform Audit
 
 Audit date: 2026-11-18
-Inspected Horizon commit: 1c45cf95d8431a7b49d94df007f7e75a890370c9
+Inspected Horizon commit: 0b14f8acfd97fa2c750e42795249dcc981178ca4
 Inspected horizon-mixins commit: e59da9094f0c2fdda6c627fe9eff22dec6a906f0
-Status: SOURCE/DOCUMENTATION INSPECTION ONLY; no Horizon code built or modified.
+Status: ROUTE SOURCE-VERIFIED; CORE SOURCE .HMOD VERIFIED; API-ONLY PREBUILT OVERLAY/HOST-LOADER CI PENDING; no production Horizon source changes.
 
 ## Current DreamMod build baseline (verified 2026-11-18)
 
@@ -50,7 +50,7 @@ Relevant existing components:
 - `horizon-engine-slots` and `horizon-mod-internals`: native integration support.
 
 Source links pinned to the inspected Horizon commit:
-- [Layer boundaries](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/docs/layers.md)
+- [Layer boundaries](https://github.com/horizon-rust/horizon/blob/0b14f8acfd97fa2c750e42795249dcc981178ca4/docs/layers.md)
 - [Modding introduction](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/docs/modding/src/introduction.md)
 - [Mod API crate](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/crates/horizon-mod-api/src/lib.rs)
 - [Native host loader](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/crates/horizon-mod-host/src/native_libraries.rs)
@@ -99,9 +99,7 @@ The pinned launcher source contains a dedicated `Route::Api` for native mods tha
 
 The native build installation path then installs that executable and library set into a versioned native build and writes `native-mods.json`. At game startup, `crates/horizon-mod-host/src/native_libraries.rs` reads that record, verifies safe adjacent file names, SHA-256 and exact game/Rust compiler identity, then loads the libraries and their exported mod entries. This is a concrete source-level match for DreamMod Core's current shape: it implements typed Hooks and declares no `native.mixin`, `native.module`, `native.bridge`, `native.state`, `native.loop` or `internals` dependency, so it should qualify for `Route::Api`.
 
-Implication: we do not need to rebuild Horizon's engine for the current API-only Core. CI can use the official pinned native-build pipeline to produce the versioned prebuilt client plus DreamMod Core libraries and inventory; the separate launcher can distribute/install that completed version. If Core later adds private internals or native source transformations, Horizon may choose the Engine/Registry route instead; that still belongs in trusted CI, never on the player's device.
-
-This is now source-verified, but the actual output still needs a reproducible CI build, artifact inspection and clean game-start proof. Do not claim end-to-end success until those pass.
+Implication: we do not need to rebuild Horizon's engine for the current API-only Core. The stock native-build CLI requires a prepared Minecraft 26.3 install and refuses without an authenticated owning account; do not bypass that check. The CI workflow therefore uses a test-only harness in an ephemeral checkout of the pinned Horizon source to call the exact internal prebuilt::compile(..., Route::Api, ...) with signed SDK client runtime/API slices, then tests the real native host loader. This creates an engine/native-library overlay without Mojang assets; the user's launcher must combine it with a matching licensed base install. The first harness run 44288437986 failed because CI overrode HOME and hid Rustup; fixed in 67bc587. Current run 44288685182 is pending. No overlay or host-loader pass is claimed yet. If Core later adds private internals or native source transformations, Horizon may choose the Engine/Registry route instead; that still belongs in trusted CI, never on the player's device.
 
 Pinned implementation sources:
 - [Native route selection and prebuilt compiler](https://github.com/horizon-rust/horizon/blob/1c45cf95d8431a7b49d94df007f7e75a890370c9/launcher/src/native_mods/prebuilt.rs)
