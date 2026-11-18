@@ -257,3 +257,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - The section bridge is verified in Core CI: negative coordinates and X/Y/Z section addressing are tested. This does not implement chunk-section storage, world simulation, block-state serialization or Minecraft Java 26.3 parity.
 - Overlay artifact inspection found that libmod_vocab.so depends on libhorizon_mod_runtime.so but lacks its own RUNPATH. The launcher does not explicitly set LD_LIBRARY_PATH on Linux. Workflow commit 4d2c910c adds $ORIGIN RUNPATH to bundled .so files, refreshes the receipt hash and runs the native-host test without an inherited overlay LD_LIBRARY_PATH. Run 44361815335 is pending.
 - No production .dmod interpreter, complete loader/sandbox, lifecycle-to-Core adapter or full launcher/game startup is verified.
+
+## Shared per-mod authorization contract — 2026-11-18
+- Added `mods/dreammod-contract` with a dependency-free `PlayerReadAuthorization` trait and canonical `entities.read` constant.
+- DreamMod Core's bounded player collector now consumes that shared trait. `dreammod-package::ModLifecycle` implements it by delegating to its lifecycle+capability check.
+- Core does not depend on the archive inspector or its ZIP/JSON/semver dependencies. This is a typed integration seam; no runtime instance manager, interpreter, scheduler or script binding exists yet.
+- Actions runs for Core `44362777239`, package `44362757352`, overlay `44362776804`, and PMCS `44362787017` were started; results must be checked before marking verified.
