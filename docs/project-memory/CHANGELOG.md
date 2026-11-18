@@ -173,3 +173,11 @@
 - Added docs/specs/REFERENCE_TEST_PIPELINE.md with official-source reference acquisition, temporary runner storage, checksum/size verification, no cache/artifact/release and cleanup requirements.
 - Clarified that modding is out of scope.
 - No engine code, downloader or reference workflow was added in this documentation step.
+
+
+## 2026-11-18 — Pivot repository to DreamMod
+- User approved implementing DreamMod in this repository and selected Horizon as the target engine.
+- Added docs/specs/DREAMMOD_ARCHITECTURE.md defining HNMod build-time integration, prebuilt Horizon distribution, interpreted .dmod runtime, extensibility, performance, security and the open language decision.
+- Updated active project memory, compatibility policy, roadmap and README. The former Minelib/standalone Minecraft Java 26.3 engine direction is marked superseded/historical, not deleted.
+- No HNMod, interpreter, loader, API, .dmod package or runtime build has been implemented in this documentation-only change.
+- Verification: repository files and PMCS validator requirements inspected; GitHub Actions validation pending.
