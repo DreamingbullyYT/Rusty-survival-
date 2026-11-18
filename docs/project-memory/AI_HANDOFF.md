@@ -68,3 +68,7 @@ Core-local `#[cfg(test)]` tests now cover malformed names/dimensions/coordinates
 
 ## Corrected collector source
 A duplicate function body was accidentally left during the authorization-gate refactor. Commit `eadd1aa` replaces the full affected section: the private unchecked collector is called only after `PlayerReadAuthorization` succeeds. The Core run for the intermediate source is not valid evidence; verify the workflow for `eadd1aa`.
+
+
+## Core CI now executes tests
+The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod check` fetches/verifies the pinned SDK. Workflow commit `ffe93f0`. Confirm the first run succeeds; the SDK path and test harness have not yet been verified by this new step.
