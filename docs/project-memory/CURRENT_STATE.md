@@ -291,3 +291,8 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Core player collection now takes an authorization closure and checks it before touching `ServerHost`.
 - `ModManager::require_capability(mod_id, capability)` exposes the exact per-mod lifecycle+grant check; it can be passed as Core's closure. This keeps HNMod Core free of non-SDK dependencies.
 - A runtime coordinator and live Horizon hook call site are still missing. New package/Core/overlay CI runs are pending.
+
+### Callback and failure-cascade hardening
+- `ModManager::require_capability` is now the package-side authorization closure target for Core player collection; tests exercise default-deny, explicit grant, activation and capability denial.
+- Added coverage for a dependency failure when an intermediate dependent was already Failed; the manager avoids trying to transition Failed → Failed and still propagates to descendants.
+- Latest package run `44364113419` passed its checks, but predates the final extra cascade regression; run after commit `4103668` pending. Core run `44363904945` and overlay run `44363904976` are still in progress.
