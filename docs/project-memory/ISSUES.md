@@ -225,3 +225,9 @@ Overlay run `44362776804` failed during API-only compilation with `unresolved im
 
 ### DM-034 implementation follow-up (2026-11-18)
 Added `ModManager::require_capability` and tests for its per-mod callback behavior. Added regression coverage for cascades through an intermediate mod that was already Failed. Package run `44364113419` passed formatting/tests/Clippy before the final cascade-hardening commit `4103668`; verify the post-commit package run. Core run `44363904945` and overlay run `44363904976` remain pending.
+
+### DM-033 final verification (2026-11-18)
+Package run `44364198594` on commit `4103668fee` passed rustfmt, all 42 unit tests (including all seven ModManager tests), and Clippy `-D warnings`. PMCS run `44364312080` also passed. ModManager milestone is VERIFIED at package level; no interpreter/runtime integration is implied.
+
+### DM-034 verification status
+Callback refactor is under verification. Package tests include the new callback method and pass in `44364198594`. Core run `44363904945` and overlay run `44363904976` remain in progress; do not close DM-034 until Core compiles and overlay API-only compilation plus real host loading pass.
