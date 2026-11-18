@@ -353,3 +353,8 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - This is bookkeeping only: no Horizon renderer/UI/resource registration occurs yet. A future host adapter must publish external resources only after successful reservation and release them during disable/failure cleanup.
 - Package workflow run `44385572845` on `3821c934975c` is validating format, tests and Clippy; result pending at documentation update time.
 - PMCS workflow for the resource implementation initially failed its freshness check because implementation changes were not accompanied by updates to all five required memory documents; this entry corrects that omission.
+
+
+### Resource registry lint correction — 2026-11-18
+- Package Clippy found one manual saturating-arithmetic pattern and one unnecessary mutable binding in resource tests. Replaced the former with `saturating_add` and removed the unused `mut`.
+- Follow-up package CI after `d1d89c64aad8` pending. No API or behavior change.
