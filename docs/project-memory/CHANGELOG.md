@@ -1,3 +1,8 @@
+## 2026-11-18 — Add CI workflow for official prebuilt Horizon distribution
+- Added `.github/workflows/dreammod-prebuilt.yml` to download and checksum-verify pinned Horizon Launcher 0.2.78, install the pinned Nightly, create a clean instance, run `native-build` on DreamMod Core with trusted code, verify `native-mods.json` and the adjacent native library, and upload the native build overlay.
+- First run 44286113386 exposed a checksum filename mismatch; corrected in 01c696c. Run 44286212788 then exposed the missing `libxkbcommon-x11.so.0` dependency; added the headless X11/XKB libraries and offscreen Qt setting in 6bd45dd. Fresh run pending.
+- The build workflow verifies the manifest's pinned Horizon commit before uploading, preventing a silently newer Nightly from being mislabeled as the pinned baseline.
+
 ## 2026-11-18 — Fix native manifest validation and cache Horizon tooling
 - The first official `cargo horizon-mod check` run 44284751206 built the pinned tool successfully, then rejected the manifest because Horizon's current native template requires `capabilities = ["registries"]` even for native API mods. Added that required field in 9a5f9b5 and documented it as a real trust permission.
 - Changed the Core workflow from `cargo install` to a cached workspace `cargo build --release` for the pinned `cargo-horizon-mod` tool, avoiding a full uncached 5-minute install on every run.
