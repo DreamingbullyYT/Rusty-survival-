@@ -299,3 +299,8 @@
 - Validates schema/unknown fields, reverse-DNS-style IDs, semantic versions and API ranges, safe relative script entrypoint, explicit capability allowlist, duplicate capabilities, dependency IDs/ranges, and manifest/count limits.
 - Added `.github/workflows/dreammod-package.yml` for formatting, tests and Clippy. CI result is pending; no passing result is claimed.
 - This is manifest validation only: no archive parsing/extraction, capability granting, dependency resolution, script execution or production sandbox.
+
+## 2026-11-18 — Add pre-extraction .dmod archive inventory policy
+- Added a bounded metadata-only archive validator to `dreammod-package`.
+- Rejects traversal/non-portable paths, case-folded duplicates, symlinks/unsupported/encrypted entries, unapproved file roots, excessive entry count/file size/aggregate expanded size/compression ratio, missing/duplicate manifest and missing script entrypoint.
+- No ZIP parser or extraction code is integrated; central-directory/local-header consistency and actual archive handling remain future work. CI pending.
