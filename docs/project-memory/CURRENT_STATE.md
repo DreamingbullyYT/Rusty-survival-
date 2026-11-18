@@ -125,3 +125,13 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Added tests for callback non-invocation on denial, successful authorized invocation, capability mismatch, and bounded failure reasons.
 - Commits: `7107022` and compile-structure correction `407a762`.
 - Verification: package CI pending. This is a reusable authorization boundary, not yet wired to concrete Horizon API functions. It does not make arbitrary host handles safe to expose.
+
+
+## Latest host-boundary hardening and Horizon API inspection (2026-11-18)
+- Extended `HostAdapter` regression coverage: a callback is not invoked when the mod is not enabled, lacks the requested capability, is Disabled, or is Failed.
+- Corrected the failure-diagnostic test to use an actual newline control character; failure messages remain capped at 512 UTF-8 bytes and reject control characters.
+- Package workflow run 44304258172 passed on source commit `d9a524f6ff0b4ef6124abf2c0fdd8aaebdc19747`: Rust formatting, all package tests and Clippy `-D warnings` succeeded.
+- Inspected the exact pinned Horizon API at `0b14f8acfd97fa2c750e42795249dcc981178ca4`: `Hooks`, `ServerHost`/`ClientHost`, `Wire`, explicit load phases and `server_tick` phase semantics are present. Hook instances are `Send + Sync`; callbacks can run across threads and re-enter through host calls.
+- Added `docs/dreammod/HORIZON_HOST_BRIDGE.md` documenting the verified API surface and rules for owned values, phase/side checks, per-operation capability checks and batched calls.
+- The generic HostAdapter is still not connected to concrete Horizon APIs; no script runtime, sandbox, scheduler or end-to-end .dmod execution exists.
+- Latest relevant commits: source `d9a524f`; host bridge doc `d016ea5`; roadmap `16c1898`; session log `2c87f41`.
