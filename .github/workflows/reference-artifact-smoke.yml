@@ -1,9 +1,16 @@
-name: Mojang Reference Artifact Smoke Test
+name: Minecraft Reference + Engine Tests
 
 on:
   push:
     branches: [main]
     paths:
+      - "crates/**"
+      - "tools/**"
+      - ".github/workflows/reference-artifact-smoke.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "crates/**"
       - "tools/**"
       - ".github/workflows/reference-artifact-smoke.yml"
   workflow_dispatch:
@@ -18,14 +25,16 @@ permissions:
   contents: read
 
 concurrency:
-  group: mojang-reference-artifact-smoke
+  group: minecraft-reference-engine-tests-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  acquire-and-verify:
-    name: Download, verify, and discard Java 26.3 server
+  acquire-test-and-discard:
+    name: Download official Java 26.3, test engine, and discard reference
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
+    env:
+      REFERENCE_DIR: ${{ runner.temp }}/rusty-survival-minecraft-reference-${{ github.run_id }}-${{ github.run_attempt }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,14 +44,40 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run offline downloader tests
+      - name: Run offline downloader security tests
         run: python -m unittest discover -s tools/tests -v
 
-      - name: Resolve and download official Java 26.3 server
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+      - name: Download and verify official Minecraft Java 26.3 server
+        run: python tools/fetch_mojang_server.py --version 26.3 --output-dir "$REFERENCE_DIR"
+
+      - name: Verify the downloaded server archive is readable and CRC-clean
         run: |
-          REFERENCE_DIR="$RUNNER_TEMP/rusty-survival-minecraft-reference-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
-          python tools/fetch_mojang_server.py --version 26.3 --output-dir "$REFERENCE_DIR"
+          python - "$REFERENCE_DIR/server.jar" <<'PY'
+          import sys
+          import zipfile
+          from pathlib import Path
+
+          jar = Path(sys.argv[1])
+          if not jar.is_file() or jar.stat().st_size == 0:
+              raise SystemExit("verified Minecraft server jar is missing or empty")
+          with zipfile.ZipFile(jar) as archive:
+              bad_member = archive.testzip()
+              if bad_member is not None:
+                  raise SystemExit(f"server archive CRC failure: {bad_member}")
+              names = set(archive.namelist())
+              if "META-INF/versions.list" not in names:
+                  raise SystemExit("official server bundle has no META-INF/versions.list")
+              print(f"Verified bundled server archive: {jar.stat().st_size} bytes")
+          PY
+
+      - name: Check engine formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run engine workspace tests
+        run: cargo test --workspace --all-targets
+
+      - name: Run engine Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
 
       - name: Optional deliberate failure for cleanup verification
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.simulate_failure }}
@@ -53,7 +88,6 @@ jobs:
       - name: Delete all temporary Minecraft files
         if: always()
         run: |
-          REFERENCE_DIR="$RUNNER_TEMP/rusty-survival-minecraft-reference-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           if [ -d "$REFERENCE_DIR" ]; then
             rm -rf -- "$REFERENCE_DIR"
           fi
