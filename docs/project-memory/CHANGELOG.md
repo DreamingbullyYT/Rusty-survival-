@@ -517,3 +517,8 @@
 - Package workflow `44363502581`: PASS — formatting, 41 tests including manager regression tests, Clippy.
 - DreamMod Core workflow `44362777239`: PASS — pinned Horizon tooling, native API/host-WASM validation, engine mirror parity, formatting, tests and source artifact upload.
 - Overlay workflow `44362776804`: still compiling the API-only overlay; native host loading without environment overrides remains unverified.
+
+## 2026-11-18 — make Core authorization compatible with Horizon staging
+- Replaced the unsupported local Cargo contract dependency with a one-shot authorization callback in Core player collection.
+- Added `ModManager::require_capability` so the package lifecycle check can be passed directly as the Core authorization closure.
+- Removed the unused `dreammod-contract` crate and dependencies. Live hook/runtime wiring remains unimplemented.
