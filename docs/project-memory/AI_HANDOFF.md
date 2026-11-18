@@ -132,3 +132,6 @@ The first package run `44363310681` predates `pub mod manager` and therefore did
 - Core run `44362777239` is green: pinned Horizon tooling, native manifest/API/host-WASM checks, engine mirror parity, formatting, Core tests, source package and upload.
 - Overlay run `44362776804` is still in API-only compilation. Do not claim host loading or normal launcher readiness until its no-overlay-environment host test and the actual launcher path are verified.
 - PMCS run `44363588460` is pending.
+
+## Authorization bridge correction — callback boundary (2026-11-18)
+The local `dreammod-contract` crate was removed after overlay run `44362776804` proved Horizon's prebuilt source staging does not carry arbitrary Cargo path dependencies (`unresolved import dreammod_contract`). Core's `with_player_read_authorization` and `collect_online_players` now accept a one-shot authorization closure. Package `ModManager::require_capability(mod_id, capability)` performs the per-mod lifecycle/grant check and can be passed as that closure. This is not yet called from a real runtime hook; a coordinator must own ModManager and invoke Core at a supported Horizon host context. Verify post-fix package/Core/overlay workflows.
