@@ -138,3 +138,8 @@ The local `dreammod-contract` crate was removed after overlay run `44362776804` 
 
 ### Latest callback hardening
 `ModManager::require_capability` is now the package-side callback for Core's closure-based player authorization. A new test covers grant+activation states. Failure propagation also handles an intermediate dependent that was already Failed without trying to fail it twice, while cascading to its descendants. Commit `4103668` adds this final regression; verify its package workflow. Core run `44363904945` and overlay `44363904976` are still in progress.
+
+### Latest CI results — 2026-11-18
+- Package run `44364198594` passed rustfmt, 42 tests (all seven manager tests), and Clippy.
+- PMCS run `44364312080` passed regression and structure/freshness checks.
+- Core run `44363904945` remains in `cargo-horizon-mod` build; overlay run `44363904976` remains in API-only compilation. Check both before making any claims about callback-compatible HNMod builds or native host loading.
