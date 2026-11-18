@@ -186,3 +186,9 @@ The manifest must identify package ID, version, display name, entry points, requ
 - Overlay run 44322745328 failed before artifact creation because the injected test used the UI-facing picker Route rather than prebuilt::Route; the patch now qualifies prebuilt::Route::Api. A fresh run is required.
 - The real native host-loader test did not execute in the failed overlay run. Do not claim a verified overlay or playable distribution.
 - Package Arc-backed batch CI run 44318172781 and archive-inspection deadline CI run 44317125357 passed. There is no measured performance gain, dispatcher/cache, or ARM64 benchmark.
+
+
+## SDK compiler compatibility — 2026-11-18
+- The signed SDK for Horizon commit 0b14f8acfd97fa2c750e42795249dcc981178ca4 was produced using the compiler version declared in that source's tools/ci/rust-version: 1.99.1.
+- Overlay run 44324363090 used Rust 1.95.0 and failed with E0514 for SDK crate mod_api. DreamMod's overlay workflow now uses Rust 1.99.1 and records it in metadata (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7).
+- Run 44328650675 is the verification rerun. The generated crate::hooks diagnostic is not yet classified as an independent source bug; wait for matching-toolchain evidence.
