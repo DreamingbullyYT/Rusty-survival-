@@ -81,3 +81,9 @@ Use Arc<[PlayerSnapshot]> as PlayerSnapshotBatch backing storage. Cloning a batc
 - Evidence: overlay run `44362776804` failed because Horizon's prebuilt source staging did not include the local `dreammod-contract` Cargo dependency.
 - Rationale: the HNMod source package must compile using only dependencies supported by Horizon's signed SDK and its native package format. A closure keeps the boundary typed without adding an unsupported external crate.
 - Consequence: the callback is a seam, not a live integration. A future runtime coordinator must call the Core collector from a valid host context and supply the manager callback.
+
+## DECISION — expose package assets as borrowed in-memory bytes (2026-11-18)
+- Decision: add a capability-gated `ModManager::read_asset` that returns `&[u8]` from the retained validated package.
+- Rationale: `.dmod` assets should be usable without extraction, duplicate allocation or filesystem path exposure.
+- Security: require Enabled + `assets.read`, restrict to `assets/`, reuse archive path validation, and return immutable borrowed bytes.
+- Consequence: this is raw package-byte access only; resource decoding, caching, texture registration and per-script budgets remain future host/runtime responsibilities.
