@@ -64,8 +64,6 @@ jobs:
           fi
       - name: Install the pinned Nightly base
         run: '"$HORIZON_LAUNCHER" install nightly'
-      - name: Prepare the pinned Nightly game files
-        run: '"$HORIZON_LAUNCHER" prepare --version nightly-2026-11-18-0b14f8a'
       - name: Create a clean CI instance
         run: |
           "$HORIZON_LAUNCHER" instance create DreamModCI
