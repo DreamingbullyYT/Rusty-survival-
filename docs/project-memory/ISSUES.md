@@ -121,3 +121,8 @@ The Core collector now refuses to touch `ServerHost` until a `PlayerReadAuthoriz
 ## DM-025 — Execute Core snapshot unit tests in CI
 Status: OPEN
 Core-local regression tests now cover DTO validation and batch limits (source commit `ebe0914`). The current `cargo-horizon-mod check` proves Horizon host/WASM compilation but may not execute Rust unit tests. Add a compatible `cargo test` CI step once the generated pinned SDK workspace/dependency setup is confirmed; do not claim these tests ran until a workflow step explicitly executes them.
+
+
+## DM-026 — Verify corrected gated collector source
+Status: VERIFYING
+A source-edit regression briefly left the previous collector declaration duplicated inside the new private helper. Commit `eadd1aa` replaces that whole section with one private `collect_online_players_unchecked` implementation, and the only public collector requires `PlayerReadAuthorization`. The intermediate Core run is not evidence for the corrected source; verify the workflow run triggered by `eadd1aa`.
