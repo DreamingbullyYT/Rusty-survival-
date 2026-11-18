@@ -236,3 +236,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Existing native Core workflow run 44322745253 passed the pinned Horizon SDK check, Core tests and source `.hmod` packaging. The Core `Hooks` implementation remains empty; player snapshot collection is not yet connected to the DreamMod runtime or script API.
 - Prebuilt overlay run 44328650675 completed API-only compilation successfully with Rust 1.99.1, but was cancelled during the real native-host loader step when a newer commit arrived. A clean rerun, 44330930078, is building the overlay; host loading, archive inspection and artifact upload remain unverified.
 - Overlay metadata compiler field was corrected to 1.99.1 in commit `d23bc48fd1e606ef2191e0b4f059ec50451c14b9`. PMCS validation passed in run 44331401564.
+
+## Three-dimensional section address bridge — 2026-11-18
+- Added `SectionPos` and `SectionAddress` to the canonical engine coordinate module. `BlockPos::section_address()` maps all three axes with Euclidean division and exposes local coordinates in the 0..16 range.
+- Added checked reconstruction to `BlockPos`; the address fields remain private and are produced from valid block coordinates. The API is deliberately geometric and does not specify serialized section layout, palette format, dimension min/max Y, or block-state IDs.
+- DreamMod Core exposes section coordinates and local Y through `engine_bridge::locate_block`. The HNMod copy is byte-identical to the engine source and is enforced by `check_engine_bridge_sync.py` in both workflows.
+- A first test run failed rustfmt and included an impossible overflow expectation for an address created from an `i32` block coordinate. That test was removed; canonical and mirrored files were formatted consistently. Latest engine and Core runs are pending.
+- Overlay run 44335372878 proved the API-only compile but failed in the real host loader because a sibling runtime dylib was not on the Linux loader path. Workflow run 44341223178 adds the overlay folder to `LD_LIBRARY_PATH`; verify it before claiming a successful load.
