@@ -174,3 +174,6 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 5. [ ] Verify package workflow `44363310681` and PMCS `44363323071`.
 6. [ ] Design transactional host registration/unregistration with rollback and resource quotas.
 7. [ ] Choose and embed the interpreted language/runtime only after sandbox and execution-budget evaluation.
+
+### ModManager validation note
+- The initial package run before `manager` module export did not include manager tests. A cascade-order defect found during review was fixed in `bb8806d`; require a post-fix package run that lists and passes all manager tests before marking the milestone verified.
