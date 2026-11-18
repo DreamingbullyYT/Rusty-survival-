@@ -381,4 +381,43 @@ mod tests {
         ));
         assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
     }
+    #[test]
+    fn shared_core_authorization_trait_tracks_lifecycle_and_capability() {
+        let mut package = package();
+        package.manifest.capabilities = vec![PLAYER_READ_CAPABILITY.into()];
+        let mut lifecycle = ModLifecycle::from_validated_package(&package);
+
+        assert_eq!(
+            PlayerReadAuthorization::require_entities_read(&lifecycle),
+            Err(LifecycleError::NotEnabled)
+        );
+
+        lifecycle.approve(&[]).unwrap();
+        lifecycle.enable().unwrap();
+        assert_eq!(
+            PlayerReadAuthorization::require_entities_read(&lifecycle),
+            Err(LifecycleError::CapabilityDenied(PLAYER_READ_CAPABILITY.into()))
+        );
+
+        let mut granted = ModLifecycle::from_validated_package(&package);
+        granted.approve(&[PLAYER_READ_CAPABILITY.into()]).unwrap();
+        assert_eq!(
+            PlayerReadAuthorization::require_entities_read(&granted),
+            Err(LifecycleError::NotEnabled)
+        );
+        granted.enable().unwrap();
+        assert_eq!(PlayerReadAuthorization::require_entities_read(&granted), Ok(()));
+        granted.disable().unwrap();
+        assert_eq!(
+            PlayerReadAuthorization::require_entities_read(&granted),
+            Err(LifecycleError::NotEnabled)
+        );
+        granted.enable().unwrap();
+        granted.fail("test failure").unwrap();
+        assert_eq!(
+            PlayerReadAuthorization::require_entities_read(&granted),
+            Err(LifecycleError::NotEnabled)
+        );
+    }
+
 }
