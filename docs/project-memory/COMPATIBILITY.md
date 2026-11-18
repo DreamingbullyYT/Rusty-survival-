@@ -66,3 +66,6 @@ The closure-based authorization callback compiled and passed all Core checks aga
 
 ## Entrypoint source bridge (2026-11-18)
 `ensure_enabled` and `entrypoint_source` add no third-party dependencies or Horizon API use. They use standard borrowed slices over the validated in-memory package. Package CI after `ee903d7` pending.
+
+### Entrypoint bridge verification
+Package run `44365010182` passed all 44 tests, rustfmt and Clippy after adding the activation-gated entrypoint source API. No Horizon SDK dependency was introduced.
