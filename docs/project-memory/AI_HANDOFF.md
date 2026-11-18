@@ -52,3 +52,7 @@ OPEN, INVESTIGATING, IMPLEMENTED, VERIFIED, BLOCKED.
 
 ## Handoff rule
 At the end of a work session, update CURRENT_STATE.md, ISSUES.md, ROADMAP.md, CHANGELOG.md and this handoff when relevant. Append a dated SESSION_LOG.md entry with exact work and verification. Clearly state what was and was not tested.
+
+
+## 2026-11-18 Core player collector update
+The first concrete Core-side collector now exists at `mods/dreammod-core/src/player_snapshot.rs`. It uses `ServerHost::players().server_players()`, then `PlayerRef::uuid/name/dimension` and `EntityRef::position`, and returns only owned bounded DTOs. The list is rejected above 256 before reads. It is not yet called by an interpreter and does not independently enforce .dmod grants; the future runtime must pass through the lifecycle capability gate before calling it. Source commits `7ecd981` and `b2362c6`. Check Actions run 44310547586 before claiming compilation. PMCS run 44310547866 failed due missing memory updates; companion docs are now being added.
