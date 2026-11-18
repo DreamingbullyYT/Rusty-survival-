@@ -1,13 +1,14 @@
 id = "dreammod_core"
 name = "DreamMod Core"
 version = "0.1.0"
-description = "Trusted native bootstrap for the DreamMod interpreted runtime."
-authors = []
+description = "Trusted native host for the interpreted DreamMod runtime."
+authors = ["DreamingbullyYT"]
+license = "MIT"
 api = "0.2"
 side = "both"
-capabilities = ["registries"]
+capabilities = []
 
 [native]
 game = "26.3"
-horizon = "1c45cf95d8431a7b49d94df007f7e75a890370c9"
+horizon = "0b14f8acfd97fa2c750e42795249dcc981178ca4"
 mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"
