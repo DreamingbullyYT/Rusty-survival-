@@ -1,3 +1,8 @@
+## 2026-11-18 — Correct interpreter shortlist against the no-bytecode requirement
+- Rejected Starlark as a candidate for the strict product requirement: its public API parses source into AST, but its evaluator compiles that AST to bytecode before execution.
+- Added Sprite as a research-only reference: it uses a tree-walking AST interpreter with no bytecode/VM, but its current language/value surface is too limited for DreamMod to adopt directly.
+- Rhai remains the practical feature-rich AST-walking candidate, but its performance must be judged on representative workloads and ARM64 devices; no final language selection is made.
+
 ## 2026-11-18 — Add real Horizon native trait package metadata
 - Corrected DreamMod Core from a bare Cargo Hooks crate into a native trait mod source package with `horizon-mod.toml`, API 0.2, no extra capabilities and exact Horizon/horizon-mixins pins.
 - Moved the Core pin to the published Nightly 2026-11-18 build `0b14f8acfd97fa2c750e42795249dcc981178ca4` and verified the current pinned source still contains `Route::Api` and the native library host.
