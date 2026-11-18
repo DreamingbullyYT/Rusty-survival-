@@ -4,7 +4,7 @@
 Project: DreamMod
 Repository: DreamingbullyYT/Rusty-survival-
 Target engine: Horizon
-Integration: pinned pinned Horizon .hmod/native integration with the existing mod API and host
+Integration: pinned Horizon .hmod/native integration with the existing mod API and host
 Runtime model: interpreted .dmod source, no per-mod compilation on player devices
 
 ## Mission
@@ -16,7 +16,7 @@ Build a powerful, deeply extensible runtime modding platform for Horizon. Mods c
 3. The separate launcher installs and updates that prebuilt distribution.
 4. Player-installed .dmod packages contain interpreted source and assets; they are dynamically loaded by DreamMod.
 
-HNMod is not assumed to be a precompiled runtime plugin. Current documented Horizon native-mod workflow builds source against the pinned game revision.
+Current Horizon docs describe .hmod as the package format. Native source is normally compiled by the launcher; the native host can also load prebuilt adjacent libraries, a path we must prove end-to-end. See docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md.
 
 ## Ground rules
 - Integrate with Horizon through pinned upstream extension points; do not copy Horizon source into this repository.
@@ -27,7 +27,7 @@ HNMod is not assumed to be a precompiled runtime plugin. Current documented Hori
 - Design explicit contracts for subsystem replacement, state ownership, scheduling, failure and migration.
 - Deep script access must not expose arbitrary unsafe pointers or unrestricted native process privileges.
 - Sandbox scripts by default. Capabilities must be explicit and narrow.
-- Treat HNMod/native code as trusted build-time code with native privileges, not as a safe sandbox.
+- Treat DreamMod Core's prebuilt native library as trusted code with native privileges, not as a safe sandbox.
 - Version every public API and record exact Horizon, mixins and hooks/API revisions.
 - No fabricated test results or completion claims.
 - Keep session history append-only.
