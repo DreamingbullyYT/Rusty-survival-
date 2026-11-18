@@ -8,7 +8,7 @@ Initial baseline pinned for the Core bootstrap: Horizon `1c45cf95d8431a7b49d94df
 
 ## DM-002 — .hmod build-time integration and prebuilt distribution
 Status: INVESTIGATING
-The minimal `.hmod` Core source compiles against the pinned Horizon API in CI (run 44249522292). This is only `cargo check`, not a native library build or game launch. Need discover the exact launcher-native build outputs and `native-mods.json` inventory generation, then prove a clean prebuilt distribution loads the library without invoking player-side native compilation.
+The minimal `.hmod` Core source compiles against the pinned Horizon API in CI (run 44249522292). This is only `cargo check`, not a native library build or game launch. Pinned Horizon source confirms the Route::Api path for API-only mods: it compiles mod dylibs against prebuilt runtime/API slices and returns the unchanged game executable plus libraries; installation writes native-mods.json, which the host validates and loads. Remaining work: run the official native-build pipeline in CI, inspect the output/inventory and prove clean startup without player-side compilation.
 
 ## DM-003 — Interpreted language selection
 Status: INVESTIGATING
