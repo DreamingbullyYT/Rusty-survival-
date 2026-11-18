@@ -108,3 +108,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 ### Core callback refactor verification — 2026-11-18
 - Core run `44363904945` completed SUCCESS after the closure-based authorization refactor: pinned `cargo-horizon-mod`, native manifest/source/API/host-WASM validation, HNMod engine mirror parity, formatting, Core tests, source packaging and upload all passed.
 - Overlay run `44363904976` has passed API-only prebuilt compilation and Linux sibling-library RUNPATH setup; the real native host load test without overlay environment overrides is currently running. Artifact inspection/upload remain pending.
+
+## Activated entrypoint source access (2026-11-18)
+- Added `ModLifecycle::ensure_enabled()` as a state-only check, separate from capability grants.
+- Added `ModManager::entrypoint_source(mod_id)` to borrow the validated manifest entrypoint bytes only after the mod is Enabled. The mod's own entrypoint is not represented as a user-grantable capability; privileged host APIs still require explicit capabilities.
+- Added a test for denial before approval/activation and success after enable. Package CI after commits `be02358` and `ee903d7` is pending.
