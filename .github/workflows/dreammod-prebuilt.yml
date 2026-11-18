@@ -97,7 +97,7 @@ jobs:
       - name: Upload CI-built native distribution
         uses: actions/upload-artifact@v4
         with:
-          name: dreammod-horizon-nightly-native
+          name: dreammod-horizon-nightly-native-server
           path: dist/
           if-no-files-found: error
           retention-days: 14
