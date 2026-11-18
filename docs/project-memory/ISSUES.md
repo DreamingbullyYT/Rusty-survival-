@@ -267,3 +267,7 @@ The first resource registry package run passed all 51 tests and formatting, but 
 ModManager now owns the internal ResourceRegistry. Mods can reserve IDs only after enablement and only under their own manifest namespace. Reservations are released on successful disable and on failure of the mod or any transitive dependent. Tests cover activation gating, namespace checks and cleanup paths.
 
 Limitations / follow-up: the registry is not a Horizon resource manager. It only tracks IDs in memory; it does not register textures, models, sounds, UI, blocks or other host objects. Implement external host publication only after verifying the pinned SDK APIs, with staged publication and rollback on partial failure. CI run `44386150155` pending at this update.
+
+
+### DM-038 verification note (2026-11-18)
+ModManager resource integration passed package CI run `44386150155` with 55 tests, formatting and strict Clippy. An additional regression now checks that duplicate IDs in one batch are rejected atomically with no partial reservations; the follow-up run after `51aa347d1140` is pending.
