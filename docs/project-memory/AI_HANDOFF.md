@@ -64,3 +64,7 @@ Core player collection now takes a `PlayerReadAuthorization` argument. Implement
 
 ## Core snapshot tests
 Core-local `#[cfg(test)]` tests now cover malformed names/dimensions/coordinates, duplicate UUIDs and batch size (commit `ebe0914`). Current Core Actions use `cargo-horizon-mod check`; do not assume that executes unit tests. Verify workflow behavior and add a compatible `cargo test` step only after confirming the generated pinned SDK dependency path.
+
+
+## Corrected collector source
+A duplicate function body was accidentally left during the authorization-gate refactor. Commit `eadd1aa` replaces the full affected section: the private unchecked collector is called only after `PlayerReadAuthorization` succeeds. The Core run for the intermediate source is not valid evidence; verify the workflow for `eadd1aa`.
