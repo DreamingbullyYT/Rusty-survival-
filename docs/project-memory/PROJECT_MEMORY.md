@@ -104,3 +104,7 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Package run `44364618050` on commit `f90d0b1dfe`: PASS — all 43 tests, including the new capability-gated asset read test, rustfmt and Clippy.
 - PMCS run `44364715327` has completed its validator regression tests and structural/freshness validation successfully; post-job cleanup is finishing.
 - Core run `44363904945` has passed pinned Horizon checker build, native/API/host-WASM checks, mirror parity and formatting; Core unit tests are running. Overlay run `44363904976` remains in API-only prebuilt compilation.
+
+### Core callback refactor verification — 2026-11-18
+- Core run `44363904945` completed SUCCESS after the closure-based authorization refactor: pinned `cargo-horizon-mod`, native manifest/source/API/host-WASM validation, HNMod engine mirror parity, formatting, Core tests, source packaging and upload all passed.
+- Overlay run `44363904976` has passed API-only prebuilt compilation and Linux sibling-library RUNPATH setup; the real native host load test without overlay environment overrides is currently running. Artifact inspection/upload remain pending.
