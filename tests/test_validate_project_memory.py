@@ -68,6 +68,27 @@ class ValidatorRegressionTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("append-only", result.stdout)
 
+    def test_duplicate_new_session_ids_fail(self) -> None:
+        path = self.root / "docs/project-memory/SESSION_LOG.md"
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(
+                "\n## S-TEST-DUPLICATE — First entry\nDate: test\n"
+                "## S-TEST-DUPLICATE — Second entry\nDate: test\n"
+            )
+        self.commit_all("append duplicate session IDs")
+        result = self.validate("--base", self.base)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("duplicate or previously used session ID", result.stdout)
+
+    def test_reusing_a_legacy_session_id_fails(self) -> None:
+        path = self.root / "docs/project-memory/SESSION_LOG.md"
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write("\n## S-2026-11-18-01 — Reused legacy ID\nDate: test\n")
+        self.commit_all("reuse a legacy session ID")
+        result = self.validate("--base", self.base)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("duplicate or previously used session ID", result.stdout)
+
     def test_valid_implementation_change_with_memory_update_passes(self) -> None:
         source = self.root / "engine/src/lib.rs"
         source.parent.mkdir(parents=True)
