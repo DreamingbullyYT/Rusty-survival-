@@ -503,3 +503,9 @@
 - Package `bridge.rs` now re-exports the canonical `PLAYER_READ_CAPABILITY` from `dreammod-contract` rather than defining a second identifier.
 - Added a regression test proving the package `ModLifecycle` implementation of `PlayerReadAuthorization` denies awaiting approval, missing grants, disabled and failed states, and allows only an enabled mod with the explicit `entities.read` grant.
 - Verification of this test and the Core dependency is running in Actions; do not mark verified until those runs finish.
+
+## 2026-11-18 — deterministic ModManager
+- Added the package-level `ModManager`, owning validated package contents and one lifecycle per mod.
+- Enforced dependency-first activation and prevented disabling a dependency while an enabled dependent exists.
+- Added fail-closed transitive dependent failure propagation and regression tests for dependency graph/lifecycle invariants.
+- Package and PMCS CI verification pending.
