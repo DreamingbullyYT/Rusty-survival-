@@ -66,3 +66,11 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 - Added negative regression tests for mismatched lengths, NaN/infinity, malformed output length and non-finite provider output.
 - Commit: 33639ee0d89627b7ad3342d694a2d26c1ff43fd5.
 - CI status: pending inspection; implementation is not yet VERIFIED by the workflow.
+
+
+## Latest package resolver work (2026-11-18)
+- Added `resolve_load_order()` to the standalone package contract.
+- Validates the installed manifest set, rejects duplicate IDs, missing dependencies and semver mismatches, detects dependency cycles, and produces a deterministic dependency-first order using lexicographic tie-breaking.
+- The resolver is a pure planning function: it does not load, execute, grant capabilities or mutate installed packages.
+- Commit: 1817a3b4b9a3f4ae974793c2d46c9cbce65b3fe6.
+- CI status: not yet inspected; tests are added but not claimed as passing.
