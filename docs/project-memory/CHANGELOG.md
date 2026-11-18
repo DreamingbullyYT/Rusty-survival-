@@ -408,3 +408,10 @@
 - Rejects more than 256 online players before per-player reads; rejects unavailable/stale fields, invalid identifiers/coordinates and duplicate UUIDs.
 - Does not retain Horizon handles or expose snapshots to scripts. No .dmod runtime or sandbox integration is implied.
 - Source commits: `7ecd981`, `b2362c6`. Core SDK check/build pending; PMCS validation previously failed because implementation changes lacked required memory updates.
+
+
+## 2026-11-18 — Gate Core player collection behind per-mod authorization
+- Changed the Core collector's public entry point to require a `PlayerReadAuthorization` implementation before it touches `ServerHost`.
+- Added a generic authorization helper with regression tests proving denied reads do not invoke the host operation and authorized reads invoke it exactly once.
+- Kept the actual lifecycle adapter open: the trait is an integration seam, not proof that `ModLifecycle` is already wired to Core.
+- Core source commit: `99929e38d5f1a815e8b17cb069a5eff8dfcc8e3e`; Core and overlay Actions are running.
