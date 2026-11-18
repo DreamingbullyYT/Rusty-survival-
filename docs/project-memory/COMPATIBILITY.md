@@ -63,3 +63,6 @@ Asset access is implemented in the standalone package crate using only Rust stan
 
 ### Core callback verification — 2026-11-18
 The closure-based authorization callback compiled and passed all Core checks against the pinned Horizon SDK in run `44363904945`. The API-only prebuilt overlay also compiled and had Linux `$ORIGIN` RUNPATH setup pass in run `44363904976`; real native host loading remains in progress.
+
+## Entrypoint source bridge (2026-11-18)
+`ensure_enabled` and `entrypoint_source` add no third-party dependencies or Horizon API use. They use standard borrowed slices over the validated in-memory package. Package CI after `ee903d7` pending.
