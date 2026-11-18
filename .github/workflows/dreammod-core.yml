@@ -48,6 +48,8 @@ jobs:
       - name: Check native mod manifest, source, API use and host/WASM compilation
         working-directory: mods/dreammod-core
         run: '"$GITHUB_WORKSPACE/.ci/horizon/target/release/cargo-horizon-mod" horizon-mod check'
+      - name: Verify HNMod engine source matches canonical engine-core
+        run: python3 scripts/ci/check_engine_bridge_sync.py
       - name: Check Core formatting
         working-directory: mods/dreammod-core
         run: cargo fmt --manifest-path Cargo.toml -- --check
