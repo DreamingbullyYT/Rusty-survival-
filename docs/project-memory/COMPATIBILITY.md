@@ -49,3 +49,6 @@ The manager is implemented in the standalone `dreammod-package` crate and uses t
 
 ## HNMod authorization callback compatibility (2026-11-18)
 The pinned Horizon prebuilt SDK stages the HNMod package source but does not stage an arbitrary local Cargo path dependency. A real overlay attempt exposed this as `unresolved import dreammod_contract` (run `44362776804`). The local contract crate was removed. Core now uses a generic one-shot authorization closure, and package ModManager exposes a capability-check method that can be passed as that closure. This avoids adding a non-SDK crate to the native mod package.
+
+### Closure-based authorization bridge (2026-11-18)
+Core no longer imports any non-SDK crate for authorization; it accepts a generic one-shot closure. Package ModManager exposes `require_capability` and can supply that closure. The callback signature uses ordinary Rust `FnOnce() -> Result<(), E>` and introduces no ABI or Horizon SDK dependency. The latest extra manager test is in commit `4103668`; post-commit package verification pending.
