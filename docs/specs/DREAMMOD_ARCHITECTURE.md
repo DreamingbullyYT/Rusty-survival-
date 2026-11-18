@@ -157,4 +157,4 @@ The manifest must identify package ID, version, display name, entry points, requ
 
 ## 13. Current status
 
-Only this architecture proposal exists. No HNMod, interpreter, loader, manifest parser, API, package, benchmark, compatibility test or prebuilt distribution has been implemented or verified.
+Only this architecture proposal exists. No native .hmod integration, interpreter, loader, manifest parser, API, package, benchmark, compatibility test or prebuilt distribution has been implemented or verified.
