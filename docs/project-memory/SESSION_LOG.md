@@ -835,3 +835,13 @@ Next:
 - Verify the test-only harness compiles and the signed SDK slices are fetched.
 - Fix any Rust API/type or loader issues found by CI.
 - Once the overlay passes the host loader, upload it and document how the user's launcher applies it to a matching base version.
+
+## S-2026-11-18-DM-BATCH-GUARD — Harden script provider boundary
+Date: 2026-11-18
+Commit: 33639ee0d89627b7ad3342d694a2d26c1ff43fd5
+Intent: prevent malformed or non-finite script results from crossing the prototype physics batch boundary.
+Files: mods/dreammod-runtime-prototype/src/lib.rs; PMCS CHANGELOG, CURRENT_STATE, ISSUES, ROADMAP and SESSION_LOG.
+Implementation: reject unequal input lengths, batches above 100,000 items, non-finite inputs, wrong-sized provider output, non-numeric output and non-finite output. Added focused negative regression tests.
+Verification: push to main triggers the existing runtime prototype workflow and PMCS workflow. Results were not available for inspection at the time of this entry; do not mark CI verified until confirmed.
+Risks/limits: prototype-only validation; the 100,000 item cap is a test boundary, not a production memory quota. No aggregate heap accounting, package sandbox or Core integration.
+Next: inspect Actions; then move toward a standalone runtime crate and a versioned manifest/permissions contract.
