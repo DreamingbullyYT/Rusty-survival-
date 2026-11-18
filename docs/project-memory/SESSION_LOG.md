@@ -1377,3 +1377,23 @@ Limitations:
 Next:
 - Confirm PMCS passes on the complete documentation update.
 - Rerun the API-only overlay workflow and inspect any subsequent compile/runtime failure; only then test the real Horizon native host loader and inspect the artifact.
+
+
+## S-2026-11-18-42 — Match prebuilt compiler to the signed SDK
+Date: 2026-11-18
+Starting commit: 239f75b30cb1aec9ce47fbdd20f04ee5c0c8c67c
+Changes:
+- Inspected overlay run 44324363090 after the Route namespace fix. The test injection and Horizon launcher test build succeeded; the API-only prebuilt build then failed with E0514 for SDK crate mod_api compiled by an incompatible rustc, plus a generated crate::hooks lookup error.
+- Audited pinned Horizon source at 0b14f8acfd97fa2c750e42795249dcc981178ca4. The SDK publish workflow reads tools/ci/rust-version, whose exact value is 1.99.1.
+- Changed .github/workflows/dreammod-prebuilt.yml from Rust 1.95.0 to 1.99.1 and updated the artifact metadata compiler field (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7).
+- Confirmed PMCS run 44328650216 passed all regression and freshness checks on commit 96d2e740.
+Verification:
+- Overlay run 44324363090: failed at API-only prebuilt compilation with E0514; host-loader and artifact steps skipped.
+- PMCS run 44328650216: PASS.
+- Overlay rerun 44328650675: in progress at the time of this entry; no compile/load result yet.
+Limitations:
+- Do not independently modify Core's Hooks declaration until the rerun establishes whether the missing crate::hooks error persists with the SDK-matching compiler.
+Next:
+- Inspect overlay run 44328650675 after the compile step.
+- If successful, verify native host loading and inspect archive metadata/artifact.
+- If it fails, capture the first diagnostics and compare with SDK's rust-version before changing code.
