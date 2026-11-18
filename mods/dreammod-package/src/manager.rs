@@ -173,17 +173,19 @@ impl ModManager {
                 .iter()
                 .any(|dependency| failed.contains(dependency));
             if depends_on_failed {
-                let dependency = self.dependencies[dependent]
-                    .iter()
-                    .find(|dependency| failed.contains(*dependency))
-                    .expect("failed dependency was found");
-                let failure = format!("dependency '{dependency}' failed");
-                self.mods
-                    .get_mut(dependent)
-                    .expect("load order only contains managed mods")
-                    .lifecycle
-                    .fail(failure)
-                    .map_err(ModManagerError::Lifecycle)?;
+                if self.state(dependent)? != LifecycleState::Failed {
+                    let dependency = self.dependencies[dependent]
+                        .iter()
+                        .find(|dependency| failed.contains(*dependency))
+                        .expect("failed dependency was found");
+                    let failure = format!("dependency '{dependency}' failed");
+                    self.mods
+                        .get_mut(dependent)
+                        .expect("load order only contains managed mods")
+                        .lifecycle
+                        .fail(failure)
+                        .map_err(ModManagerError::Lifecycle)?;
+                }
                 failed.insert(dependent.clone());
             }
         }
@@ -326,6 +328,26 @@ mod tests {
         }
 
         manager.fail("example.base", "host fault").unwrap();
+        for id in ["example.base", "example.middle", "example.addon"] {
+            assert_eq!(manager.state(id), Ok(LifecycleState::Failed));
+        }
+    }
+
+    #[test]
+    fn failure_cascade_handles_already_failed_intermediate_mod() {
+        let mut manager = ModManager::new(vec![
+            package("example.base", &[], &[]),
+            package("example.middle", &[("example.base", "^1.0")], &[]),
+            package("example.addon", &[("example.middle", "^1.0")], &[]),
+        ])
+        .unwrap();
+        for id in ["example.base", "example.middle", "example.addon"] {
+            manager.approve(id, &[]).unwrap();
+            manager.enable(id).unwrap();
+        }
+
+        manager.fail("example.middle", "independent fault").unwrap();
+        manager.fail("example.base", "base fault").unwrap();
         for id in ["example.base", "example.middle", "example.addon"] {
             assert_eq!(manager.state(id), Ok(LifecycleState::Failed));
         }
