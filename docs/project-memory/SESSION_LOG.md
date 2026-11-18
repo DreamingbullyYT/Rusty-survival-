@@ -1422,3 +1422,24 @@ Next:
 - Verify overlay run 44330930078 through host-loader and archive upload.
 - Design a small Java 26.3 oracle for the existing coordinate contract.
 - Plan one narrow Core/runtime bridge with concrete per-mod lifecycle authorization before expanding the engine or API surface.
+
+## S-2026-11-18-44 — Extend engine coordinates through the HNMod bridge
+Date: 2026-11-18
+Starting context: engine-core contained horizontal block-to-chunk mapping; DreamMod Core exposed that mapping through a byte-synchronized source mirror.
+Changes:
+- Added `SectionPos` and `SectionAddress` plus `BlockPos::section_address()` for X/Y/Z Euclidean section mapping and local coordinates. The bridge now returns section position and local Y as owned values.
+- Kept section geometry independent from world height, section serialization, palette storage and block-state identifiers.
+- Added tests for negative coordinates and section boundaries. CI revealed rustfmt adjustments and an invalid overflow assertion; removed the impossible assertion and formatted the canonical source and HNMod mirror identically.
+- Fixed the native-host CI environment after run 44335372878 showed that the real host could not resolve the sibling `libhorizon_mod_runtime.so`. The workflow now sets `LD_LIBRARY_PATH` to include the overlay directory (commit f64b016a6cf8dae17769d2ae53cd0680227f3acc).
+Verification:
+- Existing DreamMod Core run 44335366329 passed before the new section bridge.
+- Overlay run 44335372878: API-only compilation passed; real native-host load failed on missing runtime dylib search path. Fix rerun 44341223178 is pending/in progress.
+- Engine run 44341336046: official Java 26.3 download and archive checks passed; formatting failed on the new section source, so engine tests and Clippy were skipped. Rustfmt corrections are committed in 01ae7c243bfe5b8d449036c5326b9a140b3d4df6 and later commits; verify the latest run.
+- PMCS run 44341395334 failed only because the implementation files changed without updating the five required memory documents; this session updates them.
+Limitations:
+- The section address is a coordinate primitive, not a chunk-section storage format or vanilla differential implementation.
+- HNMod's `Hooks` implementation remains empty; no end-to-end .dmod execution or complete game launch exists.
+Next:
+- Inspect latest Actions for engine, Core, overlay and PMCS.
+- If host loading passes, inspect artifact layout and upload; then separately validate the actual launcher search-path behavior.
+- Add the next engine domain only with pinned Java 26.3 reference fixtures and deterministic tests.
