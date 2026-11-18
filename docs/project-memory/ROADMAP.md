@@ -10,8 +10,8 @@
 - [x] Pin initial Horizon and horizon-mixins revisions in the Core manifest.
 - [x] Add minimal native .hmod Core source and pinned-source compile workflow.
 - [x] Source-verify Horizon's API-only prebuilt native library route (the CI artifact and clean startup proof remain open).
-- [ ] Pass official `cargo horizon-mod check` and package a native source `.hmod` in CI.
-- [ ] Produce and inspect a CI-built API-only client engine/native-library overlay using signed SDK slices and Horizon's real host loader; no Mojang assets are included.
+- [x] Pass official cargo horizon-mod check and package a native source .hmod in CI (run 44285877944; artifact inspected).
+- [ ] Produce and inspect a CI-built API-only client engine/native-library overlay using signed SDK slices and Horizon's real host loader; current run 44288685182 pending; no Mojang assets are included.
 - [ ] Combine the overlay with a matching licensed Minecraft 26.3 installation for a complete playable client; never bypass the official ownership check.
 - [x] Pin Horizon Nightly 2026-11-18, horizon-mixins revision and API version in the native trait mod manifest, including Horizon's required `registries` capability.
 - [x] Get the minimal Core bootstrap CI compile check passing (Actions run 44249522292; pinned Horizon API cargo check succeeded).
@@ -30,7 +30,7 @@
 - [ ] Evaluate whether a tiny tree-walking interpreter can provide enough language features for DreamMod without creating an unmaintainable custom language.
 - [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem replacement on desktop and ARM64 devices.
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
-- [x] Add prototype operation/call-depth and aggregate array/map/string/variable/function limits plus an array-growth regression test (Actions 44285379104 passed).
+- [x] Add prototype operation/call-depth and per-array/per-map/per-string/variable/function limits plus an array-growth regression test (Actions 44285379104 passed; not aggregate heap quotas).
 - [ ] Define production execution budgets, exact memory quotas, cancellation and diagnostics.
 
 ## Phase 3 — Core runtime
