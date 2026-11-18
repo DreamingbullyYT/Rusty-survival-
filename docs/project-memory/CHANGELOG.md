@@ -1,3 +1,9 @@
+## 2026-11-18 — Add real Horizon native trait package metadata
+- Corrected DreamMod Core from a bare Cargo Hooks crate into a native trait mod source package with `horizon-mod.toml`, API 0.2, no extra capabilities and exact Horizon/horizon-mixins pins.
+- Moved the Core pin to the published Nightly 2026-11-18 build `0b14f8acfd97fa2c750e42795249dcc981178ca4` and verified the current pinned source still contains `Route::Api` and the native library host.
+- Replaced the simple direct `cargo check` workflow with the official pinned `cargo-horizon-mod check` + source bundle build + artifact upload pipeline. The corrected workflow run 44284751206 is pending.
+- Corrected YAML quoting after the first workflow revision was rejected before job creation.
+
 ## 2026-11-18 — Finish formatting correction for benchmark guard
 - Applied rustfmt's required line wrapping to the corrected benchmark in commit 00a3360; fresh workflow run is pending.
 
