@@ -311,6 +311,101 @@ fn valid_archive_path(path: &str, kind: ArchiveEntryKind) -> bool {
     true
 }
 
+
+/// Maximum number of installed manifests considered in one dependency plan.
+pub const MAX_INSTALLED_MODS: usize = 4_096;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DependencyError {
+    TooManyMods,
+    InvalidManifest(String),
+    DuplicateModId(String),
+    MissingDependency { mod_id: String, dependency: String },
+    VersionMismatch { mod_id: String, dependency: String },
+    DependencyCycle(Vec<String>),
+}
+
+/// Build a deterministic load order. Dependencies always precede dependents;
+/// among currently-ready mods, IDs are ordered lexicographically.
+pub fn resolve_load_order(manifests: &[Manifest]) -> Result<Vec<String>, DependencyError> {
+    if manifests.len() > MAX_INSTALLED_MODS {
+        return Err(DependencyError::TooManyMods);
+    }
+
+    let mut by_id = BTreeMap::<String, &Manifest>::new();
+    for manifest in manifests {
+        validate_manifest(manifest)
+            .map_err(|_| DependencyError::InvalidManifest(manifest.id.clone()))?;
+        if by_id.insert(manifest.id.clone(), manifest).is_some() {
+            return Err(DependencyError::DuplicateModId(manifest.id.clone()));
+        }
+    }
+
+    let mut indegree = BTreeMap::<String, usize>::new();
+    let mut dependents = BTreeMap::<String, BTreeSet<String>>::new();
+
+    for (id, manifest) in &by_id {
+        indegree.insert(id.clone(), manifest.dependencies.len());
+        for (dependency_id, requirement) in &manifest.dependencies {
+            let dependency = by_id.get(dependency_id).ok_or_else(|| {
+                DependencyError::MissingDependency {
+                    mod_id: id.clone(),
+                    dependency: dependency_id.clone(),
+                }
+            })?;
+            let required = semver::VersionReq::parse(requirement)
+                .map_err(|_| DependencyError::InvalidManifest(id.clone()))?;
+            let actual = Version::parse(&dependency.version)
+                .map_err(|_| DependencyError::InvalidManifest(dependency_id.clone()))?;
+            if !required.matches(&actual) {
+                return Err(DependencyError::VersionMismatch {
+                    mod_id: id.clone(),
+                    dependency: dependency_id.clone(),
+                });
+            }
+            dependents
+                .entry(dependency_id.clone())
+                .or_default()
+                .insert(id.clone());
+        }
+    }
+
+    let mut ready = BTreeSet::<String>::new();
+    for (id, count) in &indegree {
+        if *count == 0 {
+            ready.insert(id.clone());
+        }
+    }
+
+    let mut order = Vec::with_capacity(manifests.len());
+    while let Some(id) = ready.iter().next().cloned() {
+        ready.remove(&id);
+        order.push(id.clone());
+
+        if let Some(children) = dependents.get(&id) {
+            for child in children {
+                let count = indegree
+                    .get_mut(child)
+                    .expect("dependent must have an indegree entry");
+                *count -= 1;
+                if *count == 0 {
+                    ready.insert(child.clone());
+                }
+            }
+        }
+    }
+
+    if order.len() != manifests.len() {
+        let cycle = indegree
+            .iter()
+            .filter_map(|(id, count)| (*count > 0).then_some(id.clone()))
+            .collect();
+        return Err(DependencyError::DependencyCycle(cycle));
+    }
+
+    Ok(order)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -411,6 +506,82 @@ mod tests {
     fn rejects_oversized_manifest_before_parsing() {
         let input = vec![b' '; MAX_MANIFEST_BYTES + 1];
         assert_eq!(parse_manifest(&input).unwrap_err(), ManifestError::TooLarge);
+    }
+
+
+    fn manifest_with(id: &str, version: &str, dependencies: &[(&str, &str)]) -> Manifest {
+        Manifest {
+            schema_version: 1,
+            id: id.into(),
+            name: id.into(),
+            version: version.into(),
+            api: ApiCompatibility {
+                min: "0.2.0".into(),
+                max: "0.3.0".into(),
+            },
+            entrypoint: "scripts/main.dream".into(),
+            capabilities: Vec::new(),
+            dependencies: dependencies
+                .iter()
+                .map(|(dependency, range)| ((*dependency).into(), (*range).into()))
+                .collect(),
+        }
+    }
+
+    #[test]
+    fn dependency_order_is_stable_and_dependencies_come_first() {
+        let manifests = [
+            manifest_with("example.app", "1.0.0", &[("example.base", "^1.0")]),
+            manifest_with("example.zed", "1.0.0", &[]),
+            manifest_with("example.base", "1.2.0", &[]),
+        ];
+        assert_eq!(
+            resolve_load_order(&manifests).unwrap(),
+            vec!["example.base", "example.app", "example.zed"]
+        );
+    }
+
+    #[test]
+    fn dependency_resolver_rejects_missing_and_incompatible_dependencies() {
+        let missing = [manifest_with(
+            "example.app",
+            "1.0.0",
+            &[("example.missing", "^1.0")],
+        )];
+        assert!(matches!(
+            resolve_load_order(&missing),
+            Err(DependencyError::MissingDependency { .. })
+        ));
+
+        let incompatible = [
+            manifest_with("example.app", "1.0.0", &[("example.base", "^2.0")]),
+            manifest_with("example.base", "1.5.0", &[]),
+        ];
+        assert!(matches!(
+            resolve_load_order(&incompatible),
+            Err(DependencyError::VersionMismatch { .. })
+        ));
+    }
+
+    #[test]
+    fn dependency_resolver_rejects_cycles_and_duplicate_ids() {
+        let cycle = [
+            manifest_with("example.alpha", "1.0.0", &[("example.beta", "^1.0")]),
+            manifest_with("example.beta", "1.0.0", &[("example.alpha", "^1.0")]),
+        ];
+        assert!(matches!(
+            resolve_load_order(&cycle),
+            Err(DependencyError::DependencyCycle(_))
+        ));
+
+        let duplicate = [
+            manifest_with("example.same", "1.0.0", &[]),
+            manifest_with("example.same", "1.1.0", &[]),
+        ];
+        assert_eq!(
+            resolve_load_order(&duplicate),
+            Err(DependencyError::DuplicateModId("example.same".into()))
+        );
     }
 
     fn archive_file(path: &str, size: u64) -> ArchiveEntry {
