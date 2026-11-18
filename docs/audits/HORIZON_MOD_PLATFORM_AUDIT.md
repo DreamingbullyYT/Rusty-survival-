@@ -26,7 +26,7 @@ The official launcher documentation says API-only mods need only the SDK's `runt
 horizon-launcher native-build mods/dreammod-core --server-output ./dreammod-server --version nightly-2026-11-18-0b14f8a --trust-native-code --profile optimized
 ```
 
-This produces a standalone `horizon-engine` folder with the native inventory and mod libraries, without creating/selecting a client instance. The CI workflow now tests this server export first. It proves the API-only native build path, not a complete client install or game launch; those remain separate gates.
+This produces a standalone `horizon-engine` folder with the native inventory and mod libraries, without creating/selecting a client instance. The standalone server-export CLI also requires a prepared Minecraft install, so it is not an account-free CI path. The current CI workflow instead checks out the pinned Horizon source and uses a test-only harness to invoke the exact internal `prebuilt::compile(..., Route::Api, ...)` function with the signed SDK's client `runtime` and `api` slices. It writes the normal native library inventory with Horizon's `library_record::collect`, then calls the real `horizon-mod-host::native_libraries::load` to verify that the produced dylib and identity/hash record load. This produces a client engine overlay without Mojang assets or an account; it is not a complete game installation or a gameplay launch. The user's launcher must combine the overlay with a matching licensed base installation and its game assets.
 
 Pinned current-baseline references:
 - [Nightly 2026-11-18 source](https://github.com/horizon-rust/horizon/tree/0b14f8acfd97fa2c750e42795249dcc981178ca4)
