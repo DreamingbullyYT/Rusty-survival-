@@ -1555,3 +1555,8 @@ Verification:
 - Core run `44363904945` and overlay run `44363904976` still running at last inspection.
 Limitations:
 - No runtime coordinator currently passes a live ModManager callback into the Horizon host collector; only the typed closure boundary and manager API exist.
+
+### S-2026-11-18-48 verification addendum
+- Package run `44364198594` on commit `4103668fee` completed SUCCESS. Exact logs show 42 passing tests, including all seven manager tests (dependency order, callback authorization, dependency enable gate, disable protection, normal and already-failed transitive cascades, invalid graph); formatting and Clippy also passed.
+- PMCS run `44364312080` completed SUCCESS with all six validator regression tests and structural/freshness validation.
+- Core run `44363904945` was still building pinned `cargo-horizon-mod`; overlay run `44363904976` was still compiling the API-only route. Real native host loading remains unverified.
