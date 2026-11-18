@@ -29,10 +29,7 @@ impl RhaiPrototype {
         Self::parse_with_limits(source, RuntimeLimits::default())
     }
 
-    pub fn parse_with_limits(
-        source: &str,
-        limits: RuntimeLimits,
-    ) -> Result<Self, ParseError> {
+    pub fn parse_with_limits(source: &str, limits: RuntimeLimits) -> Result<Self, ParseError> {
         let mut engine = Engine::new();
         engine.set_max_operations(limits.max_operations);
         engine.set_max_call_levels(limits.max_call_levels);
@@ -43,19 +40,12 @@ impl RhaiPrototype {
         Ok(Self { engine, ast })
     }
 
-    pub fn call_i64(
-        &self,
-        function: &str,
-        argument: i64,
-    ) -> Result<i64, Box<EvalAltResult>> {
+    pub fn call_i64(&self, function: &str, argument: i64) -> Result<i64, Box<EvalAltResult>> {
         self.engine
             .call_fn(&mut Scope::new(), &self.ast, function, (argument,))
     }
 
-    pub fn call_no_args_i64(
-        &self,
-        function: &str,
-    ) -> Result<i64, Box<EvalAltResult>> {
+    pub fn call_no_args_i64(&self, function: &str) -> Result<i64, Box<EvalAltResult>> {
         self.engine
             .call_fn(&mut Scope::new(), &self.ast, function, ())
     }
@@ -95,10 +85,7 @@ mod tests {
 
     #[test]
     fn interprets_source_and_dispatches_a_game_event() {
-        let program = RhaiPrototype::parse(
-            "fn on_player_damage(amount) { amount - 3 }",
-        )
-        .unwrap();
+        let program = RhaiPrototype::parse("fn on_player_damage(amount) { amount - 3 }").unwrap();
 
         assert_eq!(program.call_i64("on_player_damage", 12).unwrap(), 9);
     }
@@ -142,11 +129,7 @@ mod tests {
         .unwrap();
 
         let result = program
-            .call_physics_batch(
-                vec![0.0, 10.0, -2.0],
-                vec![2.0, -1.0, 4.0],
-                0.5,
-            )
+            .call_physics_batch(vec![0.0, 10.0, -2.0], vec![2.0, -1.0, 4.0], 0.5)
             .unwrap();
 
         assert_eq!(result, vec![1.0, 9.5, 0.0]);
