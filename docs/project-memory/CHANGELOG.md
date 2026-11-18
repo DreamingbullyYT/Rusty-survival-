@@ -426,3 +426,9 @@
 - Corrected the collector body after a source-edit regression left the previous public function declaration duplicated inside the private helper.
 - The latest source commit `eadd1aa545851d487da4e2ff2f37edfbec327dfb` restores one private unchecked collector, called only from the authorization-gated public entry point.
 - The prior in-flight Core run targets the intermediate broken commit; check the new run for the corrected source.
+
+
+## 2026-11-18 — Execute Core tests in CI
+- Extended `.github/workflows/dreammod-core.yml` to run `cargo fmt --all -- --check` and `cargo test` after the pinned Horizon SDK check has fetched/verified the SDK.
+- This makes the Core-local authorization and snapshot validation tests executable in CI instead of merely present in source.
+- Workflow commit: `ffe93f053ab6a0a0df99953a1206262661e8b111`. First run must confirm the test command works with the generated SDK path.
