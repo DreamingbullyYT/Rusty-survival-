@@ -386,4 +386,4 @@
 - Added `HostAdapter::read_player_snapshot()`, which checks the `entities.read` capability and enabled lifecycle state before invoking the Horizon-side read closure.
 - Added tests for valid DTOs, invalid names/dimensions/coordinates, denied callback non-invocation and invalid snapshot rejection.
 - This is the typed bridge contract and policy boundary only; no concrete `ServerHost` implementation or script exposure is wired yet.
-- Source commits: `3e8baf1`, `8845d96`, `7bae3ea`. Package CI verification pending.
+- Source commits: `3e8baf1`, `8845d96`, `7bae3ea`. Verification: Actions run `44309091208` passed formatting, all package tests and Clippy.
