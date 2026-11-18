@@ -263,3 +263,8 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - DreamMod Core's bounded player collector now consumes that shared trait. `dreammod-package::ModLifecycle` implements it by delegating to its lifecycle+capability check.
 - Core does not depend on the archive inspector or its ZIP/JSON/semver dependencies. This is a typed integration seam; no runtime instance manager, interpreter, scheduler or script binding exists yet.
 - Actions runs for Core `44362777239`, package `44362757352`, overlay `44362776804`, and PMCS `44362787017` were started; results must be checked before marking verified.
+
+## Authorization regression coverage — 2026-11-18
+- The package bridge re-exports the shared `entities.read` constant from `dreammod-contract`.
+- Added a direct trait-level lifecycle regression test covering awaiting approval, no grant, ready-but-not-enabled, enabled with grant, disabled and failed states.
+- Package run `44362952060` is queued for this test; Core run `44362777239` is still building the pinned Horizon checker. Overlay run `44362776804` remains queued. Results pending.
