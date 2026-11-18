@@ -1,0 +1,39 @@
+name: DreamMod Runtime
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "mods/dreammod-runtime/**"
+      - ".github/workflows/dreammod-runtime.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dreammod-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CARGO_BUILD_JOBS: 2
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@1.95.0
+        with:
+          components: rustfmt, clippy
+      - name: Cache DreamMod runtime
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "mods/dreammod-runtime -> target"
+      - name: Check formatting
+        run: cargo fmt --manifest-path mods/dreammod-runtime/Cargo.toml -- --check
+      - name: Run package, sandbox and runtime tests
+        run: cargo test --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml
+      - name: Run Clippy
+        run: cargo clippy --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml -- -D warnings
