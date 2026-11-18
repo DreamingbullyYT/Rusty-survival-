@@ -2,6 +2,7 @@
 use mod_api::Hooks;
 
 pub mod engine_bridge;
+pub mod engine_coordinates;
 pub mod player_snapshot;
 
 #[derive(Default)]
