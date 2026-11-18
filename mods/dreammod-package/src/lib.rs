@@ -7,6 +7,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::io::{Cursor, Read, Seek};
 use zip::{CompressionMethod, ZipArchive};
 
+pub mod bridge;
 pub mod lifecycle;
 
 pub const MANIFEST_SCHEMA_VERSION: u32 = 1;
