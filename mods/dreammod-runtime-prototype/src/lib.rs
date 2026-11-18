@@ -78,16 +78,22 @@ impl RhaiPrototype {
         delta_seconds: f64,
     ) -> Result<Vec<f64>, Box<EvalAltResult>> {
         if positions.len() != velocities.len() {
-            return Err(batch_error("positions and velocities must have equal lengths"));
+            return Err(batch_error(
+                "positions and velocities must have equal lengths",
+            ));
         }
         if positions.len() > MAX_PHYSICS_BATCH_ITEMS {
-            return Err(batch_error("physics batch exceeds the configured item limit"));
+            return Err(batch_error(
+                "physics batch exceeds the configured item limit",
+            ));
         }
         if !delta_seconds.is_finite()
             || positions.iter().any(|value| !value.is_finite())
             || velocities.iter().any(|value| !value.is_finite())
         {
-            return Err(batch_error("physics inputs must contain only finite numbers"));
+            return Err(batch_error(
+                "physics inputs must contain only finite numbers",
+            ));
         }
         let expected_len = positions.len();
         let positions = positions.into_iter().map(Into::into).collect::<Array>();
@@ -99,7 +105,9 @@ impl RhaiPrototype {
             (positions, velocities, delta_seconds),
         )?;
         if result.len() != expected_len {
-            return Err(batch_error("physics provider returned an unexpected result length"));
+            return Err(batch_error(
+                "physics provider returned an unexpected result length",
+            ));
         }
         result
             .into_iter()
