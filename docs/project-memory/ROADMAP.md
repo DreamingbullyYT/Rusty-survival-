@@ -2,6 +2,7 @@
 
 ## Phase 0 — Project continuity
 - [x] Preserve PMCS, validator, regression tests and GitHub Actions workflow.
+- [ ] Verify legacy-aware session ID validation and its duplicate/reuse regression tests.
 - [x] Record the 2026-11-18 DreamMod project pivot in persistent memory.
 - [x] Define the initial DreamMod architecture and prebuilt-distribution model.
 
