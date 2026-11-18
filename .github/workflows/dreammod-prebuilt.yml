@@ -34,13 +34,13 @@ jobs:
       - name: Install native build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            pkg-config libasound2-dev libudev-dev \
-            libfontconfig1-dev libfreetype-dev libvulkan-dev \
-            libx11-dev libx11-xcb-dev libxcb1-dev libxcb-render0-dev \
-            libxcb-shape0-dev libxcb-xfixes0-dev libxcb-randr0-dev \
-            libxcb-xkb-dev libxcb-xinput-dev libxcb-cursor-dev \
-            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+          sudo apt-get install -y \\
+            pkg-config libasound2-dev libudev-dev \\
+            libfontconfig1-dev libfreetype-dev libvulkan-dev \\
+            libx11-dev libx11-xcb-dev libxcb1-dev libxcb-render0-dev \\
+            libxcb-shape0-dev libxcb-xfixes0-dev libxcb-randr0-dev \\
+            libxcb-xkb-dev libxcb-xinput-dev libxcb-cursor-dev \\
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \\
             libgl1-mesa-dev libegl1-mesa-dev libgtk-3-dev patchelf
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@1.99.1
@@ -64,9 +64,9 @@ jobs:
           export XDG_DATA_HOME="$RUNNER_TEMP/horizon-xdg/data"
           export XDG_CACHE_HOME="$RUNNER_TEMP/horizon-xdg/cache"
           cd .ci/horizon/launcher
-          DREAMMOD_MOD_DIR="$GITHUB_WORKSPACE/mods/dreammod-core" \
-          DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt" \
-          DREAMMOD_HORIZON_BUILD="0b14f8acfd97fa2c750e42795249dcc981178ca4" \
+          DREAMMOD_MOD_DIR="$GITHUB_WORKSPACE/mods/dreammod-core" \\
+          DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt" \\
+          DREAMMOD_HORIZON_BUILD="0b14f8acfd97fa2c750e42795249dcc981178ca4" \\
           cargo test -p horizon-launcher --lib native_mods::dreammod_api_route_ci::build_prebuilt_api_only_client_overlay -- --ignored --exact --nocapture
       - name: Make Linux overlay libraries resolve sibling dependencies
         shell: bash
@@ -91,7 +91,7 @@ jobs:
           for row in receipt["libraries"]:
               library = out / row["file"]
               row["sha256"] = hashlib.sha256(library.read_bytes()).hexdigest()
-          receipt_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+          receipt_path.write_text(json.dumps(receipt, indent=2) + "\\n", encoding="utf-8")
           PY
       - name: Verify the real Horizon native host loads the prebuilt library without overlay env
         shell: bash
@@ -104,7 +104,9 @@ jobs:
             readelf -d "$library" | grep -E 'RUNPATH|RPATH' || true
           done
           cd .ci/horizon
-          timeout --signal=TERM --kill-after=15s 180s env -u LD_LIBRARY_PATH cargo test -p horizon-mod-host --no-default-features native_libraries::dreammod_ci_loader_test::loads_dreammod_prebuilt_overlay -- --ignored --exact --nocapture
+          # This test compiles horizon-mod-host and its dependency graph from a clean
+          # runner cache. Keep compilation time separate from the job's 90-minute cap.
+          timeout --signal=TERM --kill-after=30s 900s env -u LD_LIBRARY_PATH cargo test -p horizon-mod-host --no-default-features native_libraries::dreammod_ci_loader_test::loads_dreammod_prebuilt_overlay -- --ignored --exact --nocapture
       - name: Inspect and archive the client overlay
         shell: bash
         run: |
