@@ -20,7 +20,7 @@ Horizon internals cannot be assumed replaceable merely because hooks exist. Iden
 
 ## DM-005 — Script performance in hot paths
 Status: OPEN
-Interpreted callbacks may be too slow at per-entity/per-vertex frequency. Use batching/coarse-grained dispatch and benchmark representative workloads before promising full replacement.
+Interpreted callbacks are 462.94× slower than Rust in the current synthetic 10k-item Rhai benchmark on x86_64 CI. Do not promise arbitrary per-entity/per-vertex script loops for physics/rendering. Use coarse provider dispatch with Rust-owned batch iteration. A CI-prebuilt native kernel tier could be considered later, but is not implemented and would be separate from interpreted `.dmod` scripts.
 
 ## DM-006 — Script sandbox and capabilities
 Status: OPEN
