@@ -1207,3 +1207,23 @@ Limitations:
 - The tests verify the package contract and guard only; no Horizon ServerHost collector, interpreter binding or sandbox exists.
 Next:
 - Build the Core-side collector against the pinned Horizon SDK, then test host access and ownership before adding any script-visible API.
+
+
+## S-2026-11-18-33 — Implement the Core-side Horizon player snapshot collector
+Date: 2026-11-18
+Commits:
+- Collector module: 7ecd981babec69a5081aecacd25f7b36629f71ea
+- Core module export: b2362c6a1347390f4f330655fb0823e8563d94d8
+Goal: Replace the abstract host-read closure with the first concrete, pinned-SDK Core collector while keeping Horizon handles out of the future script boundary.
+Changes:
+- Added a Core-local owned PlayerSnapshot and PlayerSnapshotBatch, avoiding a dependency on the package/ZIP crate.
+- Used ServerHost::players().server_players() in Horizon connection order.
+- Rejects a list above 256 before individual reads; copies UUID, name, dimension and position; rejects unavailable values, malformed IDs/names, invalid coordinates and duplicate UUIDs.
+- Exported the collector as a Core module for later capability-gated runtime use.
+Verification:
+- DreamMod Core Actions run 44310547586 is building cargo-horizon-mod; the SDK compile/check and package steps are pending.
+- PMCS run 44310547866 failed because implementation changes lacked the required memory updates. This entry and the companion PMCS files are the correction; rerun validation after these commits.
+Limitations:
+- No interpreter, script-visible binding, sandbox or per-mod capability invocation exists yet. The collector is not called on every tick and retains no Horizon handles.
+Next:
+- Confirm pinned SDK host/WASM compilation. Fix any actual signature/type errors reported by the checker. Then add a Core test harness or integration test for the snapshot collector and connect it only through the lifecycle capability gate.
