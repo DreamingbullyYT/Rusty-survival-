@@ -1,6 +1,6 @@
 # DreamMod — Architecture and Integration Plan
 
-Status: ARCHITECTURE PROPOSED; NO DREAMMOD CODE IMPLEMENTED
+Status: CORE BOOTSTRAP VERIFIED IN CI; INTERPRETER CANDIDATE PROTOTYPE ADDED; PREBUILT DISTRIBUTION NOT VERIFIED
 Date: 2026-11-18
 Target engine: Horizon (upstream engine; reuse its .hmod/native mod API and host, with horizon-mixins only where required)
 Repository role: DreamMod runtime, API, package format, tests and integration source
@@ -100,17 +100,27 @@ A subsystem is replaceable only if DreamMod can define its complete contract: in
 
 ## 8. Script language decision
 
-OPEN. Rhai is an initial Rust-native interpreted-language candidate, not an approved final choice. Before locking it, compare at least:
-- true source interpretation (no required bytecode compilation),
+OPEN — no final language has been selected.
+
+Initial shortlist:
+- **Rhai 1.27.0:** Rust-native embedding, source parser produces an AST which is evaluated by the AST walker. The optional Rhai Grain bytecode VM is deliberately not enabled in DreamMod. The prototype also disables AST optimization so we can measure the interpreter path rather than optimized-away script logic.
+- **Starlark 0.14.x:** Rust interpreter with an explicit parse-to-AST and evaluator API; useful comparison for deterministic behavior and a constrained language surface.
+
+The first Rhai evaluation prototype now exists at `mods/dreammod-runtime-prototype`. It covers event-style function calls, a coarse-grained batch host query, a batched physics-provider function, and an execution-operation budget. Its existence is not a final language decision and it is not yet integrated into DreamMod Core.
+
+Important terminology: parsing source into an AST is required by ordinary interpreters and is not native-code or bytecode compilation. The player must never run a native compiler, bytecode compiler/VM preparation step, JIT, or game rebuild for a `.dmod`. The prototype must keep Rhai's Grain feature disabled and must not serialize compiled executable artifacts.
+
+Before selection, compare:
+- true source interpretation and whether AST parsing meets the product requirement,
 - ability to expose large typed APIs safely,
 - runtime throughput and allocation behavior,
-- sandboxing/capability model,
+- sandboxing/capability model and resource metering,
 - Android/ARM64 support,
 - debugging, diagnostics and hot reload,
-- ability to call batched Rust APIs efficiently,
-- long-term maintenance and license.
+- batched API calls and subsystem-provider workloads,
+- maintenance, dependency footprint and license.
 
-Do not select a language based only on syntax or a microbenchmark. Build a small representative prototype and benchmark event dispatch, entity batches, world queries, and a coarse subsystem replacement.
+Do not select a language based only on syntax or a microbenchmark. Benchmark event dispatch, entity batches, world queries, and a coarse subsystem replacement on desktop and representative ARM64 devices.
 
 ## 9. Package contract (draft)
 
@@ -157,4 +167,9 @@ The manifest must identify package ID, version, display name, entry points, requ
 
 ## 13. Current status
 
-Only this architecture proposal exists. No native .hmod integration, interpreter, loader, manifest parser, API, package, benchmark, compatibility test or prebuilt distribution has been implemented or verified.
+- The minimal native `.hmod` Core bootstrap is implemented and its `cargo check` against pinned Horizon source passed in GitHub Actions run `44249522292` (commit `d6ca63ecea51facfaeda46e37e15e0664d188814`). This verifies API-level compilation only; it does not prove native library packaging or game startup.
+- `mods/dreammod-runtime-prototype` contains an initial Rhai AST-interpreter evaluation harness with tests and a coarse batch benchmark. It is a candidate prototype, not the production runtime and not yet part of DreamMod Core.
+- The runtime prototype CI workflow has been added; its result is pending.
+- No `.dmod` manifest/parser/loader, package lifecycle, production sandbox, capability enforcement, stable public API, subsystem registry, prebuilt native distribution or clean game startup proof exists yet.
+- No language decision has been made; Rhai and Starlark remain candidates.
+- No Android/ARM64 runtime benchmark has been performed.
