@@ -1695,3 +1695,11 @@ Verification:
 - Package workflow run `44386150155` on `d7bc8e4cc437` and PMCS run `44386149892` were pending at the time of this log entry. Do not mark them passed until completed.
 Limitations:
 - This is still a host-independent reservation registry. No Horizon asset, renderer, UI, texture, sound or other resource is registered in the live game. External publication/rollback must be implemented only after confirming the pinned Horizon APIs.
+
+
+## S-2026-11-18-56 — Resource transaction test hardening
+Date: 2026-11-18
+Commit: `51aa347d1140f52358db7387d35a98f9d0f0bbb1`
+- Confirmed ModManager resource lifecycle integration passed package CI run `44386150155`: 55 tests, rustfmt and Clippy with `-D warnings`.
+- Strengthened the manager regression suite with duplicate-ID batch rejection and verified the failed batch leaves no reservations. Renamed the foreign namespace test so its name matches its actual assertion.
+- Follow-up package run after this test-only commit is pending. PMCS run `44386238578` for the prior documentation commit remained pending without a started job at the time of this entry.
