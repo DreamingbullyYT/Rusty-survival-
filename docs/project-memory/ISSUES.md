@@ -79,3 +79,8 @@ Added a bounded, side-effect-free dependency planner to `dreammod-package`. It v
 ## DM-017 — Real in-memory .dmod ZIP inspection
 Status: VERIFIED
 Added an exact-pinned ZIP reader dependency and inspect_dmod(). It bounds compressed input, validates archive header consistency before member access, accepts only Stored/Deflate, performs metadata preflight before decompression, reads and parses the manifest, validates the declared script entrypoint, then streams all regular members to EOF in fixed-size chunks for actual-size and CRC validation. No files are extracted. Tests cover real valid ZIPs, traversal, truncated/non-ZIP input and payload corruption. GitHub Actions run 44299317538 passed on commit 4e983c04ea8f3a4085aa2e13b6b53d691c307564: formatting, all 19 tests, and Clippy with `-D warnings`. The initial test failure was a malformed JSON fixture for a Windows path; after correcting its JSON escaping, tests passed. Clippy then identified a needless boolean branch in the path validator; it was simplified and the complete workflow passed.
+
+
+## DM-018 — Legacy duplicate session IDs in append-only PMCS journal
+Status: IMPLEMENTED — CI PENDING
+The historical SESSION_LOG contains duplicate IDs from earlier entries. Rewriting those headings would violate the append-only rule. The validator now permits legacy duplicates but rejects newly appended IDs that duplicate another new entry or reuse any prior ID. Regression tests cover both cases; verify the PMCS workflow before marking this VERIFIED.
