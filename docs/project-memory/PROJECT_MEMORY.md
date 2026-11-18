@@ -113,3 +113,7 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Added `ModLifecycle::ensure_enabled()` as a state-only check, separate from capability grants.
 - Added `ModManager::entrypoint_source(mod_id)` to borrow the validated manifest entrypoint bytes only after the mod is Enabled. The mod's own entrypoint is not represented as a user-grantable capability; privileged host APIs still require explicit capabilities.
 - Added a test for denial before approval/activation and success after enable. Package CI after commits `be02358` and `ee903d7` is pending.
+
+### Entrypoint source verification — 2026-11-18
+- Package run `44365010182` on commit `ee903d7c76`: PASS — all 44 tests, including `entrypoint_source_is_borrowed_only_after_activation`, rustfmt and Clippy.
+- Overlay run `44363904976` has passed API-only compile and `$ORIGIN` setup; real Horizon host loading without overlay environment overrides remains in progress.
