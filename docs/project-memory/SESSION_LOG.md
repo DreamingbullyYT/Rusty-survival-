@@ -1141,3 +1141,16 @@ Limitations:
 - HostAdapter remains a generic policy guard. No concrete Horizon host operation is routed through it; it is not a sandbox and does not execute scripts.
 Next:
 - Check package workflow 44304258172. Then implement the first narrow owned-value adapter against the pinned SDK, only after defining its DreamMod operation contract and testing the capability check before the Horizon call.
+
+
+## S-2026-11-18-29 — Record package CI verification
+Date: 2026-11-18
+Commit: d9a524f6ff0b4ef6124abf2c0fdd8aaebdc19747
+Goal: Record the completed verification for the lifecycle host-call denial regression tests.
+Verification:
+- DreamMod package Actions run 44304258172: SUCCESS.
+- Rust formatting, all package tests and Clippy with `-D warnings` passed.
+Limitations:
+- This verifies the package/lifecycle crate only. It does not verify concrete Horizon host integration or a sandbox.
+Next:
+- Continue with the first narrow, owned-value Horizon adapter after its operation contract is specified.
