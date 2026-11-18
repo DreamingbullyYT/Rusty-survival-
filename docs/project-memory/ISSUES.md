@@ -89,3 +89,8 @@ The historical SESSION_LOG contains duplicate IDs from earlier entries. Rewritin
 ## DM-019 — Retain validated .dmod contents in memory
 Status: VERIFIED
 inspect_dmod() now returns a ValidatedPackage containing parsed manifest metadata, archive inventory and validated PackageFile records for scripts/assets. Every file is streamed to EOF and CRC-checked before its bytes are retained. Aggregate and per-file uncompressed limits bound retained data; manifest.json is parsed separately and not duplicated. No filesystem extraction, installation, permission grant or execution occurs. Fixture assertions verify exact retained script/asset bytes. Actions run 44300015439 passed formatting, all 19 tests and Clippy on commit 2dd019b.
+
+
+## DM-020 — Explicit capability grant planning
+Status: IMPLEMENTED — CI PENDING
+Added plan_capability_grants(manifest, approved) as a pure deterministic planner. Empty approvals grant nothing; requested but unapproved capabilities remain denied; unknown, unrequested and duplicate approvals are rejected. The returned CapabilityPlan is not runtime authority: the future host must enforce capabilities at every API boundary. No launcher permission UI, sandbox or live capability enforcement is implemented. Regression tests and package CI are pending.
