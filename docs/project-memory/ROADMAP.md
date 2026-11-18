@@ -271,3 +271,11 @@ Scope: internal resource ID reservations only; no live Horizon resources are reg
 - [x] Add duplicate-ID batch rollback regression and accurate test naming.
 - [ ] Verify package workflow after `51aa347d1140`.
 - [ ] Verify latest PMCS validator run after the full five-file update.
+
+
+### Resource lifecycle integration verification
+- [x] Package run `44386150155`: 55 tests, rustfmt and strict Clippy passed.
+- [x] Follow-up package run `44386384391` after duplicate-batch regression: 55 tests, rustfmt and strict Clippy passed.
+- [x] Inspect exact pinned Horizon texture-atlas registration hook and reload contract.
+- [ ] Implement the smallest Core hook adapter only after a safe declaration snapshot/coordinator exists; re-submit declarations on each resource reload.
+- [ ] PMCS latest validation after this documentation update.
