@@ -252,3 +252,15 @@ Scope note: current registry is metadata bookkeeping only; no Horizon resource i
 - [x] Rust formatting passed on run `44385572845`.
 - [x] Correct strict Clippy findings from that run.
 - [ ] Confirm follow-up package run after `d1d89c64aad8` passes tests, formatting and Clippy.
+
+
+### ModManager resource lifecycle integration
+1. [x] Give ModManager ownership of the transactional resource registry.
+2. [x] Permit registration only for Enabled mods.
+3. [x] Enforce each mod's own resource namespace.
+4. [x] Release reservations on disable and transitive failure.
+5. [x] Add lifecycle integration tests.
+6. [ ] Verify package CI run `44386150155` (format, tests, Clippy).
+7. [ ] Verify pinned Horizon SDK resource registration APIs before implementing any external host adapter.
+
+Scope: internal resource ID reservations only; no live Horizon resources are registered.
