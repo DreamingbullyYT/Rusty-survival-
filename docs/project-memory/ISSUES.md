@@ -159,5 +159,16 @@ Actions run 44322745328 failed while compiling the CI-only tests injected into t
 
 
 ## DM-028 — Prebuilt compiler must match the SDK producer toolchain
-Status: INVESTIGATING
+Status: VERIFIED
 Overlay run 44324363090 reached Horizon's API-only prebuilt compiler, then failed with E0514 because SDK crate mod_api was produced by a different rustc than the overlay workflow's 1.95.0. The exact pinned Horizon commit 0b14f8acfd97fa2c750e42795249dcc981178ca4 declares tools/ci/rust-version = 1.99.1 in its SDK publish workflow. Updated the DreamMod overlay workflow to install 1.99.1 and stamp the same value into overlay metadata (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7). Run 44328650675 is pending/in progress; verify whether the E0514 and generated crate::hooks errors disappear before changing Core source. Do not assume the second diagnostic is independent until rerun evidence is available.
+
+
+## DM-029 — Temporary official Minecraft reference and engine CI
+Status: VERIFIED
+The push/PR workflow `.github/workflows/reference-artifact-smoke.yml` downloads official Java 26.3 into a unique temporary runner directory, verifies official metadata SHA-1/size and the bundled ZIP CRCs, runs workspace format/tests/Clippy, and deletes the directory unconditionally. Run 44331401582 passed: 5 engine coordinate tests, 5 testkit contract tests, formatting, Clippy, and cleanup. Artifact was 62,294,556 bytes with SHA-1 `33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c`. This is not a Java behavior oracle or differential parity test.
+
+## DM-030 — Engine Java 26.3 parity harness and DreamMod HNMod runtime integration
+Status: OPEN
+The engine workspace currently contains only `engine-core` horizontal block-to-chunk coordinate mapping and `testkit` fixture schema/validation. No vanilla-reference fixtures, Java oracle driver, differential comparison runner, world simulation, or playable engine exists. The current reference workflow only verifies the downloaded official server archive and runs existing Rust tests; do not describe it as testing engine outputs against Minecraft.
+DreamMod Core is a valid native Horizon `.hmod` source package and its source validation/tests/package workflow passed in run 44322745253. However, `DreamModCore` currently has an empty `Hooks` implementation, the Core collector is not wired to the player-side runtime, and the package/runtime crates are not linked into Core. No end-to-end mod script or full game launch is verified. The prebuilt overlay's API-only compile succeeded in run 44328650675, but its host-loader step was cancelled; rerun 44330930078 is pending.
+The official launcher/build flow requires an authenticated account that owns the matching Minecraft release. Do not bypass ownership checks or distribute Mojang assets. A CI native-host loader test is the safe integration gate before any licensed full-game launch.
