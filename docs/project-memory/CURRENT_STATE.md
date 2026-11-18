@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-18
 Status: CORE_SOURCE_PACKAGE_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HARNESS_IN_PROGRESS; DREAMMOD_PACKAGE_INSPECTOR_VERIFIED; RHAI_CANDIDATE_PROVISIONAL
-Repository HEAD at last inspection: 4e983c04ea8f3a4085aa2e13b6b53d691c307564
+Repository HEAD: resolve dynamically from `main`; latest verified package CI commit: `4e983c04ea8f3a4085aa2e13b6b53d691c307564`.
 
 ## Direction
 - Active project: DreamMod, a deeply extensible interpreted modding runtime for Horizon.
@@ -44,6 +44,7 @@ Repository HEAD at last inspection: 4e983c04ea8f3a4085aa2e13b6b53d691c307564
 - `mods/dreammod-package` defines and validates the version-1 JSON manifest contract, capability declarations, dependency declarations, and deterministic dependency-first load order.
 - `inspect_dmod()` now parses actual ZIP input in memory, performs metadata preflight and local-header consistency validation, checks the manifest and declared entrypoint, and streams regular entries to EOF for actual-size and CRC validation. It never extracts files.
 - Dedicated package CI passed on commit `4e983c04ea8f3a4085aa2e13b6b53d691c307564`, Actions run `44299317538`: formatting step, all 19 unit tests, and Clippy with `-D warnings` succeeded.
+- PMCS session-log validation is being made legacy-aware: old duplicate headings are preserved, while new entries must be unique against all prior IDs; regression tests are added and CI is pending.
 - No filesystem installation, content retention for runtime use, capability grant, script execution, or production sandbox exists.
 - No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
 - The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
