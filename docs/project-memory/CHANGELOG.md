@@ -1,3 +1,8 @@
+## 2026-11-18 — Fix native manifest validation and cache Horizon tooling
+- The first official `cargo horizon-mod check` run 44284751206 built the pinned tool successfully, then rejected the manifest because Horizon's current native template requires `capabilities = ["registries"]` even for native API mods. Added that required field in 9a5f9b5 and documented it as a real trust permission.
+- Changed the Core workflow from `cargo install` to a cached workspace `cargo build --release` for the pinned `cargo-horizon-mod` tool, avoiding a full uncached 5-minute install on every run.
+- Fresh official package check/build run is pending.
+
 ## 2026-11-18 — Add resource limits to the Rhai candidate harness
 - Extended `RuntimeLimits` with maximum aggregate array items, map entries, string bytes, variables and functions, in addition to operation and call-depth budgets.
 - Added an array-growth regression test that must stop when the configured aggregate array budget is exceeded.
