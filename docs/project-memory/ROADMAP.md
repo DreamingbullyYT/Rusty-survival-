@@ -55,7 +55,7 @@
 - [x] Require a per-mod player-read authorization interface before Core touches ServerHost; regression tests prove denial happens before the host callback. Binding the interface to actual ModLifecycle instances remains open.
 - [x] Add Core-local snapshot validation/batch-limit unit tests.
 - [x] Add explicit Core CI formatting and cargo test steps after pinned SDK setup; first execution result pending.
-- [ ] Verify the corrected gated collector source commit eadd1aa in Core Actions; earlier run targeted an intermediate source-edit regression.
+- [x] Verify the corrected gated collector source and gated-read regression tests in Core Actions run 44322745253 (HEAD 741f7ff1).
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
 
@@ -98,3 +98,12 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 2. Implement per-dispatch snapshot reuse only once a scheduler exists and its thread/re-entrancy semantics are proven.
 3. Ensure each mod's capability is checked before exposing a shared immutable batch.
 4. Benchmark cloning and batch delivery at representative player counts on x86_64 and ARM64.
+
+
+## Verification refresh — 2026-11-18
+1. [x] Core pinned SDK check, formatting, unit tests and source packaging pass in run 44322745253 (HEAD 741f7ff1).
+2. [x] Package Arc-backed batch tests pass in run 44318172781; cooperative archive-deadline CI passed in run 44317125357.
+3. [ ] Repair and rerun API-only overlay CI. Run 44322745328 exposed a type-name collision: use prebuilt::Route::Api, not the UI-facing picker::Route::Api.
+4. [ ] Verify real Horizon native host loading and inspect the resulting overlay artifact. The host-loader step has not run successfully.
+5. [ ] Continue with capability/lifecycle wiring only after defining a concrete per-mod runtime owner; do not add a global snapshot cache without scheduler/thread/re-entrancy semantics.
+6. [ ] Add representative snapshot benchmarks, then ARM64 measurements. No FPS or throughput target is verified.
