@@ -84,3 +84,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Core's `with_player_read_authorization` and `collect_online_players` now accept a one-shot authorization closure. This avoids any non-SDK Cargo dependency in the HNMod source package.
 - `ModManager::require_capability(mod_id, capability)` checks the selected mod's lifecycle and explicit grant and can be passed directly as that closure, e.g. `collect_online_players(host, || manager.require_capability(mod_id, PLAYER_READ_CAPABILITY))`.
 - This is a callback boundary, not a completed live call site: the runtime coordinator still needs to own the manager and invoke the Core collector from the correct Horizon hook/context. Core/package/overlay verification after this correction is pending.
+
+### Callback bridge hardening follow-up (2026-11-18)
+- Added `ModManager::require_capability(mod_id, capability)` as the per-mod authorization callback target for Core. A regression test covers disabled, approved-but-not-enabled, enabled+granted, and denied capability states.
+- Added a manager regression test for a transitive failure cascade where an intermediate dependent was already Failed before its dependency failed. The cascade now skips re-failing an already-failed dependent while still propagating the failure to its dependents.
+- Package run `44364113419` passed format/tests/Clippy before the last cascade hardening commit; new package run for `4103668` is pending. Core run `44363904945` is still building pinned Horizon tooling; overlay run `44363904976` is still compiling API-only route.
