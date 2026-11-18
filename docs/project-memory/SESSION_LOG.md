@@ -544,3 +544,32 @@ Changes:
 Verification: source and workflow committed atomically; CI execution pending.
 Not tested: no successful compile yet; no native library, prebuilt distribution, interpreter, .dmod loader, sandbox or benchmarks.
 Next: get the Core workflow green, then prove prebuilt native library installation without launcher-side compilation.
+
+
+## S-2026-11-18-04 — Add interpreted runtime candidate prototype
+Date: 2026-11-18
+Commits:
+- Runtime crate: b94a8aebeef1774c288dd6156fc480ce64d788c2
+- Runtime implementation/tests: f07c8cef189bf4e41e03b9bf067ea36c59b139d9
+- Benchmark example: 90dbc7bb140c572556d88bcd3e5ef3b6d467ea95
+- Runtime CI workflow: ce30c8a3de65f209bcf7f65beded3978baf7e105
+- Architecture/status/memory synchronization commits follow.
+Goal: Start evidence-based evaluation of source-interpreted runtime candidates without selecting a language prematurely.
+Changes:
+- Added an isolated Rhai 1.27.0 prototype using the AST evaluator. The optional Grain bytecode feature is not enabled and AST optimization is disabled.
+- Added tests for event-style function dispatch, one coarse-grained world-health batch call, one script-side batched physics algorithm, and operation-budget termination of an infinite loop.
+- Added a coarse benchmark comparing the interpreted batch algorithm with a Rust-native equivalent. Desktop CI timings are diagnostic only and do not establish Android performance.
+- Added a dedicated GitHub Actions workflow for tests and benchmark.
+- Corrected project architecture/current-state records so they no longer claim that no DreamMod code exists.
+Verification:
+- Existing Core workflow run 44249522292: SUCCESS. The pinned Horizon API cargo check completed successfully.
+- Runtime prototype CI workflow: pending at the time of this log entry.
+Not tested:
+- No final scripting-language decision.
+- No Starlark comparison or ARM64 device benchmark.
+- No production .dmod package parser/loader, permissions enforcement, sandbox, lifecycle, hot reload or DreamMod Core integration.
+- No prebuilt native library inventory/package or clean Horizon game launch.
+Next:
+- Inspect runtime prototype Actions results and fix failures.
+- Compare Starlark using equivalent event, batch and subsystem workloads.
+- Prove the native prebuilt library route separately before claiming launcher installs can avoid local compilation.
