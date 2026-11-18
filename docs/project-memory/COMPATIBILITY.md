@@ -60,3 +60,6 @@ Core no longer imports any non-SDK crate for authorization; it accepts a generic
 
 ## In-memory asset reads (2026-11-18)
 Asset access is implemented in the standalone package crate using only Rust standard library data structures and the existing archive path validator. `read_asset` returns a borrowed `&[u8]` from the package retained by ModManager; it does not create a file or add Horizon SDK dependencies. Package CI after `f90d0b1` pending.
+
+### Core callback verification — 2026-11-18
+The closure-based authorization callback compiled and passed all Core checks against the pinned Horizon SDK in run `44363904945`. The API-only prebuilt overlay also compiled and had Linux `$ORIGIN` RUNPATH setup pass in run `44363904976`; real native host loading remains in progress.
