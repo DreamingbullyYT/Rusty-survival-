@@ -1397,3 +1397,28 @@ Next:
 - Inspect overlay run 44328650675 after the compile step.
 - If successful, verify native host loading and inspect archive metadata/artifact.
 - If it fails, capture the first diagnostics and compare with SDK's rust-version before changing code.
+
+
+## S-2026-11-18-43 — Add temporary Minecraft reference smoke to engine CI
+Date: 2026-11-18
+Starting commit: fb8709b00ba66bb80bfffaa44d7556016595a7b0
+Changes:
+- Inspected current engine, testkit, DreamMod Core, package/runtime crates, workflows and project memory before adding new work.
+- Confirmed the engine workspace currently has only horizontal block-to-chunk mapping plus testkit fixture schema/validation; no Java oracle or differential fixture runner exists.
+- Confirmed the official server downloader and offline security tests already existed, but the workflow downloaded Minecraft only for manual dispatch and did not run engine tests alongside the reference.
+- Changed the reference workflow to run on engine pushes/PRs, download official Java 26.3 into a unique temporary runner directory, verify the bundled ZIP/CRCs, run formatting/tests/Clippy, and remove all temporary files unconditionally.
+- Fixed a workflow parse failure caused by using runner.temp in job-level env; runner.temp is now used only in step-level env.
+- Corrected overlay metadata to report Rust 1.99.1, matching the compiler used by the signed SDK.
+Verification:
+- Reference/engine workflow run 44331401582: PASS. Official server download verified (62,294,556 bytes; SHA-1 33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c), ZIP CRC passed, 5 engine tests + 5 testkit tests passed, format/Clippy passed, temporary jar cleanup passed.
+- PMCS run 44331401564: PASS.
+- Overlay run 44328650675: API-only prebuilt compilation completed successfully but host-loader was cancelled by a newer commit; no artifact was uploaded.
+- Overlay rerun 44330930078: still in progress; inspect before claiming host load or artifact success.
+Limitations:
+- The current reference workflow does not yet compare engine output to Minecraft. A Java 26.3 oracle and differential fixtures are still missing.
+- DreamMod Core source .hmod is validated and packaged, but Hooks is empty and Core collector/runtime/script/lifecycle integration is incomplete.
+- Full-game startup remains blocked on a matching licensed installation and Horizon's ownership gate; do not bypass it.
+Next:
+- Verify overlay run 44330930078 through host-loader and archive upload.
+- Design a small Java 26.3 oracle for the existing coordinate contract.
+- Plan one narrow Core/runtime bridge with concrete per-mod lifecycle authorization before expanding the engine or API surface.
