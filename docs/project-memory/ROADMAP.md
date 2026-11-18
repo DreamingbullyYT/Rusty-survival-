@@ -46,7 +46,9 @@
 - [x] Add pure default-deny capability grant planning with explicit approval input (Actions run 44300324687 passed 21 tests and Clippy).
 - [x] Add a private-state CapabilityGate guard helper; Actions run 44300879584 passed 22 tests and Clippy. Wiring it into actual Horizon host API calls remains open.
 - [x] Add a default-disabled lifecycle policy: validated → awaiting approval → ready → explicitly enabled; disable blocks calls and failure discards grants. Four lifecycle regression tests added.
-- [x] Add a generic guarded host adapter that checks activation and capability before invoking a host callback; add bounded failure diagnostics. Concrete Horizon API wiring remains open; CI pending.
+- [x] Add a generic guarded host adapter that checks activation and capability before invoking a host callback; add bounded failure diagnostics. Concrete Horizon API wiring remains open.
+- [x] Extend guard regression coverage so disabled and failed mods cannot invoke host callbacks; package CI run 44304258172 is in progress.
+- [x] Inspect the exact pinned Horizon Hooks/Host/phase surface and record the bridge contract in docs/dreammod/HORIZON_HOST_BRIDGE.md; concrete adapters remain open.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
 
