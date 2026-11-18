@@ -47,7 +47,9 @@ jobs:
       - name: Cache pinned Horizon workspace build
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: ".ci/horizon -> target"
+          workspaces: |
+            .ci/horizon -> target
+            .ci/horizon/launcher -> target
           shared-key: horizon-nightly-0b14f8
       - name: Add CI-only tests for the official API route and host loader
         run: python3 scripts/ci/patch_horizon_api_route.py
@@ -59,7 +61,7 @@ jobs:
           export XDG_CONFIG_HOME="$RUNNER_TEMP/horizon-xdg/config"
           export XDG_DATA_HOME="$RUNNER_TEMP/horizon-xdg/data"
           export XDG_CACHE_HOME="$RUNNER_TEMP/horizon-xdg/cache"
-          cd .ci/horizon
+          cd .ci/horizon/launcher
           DREAMMOD_MOD_DIR="$GITHUB_WORKSPACE/mods/dreammod-core" \
           DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt" \
           DREAMMOD_HORIZON_BUILD="0b14f8acfd97fa2c750e42795249dcc981178ca4" \
