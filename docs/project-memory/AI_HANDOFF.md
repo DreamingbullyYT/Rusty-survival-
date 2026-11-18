@@ -143,3 +143,6 @@ The local `dreammod-contract` crate was removed after overlay run `44362776804` 
 - Package run `44364198594` passed rustfmt, 42 tests (all seven manager tests), and Clippy.
 - PMCS run `44364312080` passed regression and structure/freshness checks.
 - Core run `44363904945` remains in `cargo-horizon-mod` build; overlay run `44363904976` remains in API-only compilation. Check both before making any claims about callback-compatible HNMod builds or native host loading.
+
+## Asset API increment — 2026-11-18
+`ModManager::read_asset(mod_id, path)` now exposes borrowed immutable bytes from the validated in-memory `.dmod` package, with no extraction. It requires Enabled state and explicit `assets.read`, restricts to `assets/`, and reuses archive path validation. Tests cover denied states, successful bytes, traversal and missing assets. Verify the package workflow triggered by commit `f90d0b1`. This does not yet decode/register Horizon textures or other resources.
