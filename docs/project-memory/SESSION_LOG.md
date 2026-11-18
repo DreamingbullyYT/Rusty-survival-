@@ -681,3 +681,22 @@ Next:
 - Inspect run 44284751206 and fix package/toolchain issues.
 - Inspect the uploaded .hmod source artifact and build it through the official native-build/prebuilt API route.
 - Verify that a clean pinned Horizon game starts with DreamMod Core without player-side compilation.
+
+## S-2026-11-18-10 — Correct the interpreter shortlist for strict source interpretation
+Date: 2026-11-18
+Goal: Ensure every language candidate truly satisfies the user's no-bytecode/no-player-compilation requirement.
+Changes:
+- Inspected Starlark 0.14 documentation and implementation descriptions: although its public API parses source to AstModule, its execution pipeline compiles the AST to bytecode before the Evaluator runs it. Starlark is therefore rejected for this strict requirement.
+- Identified Sprite as a small Rust tree-walking interpreter with no bytecode/VM, but its current language has only a small set of value types and no substantial standard library. It is research-only and not a production candidate without significant expansion.
+- Updated the architecture, roadmap and handoff so they no longer describe Starlark as an AST-walking runtime candidate.
+Verification:
+- Rhai CI run 44283982705 passed formatting, four behavior/budget tests and Clippy.
+- The newest benchmark run 44284795812 is still pending; it now adds equal input cloning and observable output checks after the earlier benchmark showed that compiler optimization had removed the Rust-side work.
+Not tested:
+- No final language selection.
+- No Android/ARM64 benchmark.
+- No production .dmod loader, sandbox or Core integration.
+Next:
+- Verify the corrected benchmark and decide whether Rhai's interpreted performance is acceptable for the intended extension contracts.
+- Inspect the official Core package workflow and its .hmod artifact.
+- Continue prebuilt API-only native distribution proof.
