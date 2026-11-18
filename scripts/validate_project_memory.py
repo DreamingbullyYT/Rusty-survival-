@@ -61,13 +61,21 @@ def validate_session_log(base: str | None, errors: list[str]) -> None:
     ids = re.findall(r"^## (S-[^ ]+)", content, flags=re.MULTILINE)
     if not ids:
         errors.append("SESSION_LOG.md must contain at least one session entry.")
-    if len(ids) != len(set(ids)):
-        errors.append("SESSION_LOG.md contains duplicate session IDs.")
     if base:
+        try:
+            base_content = git("show", f"{base}:{MEMORY / 'SESSION_LOG.md'}")
+            base_ids = set(re.findall(r"^## (S-[^ ]+)", base_content, flags=re.MULTILINE))
+        except RuntimeError:
+            base_ids = set()
         diff = git("diff", "--unified=0", f"{base}...HEAD", "--", str(MEMORY / "SESSION_LOG.md"))
         diff_lines = diff.splitlines()
         removed = [line[1:] for line in diff_lines if line.startswith("-") and not line.startswith("---")]
         added = [line[1:] for line in diff_lines if line.startswith("+") and not line.startswith("+++")]
+        new_ids = re.findall(r"^## (S-[^ ]+)", "\n".join(added), flags=re.MULTILINE)
+        # Preserve legacy duplicate IDs, but require every newly appended ID to be
+        # unique against the full prior history and within this update.
+        if len(new_ids) != len(set(new_ids)) or any(session_id in base_ids for session_id in new_ids):
+            errors.append("SESSION_LOG.md adds a duplicate or previously used session ID.")
         # Appending to a legacy file without a final newline makes Git represent the
         # unchanged former last line as delete+add. Treat identical lines as preserved.
         from collections import Counter
@@ -76,6 +84,8 @@ def validate_session_log(base: str | None, errors: list[str]) -> None:
         changed = any(count > added_counts[line] for line, count in removed_counts.items())
         if changed:
             errors.append("SESSION_LOG.md is append-only: existing lines were removed or edited.")
+    elif ids and ids[-1] in ids[:-1]:
+        errors.append("SESSION_LOG.md latest session ID duplicates an earlier entry.")
 
 
 def main() -> int:
