@@ -126,3 +126,10 @@ Core-local regression tests now cover DTO validation and batch limits (source co
 ## DM-026 — Verify corrected gated collector source
 Status: VERIFYING
 A source-edit regression briefly left the previous collector declaration duplicated inside the new private helper. Commit `eadd1aa` replaces that whole section with one private `collect_online_players_unchecked` implementation, and the only public collector requires `PlayerReadAuthorization`. The intermediate Core run is not evidence for the corrected source; verify the workflow run triggered by `eadd1aa`.
+
+
+## Active issue — optimization verification (2026-11-18)
+- Core run 44313213891 failed because rustfmt was absent. Horizon native source/API/host-WASM validation succeeded; Core unit tests were skipped. Workflow now installs rustfmt (commit e47e8e0f858c9c9d09088db17d23a74584ae420a); verify rerun.
+- Core/package snapshot duplicate checks were changed to a contiguous sorted UUID buffer. Package ZIP inspection gained a cooperative 60-second monotonic deadline. Both changes require fresh CI.
+- No end-to-end runtime load timeout exists yet; no script runtime exists. The deadline currently bounds package archive inspection only.
+- No benchmark/ARM64/FPS measurements exist. Do not report a speedup or the 1.5x goal as achieved.
