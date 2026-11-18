@@ -32,19 +32,23 @@ fn main() {
             )
             .expect("script evaluation");
         assert_eq!(output.len(), ITEMS);
-        black_box(output);
+        let output = black_box(output);
+        black_box(output.iter().sum::<f64>());
     }
     let interpreted = start.elapsed();
 
     let start = Instant::now();
     for _ in 0..ROUNDS {
-        let output: Vec<f64> = black_box(&positions)
+        let positions_input = black_box(positions.clone());
+        let velocities_input = black_box(velocities.clone());
+        let output: Vec<f64> = positions_input
             .iter()
-            .zip(&velocities)
+            .zip(&velocities_input)
             .map(|(position, velocity)| position + velocity * 0.05)
             .collect();
         assert_eq!(output.len(), ITEMS);
-        black_box(output);
+        let output = black_box(output);
+        black_box(output.iter().sum::<f64>());
     }
     let native = start.elapsed();
 
