@@ -1577,3 +1577,9 @@ Limitations:
 - No image/audio/model decoder, resource registration, cache policy, interpreter binding or per-script resource quota exists yet.
 Next:
 - Verify package tests and Clippy. Then define registration transactions/rollback before exposing asset bytes to actual scripts.
+
+### S-2026-11-18-49 verification addendum
+- Package run `44364618050` on commit `f90d0b1dfe` completed SUCCESS: 43 unit tests passed (including `asset_reads_require_enabled_state_and_assets_read_capability`), rustfmt and Clippy all passed.
+- PMCS run `44364715327` completed the validator regression suite and structure/freshness validation successfully; post-job cleanup was still finishing at inspection.
+- Core run `44363904945` passed the pinned Horizon checker build, native manifest/source/API/host-WASM validation, engine mirror parity and formatting; Core unit tests were in progress.
+- Overlay run `44363904976` remained at API-only prebuilt compilation; native host loading and artifact upload remain unverified.
