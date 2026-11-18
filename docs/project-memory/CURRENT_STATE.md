@@ -180,3 +180,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 ## Gated collector source correction (2026-11-18)
 - Fixed a duplicate-function/source-structure regression in the collector refactor. The unchecked Horizon read is now private and called only after the public authorization gate succeeds.
 - Corrected source commit: `eadd1aa545851d487da4e2ff2f37edfbec327dfb`. New Core Actions must verify this commit; earlier in-flight runs target the intermediate source.
+
+
+## Core test CI
+- Added explicit formatting and `cargo test` steps to the Core workflow after `cargo-horizon-mod check` has fetched the pinned SDK.
+- Workflow commit: `ffe93f053ab6a0a0df99953a1206262661e8b111`.
+- This is not yet verified; check the first workflow run for dependency-path/test-harness issues.
