@@ -152,3 +152,6 @@ The local `dreammod-contract` crate was removed after overlay run `44362776804` 
 - PMCS run `44364715327` passed its validation steps; cleanup pending.
 - Core run `44363904945` passed pinned Horizon tooling, API/host-WASM, mirror parity and formatting; unit tests are running.
 - Overlay run `44363904976` is still compiling API-only prebuilt client. No native host-load success yet.
+
+### Core callback verification update — 2026-11-18
+Core run `44363904945` is green: pinned Horizon checker, native API/host-WASM, engine mirror parity, formatting, tests and source bundle upload all passed. Overlay run `44363904976` has passed API-only compilation and `$ORIGIN` RUNPATH setup; its real native host load test without overlay environment overrides is in progress. Wait for host load, archive inspection and upload before claiming overlay readiness.
