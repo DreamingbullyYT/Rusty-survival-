@@ -78,3 +78,9 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Core run `44362777239` passed all pinned Horizon tooling/API/host-WASM checks, HNMod engine source parity, formatting, Core tests, source bundle packaging and upload.
 - Overlay run `44362776804` remains in progress at API-only compilation; no claim is made about real launcher loading from this run.
 - PMCS run `44363588460` is pending.
+
+## Core/package authorization bridge — packaging-compatible callback design (2026-11-18)
+- The first trait-based shared crate failed the real Horizon prebuilt compile: Horizon stages the HNMod package source but does not stage arbitrary local Cargo path dependencies. Overlay run `44362776804` exposed `unresolved import dreammod_contract`; therefore the external contract crate was removed rather than masking the error in CI.
+- Core's `with_player_read_authorization` and `collect_online_players` now accept a one-shot authorization closure. This avoids any non-SDK Cargo dependency in the HNMod source package.
+- `ModManager::require_capability(mod_id, capability)` checks the selected mod's lifecycle and explicit grant and can be passed directly as that closure, e.g. `collect_online_players(host, || manager.require_capability(mod_id, PLAYER_READ_CAPABILITY))`.
+- This is a callback boundary, not a completed live call site: the runtime coordinator still needs to own the manager and invoke the Core collector from the correct Horizon hook/context. Core/package/overlay verification after this correction is pending.
