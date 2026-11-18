@@ -1542,3 +1542,16 @@ Limitations:
 - The callback seam is not yet wired from a live ModManager instance into a real Horizon hook/context. No script interpreter or scheduler exists.
 Next:
 - Verify Core API-only prebuilt compilation and host loading, then design the runtime coordinator/hook ownership path.
+
+## S-2026-11-18-48 — Harden callback bridge and failure propagation
+Date: 2026-11-18
+Commit: `259fb9b43c` (capability callback), `46ebd860ef` (package import fix), `4103668fee` (cascade hardening)
+Changes:
+- Added `ModManager::require_capability` as the package-side per-mod authorization callback target.
+- Added tests covering denied while AwaitingApproval, denied while Ready, allowed only when Enabled with explicit `entities.read`, and denial for an ungranted capability.
+- Added a regression for a transitive dependency failure where the intermediate mod was already Failed; propagation now avoids an invalid duplicate failure transition and still cascades to descendants.
+Verification:
+- Package run `44364113419` passed format, tests and Clippy but predates the last test/hardening commit. Post-`4103668` package run pending.
+- Core run `44363904945` and overlay run `44363904976` still running at last inspection.
+Limitations:
+- No runtime coordinator currently passes a live ModManager callback into the Horizon host collector; only the typed closure boundary and manager API exist.
