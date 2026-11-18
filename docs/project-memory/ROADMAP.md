@@ -177,3 +177,8 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 
 ### ModManager validation note
 - The initial package run before `manager` module export did not include manager tests. A cascade-order defect found during review was fixed in `bb8806d`; require a post-fix package run that lists and passes all manager tests before marking the milestone verified.
+
+### Verification status — 2026-11-18
+- [x] Package/ModManager: run `44363502581` passed formatting, 41 tests (including manager tests), and Clippy.
+- [x] DreamMod Core/shared authorization: run `44362777239` passed pinned Horizon SDK/tooling validation, source/API/host-WASM checks, mirror parity, formatting, tests and source packaging.
+- [ ] Prebuilt overlay host-load verification: run `44362776804` remains in API-only compilation; require the real-host load test without overlay environment overrides.
