@@ -59,3 +59,26 @@ No concrete Horizon host operation is currently routed through DreamMod's `HostA
 callback guard in `mods/dreammod-package/src/lifecycle.rs` is a policy primitive only; callers could
 still capture unsafe handles outside it. No interpreter, sandbox, script scheduler, world/entity
 adapter, or end-to-end `.dmod` execution exists.
+
+
+## First owned-value contract: player snapshot
+
+The package crate now defines `bridge::PlayerSnapshot` with only owned fields:
+UUID, Minecraft player name, dimension identifier and position. Construction rejects
+invalid profile names, malformed dimension identifiers, non-finite coordinates and
+coordinates outside the supported world bound. The type exposes read-only getters;
+it contains no `PlayerRef`, `EntityRef`, `LevelRef`, host borrow or raw pointer.
+
+`HostAdapter::read_player_snapshot()` is the policy entry point for this operation.
+It requires the mod to be Enabled and to hold `entities.read` before invoking the
+Horizon-side closure. The closure must resolve and read the player using the current
+typed Horizon host, immediately copy the values into `PlayerSnapshot`, and return
+only that owned DTO. The adapter rejects invalid snapshots.
+
+Package CI run 44309091208 passed formatting, all package tests and Clippy on source
+commit `7bae3eaad6128ff815e657541dd3cd1880dca485`.
+
+Still not implemented: DreamMod Core does not yet supply the closure using
+`ServerHost`/Horizon handles, and no interpreter can receive the DTO. The next
+integration step is to compile a narrowly scoped Core bridge against the pinned SDK,
+then test it through Horizon's hook/host test facilities before exposing it to scripts.
