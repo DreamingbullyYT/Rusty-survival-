@@ -7,6 +7,7 @@ use crate::{
     lifecycle::{LifecycleError, LifecycleState, ModLifecycle},
     resolve_load_order, valid_archive_path, ArchiveEntryKind, DependencyError, Manifest,
     ValidatedPackage,
+    resources::{ResourceError, ResourceRegistry},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -19,6 +20,7 @@ pub enum ModManagerError {
     AssetNotFound(String),
     EntrypointNotFound(String),
     Lifecycle(LifecycleError),
+    Resource(ResourceError),
 }
 
 struct ManagedMod {
@@ -32,6 +34,7 @@ pub struct ModManager {
     mods: BTreeMap<String, ManagedMod>,
     dependencies: BTreeMap<String, BTreeSet<String>>,
     load_order: Vec<String>,
+    resources: ResourceRegistry,
 }
 
 impl ModManager {
@@ -57,6 +60,7 @@ impl ModManager {
             mods,
             dependencies,
             load_order,
+            resources: ResourceRegistry::new(),
         })
     }
 
@@ -160,6 +164,44 @@ impl ModManager {
             .ok_or_else(|| ModManagerError::AssetNotFound(path.to_owned()))
     }
 
+    /// Atomically reserve resource identifiers for an enabled mod.
+    /// This is host-independent bookkeeping; it does not publish Horizon resources.
+    pub fn register_resource_ids(
+        &mut self,
+        id: &str,
+        resource_ids: &[String],
+    ) -> Result<Vec<String>, ModManagerError> {
+        let managed = self
+            .mods
+            .get(id)
+            .ok_or_else(|| ModManagerError::UnknownMod(id.to_owned()))?;
+        managed
+            .lifecycle
+            .ensure_enabled()
+            .map_err(ModManagerError::Lifecycle)?;
+
+        let mut transaction = self
+            .resources
+            .begin(id.to_owned())
+            .map_err(ModManagerError::Resource)?;
+        for resource_id in resource_ids {
+            transaction
+                .stage(resource_id.clone())
+                .map_err(ModManagerError::Resource)?;
+        }
+        transaction
+            .commit(&mut self.resources)
+            .map_err(ModManagerError::Resource)
+    }
+
+    /// Return this mod's currently reserved identifiers in deterministic order.
+    pub fn registered_resource_ids(&self, id: &str) -> Result<Vec<String>, ModManagerError> {
+        if !self.mods.contains_key(id) {
+            return Err(ModManagerError::UnknownMod(id.to_owned()));
+        }
+        Ok(self.resources.ids_for_owner(id))
+    }
+
     /// A dependent can only start after every declared dependency is enabled.
     pub fn enable(&mut self, id: &str) -> Result<(), ModManagerError> {
         let required = self
@@ -200,7 +242,9 @@ impl ModManager {
             .expect("known mod was checked above")
             .lifecycle
             .disable()
-            .map_err(ModManagerError::Lifecycle)
+            .map_err(ModManagerError::Lifecycle)?;
+        self.resources.remove_owner(id);
+        Ok(())
     }
 
     /// Fails the selected mod and all transitive dependents, in dependency-first order.
@@ -215,6 +259,7 @@ impl ModManager {
             .lifecycle
             .fail(reason.to_owned())
             .map_err(ModManagerError::Lifecycle)?;
+        self.resources.remove_owner(id);
 
         let mut failed = BTreeSet::from([id.to_owned()]);
         for dependent in &self.load_order {
@@ -238,6 +283,7 @@ impl ModManager {
                         .fail(failure)
                         .map_err(ModManagerError::Lifecycle)?;
                 }
+                self.resources.remove_owner(dependent);
                 failed.insert(dependent.clone());
             }
         }
