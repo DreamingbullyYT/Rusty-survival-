@@ -338,3 +338,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - The first 900-second timeout revision had a shell continuation regression in apt installation; commit `f6b43915f9` corrected it and produced the passing run.
 - PMCS run `44368880331` failed because three documentation update commits accidentally replaced whole PMCS documents with only appended sections. Restored the full documents from last known-good commit `12db63cf4d` and retained this verification entry. PMCS validator still needs a clean rerun; no claim of current PMCS pass.
 - Scope remains API-only native overlay/host-load proof, not a complete live script runtime or production launcher deployment.
+
+
+### Cold host-loader compile timeout — 2026-11-18
+- Overlay run `44365336841`: API-only build and ELF `$ORIGIN` RUNPATH setup passed; host-loader test exited 124 at its 180-second timeout while Cargo was still compiling Horizon dependencies (last observed: `horizon-mod-package`). This is a timeout, not evidence of a loader failure.
+- Workflow commit `a3d3eef30b8f3a30cad5273874518b8d499839f5` raises the host-test timeout to 900 seconds (job cap remains 90 minutes) to permit a cold dependency build. Run `44368761333` queued; loader result and artifact upload are still unverified.
+- Actual launcher runtime library search behavior remains a separate verification requirement.
