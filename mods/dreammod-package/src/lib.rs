@@ -482,7 +482,7 @@ fn valid_archive_path(path: &str, kind: ArchiveEntryKind) -> bool {
     } else {
         path
     };
-    if normalized.is_empty()
+    !(normalized.is_empty()
         || path.len() > MAX_ARCHIVE_PATH_BYTES
         || path.starts_with('/')
         || path.contains('\\')
@@ -496,11 +496,7 @@ fn valid_archive_path(path: &str, kind: ArchiveEntryKind) -> bool {
                 || !part
                     .bytes()
                     .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-' | b'.'))
-        })
-    {
-        return false;
-    }
-    true
+        }))
 }
 
 
