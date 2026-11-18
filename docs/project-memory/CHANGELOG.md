@@ -352,3 +352,10 @@
 - The real ZIP fixture confirms that script and asset payload bytes are retained exactly after validation; no disk extraction is used.
 - Legacy-aware PMCS session ID validation passed regression tests and full structural/freshness validation in run 44300145443.
 - Historical duplicate session headings remain unchanged; new IDs are checked against prior history.
+
+
+## 2026-11-18 — Add explicit default-deny capability planning
+- Added plan_capability_grants(manifest, approved), returning deterministic granted and denied capability sets.
+- Empty approval input grants nothing. Approvals cannot exceed manifest requests; unknown, unrequested and duplicate approvals are rejected.
+- Added regression tests for default-deny, partial approval and invalid approval inputs.
+- The planner is pure metadata; it does not grant runtime authority or replace host-side enforcement. CI pending.
