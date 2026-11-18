@@ -1088,3 +1088,20 @@ Limitations:
 - No Horizon host API wiring, permission UI, interpreter or production sandbox.
 Next:
 - Design a host adapter that checks CapabilityGate before every privileged operation, then add lifecycle states without executing scripts.
+
+
+## S-2026-11-18-06 — Default-disabled package lifecycle
+Date: 2026-11-18
+Commit: eae8f1c0cda26e2f9a17282e5f8798efe01ec7bc
+Goal: Separate package validation, capability approval and activation into explicit lifecycle transitions.
+Changes:
+- Added a lifecycle policy module with AwaitingApproval, Ready, Enabled, Disabled and Failed states.
+- Capability approvals alone do not enable a mod; activation requires a separate explicit transition.
+- Disable blocks capability checks; failure discards the capability gate and is terminal.
+- Added four lifecycle regression tests.
+Verification:
+- GitHub Actions package workflow is triggered by the source change; result pending inspection.
+Limitations:
+- This is policy/state tracking only. It does not execute scripts, install packages, schedule lifecycle callbacks, or enforce permissions at actual Horizon host API boundaries.
+Next:
+- Verify package CI, then design the host adapter so every privileged Horizon call consults the lifecycle gate.
