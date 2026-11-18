@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: CORE_SOURCE_PACKAGE_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HARNESS_IN_PROGRESS; RHAI_CANDIDATE_PROVISIONAL
+Status: CORE_SOURCE_PACKAGE_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HARNESS_IN_PROGRESS; DREAMMOD_MANIFEST_CONTRACT_CI_PENDING; RHAI_CANDIDATE_PROVISIONAL
 Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 
 ## Direction
@@ -41,7 +41,8 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 ## Not implemented / not verified
 - No verified prebuilt client overlay or successful native-host load yet.
 - No complete game launch with DreamMod Core.
-- No production .dmod manifest/parser/ZIP loader, dependency resolver, lifecycle or hot reload.
+- `mods/dreammod-package` now defines and validates the version-1 JSON manifest contract (strict fields, semantic versions/API range, safe script entrypoint, capability allowlist, dependency declarations and size/count limits); its new CI workflow has not yet been inspected.
+- No ZIP/archive loader, dependency resolver, runtime lifecycle or hot reload.
 - No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
 - The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
 - Rhai is not the final language choice and is not integrated into Core.
@@ -52,7 +53,7 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 ## Next actions
 1. Verify run 44288685182. Fix any Rust API/test harness or host-loader failures.
 2. Inspect the client overlay artifact and its inventory; verify the real Horizon host loader accepts it.
-3. Implement a standalone DreamMod runtime crate with a versioned .dmod manifest, safe package validation, lifecycle and a pluggable interpreter interface.
+3. Extend the standalone package contract with hostile-archive validation (without extracting files), then dependency resolution and lifecycle; keep interpreter integration behind a pluggable interface.
 4. Keep Rhai provisional; expose only coarse-grained/batched host contracts and benchmark realistic workloads on ARM64.
 5. Integrate the runtime into Core using documented Horizon hooks (initial lifecycle/tick hooks first); external runtime dependencies may move Core from Route::Api to the registry build route, which must be verified in CI.
 6. Define subsystem replacement contracts incrementally; do not claim full physics/rendering replacement until the required Horizon extension points and performance are proven.
