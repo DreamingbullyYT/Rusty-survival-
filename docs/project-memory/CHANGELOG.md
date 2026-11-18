@@ -1,3 +1,9 @@
+## 2026-11-18 — Replace blocked launcher CLI build with signed SDK API-route harness
+- Confirmed that both client-instance and standalone server-export `horizon-launcher native-build` commands require a prepared Minecraft 26.3 installation; the official launcher refuses to prepare without an authenticated owning account. We will not bypass this check.
+- Added `scripts/ci/patch_horizon_api_route.py`, which appends test-only harnesses to an ephemeral pinned Horizon checkout: one calls the exact internal `prebuilt::compile(..., Route::Api, ...)` with Horizon's signed SDK client runtime/API slices and writes the standard `native-mods.json`; the other calls the real `horizon-mod-host::native_libraries::load` against that overlay.
+- Replaced the prebuilt workflow with this direct signed-SDK API route. It builds only the mod dylib and reuses the SDK's prebuilt `horizon-client`; it does not download or redistribute Mojang assets. The resulting overlay is intended to be installed beside a matching licensed base game. Workflow run 44288437986 is pending.
+- Official Core source package workflow 44285877944 passed and uploaded the `.hmod` source package.
+
 ## 2026-11-18 — Switch account-free prebuilt proof to server export
 - Horizon's official client `prepare` step refuses to fetch Minecraft 26.3 unless the owner is authenticated; a client native-build also refuses an unprepared instance. We will not bypass this ownership check or redistribute Mojang files.
 - Changed the CI proof to Horizon's official `native-build --server-output ... --version nightly-2026-11-18-0b14f8a` path, which exports a standalone headless engine and native library inventory without selecting a client instance. This verifies the same API-only SDK route; it is not yet a client distribution or clean game launch.
