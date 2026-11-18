@@ -1057,3 +1057,19 @@ Limitations:
 - No user-facing permission prompt, runtime capability enforcement or sandbox exists.
 Next:
 - Design host-side capability checks and a lifecycle state machine without executing untrusted scripts prematurely.
+
+
+## S-2026-11-18-26 — Add default-deny host capability gate
+Date: 2026-11-18
+Commit: 5085971c93c3dbc2a0089e136e5f9a7aecc21a49
+Goal: Provide a small host-side guard primitive so runtime integrations can check explicit capability approvals.
+Changes:
+- Added CapabilityGate with private granted state and from_approvals(), allows() and require().
+- Gate construction uses the validated manifest and explicit approval planner; no caller can construct its private grant set directly.
+- Added tests for an approved capability, an unapproved request and an unknown capability.
+Verification:
+- Package workflow pending.
+Limitations:
+- The gate is not yet wired into Horizon host APIs or DreamMod Core; it is not an end-to-end sandbox.
+Next:
+- Verify CI, then integrate the gate at the actual host-call boundary before adding lifecycle execution.
