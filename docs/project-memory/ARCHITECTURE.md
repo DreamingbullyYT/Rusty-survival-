@@ -1,22 +1,23 @@
 # Architecture — DreamMod
 
-Status: PROPOSED; implementation not started.
+Status: CORE BOOTSTRAP VERIFIED IN CI; INTERPRETER CANDIDATE PROTOTYPE ADDED; DISTRIBUTION NOT VERIFIED.
 Target engine: Horizon.
 
 ## Build and distribution layers
 - Upstream Horizon remains the engine.
-- DreamMod Core is integrated once into a pinned Horizon build through HNMod/horizon-mixins.
+- DreamMod Core is integrated once into a pinned Horizon build through the current `.hmod` native-mod route; use horizon-mixins only for required native source transformations.
 - The build pipeline emits a prebuilt game distribution containing DreamMod Core.
 - The separate launcher installs and updates that distribution.
 
 ## Runtime layers
 1. Package discovery and validation.
-2. Interpreted source runtime (language decision OPEN).
-3. Sandbox, capability checks, resource budgets and fault isolation.
-4. Stable, versioned DreamMod API facade.
-5. Event/lifecycle scheduler and batched engine calls.
-6. Extension-point registry and subsystem provider/override coordinator.
-7. Horizon integration adapters pinned to exact upstream revisions.
+2. Candidate source interpreter (Rhai prototype; final language OPEN).
+3. Interpreted source runtime (language decision OPEN).
+4. Sandbox, capability checks, resource budgets and fault isolation.
+5. Stable, versioned DreamMod API facade.
+6. Event/lifecycle scheduler and batched engine calls.
+7. Extension-point registry and subsystem provider/override coordinator.
+8. Horizon integration adapters pinned to exact upstream revisions.
 
 ## Mod package
 Draft .dmod structure:
@@ -42,6 +43,11 @@ Scripts run sandboxed by default. Grant narrow capabilities explicitly. Do not e
 - Version public DreamMod API namespaces.
 - Ordinary .dmod updates must not require rebuilding Horizon.
 - Core integration changes require a new prebuilt game distribution.
+
+## Current implementation notes
+- `mods/dreammod-core` is a no-op native Hooks bootstrap and passed the pinned Horizon API compile check in CI run `44249522292`.
+- `mods/dreammod-runtime-prototype` is an isolated Rhai AST-evaluator candidate harness; it is not yet integrated into Core and does not establish a final language choice.
+- The prebuilt native library distribution path, `.dmod` loader and production security layer remain unverified/unimplemented.
 
 ## Historical architecture
 The former independent vanilla-engine architecture remains historical. Its Android, Minelib and Minecraft Java 26.3 decisions are not active DreamMod requirements.
