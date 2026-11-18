@@ -459,3 +459,10 @@
 - Package Arc-backed snapshot CI run 44318172781 passed; archive inspection deadline CI run 44317125357 passed.
 - PMCS run 44322745310 failed because required companion memory documents were missing; this change set records the actual CI evidence and remaining work.
 - Overlay run 44322745328 failed at compile time because the injected test referred to the UI-facing picker Route instead of prebuilt::Route. The patch script now qualifies the API route correctly. No overlay or host-loader success is claimed until a fresh run passes.
+
+
+## 2026-11-18 — Match the Horizon SDK producer Rust toolchain
+- Overlay run 44324363090 reached Horizon's official API-only prebuilt compiler but failed because the signed SDK's mod_api crate was built by an incompatible rustc.
+- Audited the exact pinned Horizon source; its SDK publishing workflow reads tools/ci/rust-version, whose value is 1.99.1.
+- Updated DreamMod's overlay workflow and overlay metadata to Rust 1.99.1 in commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7.
+- Rerun 44328650675 is in progress; no claim is made yet about resolving the compiler mismatch or generated hooks symbol.
