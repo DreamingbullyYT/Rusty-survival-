@@ -1,3 +1,8 @@
+## 2026-11-18 — Set the initial script/provider performance boundary
+- Recorded the 462.94× synthetic x86_64 Rhai-vs-Rust batch-loop gap as a design constraint.
+- Initial script providers must be coarse-grained; Rust owns per-entity/per-vertex hot loops and batch storage. Arbitrary interpreted loops in physics/rendering are not promised.
+- Added an explicit future decision point for an optional CI-prebuilt native kernel tier, which would still avoid player-side compilation but is not implemented and is separate from interpreted `.dmod` scripts.
+
 ## 2026-11-18 — Add CI workflow for official prebuilt Horizon distribution
 - Added `.github/workflows/dreammod-prebuilt.yml` to download and checksum-verify pinned Horizon Launcher 0.2.78, install the pinned Nightly, create a clean instance, run `native-build` on DreamMod Core with trusted code, verify `native-mods.json` and the adjacent native library, and upload the native build overlay.
 - First run 44286113386 exposed a checksum filename mismatch; corrected in 01c696c. Run 44286212788 then exposed the missing `libxkbcommon-x11.so.0` dependency; added the headless X11/XKB libraries and offscreen Qt setting in 6bd45dd. Fresh run pending.
