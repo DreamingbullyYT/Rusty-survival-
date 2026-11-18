@@ -222,3 +222,6 @@ ModManager is verified by package run `44363502581`: rustfmt, all 41 tests inclu
 ## DM-034 — HNMod source staging excludes local Cargo path dependencies
 Status: FIX IMPLEMENTED — CI verification pending
 Overlay run `44362776804` failed during API-only compilation with `unresolved import dreammod_contract`; Horizon's prebuilt package staging did not carry the local path dependency into the staged mod source. Removed that dependency/crate. Core now accepts an authorization closure, and `ModManager::require_capability` supplies the per-mod enabled-state+grant check. A real runtime coordinator/hook call site remains open. Verify the new Core/package/overlay runs before closing this issue.
+
+### DM-034 implementation follow-up (2026-11-18)
+Added `ModManager::require_capability` and tests for its per-mod callback behavior. Added regression coverage for cascades through an intermediate mod that was already Failed. Package run `44364113419` passed formatting/tests/Clippy before the final cascade-hardening commit `4103668`; verify the post-commit package run. Core run `44363904945` and overlay run `44363904976` remain pending.
