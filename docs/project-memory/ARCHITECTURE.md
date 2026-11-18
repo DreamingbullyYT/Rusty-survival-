@@ -81,3 +81,7 @@ Player reads cross the host boundary as a `PlayerSnapshotBatch`, capped at 256 u
 - Script-facing APIs remain batch-first. The future dispatcher should collect once per relevant event and share immutable owned results with scripts participating in that dispatch, rather than re-querying Horizon per script/player.
 - Do not add persistent caches until invalidation, event ordering, host-thread affinity and re-entrancy are specified.
 - Package ZIP inspection accepts a monotonic deadline and defaults to 60 seconds; the future complete loader must carry the same deadline through all later stages.
+
+
+## Allocation-free snapshot validation (2026-11-18)
+Duplicate UUID validation for the bounded 256-player snapshot batch now uses a fixed stack array of 256 u128 values and sort_unstable. This avoids heap allocation and preserves source order. Do not generalize the fixed buffer beyond the documented batch bound. The future dispatcher should reuse immutable snapshots within one event dispatch instead of repeating host reads, subject to thread/re-entrancy and invalidation rules.
