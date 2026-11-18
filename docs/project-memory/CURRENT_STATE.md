@@ -161,3 +161,11 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - It stores no Horizon handle or borrowed host reference in the result. It is a public Core-side collector function, not yet called by a script runtime.
 - Source commits: `7ecd981babec69a5081aecacd25f7b36629f71ea`, `b2362c6a1347390f4f330655fb0823e8563d94d8`.
 - Verification: pinned SDK Core workflow run 44310547586 is building cargo-horizon-mod; host/WASM check and package steps have not run yet. PMCS run 44310547866 failed because required memory files were not updated in the same change; this entry and companion updates address that failure.
+
+
+## Core player-read authorization seam (2026-11-18)
+- The Core player snapshot collector now requires a `PlayerReadAuthorization` implementation before it touches `ServerHost`.
+- Added a helper and regression tests proving a denied permission check prevents the host callback, while an authorized check invokes it once.
+- Source commit: `99929e38d5f1a815e8b17cb069a5eff8dfcc8e3e`.
+- Core SDK check and API-only overlay workflows are running for this source commit. Do not claim this new change verified until they finish.
+- The authorization trait is not yet implemented by a per-mod `ModLifecycle` adapter. The interpreter/runtime still needs to supply that adapter; no script binding or sandbox exists.
