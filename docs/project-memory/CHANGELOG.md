@@ -378,3 +378,12 @@
 - Actions run 44300879584 passed on commit 5085971c93c3dbc2a0089e136e5f9a7aecc21a49: formatting, all 22 tests and Clippy with -D warnings.
 - Gate tests verify approved access, denied unapproved access and rejection of unknown capabilities.
 - This verifies the helper only; Horizon host API integration and end-to-end sandbox enforcement remain open.
+
+
+## 2026-11-18 — Define owned player snapshot bridge contract
+- Added an owned `PlayerSnapshot` DTO for UUID, bounded Minecraft player name, dimension ID and finite bounded position.
+- The DTO contains no Horizon handles, references or borrowed strings and can safely outlive the hook that produced it.
+- Added `HostAdapter::read_player_snapshot()`, which checks the `entities.read` capability and enabled lifecycle state before invoking the Horizon-side read closure.
+- Added tests for valid DTOs, invalid names/dimensions/coordinates, denied callback non-invocation and invalid snapshot rejection.
+- This is the typed bridge contract and policy boundary only; no concrete `ServerHost` implementation or script exposure is wired yet.
+- Source commits: `3e8baf1`, `8845d96`, `7bae3ea`. Package CI verification pending.
