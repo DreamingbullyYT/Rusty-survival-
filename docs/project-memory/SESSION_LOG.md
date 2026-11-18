@@ -939,3 +939,21 @@ Limitations:
 - This does not parse archives, install packages, resolve optional dependencies, execute scripts or grant capabilities.
 Next:
 - Verify the package workflow; then implement a real ZIP reader with central-directory/local-header checks and no filesystem extraction.
+
+
+## S-2026-11-18-04 — Real ZIP reader and bounded package inspection
+Date: 2026-11-18
+Commits: 32d52810bb2181c7c6bb03a4f7152b402a8c8d9e, d7e7794567efb0cf1873686964fe47e7364ccbf4, 8bea071635acc45098bd4e93c5c66cbdf5296b30, 15c650a0e61ed3707e6ff76f784180f7f9115452, fc6af40387fa9b861b19ec7fb6b148046c83df8d, 6add01bb156b8ff0e826de40dbd7712a014daf41
+Goal: Replace metadata-only archive policy with actual safe inspection of untrusted .dmod ZIP bytes.
+Changes:
+- Pinned zip 9.6.1 with only Deflate support enabled.
+- Added inspect_dmod() with compressed input limit, archive structural checks, strict UTF-8 path handling, compression allowlist, metadata preflight and no extraction.
+- Enforced local-header/central-directory consistency before reading entries.
+- Parsed manifest from the archive, checked its entrypoint against the inventory, and streamed all regular entries to EOF in fixed-size chunks to verify actual sizes and CRC.
+- Added real ZIP fixtures for success, traversal, truncation/non-ZIP and payload corruption.
+Verification:
+- Commits are on main. CI has not yet been inspected; status remains PENDING.
+Limitations:
+- Inspection does not install files, grant capabilities, execute scripts or provide a production sandbox.
+Next:
+- Verify the package workflow. Fix compiler/format/lint issues before continuing to package installation and lifecycle.
