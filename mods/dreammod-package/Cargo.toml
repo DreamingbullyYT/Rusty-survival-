@@ -3,7 +3,7 @@ name = "dreammod-package"
 version = "0.1.0"
 edition = "2024"
 publish = false
-description = "Versioned DreamMod package manifest contract and validation"
+description = "Versioned DreamMod package manifest, archive inspection and validation"
 
 [dependencies]
 semver = { version = "=1.0.27", features = ["serde"] }
