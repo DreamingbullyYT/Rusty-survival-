@@ -1651,3 +1651,19 @@ Verification:
 - Loader success, archive inspection and artifact upload are not yet verified.
 Limitations:
 - A successful CI host-loader test does not prove the production launcher resolves the overlay libraries in its actual runtime environment.
+
+
+## S-2026-11-18-53 — Transactional resource ownership
+Date: 2026-11-18
+Commit: `863a2d4eb1405368a70f2362831ff41b3caa8165` (registry), `f800daeb7b326cb738ee59c07f7cd798c4f7c699` (module export), `3821c934975ce1b4a549c1e27c9c3dd4e81c3e17` (quota regression correction)
+Goal: Establish deterministic, atomic ownership bookkeeping before integrating external Horizon resource registration.
+Changes:
+- Added a host-independent `ResourceRegistry` and `ResourceTransaction` in `mods/dreammod-package/src/resources.rs`.
+- Added strict namespaced resource ID validation, duplicate detection, cross-mod ownership conflicts, per-mod/global quotas, deterministic `remove_owner`, and implicit rollback when a staged transaction is dropped.
+- Exported the module from the package crate.
+- Corrected the global quota test to fill the registry through multiple owners while respecting the per-mod quota.
+Verification:
+- Package run `44385572845` on commit `3821c934975c` was in progress during this log update; do not treat tests or Clippy as passed until its conclusion is SUCCESS.
+- PMCS validator regression tests passed on run `44385572246`, but the structure/freshness step correctly flagged the five missing document updates; this session appends to all five required documents.
+Limitations:
+- This registry reserves IDs only. It does not call Horizon, register assets/UI/render resources, execute scripts, or automatically hook lifecycle disable/failure. Those effects require a separately verified host adapter and cleanup path.
