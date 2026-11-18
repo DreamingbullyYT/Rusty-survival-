@@ -1,45 +1,20 @@
-# Minecraft Java Edition Parity Matrix
+# Compatibility and Verification Matrix
 
-Target Java Edition version: **26.3**
-Overall status: NOT_STARTED
-Rule: IMPLEMENTED is not VERIFIED. VERIFIED requires a reproducible comparison against an official 26.3 reference.
+The former Minecraft Java Edition 26.3 parity matrix is historical and is not the active DreamMod test target.
 
-| Domain | Required observable behavior / test coverage | Status | Evidence |
-|---|---|---|---|
-| Version identity | Release metadata, protocol, data version, pack formats | INVESTIGATING | docs/specs/MINECRAFT_JAVA_26.3_BASELINE.md |
-| Blocks and states | Registry IDs, properties, default states, placement, breaking, drops, tags | NOT_STARTED | — |
-| Items and components | Stack limits, durability, use, components, item conversions | NOT_STARTED | — |
-| Player | Movement, jumping, swimming, climbing, damage, knockback, spectator portal use | NOT_STARTED | — |
-| World and dimensions | Dimension bounds, chunk sections, block coordinates, heightmaps, biomes | NOT_STARTED | — |
-| World generation | Seed determinism, biome source, noise, carvers, features, structures, placement order | NOT_STARTED | — |
-| 26.3 world content | Dappled Forest, Poplar variants, fallen trees, Shelf Mushrooms, Red Shrubs, Abandoned Camps | NOT_STARTED | Official 26.3 release notes |
-| Lighting | Sky/block light, propagation, opacity/emission, chunk-edge relighting | NOT_STARTED | — |
-| Fluids | Water/lava flow, scheduling, source rules, interactions, tick ordering | NOT_STARTED | — |
-| Entities and AI | Spawn/despawn, movement, collision, targeting, mob activation and random walk/swim | NOT_STARTED | — |
-| Inventory and crafting | Slot rules, recipes, containers, crafting, stonecutter, creative ordering | NOT_STARTED | — |
-| 26.3 items/interactions | Cushions, Straw Beds, wool/concrete stairs/slabs, Explorer Maps, recipe changes | NOT_STARTED | Official 26.3 release notes |
-| Persistence | level.dat, region/chunk NBT, player data, version_history, migration and round-trip | NOT_STARTED | — |
-| Networking | Protocol 777 handshake/login/configuration/play, packet ordering and disconnect behavior | NOT_STARTED | Protocol reference; verify official artifact |
-| Rendering | Block models, culling, lighting, particles, fog, animation, OIT and post effects | NOT_STARTED | Official 26.3 release notes |
-| Audio | Sound events, attenuation, spatialization, subtitles and entity interactions | NOT_STARTED | — |
-| Input/platform | Android lifecycle, touch, controller, focus, pause/resume, surface recreation | NOT_STARTED | Android Vulkan POC pending device test |
-| Performance | Chunk generation, frame time, memory, thermal behavior and GPU capability fallbacks | NOT_STARTED | — |
+## Active DreamMod verification domains
 
-## Required test fixture format
+| Domain | Status | Required evidence |
+|---|---|---|
+| Pinned Horizon integration | NOT_STARTED | Reproducible HNMod build against exact Horizon/mixins/hooks revisions |
+| Prebuilt distribution | NOT_STARTED | Build artifact contains DreamMod Core and boots successfully |
+| No player-side compilation | NOT_STARTED | Install/run trace shows no Rust/native/bytecode compilation for .dmod |
+| Package validation | NOT_STARTED | Valid/invalid manifest and archive tests |
+| Interpreted runtime | NOT_STARTED | Source .dmod executes without compilation |
+| Sandbox/capabilities | NOT_STARTED | Denied capability and resource-budget tests |
+| API lifecycle/events | NOT_STARTED | Deterministic integration tests |
+| System registration | NOT_STARTED | Ordering, dependency and failure tests |
+| Subsystem replacement | NOT_STARTED | Provider contract, fallback, state and performance tests |
+| Upstream compatibility | NOT_STARTED | Test matrix across explicitly pinned Horizon revisions |
 
-Each fixture must include:
-- Fixture ID and domain
-- Exact reference version (26.3 stable)
-- Seed, dimension, coordinates and relevant settings
-- Initial world/player/entity state
-- Exact action sequence and timing/tick count
-- Expected observable result (state, NBT, packet, image or trace)
-- Reference capture method and provenance
-- Tolerance rules, if any
-- Test command and result
-
-No parity row may be marked VERIFIED from visual resemblance alone if the domain requires state, timing, persistence, protocol or physics equivalence.
-
-
-## Foundational tests (not parity verification)
-The initial engine-core suite tests horizontal coordinate partitioning and round-trip invariants, including negative coordinates. This does not mark the World and dimensions domain VERIFIED: no captured Minecraft Java 26.3 reference fixture has been compared, and chunk sections, dimension bounds, heightmaps, storage and biome semantics remain unimplemented.
+No domain may be marked VERIFIED without reproducible tests and recorded revision metadata.
