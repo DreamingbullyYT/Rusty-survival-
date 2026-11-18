@@ -1603,3 +1603,7 @@ Limitations:
 - No script parser/interpreter, sandbox, instruction/memory budget, scheduling or execution has been added.
 Next:
 - Verify package CI. Then design the runtime execution contract and sandbox limits before selecting an interpreter.
+
+### S-2026-11-18-50 verification addendum
+- Package run `44365010182` on commit `ee903d7c76` completed SUCCESS: all 44 tests passed, including `manager::tests::entrypoint_source_is_borrowed_only_after_activation`; rustfmt and Clippy passed.
+- Overlay run `44363904976` had passed API-only prebuilt compilation and `$ORIGIN` setup; real Horizon native host load test without overlay environment overrides remained in progress.
