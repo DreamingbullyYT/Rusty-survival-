@@ -1,0 +1,11 @@
+[package]
+name = "mod-dreammod-core"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "DreamMod Core: trusted Horizon native bootstrap and interpreted runtime host"
+
+[dependencies]
+horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
+
+[workspace]

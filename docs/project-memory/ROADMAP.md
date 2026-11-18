@@ -7,9 +7,11 @@
 
 ## Phase 1 — Horizon integration research
 - [x] Audit current Horizon mod API/host, package formats, native route and WASM runtime.
-- [ ] Identify exact native .hmod build and prebuilt library packaging path.
-- [ ] Pin Horizon revision, horizon-mixins revision, hooks/API revision and Rust toolchain.
-- [ ] Build a minimal native .hmod that embeds a no-op DreamMod Core bootstrap.
+- [x] Pin initial Horizon and horizon-mixins revisions in the Core manifest.
+- [x] Add minimal native .hmod Core source and pinned-source compile workflow.
+- [ ] Identify and verify prebuilt native library packaging path.
+- [x] Pin Horizon revision, horizon-mixins revision and API version for the bootstrap.
+- [ ] Get the minimal Core bootstrap CI compile check passing.
 - [ ] Produce and verify a prebuilt Horizon package containing the bootstrap.
 - [ ] Confirm ordinary installation does not invoke native mod compilation on the player device.
 

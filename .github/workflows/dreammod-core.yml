@@ -1,0 +1,41 @@
+name: DreamMod Core
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mods/dreammod-core/**"
+      - ".github/workflows/dreammod-core.yml"
+      - "docs/project-memory/**"
+  pull_request:
+    paths:
+      - "mods/dreammod-core/**"
+      - ".github/workflows/dreammod-core.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-against-pinned-horizon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out DreamMod
+        uses: actions/checkout@v4
+      - name: Check out pinned Horizon source
+        uses: actions/checkout@v4
+        with:
+          repository: horizon-rust/horizon
+          ref: 1c45cf95d8431a7b49d94df007f7e75a890370c9
+          path: .ci/horizon
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@1.95.0
+      - name: Stage Core against pinned API source
+        shell: bash
+        run: |
+          mkdir -p .ci/horizon/mods
+          cp -R mods/dreammod-core .ci/horizon/mods/dreammod-core
+          sed -i 's#path = ".horizon/sdk/api/crates/horizon-mod-api"#path = "../../crates/horizon-mod-api"#' .ci/horizon/mods/dreammod-core/Cargo.toml
+      - name: Compile against Horizon mod API
+        run: cargo check --manifest-path .ci/horizon/mods/dreammod-core/Cargo.toml

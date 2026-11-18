@@ -189,3 +189,10 @@
 - Confirmed the current WASM runtime has a child-process compilation path and Wasmtime module compilation/cache, so it does not meet the strict interpreted-source/no-player-compilation requirement.
 - Confirmed native host code loads prebuilt adjacent dynamic libraries and validates SHA-256/build identity; a CI-built DreamMod Core library may be distributable without player-side compilation, but end-to-end proof remains pending.
 - Added docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md and updated DreamMod architecture/PMCS. No Horizon code was changed and no build was run.
+
+
+## 2026-11-18 — Add DreamMod Core bootstrap skeleton
+- Added mods/dreammod-core as a minimal native .hmod source package pinned to Horizon 1c45cf95d8431a7b49d94df007f7e75a890370c9 and horizon-mixins e59da9094f0c2fdda6c627fe9eff22dec6a906f0.
+- Added a no-op typed Hooks implementation; no script runtime or public DreamMod API exists yet.
+- Added a GitHub Actions workflow that compiles the Core against the pinned Horizon source checkout.
+- CI result pending. No native library was prebuilt or loaded; no .dmod package was executed.

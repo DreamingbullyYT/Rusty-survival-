@@ -530,3 +530,17 @@ Not tested:
 - No Horizon build, native .hmod build, prebuilt library package, clean install/startup, interpreter, sandbox or benchmark.
 Next:
 - Prove a CI-built native .hmod can be shipped as prebuilt files and loaded by a clean pinned Horizon distribution without invoking launcher compilation.
+
+
+## S-2026-11-18-03 — Add minimal DreamMod Core native bootstrap
+Date: 2026-11-18
+Commit: this atomic change set; resolve exact SHA from Git history
+Goal: Establish the smallest compile-checkable native Core integration before implementing the interpreted runtime.
+Changes:
+- Added mods/dreammod-core/Cargo.toml, horizon-mod.toml and src/lib.rs as a minimal native .hmod project using Horizon's typed Hooks API.
+- Pinned Horizon 1c45cf95d8431a7b49d94df007f7e75a890370c9 and horizon-mixins e59da9094f0c2fdda6c627fe9eff22dec6a906f0.
+- Added .github/workflows/dreammod-core.yml to compile the package against the exact Horizon source checkout; CI rewrites only its temporary copy to use the checkout's local API crate.
+- Updated current state, issues, roadmap and changelog in the same atomic commit.
+Verification: source and workflow committed atomically; CI execution pending.
+Not tested: no successful compile yet; no native library, prebuilt distribution, interpreter, .dmod loader, sandbox or benchmarks.
+Next: get the Core workflow green, then prove prebuilt native library installation without launcher-side compilation.
