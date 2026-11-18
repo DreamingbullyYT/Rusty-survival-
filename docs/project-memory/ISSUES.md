@@ -257,3 +257,7 @@ Found that `DREAMMOD_PREBUILT_DIR` was exported only in the overlay build step, 
 Added `ResourceRegistry` / `ResourceTransaction` as a host-independent reservation layer. It validates namespaced IDs, rejects duplicates and cross-mod conflicts atomically, enforces 1,024-per-mod and 16,384-global quotas, and supports deterministic owner cleanup. Dropping a staged transaction performs rollback because no registry mutation occurs before commit.
 
 Limitations: this does not register real Horizon assets, renderer/UI resources, or game resources; it does not yet attach cleanup to `ModManager::disable/fail`. A future adapter must commit reservations before external publication and release them on every disable/failure path. Package CI run `44385572845` was pending during this update.
+
+
+### DM-037 verification follow-up (2026-11-18)
+The first resource registry package run passed all 51 tests and formatting, but strict Clippy rejected manual saturating arithmetic and an unused mutable binding. Both were corrected in commits `7edd2f4` and `d1d89c6`. Follow-up CI is pending; do not mark DM-037 fully verified until Clippy passes.
