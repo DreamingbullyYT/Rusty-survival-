@@ -1583,3 +1583,7 @@ Next:
 - PMCS run `44364715327` completed the validator regression suite and structure/freshness validation successfully; post-job cleanup was still finishing at inspection.
 - Core run `44363904945` passed the pinned Horizon checker build, native manifest/source/API/host-WASM validation, engine mirror parity and formatting; Core unit tests were in progress.
 - Overlay run `44363904976` remained at API-only prebuilt compilation; native host loading and artifact upload remain unverified.
+
+### S-2026-11-18-47 verification addendum
+- Core run `44363904945` completed SUCCESS after removal of the unsupported local contract crate and conversion to the closure-based authorization API. Pinned Horizon checker build, native manifest/source/API/host-WASM checks, engine mirror parity, formatting, Core unit tests, source bundle packaging and upload all passed.
+- Overlay run `44363904976` passed API-only prebuilt compilation and Linux `$ORIGIN` RUNPATH setup. The real Horizon native host load test without overlay environment overrides was in progress; archive inspection and upload pending.
