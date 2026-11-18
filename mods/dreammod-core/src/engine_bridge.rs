@@ -3,7 +3,7 @@
 //! This module deliberately exposes pure coordinate conversion only. It does not
 //! retain Horizon handles, access world state, or claim that a playable engine exists.
 
-use crate::engine_coordinates::{BlockPos, ChunkAddress, ChunkPos};
+use crate::engine_coordinates::{BlockPos, ChunkAddress, ChunkPos, SectionAddress, SectionPos};
 
 /// Owned result returned across the native/mod boundary.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -12,6 +12,8 @@ pub struct BlockLocation {
     pub chunk: ChunkPos,
     pub local_x: u8,
     pub local_z: u8,
+    pub section: SectionPos,
+    pub local_y: u8,
 }
 
 /// Convert an absolute block position using the shared engine implementation.
@@ -19,11 +21,14 @@ pub struct BlockLocation {
 pub fn locate_block(x: i32, y: i32, z: i32) -> BlockLocation {
     let block = BlockPos::new(x, y, z);
     let address: ChunkAddress = block.chunk_address();
+    let section: SectionAddress = block.section_address();
     BlockLocation {
         block,
         chunk: address.chunk(),
         local_x: address.local_x(),
         local_z: address.local_z(),
+        section: section.section(),
+        local_y: section.local_y(),
     }
 }
 
@@ -38,6 +43,8 @@ mod tests {
         assert_eq!(location.chunk, ChunkPos::new(-1, -2));
         assert_eq!(location.local_x, 15);
         assert_eq!(location.local_z, 15);
+        assert_eq!(location.section, SectionPos::new(-1, 4, -2));
+        assert_eq!(location.local_y, 0);
     }
 
     #[test]
@@ -46,5 +53,7 @@ mod tests {
         assert_eq!(location.chunk, ChunkPos::new(1, 2));
         assert_eq!(location.local_x, 0);
         assert_eq!(location.local_z, 0);
+        assert_eq!(location.section, SectionPos::new(1, 0, 2));
+        assert_eq!(location.local_y, 0);
     }
 }
