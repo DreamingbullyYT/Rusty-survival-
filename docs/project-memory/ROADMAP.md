@@ -226,3 +226,7 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. [x] Add lifecycle regression test for before/after activation.
 4. [ ] Verify package workflow after `ee903d7`.
 5. [ ] Select and sandbox the interpreter; parse/execute source only with deterministic time, memory and instruction budgets.
+
+### Entrypoint bridge CI
+- [x] Package run `44365010182` passed 44 tests, formatting and Clippy, including activation-gated entrypoint source access.
+- [ ] Complete native host loading in overlay run `44363904976` and archive/upload verification.
