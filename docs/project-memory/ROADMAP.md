@@ -234,3 +234,14 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 ### Overlay host-load harness
 - [x] Re-export `DREAMMOD_PREBUILT_DIR` in the loader step; add ELF/RUNPATH diagnostics and a 180-second timeout.
 - [ ] Verify the new overlay run passes host loading without `LD_LIBRARY_PATH`, then inspect/upload the artifact.
+
+
+## Resource ownership transaction milestone — 2026-11-18
+1. [x] Add strict resource identifier validation and deterministic ownership records.
+2. [x] Stage registrations privately and commit atomically; reject duplicates/conflicts without partial mutation.
+3. [x] Add drop rollback, deterministic owner cleanup, and per-mod/global quotas.
+4. [ ] Verify package workflow run `44385572845` (tests, formatting, Clippy).
+5. [ ] Integrate reservations with ModManager lifecycle disable/failure and add rollback tests for external host publication.
+6. [ ] Verify the actual Horizon resource registration APIs before implementing the host adapter.
+
+Scope note: current registry is metadata bookkeeping only; no Horizon resource is registered or visible in-game.
