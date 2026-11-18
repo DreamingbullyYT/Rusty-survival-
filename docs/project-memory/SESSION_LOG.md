@@ -490,3 +490,24 @@ Next:
 - The workflow now explicitly supports push checks (offline tests only) and manual dispatch (actual download). This avoids a no-trigger workflow run and prevents ordinary pushes from downloading Mojang binaries.
 - Push run 44162815461 on commit `965287f36d9d8855e9f9f2f8e715c3e61d4ed58e`: SUCCESS. All nine offline Python tests passed; the artifact download was correctly skipped for a push event; unconditional cleanup passed and confirmed the temp directory was absent.
 - A manual `workflow_dispatch` could not be initiated through the available GitHub connection (no dispatch action is exposed). Therefore the live Mojang download, actual downloaded-file verification and deliberate-failure cleanup path remain unverified and require a manual run from the repository Actions tab.
+
+
+## S-2026-11-18-01 — Pivot project to DreamMod
+Date: 2026-11-18
+Commit: architecture commit 422a9e3fc57ffce0c2e9399a9b7466a1f15a6e2a; memory synchronization commits follow
+Goal: Start the user-approved DreamMod project in Rusty-survival- while preserving the existing PMCS continuity system.
+Changes:
+- User approved using this repository for DreamMod and selected the Horizon-based prebuilt-distribution architecture.
+- Added docs/specs/DREAMMOD_ARCHITECTURE.md covering HNMod build-time integration, prebuilt Horizon distribution, interpreted .dmod packages, deep extension points, performance, sandboxing, language evaluation and phases.
+- Reframed active project memory, architecture, decisions, issues, roadmap, compatibility matrix and README around DreamMod.
+- Marked the previous Minelib/standalone Minecraft Java 26.3 engine direction as superseded/historical. Existing files and history are preserved.
+- Kept direct commits to main and retained PMCS append-only session history.
+Verification:
+- Inspected main commit 279059bda915b2b2d87bc13731d4d7c3d3594286 and relevant PMCS files/validator.
+- Added architecture document in commit 422a9e3fc57ffce0c2e9399a9b7466a1f15a6e2a.
+- Documentation updates committed directly to main; PMCS Actions validation pending.
+Not tested:
+- No Horizon source integration, HNMod build, interpreter, loader, API, .dmod, benchmark, sandbox or runtime distribution has been implemented or tested.
+- No Rust code changed and no cargo tests were run.
+Next:
+- Verify PMCS Actions; then inspect and pin current Horizon, horizon-mixins and hooks/API revisions before creating the minimal Core bootstrap.
