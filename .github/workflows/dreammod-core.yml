@@ -50,7 +50,7 @@ jobs:
         run: '"$GITHUB_WORKSPACE/.ci/horizon/target/release/cargo-horizon-mod" horizon-mod check'
       - name: Check Core formatting
         working-directory: mods/dreammod-core
-        run: cargo fmt --all -- --check
+        run: cargo fmt --manifest-path Cargo.toml -- --check
       - name: Run Core unit tests against the verified pinned SDK
         working-directory: mods/dreammod-core
         run: cargo test
