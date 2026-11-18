@@ -1667,3 +1667,15 @@ Verification:
 - PMCS validator regression tests passed on run `44385572246`, but the structure/freshness step correctly flagged the five missing document updates; this session appends to all five required documents.
 Limitations:
 - This registry reserves IDs only. It does not call Horizon, register assets/UI/render resources, execute scripts, or automatically hook lifecycle disable/failure. Those effects require a separately verified host adapter and cleanup path.
+
+
+## S-2026-11-18-54 — Resource registry lint cleanup
+Date: 2026-11-18
+Commit: `7edd2f44832ecc2a087c075ca7b88f1fa5bd001e`, `d1d89c64aad80e4f3fa30f13aae98d7358330b1c`
+Goal: Resolve strict Clippy findings from the first resource registry validation.
+Changes:
+- Replaced manual checked-add/maximum fallback with `saturating_add` for global quota calculation.
+- Removed an unnecessary mutable binding in the rollback test.
+Verification:
+- Prior run `44385572845` passed all 51 unit tests and formatting, but Clippy failed on these two findings.
+- Follow-up package workflow after `d1d89c64aad8` pending; no clean CI pass claimed yet.
