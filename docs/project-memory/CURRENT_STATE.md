@@ -250,3 +250,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Core run 44341466411: Horizon native/API/host-WASM validation and canonical/HNMod source parity passed; formatting failed only on import wrapping in engine_bridge.rs. Corrected in 42d9ac762502ad5ef3db9158a9885c99a24ae238. Core rerun 44361109477 is in progress.
 - PMCS run 44341597122 passed. PMCS run 44361109707 failed because the prior code change was not accompanied by all five required memory documents in its compared change range; the current update records the verified results and formatting correction.
 - No full launcher/game startup, production .dmod interpreter, runtime-to-Core lifecycle adapter, or live mod execution is verified.
+
+
+## Verification refresh — 2026-11-18 (Core run 44361109477)
+- DreamMod Core: PASS. Pinned Horizon native/API/host-WASM checks, canonical engine/HNMod mirror parity, rustfmt, 12 unit tests, source .hmod bundle packaging and upload all passed. Artifact ID 14454406903 (9,939 bytes).
+- The section bridge is verified in Core CI: negative coordinates and X/Y/Z section addressing are tested. This does not implement chunk-section storage, world simulation, block-state serialization or Minecraft Java 26.3 parity.
+- Overlay artifact inspection found that libmod_vocab.so depends on libhorizon_mod_runtime.so but lacks its own RUNPATH. The launcher does not explicitly set LD_LIBRARY_PATH on Linux. Workflow commit 4d2c910c adds $ORIGIN RUNPATH to bundled .so files, refreshes the receipt hash and runs the native-host test without an inherited overlay LD_LIBRARY_PATH. Run 44361815335 is pending.
+- No production .dmod interpreter, complete loader/sandbox, lifecycle-to-Core adapter or full launcher/game startup is verified.
