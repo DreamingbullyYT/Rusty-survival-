@@ -101,3 +101,6 @@ The real Horizon prebuilt compiler stages the HNMod source package but does not 
 
 ### Callback bridge and failure-state behavior
 `ModManager::require_capability` is the package-side callback target for Core's one-shot authorization closure. The manager regression suite covers the callback across approval/activation/grant states. During failure propagation, already-Failed intermediate dependents are recorded as failed without attempting an invalid second Failed transition; their descendants are still failed in topological order.
+
+## In-memory asset access
+`ModManager::read_asset(mod_id, path)` provides a narrow read-only asset API over validated package files. It accepts only paths under `assets/`, reuses the archive's portable path validation, checks the requesting mod's Enabled state and `assets.read` grant before lookup, and returns a borrowed immutable byte slice. No extraction or filesystem write occurs. The interpreter/host adapter must still impose per-call byte/CPU budgets and decide how resource formats are decoded; this method only exposes validated raw bytes.
