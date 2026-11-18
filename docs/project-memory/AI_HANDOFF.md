@@ -100,3 +100,10 @@ The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod 
 - PMCS run 44322745310 failed because CURRENT_STATE.md, ISSUES.md, ROADMAP.md, CHANGELOG.md and SESSION_LOG.md were stale. Their current evidence/status is being updated in the same logical change set; rerun PMCS.
 - API-only overlay run 44322745328 failed because the CI patch used the UI picker Route rather than prebuilt::Route. scripts/ci/patch_horizon_api_route.py now uses prebuilt::Route::Api for SDK slices and compiler selection. A fresh run must confirm this; host-loader validation and artifact inspection remain unverified.
 - No dispatcher/cache, production .dmod interpreter/sandbox, lifecycle-to-Core authorization adapter, or ARM64 benchmark exists. Do not claim performance gains.
+
+
+## Prebuilt toolchain finding — 2026-11-18
+- Overlay run 44324363090 reached Horizon's official API-only prebuilt compiler, then reported E0514: SDK crate mod_api was built by an incompatible rustc. The workflow used 1.95.0.
+- Exact pinned Horizon source 0b14f8acfd97fa2c750e42795249dcc981178ca4 declares tools/ci/rust-version = 1.99.1 in its SDK publish workflow. Overlay workflow and metadata now use 1.99.1 (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7).
+- PMCS run 44328650216 passed. Overlay rerun 44328650675 was still in progress at handoff; do not claim compiler or host-loader success until it finishes.
+- Treat the generated crate::hooks error as potentially secondary to the compiler mismatch until the rerun confirms it persists.
