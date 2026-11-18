@@ -1,16 +1,10 @@
-use std::{
-    collections::BTreeMap,
-    fs::File,
-    io::Read,
-    path::Path,
-    sync::Arc,
-};
+use std::{collections::BTreeMap, fs::File, io::Read, path::Path, sync::Arc};
 
 use sha2::{Digest, Sha256};
 use thiserror::Error;
 use zip::ZipArchive;
 
-use crate::manifest::{is_safe_relative_path, ManifestError, ModManifest};
+use crate::manifest::{ManifestError, ModManifest, is_safe_relative_path};
 
 #[derive(Clone, Copy, Debug)]
 pub struct PackageLimits {
@@ -115,8 +109,7 @@ impl PackageLoader {
             }
             if size > 0
                 && (compressed == 0
-                    || size
-                        > compressed.saturating_mul(self.limits.max_compression_ratio as u64))
+                    || size > compressed.saturating_mul(self.limits.max_compression_ratio as u64))
             {
                 return Err(PackageError::SuspiciousCompression(name));
             }
@@ -187,8 +180,18 @@ fn is_forbidden_executable(path: &str) -> bool {
 
     matches!(
         extension.as_str(),
-        "so" | "dll" | "dylib" | "exe" | "wasm" | "o" | "rlib" | "a" | "class"
-            | "jar" | "pyc" | "luac" | "bc"
+        "so" | "dll"
+            | "dylib"
+            | "exe"
+            | "wasm"
+            | "o"
+            | "rlib"
+            | "a"
+            | "class"
+            | "jar"
+            | "pyc"
+            | "luac"
+            | "bc"
     )
 }
 
@@ -209,7 +212,11 @@ pub enum PackageError {
     #[error("package contains duplicate entry path: {0}")]
     DuplicatePath(String),
     #[error("package file is too large: {path} ({actual} bytes, limit {limit})")]
-    FileTooLarge { path: String, actual: u64, limit: u64 },
+    FileTooLarge {
+        path: String,
+        actual: u64,
+        limit: u64,
+    },
     #[error("suspicious compression ratio in entry: {0}")]
     SuspiciousCompression(String),
     #[error("package total uncompressed size overflow")]
@@ -239,7 +246,7 @@ mod tests {
     use std::io::Write;
 
     use tempfile::NamedTempFile;
-    use zip::{write::SimpleFileOptions, CompressionMethod, ZipWriter};
+    use zip::{CompressionMethod, ZipWriter, write::SimpleFileOptions};
 
     use super::*;
 
@@ -275,7 +282,10 @@ mod tests {
     fn loads_source_package_and_hashes_archive() {
         let file = write_package(&[
             ("manifest.json", valid_manifest()),
-            ("scripts/main.dream", b"fn on_server_tick(event) { #{ commands: [] } }"),
+            (
+                "scripts/main.dream",
+                b"fn on_server_tick(event) { #{ commands: [] } }",
+            ),
             ("assets/readme.txt", b"example"),
         ]);
 
