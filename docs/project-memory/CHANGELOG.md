@@ -432,3 +432,10 @@
 - Extended `.github/workflows/dreammod-core.yml` to run `cargo fmt --all -- --check` and `cargo test` after the pinned Horizon SDK check has fetched/verified the SDK.
 - This makes the Core-local authorization and snapshot validation tests executable in CI instead of merely present in source.
 - Workflow commit: `ffe93f053ab6a0a0df99953a1206262661e8b111`. First run must confirm the test command works with the generated SDK path.
+
+
+## 2026-11-18 — API optimization and bounded package loading
+- Replaced BTreeSet-based duplicate UUID checks in Core and package snapshot batches with one contiguous UUID vector, sort_unstable, and adjacent duplicate detection; batch cap/order unchanged.
+- Added a cooperative 60-second monotonic deadline to .dmod archive inspection, including checks between entries and decompression chunks, plus an expired-deadline regression test.
+- Fixed Core CI toolchain setup to install rustfmt after run 44313213891 exposed a missing component (Horizon check had passed; tests did not run).
+- Verification pending: package and Core Actions must pass before these changes are marked verified. No performance benchmark has been run.
