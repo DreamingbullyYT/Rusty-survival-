@@ -68,3 +68,7 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Approval remains per-mod and does not activate. Enable requires every declared dependency to be Enabled. Disable refuses while a direct dependent remains Enabled. A failure propagates fail-closed through transitive dependents in reverse load order.
 - Regression tests cover dependency-first ordering, package retention, enable ordering, disable protection, transitive failure propagation and invalid graphs.
 - This is lifecycle/dependency orchestration only: no interpreter, script scheduling, host registration or Horizon runtime manager exists yet. Package workflow run `44363310681` and PMCS run `44363323071` are pending.
+
+### ModManager cascade-order correction (2026-11-18)
+- Corrected failure propagation to walk the dependency-first topological order, so a failed root is propagated to its intermediate dependent before that dependent's own dependents are visited. Reverse order was incorrect for a multi-level chain.
+- The transitive cascade regression test is the required guard. The first package run `44363310681` passed but did not include manager tests because the manager module export was committed afterward; the export-triggered run must be inspected, and the corrected run must show the manager tests executing.
