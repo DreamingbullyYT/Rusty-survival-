@@ -134,7 +134,7 @@ impl ModManager {
             .map_err(ModManagerError::Lifecycle)
     }
 
-    /// Fails the selected mod and all transitive dependents, in reverse load order.
+    /// Fails the selected mod and all transitive dependents, in dependency-first order.
     /// This is fail-closed: dependents cannot continue after a dependency faults.
     pub fn fail(&mut self, id: &str, reason: &str) -> Result<(), ModManagerError> {
         if !self.mods.contains_key(id) {
@@ -148,7 +148,7 @@ impl ModManager {
             .map_err(ModManagerError::Lifecycle)?;
 
         let mut failed = BTreeSet::from([id.to_owned()]);
-        for dependent in self.load_order.iter().rev() {
+        for dependent in &self.load_order {
             if failed.contains(dependent) {
                 continue;
             }
