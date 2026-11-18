@@ -511,3 +511,22 @@ Not tested:
 - No Rust code changed and no cargo tests were run.
 Next:
 - Verify PMCS Actions; then inspect and pin current Horizon, horizon-mixins and hooks/API revisions before creating the minimal Core bootstrap.
+
+
+## S-2026-11-18-02 — Audit Horizon's existing mod platform
+Date: 2026-11-18
+Commit: audit commit 21ff8bd96672d0304533170781f9f5f8d05d36aa; architecture and memory synchronization commits follow
+Goal: Verify the best integration route against current Horizon source instead of duplicating existing mod infrastructure.
+Changes:
+- Inspected Horizon main 1c45cf95d8431a7b49d94df007f7e75a890370c9 and horizon-mixins e59da9094f0c2fdda6c627fe9eff22dec6a906f0.
+- Audited existing mod API/host, package formats, hooks, Hosts, Parts, attachments, capabilities, typed API injection, native mixins/bridges/loop slots and runtime loading.
+- Confirmed WASM runtime includes a child-process Wasmtime compilation path; it is unsuitable for the strict no-player-compilation/interpreted-source requirement.
+- Confirmed native host can load prebuilt adjacent dynamic libraries with SHA-256 and build-identity checks; end-to-end CI packaging/startup proof remains OPEN.
+- Added docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md and revised docs/specs/DREAMMOD_ARCHITECTURE.md to reuse existing Horizon facilities.
+- Updated issues, roadmap and AI handoff with the new evidence.
+Verification:
+- Source/documentation inspection only; pinned files and loader behavior are recorded in the audit.
+Not tested:
+- No Horizon build, native .hmod build, prebuilt library package, clean install/startup, interpreter, sandbox or benchmark.
+Next:
+- Prove a CI-built native .hmod can be shipped as prebuilt files and loaded by a clean pinned Horizon distribution without invoking launcher compilation.
