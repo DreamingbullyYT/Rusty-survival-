@@ -573,3 +573,27 @@ Next:
 - Inspect runtime prototype Actions results and fix failures.
 - Compare Starlark using equivalent event, batch and subsystem workloads.
 - Prove the native prebuilt library route separately before claiming launcher installs can avoid local compilation.
+
+## S-2026-11-18-05 — Verify API-only prebuilt route and correct CI findings
+Date: 2026-11-18
+Goal: Confirm the exact Horizon route for shipping DreamMod Core prebuilt and correct failures found by automated verification.
+Changes:
+- Traced pinned Horizon source from native_mods::pipeline through prebuilt::compile and Route::Api into api_route::compile.
+- Confirmed API-only mods are compiled as separate dynamic libraries against the prebuilt SDK runtime/API slices; api_route returns the existing horizon-client executable unchanged plus runtime and mod libraries.
+- Confirmed the native host reads native-mods.json, validates adjacent library names, SHA-256, game build identity and Rust compiler identity, then loads exported native mod entries.
+- Confirmed current DreamMod Core uses Hooks only and has no native source patch/internals dependency, so it should use Route::Api and avoid rebuilding Horizon's engine. This is source-level evidence; artifact creation and clean startup remain pending.
+- Corrected the Rhai prototype after CI identified an optimizer import hidden by the no_optimize feature, and applied rustfmt output. Added rustfmt/clippy toolchain components to CI.
+- Corrected the PMCS append-only validator's false positive when appending to a legacy file whose previous final line had no newline.
+Verification:
+- PMCS regression run 44277791784: SUCCESS after the validator correction.
+- Initial runtime candidate CI failures were inspected: one compile error due to importing a feature-gated OptimizationLevel, and one rustfmt mismatch. Fixes committed; fresh runtime workflow run is pending.
+- Existing Core pinned Horizon API compile run 44249522292 remains SUCCESS.
+Not tested:
+- No successful Rhai runtime test/benchmark result yet.
+- No Starlark comparison or ARM64 runtime benchmark.
+- No official native-build output artifact, native-mods.json package, or clean Horizon client launch.
+- No production .dmod loader, sandbox, or Core integration.
+Next:
+- Verify the current runtime prototype and PMCS workflows.
+- Create a reproducible CI build using Horizon's official API-only native route and inspect the complete version folder/inventory.
+- Test that a clean pinned Horizon install starts with the shipped Core libraries without running native-build on the player device.
