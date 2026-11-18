@@ -1607,3 +1607,17 @@ Next:
 ### S-2026-11-18-50 verification addendum
 - Package run `44365010182` on commit `ee903d7c76` completed SUCCESS: all 44 tests passed, including `manager::tests::entrypoint_source_is_borrowed_only_after_activation`; rustfmt and Clippy passed.
 - Overlay run `44363904976` had passed API-only prebuilt compilation and `$ORIGIN` setup; real Horizon native host load test without overlay environment overrides remained in progress.
+
+## S-2026-11-18-51 — Fix overlay host-loader step environment
+Date: 2026-11-18
+Commit: `9347eb43514211d0cc64f8efaee75393058da531`
+Goal: Ensure the real Horizon host-loader test receives the overlay path in its own GitHub Actions process.
+Changes:
+- Reviewed the in-progress overlay run `44363904976` after API-only compilation and `$ORIGIN` setup passed.
+- Found the workflow exported `DREAMMOD_PREBUILT_DIR` only in the build step. GitHub Actions creates a separate process/environment for each step, so that variable was not available to the loader test.
+- Re-exported `$RUNNER_TEMP/dreammod-prebuilt` in the loader step, added file-size and ELF RUNPATH diagnostics, and bounded the test to 180 seconds.
+Verification:
+- Previous run `44363904976` was superseded by this workflow correction during the host-test step.
+- New overlay workflow run pending.
+Limitations:
+- This validates the CI host loader only; actual launcher runtime search-path behavior still requires a separate check.
