@@ -53,7 +53,7 @@ The official pinned cargo-horizon-mod check and source .hmod build passed in run
 
 ## DM-012 — Validate the Rhai interpreted-source candidate
 Status: INVESTIGATING
-Added `mods/dreammod-runtime-prototype` and a dedicated workflow. Rhai 1.27.0 AST evaluation uses `no_optimize` and excludes Grain bytecode. Formatting, behavior tests, Clippy and per-value resource-limit tests passed (runs 44284795812 and 44285379104). Provider batch validation was then added; run 44289702282 caught rustfmt-only differences, fixed in 99be124. Run 44289964423 is pending. The comparable 10k-item benchmark was 462.94× slower than native on x86_64 CI. Starlark was rejected because it compiles AST to bytecode; Sprite remains research-only due to its tiny feature set. Keep Rhai provisional, design coarse provider APIs and benchmark ARM64 before any language decision.
+Added `mods/dreammod-runtime-prototype` and a dedicated workflow. Rhai 1.27.0 AST evaluation uses `no_optimize` and excludes Grain bytecode. Formatting, behavior tests, Clippy and per-value resource-limit tests passed (runs 44284795812 and 44285379104). Provider batch validation was then added; run 44289702282 caught rustfmt-only differences, fixed in 99be124. Run 44289964423 then caught an ambiguous EvalAltResult-to-Box conversion in the new type-validation path; fixed with Box::new in 5bdd485. Follow-up workflow is pending. The comparable 10k-item benchmark was 462.94× slower than native on x86_64 CI. Starlark was rejected because it compiles AST to bytecode; Sprite remains research-only due to its tiny feature set. Keep Rhai provisional, design coarse provider APIs and benchmark ARM64 before any language decision.
 
 
 ## DM-013 — Validate script provider batch boundaries
