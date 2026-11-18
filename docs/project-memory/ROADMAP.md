@@ -11,14 +11,17 @@
 - [x] Add minimal native .hmod Core source and pinned-source compile workflow.
 - [ ] Identify and verify prebuilt native library packaging path.
 - [x] Pin Horizon revision, horizon-mixins revision and API version for the bootstrap.
-- [ ] Get the minimal Core bootstrap CI compile check passing.
+- [x] Get the minimal Core bootstrap CI compile check passing (Actions run 44249522292; pinned Horizon API cargo check succeeded).
 - [ ] Produce and verify a prebuilt Horizon package containing the bootstrap.
 - [ ] Confirm ordinary installation does not invoke native mod compilation on the player device.
 
 ## Phase 2 — Runtime decision and prototype
-- [ ] Compare interpreted language candidates against the no-compilation requirement.
-- [ ] Prototype source parsing/evaluation and typed Rust API calls.
-- [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem calls.
+- [x] Establish initial candidate shortlist (Rhai AST evaluator and Starlark AST interpreter); final selection remains OPEN.
+- [x] Add an isolated Rhai AST-evaluator prototype with typed test host calls and an explicit operation budget.
+- [x] Add tests for event-style dispatch, batch world query and script-side batch physics replacement.
+- [ ] Verify the new runtime prototype CI workflow and fix any failures.
+- [ ] Compare Starlark with the same representative workloads.
+- [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem replacement on desktop and ARM64 devices.
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
 - [ ] Define execution budgets, memory quotas, cancellation and diagnostics.
 
