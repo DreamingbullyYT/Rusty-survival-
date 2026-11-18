@@ -2,6 +2,12 @@
 //! DreamMod language decision or production sandbox.
 use rhai::{AST, Array, Engine, EvalAltResult, ParseError, Scope};
 
+const MAX_PHYSICS_BATCH_ITEMS: usize = 100_000;
+
+fn batch_error(message: &str) -> Box<EvalAltResult> {
+    EvalAltResult::ErrorRuntime(message.into(), rhai::Position::NONE).into()
+}
+
 #[derive(Clone, Copy, Debug)]
 pub struct RuntimeLimits {
     pub max_operations: u64,
@@ -71,6 +77,19 @@ impl RhaiPrototype {
         velocities: Vec<f64>,
         delta_seconds: f64,
     ) -> Result<Vec<f64>, Box<EvalAltResult>> {
+        if positions.len() != velocities.len() {
+            return Err(batch_error("positions and velocities must have equal lengths"));
+        }
+        if positions.len() > MAX_PHYSICS_BATCH_ITEMS {
+            return Err(batch_error("physics batch exceeds the configured item limit"));
+        }
+        if !delta_seconds.is_finite()
+            || positions.iter().any(|value| !value.is_finite())
+            || velocities.iter().any(|value| !value.is_finite())
+        {
+            return Err(batch_error("physics inputs must contain only finite numbers"));
+        }
+        let expected_len = positions.len();
         let positions = positions.into_iter().map(Into::into).collect::<Array>();
         let velocities = velocities.into_iter().map(Into::into).collect::<Array>();
         let result: Array = self.engine.call_fn(
@@ -79,17 +98,24 @@ impl RhaiPrototype {
             "physics_step",
             (positions, velocities, delta_seconds),
         )?;
+        if result.len() != expected_len {
+            return Err(batch_error("physics provider returned an unexpected result length"));
+        }
         result
             .into_iter()
             .map(|value| {
-                value.as_float().map_err(|_| {
+                let number = value.as_float().map_err(|_| {
                     EvalAltResult::ErrorMismatchDataType(
                         "f64".into(),
                         value.type_name().into(),
                         rhai::Position::NONE,
                     )
                     .into()
-                })
+                })?;
+                if !number.is_finite() {
+                    return Err(batch_error("physics provider returned a non-finite number"));
+                }
+                Ok(number)
             })
             .collect()
     }
