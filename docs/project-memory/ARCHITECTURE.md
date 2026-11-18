@@ -107,3 +107,6 @@ The real Horizon prebuilt compiler stages the HNMod source package but does not 
 
 ## Entry-point source access
 The trusted interpreter can obtain the validated entrypoint via `ModManager::entrypoint_source` only after activation. `ModLifecycle::ensure_enabled` is intentionally separate from capability checks: executing a mod's own entrypoint is controlled by explicit mod enablement, while access to privileged host operations remains guarded by named capabilities. The method returns borrowed bytes from the validated in-memory package and does not parse or execute them.
+
+### CI host-load harness environment
+GitHub Actions steps do not share shell-local exports. The host loader test must explicitly set `DREAMMOD_PREBUILT_DIR` again in its own step; the workflow now does so, prints the packaged ELF files and RUNPATHs, and enforces a 180-second timeout. This is test-harness plumbing, not a change to the launcher runtime contract.
