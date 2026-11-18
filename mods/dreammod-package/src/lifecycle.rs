@@ -1,8 +1,6 @@
 //! Pure, default-disabled lifecycle policy for validated DreamMod packages.
 //! This module does not execute scripts or install files.
 
-use dreammod_contract::{PlayerReadAuthorization, PLAYER_READ_CAPABILITY};
-
 use crate::{
     bridge::{PlayerSnapshot, PlayerSnapshotBatch, SnapshotError},
     CapabilityGate, CapabilityPlanError, Manifest, ValidatedPackage,
@@ -38,14 +36,6 @@ pub struct ModLifecycle {
     state: LifecycleState,
     gate: Option<CapabilityGate>,
     failure: Option<String>,
-}
-
-impl PlayerReadAuthorization for ModLifecycle {
-    type Error = LifecycleError;
-
-    fn require_entities_read(&self) -> Result<(), Self::Error> {
-        self.require(PLAYER_READ_CAPABILITY)
-    }
 }
 
 impl ModLifecycle {
@@ -380,44 +370,6 @@ mod tests {
             Err(LifecycleError::Approval(CapabilityPlanError::UnrequestedCapability(_)))
         ));
         assert_eq!(lifecycle.state(), LifecycleState::AwaitingApproval);
-    }
-    #[test]
-    fn shared_core_authorization_trait_tracks_lifecycle_and_capability() {
-        let mut package = package();
-        package.manifest.capabilities = vec![PLAYER_READ_CAPABILITY.into()];
-        let mut lifecycle = ModLifecycle::from_validated_package(&package);
-
-        assert_eq!(
-            PlayerReadAuthorization::require_entities_read(&lifecycle),
-            Err(LifecycleError::NotEnabled)
-        );
-
-        lifecycle.approve(&[]).unwrap();
-        lifecycle.enable().unwrap();
-        assert_eq!(
-            PlayerReadAuthorization::require_entities_read(&lifecycle),
-            Err(LifecycleError::CapabilityDenied(PLAYER_READ_CAPABILITY.into()))
-        );
-
-        let mut granted = ModLifecycle::from_validated_package(&package);
-        granted.approve(&[PLAYER_READ_CAPABILITY.into()]).unwrap();
-        assert_eq!(
-            PlayerReadAuthorization::require_entities_read(&granted),
-            Err(LifecycleError::NotEnabled)
-        );
-        granted.enable().unwrap();
-        assert_eq!(PlayerReadAuthorization::require_entities_read(&granted), Ok(()));
-        granted.disable().unwrap();
-        assert_eq!(
-            PlayerReadAuthorization::require_entities_read(&granted),
-            Err(LifecycleError::NotEnabled)
-        );
-        granted.enable().unwrap();
-        granted.fail("test failure").unwrap();
-        assert_eq!(
-            PlayerReadAuthorization::require_entities_read(&granted),
-            Err(LifecycleError::NotEnabled)
-        );
     }
 
 }
