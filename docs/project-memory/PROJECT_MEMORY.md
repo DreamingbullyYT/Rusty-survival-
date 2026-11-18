@@ -1,44 +1,41 @@
 # Project Memory
 
 ## Identity
-Project: Rusty Survival Engine
+Project: DreamMod
 Repository: DreamingbullyYT/Rusty-survival-
-Primary platform: Android
-Correctness target: Minecraft Java Edition 26.3 observable behavior
-Inspiration: Horizon and Minelib engineering ideas only; no Horizon code copying
-Strategy: independent Rust engine; optional Minelib component reuse only after audit.
+Target engine: Horizon
+Integration: pinned HNMod/horizon-mixins build-time integration
+Runtime model: interpreted .dmod source, no per-mod compilation on player devices
 
 ## Mission
-Build an independent, modular Rust vanilla engine/runtime with observable behavior matching Minecraft Java Edition 26.3. Keep simulation portable and independently testable. Use Android as the final first-class platform target.
+Build a powerful, deeply extensible runtime modding platform for Horizon. Mods can add gameplay and engine systems, customize existing behavior, and replace designated subsystems through versioned contracts. Ordinary .dmod packages are loaded and interpreted at runtime without Rust/native compilation, bytecode compilation or a game rebuild on the player's device.
 
-## Scope
-Current active scope is the vanilla engine only: world data, world generation, simulation, physics, persistence, rendering, resources, audio, runtime and platform integration. Modding is explicitly out of scope: do not design or implement mod loaders, mod APIs, hooks, mixins or scripting.
+## Distribution model
+1. DreamMod Core is integrated into a pinned Horizon revision during the trusted build pipeline through HNMod/horizon-mixins.
+2. The resulting prebuilt Horizon distribution contains DreamMod Core.
+3. The separate launcher installs and updates that prebuilt distribution.
+4. Player-installed .dmod packages contain interpreted source and assets; they are dynamically loaded by DreamMod.
+
+HNMod is not assumed to be a precompiled runtime plugin. Current documented Horizon native-mod workflow builds source against the pinned game revision.
 
 ## Ground rules
-- Correctness/parity before feature breadth or benchmark optimization.
-- Horizon is inspiration only; do not copy its source, assets, code structure or implementation.
-- Minelib reuse is optional; its root license is AGPLv3. Record file-level provenance and legal obligations before any source reuse. No Minelib source has been copied.
-- Record provenance and redistribution status for every asset.
-- No undocumented architectural coupling or cyclic dependencies.
-- Keep headless simulation independent of Android, graphics APIs, audio devices, UI and filesystem paths.
-- Run formatting, unit/integration tests and Clippy in CI for Rust changes.
+- Integrate with Horizon through pinned upstream extension points; do not copy Horizon source into this repository.
+- Work directly on main; no PRs or feature branches unless the user changes this rule.
+- No per-mod compilation on player devices, including hidden bytecode compilation.
+- Do not finalize the script language before comparative evaluation and representative benchmarks. Rhai is a candidate only.
+- Keep performance-critical loops in Rust/native engine code by default; expose batched/coarse-grained script APIs.
+- Design explicit contracts for subsystem replacement, state ownership, scheduling, failure and migration.
+- Deep script access must not expose arbitrary unsafe pointers or unrestricted native process privileges.
+- Sandbox scripts by default. Capabilities must be explicit and narrow.
+- Treat HNMod/native code as trusted build-time code with native privileges, not as a safe sandbox.
+- Version every public API and record exact Horizon, mixins and hooks/API revisions.
 - No fabricated test results or completion claims.
-- Commit directly to main; no PRs or feature branches unless user changes this.
 - Keep session history append-only.
-- Do not guess version-specific Minecraft Java 26.3 behavior; use reference fixtures or mark unknowns OPEN.
+- Launcher implementation is separate and out of scope.
+- Existing Minelib/vanilla-engine work is historical, not the active product direction.
 
-## Source of truth
-1. Current source and build configuration.
-2. Git history and commit references.
-3. Reproducible tests and captured logs.
-4. Version-pinned Minecraft Java 26.3 reference fixtures and provenance.
-5. Project memory as an index, updated with meaningful changes.
+## Architecture
+The active architecture is specified in docs/specs/DREAMMOD_ARCHITECTURE.md. The previous engine architecture and Minecraft Java 26.3 parity work are superseded for active development, but remain in Git history and existing records for traceability.
 
 ## Continuity system
-PMCS documents live in docs/project-memory/. Specifications and audits live in docs/specs/ and docs/audits/. Read AI_HANDOFF.md first.
-
-## Engine foundation
-The workspace contains `rusty-survival-engine-core` with horizontal coordinate mapping and `rusty-survival-testkit` with a typed, version-pinned fixture contract and validator. Coordinate and synthetic testkit tests establish internal invariants only, not Minecraft parity. See docs/specs/ENGINE_TEST_STRATEGY.md, docs/specs/ENGINE_LAYOUT.md and docs/specs/REFERENCE_TEST_PIPELINE.md.
-
-## Reference test acquisition
-The implemented `tools/fetch_mojang_server.py` resolves Java 26.3 from Mojang's official v2 manifest/version JSON, verifies metadata SHA-1, restricts official HTTPS hosts and redirects, and downloads the server jar into a caller-provided ephemeral directory while checking exact size/SHA-1. Offline tests live in `tools/tests/`; the manual artifact-only workflow is `.github/workflows/reference-artifact-smoke.yml` and has unconditional cleanup plus an optional deliberate-failure input. It does not yet run a Java oracle or establish parity. Never commit, cache, upload, release or otherwise redistribute Mojang files. The public workflow remains transparent. See docs/specs/REFERENCE_TEST_PIPELINE.md.
+PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update project memory with every meaningful implementation or architecture change.
