@@ -1,6 +1,6 @@
 //! Candidate runtime prototype. This is an evaluation harness, not the final
 //! DreamMod language decision or production sandbox.
-use rhai::{AST, Engine, EvalAltResult, OptimizationLevel, ParseError, Scope};
+use rhai::{AST, Engine, EvalAltResult, ParseError, Scope};
 
 #[derive(Clone, Copy, Debug)]
 pub struct RuntimeLimits {
@@ -34,7 +34,6 @@ impl RhaiPrototype {
         limits: RuntimeLimits,
     ) -> Result<Self, ParseError> {
         let mut engine = Engine::new();
-        engine.set_optimization_level(OptimizationLevel::None);
         engine.set_max_operations(limits.max_operations);
         engine.set_max_call_levels(limits.max_call_levels);
 
@@ -84,7 +83,6 @@ impl RhaiPrototype {
 /// Used by the tests to model a single coarse-grained world query.
 pub fn engine_with_test_world_api() -> Engine {
     let mut engine = Engine::new();
-    engine.set_optimization_level(OptimizationLevel::None);
     engine.set_max_operations(250_000);
     engine.set_max_call_levels(32);
     engine.register_fn("world_health_batch", || vec![10_i64, 20, 30, 40]);
