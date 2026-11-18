@@ -1278,3 +1278,18 @@ Limitations:
 - No live ServerHost unit test or .dmod runtime integration exists.
 Next:
 - Verify the corrected Core workflow and confirm test compilation/execution separately.
+
+
+## S-2026-11-18-37 — Run Core formatting and unit tests in CI
+Date: 2026-11-18
+Commit: ffe93f053ab6a0a0df99953a1206262661e8b111
+Goal: Ensure Core-local regression tests are actually executed rather than relying only on the Horizon native-mod checker.
+Changes:
+- Added cargo fmt --all -- --check after Horizon SDK check.
+- Added cargo test after the verified SDK has been fetched into the mod project.
+Verification:
+- The workflow triggered by this change must confirm that the generated SDK path and unit-test harness work. No pass is claimed yet.
+Limitations:
+- Unit tests do not replace a live ServerHost integration test or prove per-mod runtime wiring.
+Next:
+- Check DreamMod Core Actions and fix any test/build errors reported.
