@@ -302,3 +302,8 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - PMCS: PASS, run `44364312080`.
 - Core: run `44363904945` still in progress at `cargo-horizon-mod` build.
 - Overlay: run `44363904976` still in progress at API-only prebuilt build; real host loader and overlay artifact steps have not run.
+
+## Asset API milestone — 2026-11-18
+- `ModManager::read_asset` now reads a validated asset from the retained `.dmod` package without extracting it.
+- Reads require Enabled state plus explicit `assets.read`; requested paths are revalidated against archive traversal/portable-path rules.
+- Regression coverage includes denied-before-enable, denied-without-grant, successful bytes, traversal and missing-file cases. CI after commit `f90d0b1` pending.
