@@ -32,6 +32,7 @@
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
 - [x] Add prototype operation/call-depth and per-array/per-map/per-string/variable/function limits plus an array-growth regression test (Actions 44285379104 passed; not aggregate heap quotas).
 - [ ] Define production execution budgets, exact memory quotas, cancellation and diagnostics.
+- [x] Add prototype validation for physics provider batch input/output shape and finite numeric values (commit 33639ee0; Actions verification pending).
 
 ## Phase 3 — Core runtime
 - [ ] Define .dmod manifest and permissions schema.
