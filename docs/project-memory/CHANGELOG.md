@@ -509,3 +509,6 @@
 - Enforced dependency-first activation and prevented disabling a dependency while an enabled dependent exists.
 - Added fail-closed transitive dependent failure propagation and regression tests for dependency graph/lifecycle invariants.
 - Package and PMCS CI verification pending.
+
+### ModManager failure cascade correction — 2026-11-18
+- Corrected transitive failure propagation to process dependencies before their dependents. This ensures every level of a dependency chain is marked Failed in one pass.
