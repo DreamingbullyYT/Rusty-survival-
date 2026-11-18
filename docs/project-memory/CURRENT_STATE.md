@@ -42,10 +42,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - No verified prebuilt client overlay or successful native-host load yet.
 - No complete game launch with DreamMod Core.
 - `mods/dreammod-package` defines and validates the version-1 JSON manifest contract, capability declarations, dependency declarations, and deterministic dependency-first load order.
-- `inspect_dmod()` now parses actual ZIP input in memory, performs metadata preflight and local-header consistency validation, checks the manifest and declared entrypoint, and streams regular entries to EOF for actual-size and CRC validation. It never extracts files.
+- inspect_dmod() now parses actual ZIP input in memory, performs metadata preflight and local-header consistency validation, checks the manifest and declared entrypoint, and streams regular entries to EOF for actual-size and CRC validation. Validated script/asset bytes are retained in a bounded Vec<PackageFile>; no filesystem extraction occurs.
 - Dedicated package CI passed on commit `4e983c04ea8f3a4085aa2e13b6b53d691c307564`, Actions run `44299317538`: formatting step, all 19 unit tests, and Clippy with `-D warnings` succeeded.
-- PMCS session-log validation is being made legacy-aware: old duplicate headings are preserved, while new entries must be unique against all prior IDs; regression tests are added and CI is pending.
-- No filesystem installation, content retention for runtime use, capability grant, script execution, or production sandbox exists.
+- PMCS session-log validation is legacy-aware: old duplicate headings are preserved, while new entries must be unique against all prior IDs; regression tests passed in Actions run 44299837834.
+- No filesystem installation, capability grant, script execution, or production sandbox exists. The package layer now retains validated script/asset bytes in memory but does not expose an execution API.
 - No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
 - The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
 - Rhai is not the final language choice and is not integrated into Core.
@@ -87,3 +87,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Commits: 32d52810bb2181c7c6bb03a4f7152b402a8c8d9e, d7e7794567efb0cf1873686964fe47e7364ccbf4, 8bea071635acc45098bd4e93c5c66cbdf5296b30, 15c650a0e61ed3707e6ff76f784180f7f9115452, fc6af40387fa9b861b19ec7fb6b148046c83df8d and 6add01bb156b8ff0e826de40dbd7712a014daf41.
 - CI status: not yet verified. The implementation is committed but must pass the dedicated workflow before it is treated as verified.
 - Limitations: package inspection is in-memory and bounded; it does not install files, grant capabilities, execute scripts, or establish a production sandbox.
+
+
+## Latest in-memory package-content representation (2026-11-18)
+- Extended ValidatedPackage with files: Vec<PackageFile>, retaining validated script and asset bytes after full streaming/CRC checks.
+- manifest.json remains parsed metadata and is not duplicated in files; directories are not retained.
+- Retention remains bounded by the existing 64 MiB aggregate uncompressed package limit and 16 MiB per-file limit. No disk extraction or installation occurs.
+- Added a fixture assertion for exact script and asset bytes. Package CI is pending for this extension.
