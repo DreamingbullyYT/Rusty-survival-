@@ -358,3 +358,12 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 ### Resource registry lint correction — 2026-11-18
 - Package Clippy found one manual saturating-arithmetic pattern and one unnecessary mutable binding in resource tests. Replaced the former with `saturating_add` and removed the unused `mut`.
 - Follow-up package CI after `d1d89c64aad8` pending. No API or behavior change.
+
+
+## ModManager resource lifecycle integration — 2026-11-18
+- Integrated `ResourceRegistry` into `ModManager`. Resource IDs can be reserved only while the owning mod is Enabled; IDs must use that mod's own manifest namespace.
+- Reservation batches commit atomically. The manager exposes deterministic owner-scoped resource ID inspection.
+- Successful disable releases that mod's reservations. Failure releases reservations for the failed mod and every transitive dependent in the fail cascade.
+- Added manager tests for pre-enable denial, namespace enforcement, registration, disable cleanup, and failure-cascade cleanup. Registry-level tests continue to cover duplicate IDs, atomic conflict rejection, drop rollback and quotas.
+- Implementation commits: `980e3041fc1b`, `fe5bcaf4645a`, `d7bc8e4cc437`. Package workflow `44386150155` and PMCS workflow `44386149892` are pending at the time of this update.
+- Important boundary: these are internal ID reservations only. They do not register actual Horizon resources or perform external side effects; a future adapter must stage/publish/rollback real host resources safely.
