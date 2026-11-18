@@ -219,3 +219,10 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - API-only overlay run 44322745328 failed before the real host-loader step. The CI-only test imported the public picker::Route (used for UI fit status) instead of the private prebuilt::Route required by sdk_cache::slices and prebuilt::compile. The pinned upstream source confirms the correct type is prebuilt::Route::Api; the test patch is corrected accordingly. No overlay artifact or host-loader success is claimed.
 - The Core authorization trait remains an integration seam; it is not yet backed by a concrete per-mod lifecycle adapter. There is still no production interpreter, .dmod loader, sandbox or dispatcher.
 - Arc-backed cloning and stack-buffer duplicate detection are implemented and regression-tested; no performance benchmark or FPS claim exists.
+
+
+## Prebuilt compiler compatibility investigation — 2026-11-18
+- Overlay run 44324363090 passed CI test injection and compiled the pinned Horizon launcher, then failed inside Horizon's API-only prebuilt build. The diagnostic showed SDK crate mod_api had been compiled by an incompatible rustc; the compiler in our overlay workflow was 1.95.0.
+- Inspected the exact pinned Horizon source at 0b14f8acfd97fa2c750e42795249dcc981178ca4: tools/ci/rust-version is 1.99.1, which is the compiler used to produce the signed SDK. Updated .github/workflows/dreammod-prebuilt.yml to use 1.99.1 and to record that exact compiler in overlay metadata (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7).
+- Overlay rerun 44328650675 is in progress. It has not yet reached the prebuilt compile step; no result is claimed for the rustc mismatch or the secondary generated crate::hooks error.
+- PMCS run 44328650216 passed all validator regression tests and freshness checks on commit 96d2e740.
