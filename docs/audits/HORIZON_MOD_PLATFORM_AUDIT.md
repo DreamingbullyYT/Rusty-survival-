@@ -5,6 +5,29 @@ Inspected Horizon commit: 1c45cf95d8431a7b49d94df007f7e75a890370c9
 Inspected horizon-mixins commit: e59da9094f0c2fdda6c627fe9eff22dec6a906f0
 Status: SOURCE/DOCUMENTATION INSPECTION ONLY; no Horizon code built or modified.
 
+## Current DreamMod build baseline (verified 2026-11-18)
+
+DreamMod Core now pins the published Horizon Nightly `0b14f8acfd97fa2c750e42795249dcc981178ca4` (Nightly 2026-11-18; matching SDK release `sdk-0b14f8acfd97fa2c750e42795249dcc981178ca4`) and horizon-mixins `e59da9094f0c2fdda6c627fe9eff22dec6a906f0`. The matching official launcher release is `launcher@0.2.78`.
+
+The same `Route::Api` and adjacent native-library loader are present at the current Nightly commit (verified directly in `launcher/src/native_mods/prebuilt.rs`, `launcher/src/native_mods/api_route.rs` and `crates/horizon-mod-host/src/native_libraries.rs`). DreamMod Core's `horizon-mod.toml` has API 0.2, no extra capabilities and no `native.mixin`, `native.module`, `native.bridge`, `native.state`, `native.loop` or `internals` declarations. It is therefore eligible for the API-only route, subject to a real build.
+
+The current official command for a reproducible build against an installed base is:
+
+```sh
+horizon-launcher install nightly
+horizon-launcher instance create DreamModCI
+horizon-launcher instance version DreamModCI nightly
+horizon-launcher native-build mods/dreammod-core --instance DreamModCI --trust-native-code --profile optimized
+```
+
+The official launcher documentation says API-only mods need only the SDK's `runtime` and `api` slices; it returns a versioned native build with the unchanged game executable plus the compiled mod libraries and `native-mods.json`. It does not rebuild the engine. The `native-build` output must still be inspected and a clean game/host startup must still be proven. The CI source-package check currently underway is not that proof.
+
+Pinned current-baseline references:
+- [Nightly 2026-11-18 source](https://github.com/horizon-rust/horizon/tree/0b14f8acfd97fa2c750e42795249dcc981178ca4)
+- [Native build steps](https://github.com/horizon-rust/horizon/blob/0b14f8acfd97fa2c750e42795249dcc981178ca4/docs/modding/src/how-to/native-mods/04-what-the-launcher-does.md)
+- [Launcher native-build command](https://github.com/horizon-rust/horizon/blob/0b14f8acfd97fa2c750e42795249dcc981178ca4/docs/launcher-commands.md)
+- [Current API-only route](https://github.com/horizon-rust/horizon/blob/0b14f8acfd97fa2c750e42795249dcc981178ca4/launcher/src/native_mods/api_route.rs)
+
 ## 1. Existing platform is substantial
 
 Horizon already separates engine, platform and Horizon-specific product layers. Its documented platform layer owns the mod API, mod formats, native mod host, shader APIs and other extension services.
