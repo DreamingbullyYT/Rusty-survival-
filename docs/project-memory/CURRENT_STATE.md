@@ -23,7 +23,7 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 - mods/dreammod-core contains a minimal native Hooks bootstrap with horizon-mod.toml, Cargo manifest and src/lib.rs.
 - Official pinned cargo-horizon-mod check and source package build passed in Actions run 44285877944.
 - Downloaded and inspected the generated .hmod artifact. It contains horizon-mod.toml, Cargo.toml, src/lib.rs and uses.json; the manifest pins the expected Nightly/API/mixins revisions.
-- mods/dreammod-runtime-prototype contains an evaluation-only Rhai 1.27.0 AST interpreter candidate. Formatting, behavior tests, Clippy and per-value resource-limit tests passed in runs 44284795812 and 44285379104.
+- mods/dreammod-runtime-prototype contains an evaluation-only Rhai 1.27.0 AST interpreter candidate. Formatting, behavior tests, Clippy and per-value resource-limit tests passed in runs 44284795812 and 44285379104. A later provider-validation addition needed rustfmt-only changes; run 44289702282 caught the formatting mismatch, fixed in 99be124. Run 44289964423 is validating the correction.
 - Comparable synthetic x86_64 benchmark: 50 x 10,000 item updates took 265.955 ms in Rhai AST vs 574.49 microseconds in Rust (462.94x). This is not Android/ARM64 data; it warns against per-entity/per-vertex script loops.
 - Pinned Horizon source confirms the API-only Route::Api implementation builds mod dylibs against signed prebuilt runtime/API slices and reuses the existing client executable.
 - The source-package workflow uses a cached workspace build of the pinned cargo-horizon-mod tool.
@@ -34,8 +34,8 @@ Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
   1. call the exact internal prebuilt::compile(..., Route::Api, ...) function with the signed SDK client runtime/API slices;
   2. create the normal native inventory with Horizon's library_record::collect;
   3. call the real horizon-mod-host::native_libraries::load and assert DreamMod Core is loaded.
-- Workflow run 44288437986 failed because the CI step changed HOME, hiding the installed Rustup toolchain. Commit 67bc587 preserves HOME and isolates only XDG directories.
-- Current prebuilt overlay workflow run 44288685182 is in progress. No overlay artifact or real host-loader success is claimed yet.
+- Workflow run 44288437986 failed because the CI step changed HOME, hiding the installed Rustup toolchain. Commit 67bc587 preserves HOME and isolates only XDG directories. Run 44288685182 then failed because the cargo package was invoked from the wrong workspace; fixed in 7a7cdb0.
+- Prebuilt overlay workflow run 44288685182 failed because cargo was run from the Horizon root workspace, which does not include the separate launcher workspace. Fixed in 7a7cdb0 by running the compiler test from .ci/horizon/launcher and caching both workspaces. Current run 44289897914 is in progress. No overlay artifact or real host-loader success is claimed yet.
 - The intended artifact is a client engine/native-library overlay only; it contains no Mojang assets. A complete playable install still needs the user's matching licensed Minecraft 26.3 assets.
 
 ## Not implemented / not verified
