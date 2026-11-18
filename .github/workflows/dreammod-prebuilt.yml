@@ -97,8 +97,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export DREAMMOD_PREBUILT_DIR="$RUNNER_TEMP/dreammod-prebuilt"
+          test -f "$DREAMMOD_PREBUILT_DIR/native-mods.json"
+          find "$DREAMMOD_PREBUILT_DIR" -maxdepth 1 -type f -printf '%f %s bytes\\n' | sort
+          for library in "$DREAMMOD_PREBUILT_DIR"/*.so; do
+            readelf -d "$library" | grep -E 'RUNPATH|RPATH' || true
+          done
           cd .ci/horizon
-          env -u LD_LIBRARY_PATH cargo test -p horizon-mod-host --no-default-features native_libraries::dreammod_ci_loader_test::loads_dreammod_prebuilt_overlay -- --ignored --exact --nocapture
+          timeout --signal=TERM --kill-after=15s 180s env -u LD_LIBRARY_PATH cargo test -p horizon-mod-host --no-default-features native_libraries::dreammod_ci_loader_test::loads_dreammod_prebuilt_overlay -- --ignored --exact --nocapture
       - name: Inspect and archive the client overlay
         shell: bash
         run: |
