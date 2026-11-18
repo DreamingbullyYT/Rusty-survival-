@@ -169,3 +169,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Source commit: `99929e38d5f1a815e8b17cb069a5eff8dfcc8e3e`.
 - Core SDK check and API-only overlay workflows are running for this source commit. Do not claim this new change verified until they finish.
 - The authorization trait is not yet implemented by a per-mod `ModLifecycle` adapter. The interpreter/runtime still needs to supply that adapter; no script binding or sandbox exists.
+
+
+## Core snapshot regression coverage (2026-11-18)
+- Added Core-local unit tests for player name/dimension/position validation, duplicate UUID rejection and the 256-player batch limit.
+- Source commit: `ebe09145849063ade0e01f18e55a23bec18cd4e4`.
+- Core workflow must be checked; the existing Horizon checker validates host/WASM compilation, but whether it executes `#[cfg(test)]` tests is not assumed.
