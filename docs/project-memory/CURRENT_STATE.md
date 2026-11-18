@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: CORE_BOOTSTRAP_CI_VERIFIED; RHAl_CANDIDATE_PROTOTYPE_ADDED; PROTOTYPE_CI_PENDING
+Status: CORE_BOOTSTRAP_CI_VERIFIED; RHAI_CANDIDATE_PROTOTYPE_ADDED; PROTOTYPE_CI_PENDING
 Repository HEAD: resolve dynamically from current main; last inspected commit before this work: 25d839d79b5238207ed9829f202eae5cd947ffcb
 
 ## Direction
