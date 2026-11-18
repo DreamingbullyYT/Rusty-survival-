@@ -7,6 +7,5 @@ description = "DreamMod Core: trusted Horizon native bootstrap and interpreted r
 
 [dependencies]
 horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
-dreammod-contract = { path = "../dreammod-contract" }
 
 [workspace]
