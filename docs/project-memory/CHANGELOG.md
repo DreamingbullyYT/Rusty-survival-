@@ -480,3 +480,9 @@
 - Overlay run 44335372878 compiled the API-only client successfully but native-host loading failed because Linux could not resolve the sibling `libhorizon_mod_runtime.so`. The workflow now prepends the overlay directory to `LD_LIBRARY_PATH` for the native-host test (commit f64b016a6cf8dae17769d2ae53cd0680227f3acc); rerun 44341223178 was queued/in progress, not yet verified.
 - The first section-coordinate engine run exposed formatting differences and an invalid overflow test assumption. The impossible test was removed and rustfmt's exact formatting applied to canonical and mirrored sources. Latest engine/Core/overlay workflows must be checked before marking the new primitives verified.
 - No full engine, chunk storage, world simulation, or end-to-end .dmod runtime is claimed.
+
+
+## 2026-11-18 — Verify native host overlay and repair Core formatting
+- Overlay run 44341466372 passed API-only compilation, real Horizon native-host loading, archive inspection and artifact upload. This proves the pinned CI host can load the prebuilt overlay with the configured sibling-library search path; it does not prove a full launcher/game startup.
+- Core run 44341466411 passed pinned Horizon native/API/host-WASM checks and source mirror check, then stopped at one rustfmt-only import wrapping difference in engine_bridge.rs. Corrected in commit 42d9ac762502ad5ef3db9158a9885c99a24ae238; fresh Core run 44361109477 is pending.
+- PMCS run 44341597122 passed. A later code push exposed the validator's same-change-set requirement; the companion status documents are updated with this correction.
