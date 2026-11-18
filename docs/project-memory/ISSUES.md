@@ -119,12 +119,12 @@ The Core collector now refuses to touch `ServerHost` until a `PlayerReadAuthoriz
 
 
 ## DM-025 — Execute Core snapshot unit tests in CI
-Status: OPEN
+Status: VERIFIED
 Core-local regression tests now cover DTO validation and batch limits (source commit `ebe0914`). The current `cargo-horizon-mod check` proves Horizon host/WASM compilation but may not execute Rust unit tests. Add a compatible `cargo test` CI step once the generated pinned SDK workspace/dependency setup is confirmed; do not claim these tests ran until a workflow step explicitly executes them.
 
 
 ## DM-026 — Verify corrected gated collector source
-Status: VERIFYING
+Status: VERIFIED
 A source-edit regression briefly left the previous collector declaration duplicated inside the new private helper. Commit `eadd1aa` replaces that whole section with one private `collect_online_players_unchecked` implementation, and the only public collector requires `PlayerReadAuthorization`. The intermediate Core run is not evidence for the corrected source; verify the workflow run triggered by `eadd1aa`.
 
 
@@ -145,3 +145,14 @@ A source-edit regression briefly left the previous collector declaration duplica
 - PlayerSnapshotBatch now uses Arc<[PlayerSnapshot]> in Core and package, with tests proving clone pointer identity.
 - This prepares cheap sharing but does not implement dispatch caching or script execution. Per-mod capability checks must still happen before exposing the shared data.
 - Latest package and Core Actions for this change are pending; no performance benchmark is available.
+
+
+## DM-027 — API-only prebuilt overlay CI harness uses the wrong Route type
+Status: INVESTIGATING
+Actions run 44322745328 failed while compiling the CI-only tests injected into the pinned Horizon launcher. The test used the public native_mods::Route from picker (which has Prebuilt/Fits/Unfit/Invalid variants), but sdk_cache::slices and prebuilt::compile require the separate prebuilt::Route (Api/Engine/Registry). Pinned upstream source at Horizon commit 0b14f8acfd97fa2c750e42795249dcc981178ca4 confirms the distinction. The patch script now qualifies both API route uses as prebuilt::Route::Api; a fresh overlay run must verify the fix. The host-loader step was skipped in the failed run, so no prebuilt overlay is verified.
+
+## Optimization verification refresh (2026-11-18)
+- Core Actions run 44322745253 passed the pinned SDK check, formatting, all Core unit tests and source packaging on HEAD 741f7ff1.
+- Package Actions run 44318172781 passed the Arc-backed batch implementation and tests; run 44317125357 passed the cooperative ZIP-inspection deadline.
+- PMCS run 44322745310 failed because the implementation commit was not accompanied by updates to all required memory documents. The validator's six regression tests passed. This update set records the actual CI evidence and remaining work.
+- No ARM64 benchmark or measured FPS change exists. Snapshot sharing is storage-level only; no dispatcher/cache exists.
