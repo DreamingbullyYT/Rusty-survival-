@@ -2,7 +2,7 @@
 
 Status: ARCHITECTURE PROPOSED; NO DREAMMOD CODE IMPLEMENTED
 Date: 2026-11-18
-Target engine: Horizon (upstream engine; integrate through supported HNMod/horizon-mixins interfaces)
+Target engine: Horizon (upstream engine; reuse its .hmod/native mod API and host, with horizon-mixins only where required)
 Repository role: DreamMod runtime, API, package format, tests and integration source
 
 ## 1. Mission
@@ -11,7 +11,7 @@ Build DreamMod: a deeply extensible runtime modding platform for Horizon. It mus
 
 Player-installed `.dmod` packages must not require Rust compilation, native compilation, bytecode compilation, or a game rebuild. Their source is interpreted at runtime.
 
-DreamMod Core itself is integrated into a pinned Horizon build during development/build time using an HNMod integration package. The launcher distributes the already-built Horizon package containing DreamMod Core. The launcher is a separate project and owns installation, file placement, profiles and updates.
+DreamMod Core is built once as a trusted native .hmod mod against a pinned Horizon SDK. The CI-built native library and matching manifest are shipped with the prebuilt Horizon distribution. The launcher distributes the already-built Horizon package containing DreamMod Core. The launcher is a separate project and owns installation, file placement, profiles and updates.
 
 ## 2. Build-time versus runtime
 
@@ -22,7 +22,7 @@ DreamMod Core itself is integrated into a pinned Horizon build during developmen
 - Verify whether the stock native host can load the resulting prebuilt library, its SHA-256/build identity metadata and matching package manifest directly from the shipped distribution. The native host visibly supports loading adjacent prebuilt libraries, but the full CI-to-distribution path is not yet proven.
 - Produce a complete prebuilt Horizon distribution with DreamMod Core included; launcher only copies/installs files.
 - Pin Horizon revision, horizon-mixins revision, hooks/API revision, Rust toolchain and native library identity.
-- The launcher downloads and installs that finished distribution; it does not compile HNMods on the player's device.
+- The launcher downloads and installs that finished distribution; it does not compile native .hmod source on the player's device.
 
 Current Horizon documentation describes .hmod native packages as Rust source that the launcher normally compiles for the selected game revision. The native host also has a loader for already-built adjacent dynamic libraries with SHA-256 and build-identity checks. Our intended route is to build DreamMod Core in CI and verify that prebuilt-library path end-to-end; a source .hmod archive alone is not enough. Current docs call the package .hmod, so do not assume the older .hnmod name is still the active package format. See docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md.
 
@@ -42,7 +42,7 @@ Horizon already supplies a typed mod API and host: Hooks, Host/ServerHost/Client
 
 ```text
 Pinned Horizon build
-  └── DreamMod Core (integrated once through HNMod during build)
+  └── DreamMod Core (CI-built native library loaded by the Horizon mod host)
        ├── Package manager / manifest validation
        ├── Script runtime (interpreted source; engine choice OPEN)
        ├── Capability and sandbox layer
@@ -95,7 +95,7 @@ A subsystem is replaceable only if DreamMod can define its complete contract: in
 - Capabilities are explicit, narrow, declared in the manifest and granted by the user/instance policy.
 - Filesystem, network, process, native-library and external-device access are denied unless a specific safe capability exists.
 - A script exception or budget overrun must not corrupt engine state or crash unrelated mods.
-- Native HNMods run outside the script sandbox and can have the user's process privileges. They are trusted build-time components and must not be treated as safe untrusted downloads.
+- DreamMod Core's native library runs outside the script sandbox and can have the user's process privileges. They are trusted build-time components and must not be treated as safe untrusted downloads.
 - Validate package paths, archive limits, hashes/signatures where available, dependency cycles and API compatibility.
 
 ## 8. Script language decision
