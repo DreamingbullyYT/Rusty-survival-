@@ -1,7 +1,7 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: CORE_BOOTSTRAP_CI_VERIFIED; RHAI_CANDIDATE_PROTOTYPE_ADDED; PROTOTYPE_CI_PENDING
+Status: CORE_BOOTSTRAP_CI_VERIFIED; RHAI_CANDIDATE_PROTOTYPE_IMPLEMENTED; RUNTIME_CI_REPAIR_IN_PROGRESS
 Repository HEAD: resolve dynamically from current main; last inspected commit before this work: 25d839d79b5238207ed9829f202eae5cd947ffcb
 
 ## Direction
@@ -24,7 +24,7 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 
 ## Not implemented / not verified
 - The minimal native `.hmod` source skeleton exists and its pinned-source API compile check is VERIFIED in CI run 44249522292.
-- The Rhai candidate prototype is IMPLEMENTED; its CI result is pending. It is not selected as the final language and is not integrated into DreamMod Core.
+- The Rhai candidate prototype is IMPLEMENTED. The first behavior test run exposed Rust Vec versus Rhai Array boundary errors; the conversion fix is committed, but the latest workflow stopped at a rustfmt import-order check before rerunning behavior tests. It is not selected as the final language and is not integrated into DreamMod Core.
 - Pinned Horizon source now confirms the API-only Route::Api build path: Core's current Hooks-only manifest qualifies, and the route returns the unchanged prebuilt client plus native libraries. No prebuilt native library package has yet been produced or loaded.
 - No production interpreter selected or integrated; the isolated Rhai candidate is only an evaluation prototype.
 - No .dmod manifest/schema, package loader, lifecycle, dependency resolver or hot reload.
@@ -35,7 +35,7 @@ Repository HEAD: resolve dynamically from current main; last inspected commit be
 - No compatibility tests against a pinned current Horizon revision.
 
 ## Next actions
-1. Verify the corrected Rhai candidate workflow and fix any compile/test failures.
+1. Verify the corrected Rhai candidate workflow after the import-order formatting fix; resolve any remaining test, Clippy or benchmark failures.
 2. Use the pinned official native-build pipeline to produce and inspect an API-only prebuilt distribution, then prove clean startup.
 3. Compare Rhai and Starlark against the no-bytecode/no-JIT requirement and representative workloads.
 4. Define the minimal package manifest, loader lifecycle and capability model.
