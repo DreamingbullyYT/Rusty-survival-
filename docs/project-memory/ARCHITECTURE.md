@@ -1,6 +1,6 @@
 # Architecture — DreamMod
 
-Status: CORE BOOTSTRAP VERIFIED IN CI; INTERPRETER CANDIDATE PROTOTYPE ADDED; DISTRIBUTION NOT VERIFIED.
+Status: NATIVE CORE SOURCE PACKAGE ADDED; OFFICIAL PACKAGE CI PENDING; RHAI CANDIDATE TESTS/CLIPPY VERIFIED; PREBUILT DISTRIBUTION NOT VERIFIED.
 Target engine: Horizon.
 
 ## Build and distribution layers
@@ -45,9 +45,9 @@ Scripts run sandboxed by default. Grant narrow capabilities explicitly. Do not e
 - Core integration changes require a new prebuilt game distribution.
 
 ## Current implementation notes
-- `mods/dreammod-core` is a no-op native Hooks bootstrap and passed the pinned Horizon API compile check in CI run `44249522292`.
+- `mods/dreammod-core` now has a native trait mod manifest pinned to Nightly 2026-11-18 (`0b14f8a`) and mixins `e59da90`; it uses API 0.2, declares no extra capabilities and has no mixin/internals/bridge/loop requirements. The new official package validation/build workflow is pending (44284751206).
 - `mods/dreammod-runtime-prototype` is an isolated Rhai AST-evaluator candidate harness; it is not yet integrated into Core and does not establish a final language choice.
-- Pinned Horizon launcher source confirms an API-only native build route that compiles mod dylibs against prebuilt SDK runtime/API slices without rebuilding the engine. CI output packaging and clean startup are still unverified.
+- Pinned Horizon source at the current Nightly confirms an API-only native build route that compiles mod dylibs against prebuilt SDK runtime/API slices without rebuilding the engine. CI output packaging and clean startup are still unverified.
 - The prebuilt native library distribution path, `.dmod` loader and production security layer remain unverified/unimplemented.
 
 ## Historical architecture
