@@ -74,3 +74,10 @@ into the native engine unnecessarily.
 
 ## Bounded player query batches
 Player reads cross the host boundary as a `PlayerSnapshotBatch`, capped at 256 unique UUIDs. One `entities.read` authorization check protects one host callback for the whole batch. This avoids one native/interpreter crossing per player and provides a hard per-call work/memory bound. A server with more than 256 online players must use explicit paging rather than silently truncating or exceeding the batch cap. The Core collector must preserve Horizon's `server_players()` connection order and copy all data before the hook's host borrow ends.
+
+
+## Performance architecture update (2026-11-18)
+- Player batch duplicate validation now uses a bounded contiguous UUID scratch vector and sort/adjacent comparison instead of a tree set. This removes tree-node allocation overhead while preserving player snapshot order and the 256-item bound.
+- Script-facing APIs remain batch-first. The future dispatcher should collect once per relevant event and share immutable owned results with scripts participating in that dispatch, rather than re-querying Horizon per script/player.
+- Do not add persistent caches until invalidation, event ordering, host-thread affinity and re-entrancy are specified.
+- Package ZIP inspection accepts a monotonic deadline and defaults to 60 seconds; the future complete loader must carry the same deadline through all later stages.
