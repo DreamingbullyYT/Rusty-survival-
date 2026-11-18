@@ -420,3 +420,9 @@
 ## 2026-11-18 — Add Core snapshot validation regressions
 - Added Core-local unit tests for malformed player names, invalid dimension identifiers, NaN/infinite/out-of-range positions, duplicate player UUIDs and the 256-entry batch ceiling.
 - Source commit: `ebe09145849063ade0e01f18e55a23bec18cd4e4`. Core Actions are queued/running; tests have not yet been reported as executed by CI.
+
+
+## 2026-11-18 — Correct gated collector refactor
+- Corrected the collector body after a source-edit regression left the previous public function declaration duplicated inside the private helper.
+- The latest source commit `eadd1aa545851d487da4e2ff2f37edfbec327dfb` restores one private unchecked collector, called only from the authorization-gated public entry point.
+- The prior in-flight Core run targets the intermediate broken commit; check the new run for the corrected source.
