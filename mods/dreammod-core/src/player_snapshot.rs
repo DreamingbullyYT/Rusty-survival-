@@ -261,4 +261,71 @@ mod authorization_tests {
         assert_eq!(result, Ok(42));
         assert_eq!(calls.get(), 1);
     }
+    fn valid_snapshot(uuid: u128) -> PlayerSnapshot {
+        PlayerSnapshot::new(
+            uuid,
+            "Dreamer_7".into(),
+            "minecraft:overworld".into(),
+            [1.0, 64.0, -2.0],
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn snapshot_rejects_invalid_player_names() {
+        for name in ["", "player name", "name!", "é", "a-very-long-name-over-16"] {
+            assert!(matches!(
+                PlayerSnapshot::new(1, name.into(), "minecraft:overworld".into(), [0.0; 3]),
+                Err(PlayerSnapshotError::InvalidPlayerName { uuid: 1 })
+            ));
+        }
+    }
+
+    #[test]
+    fn snapshot_rejects_invalid_dimension_identifiers() {
+        for dimension in ["", "overworld", ":path", "minecraft:", "Minecraft:overworld", "minecraft:a:b"] {
+            assert!(matches!(
+                PlayerSnapshot::new(1, "Dreamer".into(), dimension.into(), [0.0; 3]),
+                Err(PlayerSnapshotError::InvalidDimension { uuid: 1 })
+            ));
+        }
+    }
+
+    #[test]
+    fn snapshot_rejects_non_finite_and_out_of_range_positions() {
+        for position in [
+            [f64::NAN, 0.0, 0.0],
+            [0.0, f64::INFINITY, 0.0],
+            [0.0, 0.0, -30_000_001.0],
+        ] {
+            assert!(matches!(
+                PlayerSnapshot::new(1, "Dreamer".into(), "minecraft:overworld".into(), position),
+                Err(PlayerSnapshotError::InvalidPosition { uuid: 1 })
+            ));
+        }
+    }
+
+    #[test]
+    fn snapshot_batch_rejects_duplicate_player_ids() {
+        let result = PlayerSnapshotBatch::new(vec![valid_snapshot(7), valid_snapshot(7)]);
+        assert_eq!(
+            result,
+            Err(PlayerSnapshotError::DuplicatePlayer { uuid: 7 })
+        );
+    }
+
+    #[test]
+    fn snapshot_batch_enforces_the_bounded_size() {
+        let players = (0..=MAX_PLAYER_SNAPSHOT_BATCH)
+            .map(valid_snapshot)
+            .collect();
+        assert_eq!(
+            PlayerSnapshotBatch::new(players),
+            Err(PlayerSnapshotError::TooManyPlayers {
+                actual: MAX_PLAYER_SNAPSHOT_BATCH + 1,
+                maximum: MAX_PLAYER_SNAPSHOT_BATCH,
+            })
+        );
+    }
+
 }
