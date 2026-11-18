@@ -1227,3 +1227,22 @@ Limitations:
 - No interpreter, script-visible binding, sandbox or per-mod capability invocation exists yet. The collector is not called on every tick and retains no Horizon handles.
 Next:
 - Confirm pinned SDK host/WASM compilation. Fix any actual signature/type errors reported by the checker. Then add a Core test harness or integration test for the snapshot collector and connect it only through the lifecycle capability gate.
+
+
+## S-2026-11-18-34 — Require authorization before Core player reads
+Date: 2026-11-18
+Commit: 99929e38d5f1a815e8b17cb069a5eff8dfcc8e3e
+Goal: Prevent Core player snapshot collection from touching Horizon before a per-mod entities.read authorization check.
+Changes:
+- Added the PlayerReadAuthorization interface and made the public player collector require it.
+- Added a helper that performs authorization before running the host-read closure.
+- Added regression tests for denied callback non-invocation and exactly-once authorized execution.
+- Updated docs/dreammod/HORIZON_HOST_BRIDGE.md with the verified collector and explicit limitation.
+Verification:
+- Earlier Core workflow run 44310547586 passed the pinned SDK build, host/WASM validation and source packaging for the collector before this authorization change.
+- Latest Core workflow run 44312568247 and API-only overlay run 44312568292 are running for this commit.
+- PMCS run 44312568120 failed because required memory files were not updated alongside this source change; this entry and companion files correct the omission. Re-run PMCS after these docs commits.
+Limitations:
+- No implementation connects PlayerReadAuthorization to a concrete per-mod ModLifecycle instance yet. No interpreter, script binding or sandbox exists.
+Next:
+- Verify latest Core workflow. Then implement the per-mod lifecycle adapter and test it against the package lifecycle contract before exposing player data to scripts.
