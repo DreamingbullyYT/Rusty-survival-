@@ -125,3 +125,12 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 6. [ ] Connect the package/runtime layer to the trusted Core HNMod without duplicating the package DTOs or Horizon host functionality.
 7. [ ] Finish API-only overlay native-host loading, archive inspection and artifact upload (run 44330930078 pending).
 8. [ ] Full-game launch remains gated on the user's matching licensed Minecraft installation; never bypass Horizon's account/ownership checks or upload Mojang assets.
+
+## Section coordinate and HNMod bridge increment — 2026-11-18
+1. [x] Add a dimension-independent `SectionPos` / `SectionAddress` geometric contract using Euclidean division on all axes.
+2. [x] Expose section and local-Y coordinates through the HNMod bridge without retaining Horizon handles.
+3. [x] Enforce byte-identical canonical engine source and HNMod mirror in Core and overlay CI.
+4. [ ] Verify the latest engine formatting/tests/Clippy after correcting the initial formatting and impossible overflow test.
+5. [ ] Verify Core formatting, tests and pinned Horizon source packaging after adding the section bridge.
+6. [ ] Verify API-only overlay compilation and real native-host loading with the runtime dylib search path configured. The previous host test failed on a missing sibling `libhorizon_mod_runtime.so`; the workflow now sets `LD_LIBRARY_PATH` but the rerun is pending.
+7. [ ] Define chunk section storage and block-state representation only after pinning the Java 26.3 reference behavior and test fixtures. Do not infer dimension height or palette serialization from this coordinate contract.
