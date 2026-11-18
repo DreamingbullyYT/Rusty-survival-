@@ -365,3 +365,10 @@
 - Actions run 44300324687 passed on commit d83b3491b747bc880b657e4cf17e259a8af2ff62: formatting, all 21 tests and Clippy with -D warnings.
 - Default-deny, partial approval, unknown/unrequested approval and duplicate approval tests passed.
 - CapabilityPlan remains a pure planning result; actual host-side enforcement is not implemented.
+
+
+## 2026-11-18 — Add default-deny host capability gate
+- Added CapabilityGate::from_approvals(), allows() and require() with a private granted set.
+- Gate construction routes through manifest validation and the explicit approval planner; unapproved and unknown capabilities are denied.
+- Added tests for approved, denied and unknown capabilities.
+- This helper is not yet wired into Horizon host calls; end-to-end enforcement is not claimed. CI pending.
