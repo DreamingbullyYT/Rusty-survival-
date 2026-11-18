@@ -1,6 +1,3 @@
-//! Generated source mirror of `crates/engine-core/src/coordinates.rs`.
-//! Keep byte-for-byte synchronized; CI enforces this to avoid behavior drift.
-
 //! Block-to-chunk coordinate mapping.
 //!
 //! Horizontal chunks are 16 blocks wide. Euclidean division is required so
