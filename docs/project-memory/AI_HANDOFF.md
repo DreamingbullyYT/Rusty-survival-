@@ -146,3 +146,9 @@ The local `dreammod-contract` crate was removed after overlay run `44362776804` 
 
 ## Asset API increment — 2026-11-18
 `ModManager::read_asset(mod_id, path)` now exposes borrowed immutable bytes from the validated in-memory `.dmod` package, with no extraction. It requires Enabled state and explicit `assets.read`, restricts to `assets/`, and reuses archive path validation. Tests cover denied states, successful bytes, traversal and missing assets. Verify the package workflow triggered by commit `f90d0b1`. This does not yet decode/register Horizon textures or other resources.
+
+### Latest asset API CI snapshot — 2026-11-18
+- Package run `44364618050` passed all 43 tests (asset read included), formatting and Clippy.
+- PMCS run `44364715327` passed its validation steps; cleanup pending.
+- Core run `44363904945` passed pinned Horizon tooling, API/host-WASM, mirror parity and formatting; unit tests are running.
+- Overlay run `44363904976` is still compiling API-only prebuilt client. No native host-load success yet.
