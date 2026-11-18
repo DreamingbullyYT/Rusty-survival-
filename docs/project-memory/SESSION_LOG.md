@@ -722,3 +722,21 @@ Next:
 - Inspect and complete the official native Core package workflow.
 - Verify prebuilt native build distribution and clean startup.
 - Prototype a coarse provider contract and test whether interpreted code can remain out of per-item hot loops.
+
+## S-2026-11-18-12 — Add resource limits to the interpreted runtime candidate
+Date: 2026-11-18
+Commit: b6b1f32f81fb4b9b486ac59c375a71b622473bb3
+Goal: Strengthen the evaluation-only Rhai harness with explicit resource bounds before considering production sandbox design.
+Changes:
+- Added RuntimeLimits fields for max aggregate array items, map entries, string bytes, variables and functions.
+- Applied Rhai Engine limits for array size, map size, string size, variable count and function count, alongside the existing operation and call-depth limits.
+- Added a regression test that attempts to grow an array beyond its configured budget and expects execution to fail.
+Verification:
+- The code commit's PMCS check 44285379097 failed because the implementation change did not include the required five memory documents in the same base diff; this entry and synchronized memory updates are now being added. The PMCS regression tests themselves passed.
+- Runtime prototype workflow 44285379104 is in progress; no passing result is claimed yet.
+Not implemented:
+- This prototype does not provide exact byte-level heap accounting, per-mod memory isolation, filesystem/network capabilities, cancellation across threads or production fault containment.
+Next:
+- Verify the resource-budget regression and Clippy in CI.
+- Keep the 462.94x desktop interpreted/native result as a warning against hot per-item loops; prototype a coarse provider boundary.
+- Continue the official native-build pipeline and prebuilt distribution proof.
