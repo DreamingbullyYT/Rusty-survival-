@@ -1042,3 +1042,18 @@ Limitations:
 - The planner returns metadata only. No permission UI, runtime host enforcement, sandbox or script execution exists.
 Next:
 - Verify CI, then define the host-side capability gate and package lifecycle state machine before connecting an interpreter.
+
+
+## S-2026-11-18-25 — Verify explicit capability planning
+Date: 2026-11-18
+Commit: d83b3491b747bc880b657e4cf17e259a8af2ff62
+Goal: Verify the pure default-deny capability planner before runtime host integration.
+Changes:
+- Recorded the verified capability-planning API and its enforcement limitation in project memory.
+Verification:
+- DreamMod package Actions run 44300324687: formatting SUCCESS, 21/21 tests SUCCESS, Clippy SUCCESS.
+- Tests cover no approvals, partial approvals, unrequested/unknown capabilities and duplicate approvals.
+Limitations:
+- No user-facing permission prompt, runtime capability enforcement or sandbox exists.
+Next:
+- Design host-side capability checks and a lifecycle state machine without executing untrusted scripts prematurely.
