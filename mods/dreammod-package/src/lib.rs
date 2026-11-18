@@ -226,7 +226,10 @@ pub fn validate_archive_inventory(
             return Err(ArchiveError::EncryptedEntry(entry.path.clone()));
         }
         if entry.kind == ArchiveEntryKind::Directory {
-            if entry.uncompressed_bytes != 0 || entry.compressed_bytes != 0 {
+            if entry.uncompressed_bytes != 0
+                || entry.compressed_bytes != 0
+                || !(entry.path.starts_with("scripts/") || entry.path.starts_with("assets/"))
+            {
                 return Err(ArchiveError::UnsafePath(entry.path.clone()));
             }
             continue;
