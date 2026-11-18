@@ -4,6 +4,7 @@
 
 pub const PLAYER_READ_CAPABILITY: &str = "entities.read";
 pub const MAX_PLAYER_NAME_BYTES: usize = 16;
+pub const MAX_PLAYER_SNAPSHOT_BATCH: usize = 256;
 pub const MAX_DIMENSION_ID_BYTES: usize = 255;
 pub const MAX_WORLD_COORDINATE: f64 = 30_000_000.0;
 
@@ -12,6 +13,8 @@ pub enum SnapshotError {
     InvalidPlayerName,
     InvalidDimensionId,
     InvalidPosition,
+    BatchTooLarge,
+    DuplicatePlayer(u128),
 }
 
 /// A small, owned player view. It is safe to retain after the Horizon hook returns.
@@ -74,6 +77,41 @@ impl PlayerSnapshot {
     }
 }
 
+/// A bounded batch for one script/native boundary crossing.
+#[derive(Debug, Clone, PartialEq)]
+pub struct PlayerSnapshotBatch {
+    players: Vec<PlayerSnapshot>,
+}
+
+impl PlayerSnapshotBatch {
+    pub fn new(players: Vec<PlayerSnapshot>) -> Result<Self, SnapshotError> {
+        if players.len() > MAX_PLAYER_SNAPSHOT_BATCH {
+            return Err(SnapshotError::BatchTooLarge);
+        }
+
+        let mut seen = std::collections::BTreeSet::new();
+        for player in &players {
+            if !seen.insert(player.uuid()) {
+                return Err(SnapshotError::DuplicatePlayer(player.uuid()));
+            }
+        }
+
+        Ok(Self { players })
+    }
+
+    pub fn players(&self) -> &[PlayerSnapshot] {
+        &self.players
+    }
+
+    pub fn len(&self) -> usize {
+        self.players.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.players.is_empty()
+    }
+}
+
 fn valid_dimension_id(value: &str) -> bool {
     if value.is_empty() || value.len() > MAX_DIMENSION_ID_BYTES {
         return false;
@@ -112,6 +150,25 @@ mod tests {
         assert_eq!(snapshot.name(), "Dreamer_7");
         assert_eq!(snapshot.dimension(), "minecraft:overworld");
         assert_eq!(snapshot.position(), [12.5, 64.0, -3.25]);
+    }
+
+    #[test]
+    fn snapshot_batches_are_bounded_and_reject_duplicate_players() {
+        let player = || {
+            PlayerSnapshot::new(7, "Dreamer_7".into(), "minecraft:overworld".into(), [0.0; 3]).unwrap()
+        };
+        let batch = PlayerSnapshotBatch::new(vec![player()]).unwrap();
+        assert_eq!(batch.len(), 1);
+        assert_eq!(batch.players()[0].uuid(), 7);
+
+        assert_eq!(
+            PlayerSnapshotBatch::new(vec![player(), player()]),
+            Err(SnapshotError::DuplicatePlayer(7))
+        );
+        assert_eq!(
+            PlayerSnapshotBatch::new(vec![player(); MAX_PLAYER_SNAPSHOT_BATCH + 1]),
+            Err(SnapshotError::BatchTooLarge)
+        );
     }
 
     #[test]
