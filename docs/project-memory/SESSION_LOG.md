@@ -1121,3 +1121,23 @@ Limitations:
 - Generic host boundary only. No concrete Horizon API calls are routed through it yet; no sandbox, scheduler, or script execution.
 Next:
 - Verify CI, inspect the exact pinned Horizon Hooks/API extension points, then implement narrowly scoped adapters that route each supported host operation through this guard.
+
+
+## S-2026-11-18-28 — Harden host-call denial and inspect pinned Horizon host API
+Date: 2026-11-18
+Commits:
+- Code: d9a524f6ff0b4ef6124abf2c0fdd8aaebdc19747
+- Host bridge contract: d016ea58297e06d90abcc0de06cc32333a5ac82e
+- Roadmap: 16c18983b8e770d6b978f507089deeb3981b4051
+Goal: Extend lifecycle guard regression coverage and replace assumptions about Horizon integration with facts from the exact pinned SDK.
+Changes:
+- Extended HostAdapter tests to prove callbacks remain uncalled when a mod is disabled or has failed, in addition to the existing not-enabled and capability-denied cases.
+- Corrected the failure-reason test to pass an actual newline control character rather than the two-character escaped sequence.
+- Inspected the pinned Horizon mod API and its modding guide: Hooks, ServerHost/ClientHost, Wire values, explicit load phases, server_tick phase semantics, Send + Sync and cross-thread/re-entrant constraints.
+- Added docs/dreammod/HORIZON_HOST_BRIDGE.md with the verified upstream surface, adapter rules, initial integration sequence and explicit implementation gaps.
+Verification:
+- DreamMod package workflow run 44304258172 was observed in progress for the code commit; do not treat it as passed until a completed result is checked.
+Limitations:
+- HostAdapter remains a generic policy guard. No concrete Horizon host operation is routed through it; it is not a sandbox and does not execute scripts.
+Next:
+- Check package workflow 44304258172. Then implement the first narrow owned-value adapter against the pinned SDK, only after defining its DreamMod operation contract and testing the capability check before the Horizon call.
