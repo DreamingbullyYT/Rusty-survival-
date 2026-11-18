@@ -1515,3 +1515,8 @@ Limitations:
 - No interpreter, script scheduler, transactional resource registration, runtime quotas or concrete Horizon host integration was added.
 Next:
 - Verify package/PMCS workflows. Then design a registration transaction API (prepare/commit/rollback) and tests before connecting runtime scripts to Core.
+
+### S-2026-11-18-46 follow-up — catch and fix transitive cascade order
+- Inspected the exact package test log for run `44363310681`: 36 tests passed, but manager tests were absent because `pub mod manager` was committed in the subsequent `e11db6d` change.
+- Code review found the manager's first failure-cascade traversal used reverse topological order, which can visit a grandchild before the intermediate dependency has been marked failed. Corrected it to walk dependency-first order in commit `bb8806d`.
+- Require the next package run to compile `manager.rs` and execute its manager tests; do not cite the earlier 36-test pass as manager verification.
