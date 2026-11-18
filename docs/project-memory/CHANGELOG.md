@@ -1,3 +1,8 @@
+## 2026-11-18 — Add resource limits to the Rhai candidate harness
+- Extended `RuntimeLimits` with maximum aggregate array items, map entries, string bytes, variables and functions, in addition to operation and call-depth budgets.
+- Added an array-growth regression test that must stop when the configured aggregate array budget is exceeded.
+- These are prototype-level Rhai safeguards only; production per-mod memory accounting, capability enforcement and fault isolation remain unimplemented. Runtime CI run 44285379104 is pending.
+
 ## 2026-11-18 — Record comparable Rhai AST benchmark
 - Corrected benchmark run 44284795812 passed: 10,000 items × 50 rounds, Rhai AST interpreter 265.955 ms, Rust native 574.49 µs, ratio 462.94×.
 - Both sides now clone their inputs and materialize/checksum their outputs, preventing the prior Rust-side work-elision bug.
