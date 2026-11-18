@@ -107,3 +107,13 @@ The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod 
 - Exact pinned Horizon source 0b14f8acfd97fa2c750e42795249dcc981178ca4 declares tools/ci/rust-version = 1.99.1 in its SDK publish workflow. Overlay workflow and metadata now use 1.99.1 (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7).
 - PMCS run 44328650216 passed. Overlay rerun 44328650675 was still in progress at handoff; do not claim compiler or host-loader success until it finishes.
 - Treat the generated crate::hooks error as potentially secondary to the compiler mismatch until the rerun confirms it persists.
+
+
+## 2026-11-18 — Engine reference CI and HNMod handoff
+- New automated workflow: `.github/workflows/reference-artifact-smoke.yml`. It downloads official Minecraft Java 26.3 to a unique temporary runner path, verifies metadata SHA-1/size and ZIP CRCs, runs `cargo fmt`, workspace tests and Clippy, then removes the jar with `if: always()`.
+- Successful run 44331401582: server.jar 62,294,556 bytes, SHA-1 `33680f5f2ac32864d6d7cf5e56a705fdb3e05f4c`; 5 engine coordinate tests + 5 testkit tests passed; Clippy/format/cleanup passed.
+- Be precise: this workflow verifies the reference artifact and runs existing Rust tests. It does NOT yet feed the server jar into the engine or compare runtime behavior. The engine currently contains only block-to-chunk coordinate mapping and fixture-contract validation. No differential Java oracle exists.
+- DreamMod Core native `.hmod` source validation, unit tests and source packaging passed in run 44322745253. Its Hooks impl is empty; Core player collection is not wired to runtime/lifecycle/script bindings. The .dmod package/runtime are separate crates and not integrated into Core yet.
+- Overlay compiler issue E0514 was resolved by matching pinned Horizon's Rust 1.99.1. Run 44328650675 completed prebuilt compile but got cancelled during host loading. Current full rerun 44330930078 must finish host-loader, archive inspection and upload before claiming verified overlay.
+- Metadata compiler value was corrected to 1.99.1 in d23bc48. PMCS run 44331401564 passed.
+- Next: inspect 44330930078; then design a minimal real Java 26.3 oracle for the engine's first coordinate contract, rather than adding fake parity tests. Do not bypass Mojang ownership checks or redistribute assets.
