@@ -89,3 +89,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Added `ModManager::require_capability(mod_id, capability)` as the per-mod authorization callback target for Core. A regression test covers disabled, approved-but-not-enabled, enabled+granted, and denied capability states.
 - Added a manager regression test for a transitive failure cascade where an intermediate dependent was already Failed before its dependency failed. The cascade now skips re-failing an already-failed dependent while still propagating the failure to its dependents.
 - Package run `44364113419` passed format/tests/Clippy before the last cascade hardening commit; new package run for `4103668` is pending. Core run `44363904945` is still building pinned Horizon tooling; overlay run `44363904976` is still compiling API-only route.
+
+### Latest verification snapshot (2026-11-18)
+- Package run `44364198594` on commit `4103668fee`: PASS — rustfmt, 42 tests (all seven ModManager tests included), and Clippy `-D warnings`.
+- PMCS run `44364312080` on the updated documentation head: PASS — six validator regression tests and structural/freshness validation.
+- Core run `44363904945` and API-only overlay run `44363904976` are still in progress at Horizon tooling/API-only compilation; no post-callback Core or host-loader success is claimed yet.
