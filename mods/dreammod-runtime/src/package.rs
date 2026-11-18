@@ -86,10 +86,10 @@ impl PackageLoader {
             if !is_safe_relative_path(&name) || file.enclosed_name().is_none() {
                 return Err(PackageError::UnsafePath(name));
             }
-            if let Some(mode) = file.unix_mode() {
-                if mode & 0o170000 == 0o120000 {
-                    return Err(PackageError::Symlink(name));
-                }
+            if let Some(mode) = file.unix_mode()
+                && mode & 0o170000 == 0o120000
+            {
+                return Err(PackageError::Symlink(name));
             }
             if file.is_dir() {
                 continue;
@@ -328,7 +328,7 @@ mod tests {
     fn rejects_oversized_script() {
         let file = write_package(&[
             ("manifest.json", valid_manifest()),
-            ("scripts/main.dream", &vec![b'a'; 128]),
+            ("scripts/main.dream", &[b'a'; 128]),
         ]);
         let loader = PackageLoader::new(PackageLimits {
             max_script_bytes: 32,
