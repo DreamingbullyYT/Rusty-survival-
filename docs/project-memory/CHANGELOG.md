@@ -492,3 +492,9 @@
 - DreamMod Core run 44361109477 passed pinned Horizon native/API/host-WASM validation, engine mirror parity, formatting, all 12 Core unit tests, source package creation and artifact upload (artifact 14454406903).
 - The earlier import-format-only failure is resolved. Three-axis section addressing is now verified in the Core package workflow; this remains a coordinate contract, not chunk storage or Minecraft parity.
 - The overlay workflow is being strengthened after inspection of the uploaded artifact showed libmod_vocab.so had no RUNPATH for its sibling runtime dependency. New run 44361815335 is pending the $ORIGIN packaging and no-LD_LIBRARY_PATH host test.
+
+## 2026-11-18 — shared per-mod authorization contract
+- Added dependency-light `dreammod-contract` with the shared player-read authorization trait and canonical `entities.read` capability name.
+- Updated Core's player snapshot collector to consume the shared contract.
+- Implemented the contract for package `ModLifecycle`, enforcing both enabled state and capability approval.
+- Kept archive inspection dependencies isolated from the native Core crate. CI verification pending.
