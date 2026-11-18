@@ -1,45 +1,59 @@
 # Current State
 
 Last updated: 2026-11-18
-Status: CORE_NATIVE_PACKAGE_ADDED; NIGHTLY_SDK_PINNED; CORE_PACKAGE_CI_PENDING; RHAI_CANDIDATE_TESTS_AND_CLIPPY_VERIFIED
-Repository HEAD: resolve dynamically from current main; last inspected commit before this work: 25d839d79b5238207ed9829f202eae5cd947ffcb
+Status: CORE_SOURCE_PACKAGE_VERIFIED; API_ONLY_PREBUILT_OVERLAY_HARNESS_IN_PROGRESS; RHAI_CANDIDATE_PROVISIONAL
+Repository HEAD at last inspection: 67bc5874fcbb8157d9e4f9fb51a919f6aeb81a9a
 
 ## Direction
 - Active project: DreamMod, a deeply extensible interpreted modding runtime for Horizon.
-- Build DreamMod Core as a trusted native .hmod mod against a pinned Horizon SDK; use the existing mod API/host and native route. Verify prebuilt library loading without launcher compilation.
-- The launcher distributes a prebuilt Horizon package containing DreamMod Core.
-- Ordinary .dmod packages are interpreted dynamically; no compilation or bytecode build on player devices.
-- Launcher implementation is separate.
+- DreamMod Core is built once in trusted CI against a pinned Horizon SDK. The separate launcher distributes the prebuilt engine/native overlay and ordinary .dmod source packages.
+- Player-installed .dmod scripts are parsed and interpreted at runtime. No Rust/native compilation, bytecode build or game rebuild occurs on player devices.
+- The separate launcher is out of scope in this repository.
+- Integrate through Horizon's current .hmod/native API and use mixins only when a real extension gap requires them. Do not copy Horizon source into this repository.
 
-## Implemented
-- Existing PMCS continuity docs, validator, regression tests and GitHub Actions workflow.
-- New docs/specs/DREAMMOD_ARCHITECTURE.md: build-time/runtime separation, integration model, extensibility, performance, security, language evaluation criteria, package draft and phased plan.
-- New docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md: current Horizon mod API/host, native and WASM routes, pinned revisions, and prebuilt-library feasibility.
-- Added mods/dreammod-core as a native trait mod source package: horizon-mod.toml (API 0.2, required `registries` capability, [native] pinned to the published 2026-11-18 Nightly and matching horizon-mixins revision), Cargo.toml and typed Hooks bootstrap.
-- Updated .github/workflows/dreammod-core.yml to install the pinned cargo-horizon-mod tool, check the native package/source/API use against the pinned Nightly SDK, compile host and wasm32 targets, package a source .hmod and upload it as a short-lived CI artifact. Workflow run 44284751206 failed at manifest validation because Horizon requires `capabilities = ["registries"]` even for native templates; this is fixed in commit 9a5f9b5. The workflow now caches/builds the pinned cargo-horizon-mod tool in the Horizon workspace; a fresh run is pending.
-- Historical direct API check run 44249522292 passed against the earlier source pin; the new official package check/build workflow is the active verification gate.
-- Added `mods/dreammod-runtime-prototype`, an isolated Rhai AST-evaluator candidate with event dispatch, batch API, subsystem-algorithm and resource-budget tests. The prototype now caps operations, call depth, aggregate array size, map size, string bytes, variables and functions; array-growth budget regression test is pending CI.
-- Added `.github/workflows/dreammod-runtime-prototype.yml` to run candidate tests and a coarse desktop benchmark.
-- Existing Rust engine-core/testkit, reference tooling and Android Vulkan POC are historical artifacts from the previous project direction; they are not DreamMod functionality.
+## Pinned baseline
+- Horizon Nightly 2026-11-18: 0b14f8acfd97fa2c750e42795249dcc981178ca4
+- SDK tag: sdk-0b14f8acfd97fa2c750e42795249dcc981178ca4
+- horizon-mixins: e59da9094f0c2fdda6c627fe9eff22dec6a906f0
+- mod API: 0.2
+- game: 26.3
+- Core manifest capability: registries, required by Horizon's current native template/validator. Treat it as a real permission.
+
+## Implemented and verified
+- mods/dreammod-core contains a minimal native Hooks bootstrap with horizon-mod.toml, Cargo manifest and src/lib.rs.
+- Official pinned cargo-horizon-mod check and source package build passed in Actions run 44285877944.
+- Downloaded and inspected the generated .hmod artifact. It contains horizon-mod.toml, Cargo.toml, src/lib.rs and uses.json; the manifest pins the expected Nightly/API/mixins revisions.
+- mods/dreammod-runtime-prototype contains an evaluation-only Rhai 1.27.0 AST interpreter candidate. Formatting, behavior tests, Clippy and per-value resource-limit tests passed in runs 44284795812 and 44285379104.
+- Comparable synthetic x86_64 benchmark: 50 x 10,000 item updates took 265.955 ms in Rhai AST vs 574.49 microseconds in Rust (462.94x). This is not Android/ARM64 data; it warns against per-entity/per-vertex script loops.
+- Pinned Horizon source confirms the API-only Route::Api implementation builds mod dylibs against signed prebuilt runtime/API slices and reuses the existing client executable.
+- The source-package workflow uses a cached workspace build of the pinned cargo-horizon-mod tool.
+
+## Active verification
+- The stock horizon-launcher native-build client and server export commands require a prepared Minecraft 26.3 installation. Horizon refuses to prepare it without an authenticated account that owns the game. Do not bypass this check or redistribute Mojang assets.
+- To prove the API-only native route without Mojang assets, scripts/ci/patch_horizon_api_route.py adds CI-only tests to an ephemeral checkout of the pinned Horizon source:
+  1. call the exact internal prebuilt::compile(..., Route::Api, ...) function with the signed SDK client runtime/API slices;
+  2. create the normal native inventory with Horizon's library_record::collect;
+  3. call the real horizon-mod-host::native_libraries::load and assert DreamMod Core is loaded.
+- Workflow run 44288437986 failed because the CI step changed HOME, hiding the installed Rustup toolchain. Commit 67bc587 preserves HOME and isolates only XDG directories.
+- Current prebuilt overlay workflow run 44288685182 is in progress. No overlay artifact or real host-loader success is claimed yet.
+- The intended artifact is a client engine/native-library overlay only; it contains no Mojang assets. A complete playable install still needs the user's matching licensed Minecraft 26.3 assets.
 
 ## Not implemented / not verified
-- The minimal native `.hmod` source skeleton exists and its pinned-source API compile check is VERIFIED in CI run 44249522292.
-- The Rhai candidate prototype is IMPLEMENTED. CI run 44284795812 passed formatting, behavior tests, Clippy and a fairer desktop benchmark: Rhai AST 265.955 ms vs Rust 574.49 µs for 50 × 10k items (462.94×). This synthetic x86_64 result is not Android data and warns against per-item interpreted loops in hot systems. A follow-up added explicit array/map/string/variable/function budgets and an array-growth test; CI run 44285379104 is pending. It is not selected as the final language and is not integrated into DreamMod Core.
-- Pinned Horizon source now confirms the API-only Route::Api build path: Core's current Hooks-only manifest qualifies, and the route returns the unchanged prebuilt client plus native libraries. No prebuilt native library package has yet been produced or loaded.
-- No production interpreter selected or integrated; the isolated Rhai candidate is only an evaluation prototype. Starlark was rejected for the strict no-bytecode rule; Sprite is only a research reference because its current language surface is too limited. The prototype budgets are not production sandbox enforcement. The array/map/string/variable/function limit regression suite passed in Actions run 44285379104.
-- No .dmod manifest/schema, package loader, lifecycle, dependency resolver or hot reload.
-- No public DreamMod API, event bus, extension registry or subsystem replacement contract.
-- No sandbox, capability enforcement, execution/memory budgets or diagnostics.
-- No representative benchmarks or Android runtime validation for DreamMod.
-- No reproducible prebuilt Horizon distribution containing DreamMod Core.
-- No compatibility tests against a pinned current Horizon revision.
+- No verified prebuilt client overlay or successful native-host load yet.
+- No complete game launch with DreamMod Core.
+- No production .dmod manifest/parser/ZIP loader, dependency resolver, lifecycle or hot reload.
+- No production sandbox, capability enforcement, per-mod isolation, exact heap accounting, cancellation or crash containment.
+- The Rhai prototype limits are per-array, per-map and per-string caps plus operation/call-depth/variable/function limits; they are not aggregate per-mod memory quotas.
+- Rhai is not the final language choice and is not integrated into Core.
+- No stable public DreamMod API, event bus, subsystem provider registry or AI/physics/rendering replacement implementation.
+- No Android/ARM64 runtime benchmark or device validation.
+- No final decision on an optional prebuilt native-kernel tier; it is not implemented and must not silently replace interpreted .dmod scripts.
 
 ## Next actions
-1. Verify the new official native package workflow (44284751206), fix any issues, and inspect the generated source .hmod artifact.
-2. Benchmark run 44284795812 now provides a comparable desktop diagnostic: 462.94× slower for a 10k-item interpreted loop. Treat this as a warning for hot subsystem loops, not an Android/device result.
-3. Use the pinned official native-build pipeline to produce and inspect an API-only prebuilt distribution, then prove clean startup.
-4. Evaluate the tiny Sprite tree-walker as a research reference only; Starlark is rejected because its evaluator compiles AST to bytecode.
-4. Define the minimal package manifest, loader lifecycle and capability model.
-5. Implement one minimal .dmod end-to-end before broad API expansion.
-6. Design extension contracts for adding and replacing systems, then benchmark.
-7. Keep launcher work out of this repository.
+1. Verify run 44288685182. Fix any Rust API/test harness or host-loader failures.
+2. Inspect the client overlay artifact and its inventory; verify the real Horizon host loader accepts it.
+3. Implement a standalone DreamMod runtime crate with a versioned .dmod manifest, safe package validation, lifecycle and a pluggable interpreter interface.
+4. Keep Rhai provisional; expose only coarse-grained/batched host contracts and benchmark realistic workloads on ARM64.
+5. Integrate the runtime into Core using documented Horizon hooks (initial lifecycle/tick hooks first); external runtime dependencies may move Core from Route::Api to the registry build route, which must be verified in CI.
+6. Define subsystem replacement contracts incrementally; do not claim full physics/rendering replacement until the required Horizon extension points and performance are proven.
+7. Keep launcher implementation out of this repository.
