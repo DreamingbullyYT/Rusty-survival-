@@ -3,7 +3,7 @@
 //! This module deliberately exposes pure coordinate conversion only. It does not
 //! retain Horizon handles, access world state, or claim that a playable engine exists.
 
-use rusty_survival_engine_core::{BlockPos, ChunkAddress, ChunkPos};
+use crate::engine_coordinates::{BlockPos, ChunkAddress, ChunkPos};
 
 /// Owned result returned across the native/mod boundary.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
