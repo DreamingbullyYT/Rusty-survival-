@@ -92,3 +92,11 @@ The Core workflow now runs formatting and `cargo test` after `cargo-horizon-mod 
 - Core PlayerSnapshotBatch uses Arc<[PlayerSnapshot]> (commit 3f629cc54a27992f9a7f402dfda3fcfa0505b4bf); package bridge equivalent uses Arc (commit 74310a797393ec319fb9192d931a7b860ba55ced).
 - Clone shares immutable backing storage; pointer-identity tests were added. This is not yet used by a dispatcher/cache. Always enforce per-mod capability checks before returning shared data.
 - Core/package CI runs 44318166133 and 44318172781 are pending. Previous Core run 44317880298 is still active on the preceding stack-buffer revision.
+
+
+## Verification refresh — 2026-11-18 (HEAD 741f7ff1)
+- Core workflow run 44322745253 passed pinned Horizon SDK native/API/host-WASM checks, formatting, unit tests and native source packaging. The prior UUID fixture type mismatch is fixed.
+- Package Arc-backed batch workflow run 44318172781 passed; cooperative archive-inspection deadline workflow run 44317125357 passed.
+- PMCS run 44322745310 failed because CURRENT_STATE.md, ISSUES.md, ROADMAP.md, CHANGELOG.md and SESSION_LOG.md were stale. Their current evidence/status is being updated in the same logical change set; rerun PMCS.
+- API-only overlay run 44322745328 failed because the CI patch used the UI picker Route rather than prebuilt::Route. scripts/ci/patch_horizon_api_route.py now uses prebuilt::Route::Api for SDK slices and compiler selection. A fresh run must confirm this; host-loader validation and artifact inspection remain unverified.
+- No dispatcher/cache, production .dmod interpreter/sandbox, lifecycle-to-Core authorization adapter, or ARM64 benchmark exists. Do not claim performance gains.
