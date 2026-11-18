@@ -18,12 +18,13 @@
 - [ ] Confirm ordinary installation does not invoke native mod compilation on the player device.
 
 ## Phase 2 — Runtime decision and prototype
-- [x] Establish initial candidate shortlist (Rhai AST evaluator and Starlark AST interpreter); final selection remains OPEN.
+- [x] Establish candidate shortlist (Rhai AST evaluator plus a research-only tree-walking reference); reject Starlark because its evaluator compiles AST to bytecode.
 - [x] Add an isolated Rhai AST-evaluator prototype with typed test host calls and an explicit operation budget.
 - [x] Add tests for event-style dispatch, batch world query and script-side batch physics replacement.
 - [x] Verify runtime formatting, 4 behavior/budget tests and Clippy after the Vec-to-Rhai-Array fix (Actions run 44283982705).
-- [ ] Rerun the benchmark after adding black_box guards; the previous native timing was optimized away and is invalid.
-- [ ] Compare Starlark with the same representative workloads.
+- [x] Add black_box guards after detecting that the first Rust-native benchmark result was optimized away.
+- [ ] Verify the newest benchmark with equal input cloning and observable output checks; then decide whether Rhai is fast enough for supported subsystem replacement.
+- [ ] Evaluate whether a tiny tree-walking interpreter can provide enough language features for DreamMod without creating an unmaintainable custom language.
 - [ ] Benchmark event dispatch, batch world/entity queries and coarse subsystem replacement on desktop and ARM64 devices.
 - [ ] Select a runtime only after performance, safety and Android/target compatibility evidence.
 - [ ] Define execution budgets, memory quotas, cancellation and diagnostics.
