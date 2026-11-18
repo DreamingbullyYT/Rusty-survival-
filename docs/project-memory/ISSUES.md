@@ -82,10 +82,10 @@ Added an exact-pinned ZIP reader dependency and inspect_dmod(). It bounds compre
 
 
 ## DM-018 — Legacy duplicate session IDs in append-only PMCS journal
-Status: IMPLEMENTED — CI PENDING
-The historical SESSION_LOG contains duplicate IDs from earlier entries. Rewriting those headings would violate the append-only rule. The validator now permits legacy duplicates but rejects newly appended IDs that duplicate another new entry or reuse any prior ID. Regression tests cover both cases; verify the PMCS workflow before marking this VERIFIED.
+Status: VERIFIED
+The historical SESSION_LOG contains duplicate IDs from earlier entries. Rewriting those headings would violate the append-only rule. The validator now permits legacy duplicates but rejects newly appended IDs that duplicate another new entry or reuse any prior ID. Regression tests cover both cases; PMCS Actions run 44299837834 passed the new regressions, and final run 44300145443 passed the full structural/freshness validation.
 
 
 ## DM-019 — Retain validated .dmod contents in memory
-Status: IMPLEMENTED — CI PENDING
-inspect_dmod() now returns a ValidatedPackage containing parsed manifest metadata, archive inventory and validated PackageFile records for scripts/assets. Every file is streamed to EOF and CRC-checked before its bytes are retained. Aggregate and per-file uncompressed limits bound retained data; manifest.json is parsed separately and not duplicated. No filesystem extraction, installation, permission grant or execution occurs. Fixture assertions verify exact retained script/asset bytes; package CI is pending.
+Status: VERIFIED
+inspect_dmod() now returns a ValidatedPackage containing parsed manifest metadata, archive inventory and validated PackageFile records for scripts/assets. Every file is streamed to EOF and CRC-checked before its bytes are retained. Aggregate and per-file uncompressed limits bound retained data; manifest.json is parsed separately and not duplicated. No filesystem extraction, installation, permission grant or execution occurs. Fixture assertions verify exact retained script/asset bytes. Actions run 44300015439 passed formatting, all 19 tests and Clippy on commit 2dd019b.
