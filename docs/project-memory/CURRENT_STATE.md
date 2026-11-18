@@ -6,7 +6,7 @@ Repository HEAD at last inspection: 422a9e3fc57ffce0c2e9399a9b7466a1f15a6e2a (ar
 
 ## Direction
 - Active project: DreamMod, a deeply extensible interpreted modding runtime for Horizon.
-- HNMod/horizon-mixins integrates DreamMod Core at build time into a pinned Horizon revision.
+- Build DreamMod Core as a trusted native .hmod mod against a pinned Horizon SDK; use the existing mod API/host and native route. Verify prebuilt library loading without launcher compilation.
 - The launcher distributes a prebuilt Horizon package containing DreamMod Core.
 - Ordinary .dmod packages are interpreted dynamically; no compilation or bytecode build on player devices.
 - Launcher implementation is separate.
@@ -17,7 +17,7 @@ Repository HEAD at last inspection: 422a9e3fc57ffce0c2e9399a9b7466a1f15a6e2a (ar
 - Existing Rust engine-core/testkit, reference tooling and Android Vulkan POC are historical artifacts from the previous project direction; they are not DreamMod functionality.
 
 ## Not implemented / not verified
-- No HNMod integration for DreamMod Core.
+- No DreamMod native .hmod Core or prebuilt library package.
 - No interpreter selected or integrated.
 - No .dmod manifest/schema, package loader, lifecycle, dependency resolver or hot reload.
 - No public DreamMod API, event bus, extension registry or subsystem replacement contract.
@@ -27,7 +27,7 @@ Repository HEAD at last inspection: 422a9e3fc57ffce0c2e9399a9b7466a1f15a6e2a (ar
 - No compatibility tests against a pinned current Horizon revision.
 
 ## Next actions
-1. Inspect and pin a current Horizon revision plus matching horizon-mixins and hooks/API revisions.
+1. Complete the Horizon mod platform audit and pin Horizon, horizon-mixins and hooks/API revisions; prove a CI-built native library can be shipped and loaded without local compilation.
 2. Map the exact HNMod integration point and build a minimal Core bootstrap.
 3. Evaluate interpreted scripting runtimes against the no-compilation requirement and benchmark representative calls.
 4. Define the minimal package manifest, loader lifecycle and capability model.
