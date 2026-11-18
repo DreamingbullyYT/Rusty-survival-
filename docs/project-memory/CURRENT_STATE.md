@@ -326,3 +326,7 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 ### Entrypoint source verification
 - Package run `44365010182`: PASS — 44 tests, formatting and Clippy. Entry-point source is borrowed only after activation.
 - Overlay run `44363904976`: API-only compile and Linux RUNPATH passed; native host load test still in progress.
+
+### Overlay host-test harness correction
+- Fixed `.github/workflows/dreammod-prebuilt.yml`: the loader test now explicitly exports `DREAMMOD_PREBUILT_DIR` in its own step (step environments are isolated), prints packaged library/RUNPATH diagnostics, and has a 180-second timeout.
+- Previous overlay run `44363904976` passed API-only compilation and RUNPATH setup but was superseded during host-test execution by this correction. New overlay run pending.
