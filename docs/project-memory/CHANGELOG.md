@@ -372,3 +372,9 @@
 - Gate construction routes through manifest validation and the explicit approval planner; unapproved and unknown capabilities are denied.
 - Added tests for approved, denied and unknown capabilities.
 - This helper is not yet wired into Horizon host calls; end-to-end enforcement is not claimed. CI pending.
+
+
+## 2026-11-18 — Verify default-deny host capability gate
+- Actions run 44300879584 passed on commit 5085971c93c3dbc2a0089e136e5f9a7aecc21a49: formatting, all 22 tests and Clippy with -D warnings.
+- Gate tests verify approved access, denied unapproved access and rejection of unknown capabilities.
+- This verifies the helper only; Horizon host API integration and end-to-end sandbox enforcement remain open.
