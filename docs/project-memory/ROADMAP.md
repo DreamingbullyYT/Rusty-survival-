@@ -214,3 +214,8 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 - [x] PMCS validation: run `44364715327` passed regression and structure/freshness validation.
 - [ ] Core unit tests/package: run `44363904945` has passed pinned checker/API/host-WASM/mirror/format checks; unit tests still in progress.
 - [ ] Overlay API-only build and native host loading: run `44363904976` still compiling.
+
+### Core callback verification update
+- [x] Core closure-based authorization passed run `44363904945`, including pinned Horizon native/API/host-WASM checks, mirror parity, formatting, tests and source packaging.
+- [x] Overlay API-only prebuilt compile and Linux RUNPATH setup passed in `44363904976`.
+- [ ] Finish real native host load test without overlay environment overrides, then inspect and upload overlay artifact.
