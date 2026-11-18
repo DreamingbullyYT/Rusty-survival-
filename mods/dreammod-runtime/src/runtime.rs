@@ -644,20 +644,11 @@ fn resolve_load_order(
     Ok(order)
 }
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 struct ScriptResponse {
     commands: Vec<CommandEnvelope>,
     providers: Vec<ProviderRegistration>,
-}
-
-impl Default for ScriptResponse {
-    fn default() -> Self {
-        Self {
-            commands: Vec::new(),
-            providers: Vec::new(),
-        }
-    }
 }
 
 #[derive(Debug, Error)]
