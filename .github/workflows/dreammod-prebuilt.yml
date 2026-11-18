@@ -51,6 +51,8 @@ jobs:
             .ci/horizon -> target
             .ci/horizon/launcher -> target
           shared-key: horizon-nightly-0b14f8
+      - name: Verify HNMod engine source matches canonical engine-core
+        run: python3 scripts/ci/check_engine_bridge_sync.py
       - name: Add CI-only tests for the official API route and host loader
         run: python3 scripts/ci/patch_horizon_api_route.py
       - name: Build the API-only prebuilt client overlay using Horizon's signed SDK
