@@ -957,3 +957,20 @@ Limitations:
 - Inspection does not install files, grant capabilities, execute scripts or provide a production sandbox.
 Next:
 - Verify the package workflow. Fix compiler/format/lint issues before continuing to package installation and lifecycle.
+
+
+## S-2026-11-18-01 — Verify and repair DreamMod package CI
+Date: 2026-11-18
+Commit: 4e983c04ea8f3a4085aa2e13b6b53d691c307564 (package implementation); PMCS synchronization follows.
+Goal: Verify the in-memory .dmod ZIP inspector and correct the issues exposed by CI.
+Changes:
+- Fixed the Windows-backslash path test fixture by escaping the backslash in JSON before parsing.
+- Simplified the archive path validator to satisfy Clippy without suppressing the lint.
+- Corrected stale source comments that still described the crate as manifest-only/metadata-only.
+Verification:
+- First rerun: all 19 unit tests passed; Clippy exposed one needless-bool lint.
+- Final Actions run 44299317538: formatting step SUCCESS, 19/19 unit tests SUCCESS, Clippy with -D warnings SUCCESS.
+Limitations:
+- This verifies in-memory ZIP inspection and validation only. No files are extracted or installed; package contents are not yet retained for runtime use; no capabilities are granted and no script is executed.
+Next:
+- Add a bounded in-memory package-content representation that retains validated script/assets bytes, then design explicit install/permission/lifecycle boundaries before connecting an interpreter.
