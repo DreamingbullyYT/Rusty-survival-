@@ -285,3 +285,9 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - Core run `44362777239` passed the pinned Horizon `cargo-horizon-mod` build, native manifest/source/API/host-WASM checks, engine mirror parity, formatting, Core tests, source packaging and artifact upload.
 - Overlay run `44362776804` remains in progress at API-only prebuilt client compilation; its real-host no-overlay-env test has not run yet.
 - PMCS run `44363588460` is queued/pending at the time of this update; await its final result.
+
+## Packaging-compatible authorization callback — 2026-11-18
+- The external `dreammod-contract` path dependency was removed after the real Horizon overlay build failed because the SDK staging process does not include arbitrary local Cargo dependencies (`unresolved import dreammod_contract`, run `44362776804`).
+- Core player collection now takes an authorization closure and checks it before touching `ServerHost`.
+- `ModManager::require_capability(mod_id, capability)` exposes the exact per-mod lifecycle+grant check; it can be passed as Core's closure. This keeps HNMod Core free of non-SDK dependencies.
+- A runtime coordinator and live Horizon hook call site are still missing. New package/Core/overlay CI runs are pending.
