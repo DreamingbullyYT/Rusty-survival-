@@ -894,3 +894,16 @@ Limitations:
 - No ZIP/archive parsing or extraction, entrypoint existence check, capability granting, dependency resolver, runtime lifecycle, script execution or production sandbox.
 Next:
 - Inspect package-contract CI. Fix all failures before adding archive handling; then design a bounded, non-extracting ZIP inventory validator.
+
+
+## S-2026-11-18-20 — Fix Rhai provider error conversion
+Date: 2026-11-18
+Goal: Correct the type-check failure found by the runtime prototype workflow.
+Changes:
+- Runtime workflow 44289964423 passed rustfmt but failed compilation at the new physics provider result type check because .into() was ambiguous between several conversions to Box<EvalAltResult>.
+- Replaced the ambiguous conversion with explicit Box::new(EvalAltResult::ErrorMismatchDataType(...)) in commit 5bdd485.
+Verification:
+- No follow-up test result yet; a new workflow was triggered by 5bdd485.
+Next:
+- Verify runtime tests, Clippy and benchmark after the explicit error conversion.
+- Continue monitoring API-only prebuilt overlay run 44289897914.
