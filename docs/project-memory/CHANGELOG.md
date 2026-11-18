@@ -415,3 +415,8 @@
 - Added a generic authorization helper with regression tests proving denied reads do not invoke the host operation and authorized reads invoke it exactly once.
 - Kept the actual lifecycle adapter open: the trait is an integration seam, not proof that `ModLifecycle` is already wired to Core.
 - Core source commit: `99929e38d5f1a815e8b17cb069a5eff8dfcc8e3e`; Core and overlay Actions are running.
+
+
+## 2026-11-18 — Add Core snapshot validation regressions
+- Added Core-local unit tests for malformed player names, invalid dimension identifiers, NaN/infinite/out-of-range positions, duplicate player UUIDs and the 256-entry batch ceiling.
+- Source commit: `ebe09145849063ade0e01f18e55a23bec18cd4e4`. Core Actions are queued/running; tests have not yet been reported as executed by CI.
