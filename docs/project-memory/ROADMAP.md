@@ -51,7 +51,8 @@
 - [x] Define an owned, validated player snapshot DTO and a typed `entities.read` adapter gate; concrete Horizon host implementation and runtime exposure remain open.
 - [x] Add a bounded player snapshot batch (256 max) with duplicate-UUID rejection and one capability check per batch; concrete Horizon collector and script binding remain open; package Actions run 44309674771 passed formatting, tests and Clippy.
 - [x] Inspect the exact pinned Horizon Hooks/Host/phase surface and record the bridge contract in docs/dreammod/HORIZON_HOST_BRIDGE.md.
-- [x] Implement the first Core-side bounded online-player snapshot collector against the pinned ServerHost API; SDK compilation and host/WASM validation are pending. Script runtime and capability-gated invocation remain open.
+- [x] Implement the first Core-side bounded online-player snapshot collector against the pinned ServerHost API; Core workflow run 44310547586 passed SDK build, host/WASM validation and packaging.
+- [x] Require a per-mod player-read authorization interface before Core touches ServerHost; regression tests prove denial happens before the host callback. Binding the interface to actual ModLifecycle instances remains open and latest Core/overlay Actions are pending.
 - [ ] Implement sandbox and capability enforcement.
 - [ ] Load and run one minimal example .dmod end-to-end.
 
