@@ -205,3 +205,8 @@ Added `mods/dreammod-contract`, a dependency-light shared crate defining `Player
 
 ### DM-024 verification follow-up (2026-11-18)
 The package bridge now re-exports the canonical capability constant from `dreammod-contract`; a new regression test exercises the exact shared trait implementation across all lifecycle states and grant combinations. Actions run `44362952060` is queued, Core run `44362777239` is still in progress, and overlay run `44362776804` is queued. Status remains IMPLEMENTED — CI verification pending.
+
+## DM-033 — Deterministic package lifecycle manager
+Status: IMPLEMENTED — CI verification pending
+Added `dreammod-package::manager::ModManager`, which owns validated package bytes and a lifecycle per mod, validates the dependency graph on construction, and exposes dependency-first load order. Enable requires dependencies Enabled; disable rejects an enabled dependent; fail cascades to transitive dependents in reverse load order. Tests cover ordering, retained package data, enable/disable constraints, cascading failures and invalid dependency graphs. Package run `44363310681` and PMCS run `44363323071` are pending. This is not an interpreter/runtime or Horizon registration manager.
+
