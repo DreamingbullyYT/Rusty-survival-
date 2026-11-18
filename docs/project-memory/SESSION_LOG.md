@@ -1335,3 +1335,21 @@ Limitations:
 - The 60-second deadline currently bounds ZIP inspection only, not a complete mod load transaction.
 Next:
 - Verify both latest workflows, add batch benchmarks, then design per-dispatch immutable snapshot reuse with explicit thread and invalidation rules.
+
+
+## S-2026-11-18-40 — Share immutable player snapshot batches
+Date: 2026-11-18
+Commits:
+- Core Arc-backed batch: 3f629cc54a27992f9a7f402dfda3fcfa0505b4bf
+- Package Arc-backed batch: 74310a797393ec319fb9192d931a7b860ba55ced
+Goal: Avoid deep-copying snapshot records when multiple authorized consumers need the same immutable batch.
+Changes:
+- Changed PlayerSnapshotBatch storage from Vec<PlayerSnapshot> to Arc<[PlayerSnapshot]> in Core and package contract.
+- Existing getters and ordering are unchanged. Cloning a batch shares its immutable backing allocation.
+- Added tests using Arc::ptr_eq to prove clones share storage.
+Verification:
+- Package CI run 44318172781 and Core CI run 44318166133 are pending. No benchmark is claimed.
+Limitations:
+- No runtime dispatcher or cache exists yet. This storage design only makes future per-dispatch sharing cheap; each mod must pass its own capability check before receiving the batch.
+Next:
+- Verify both workflows, then benchmark batch clone/delivery and design the scheduler's per-dispatch ownership and invalidation rules.
