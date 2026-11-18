@@ -7,7 +7,6 @@ on:
       - "mods/dreammod-runtime-prototype/**"
       - ".github/workflows/dreammod-runtime-prototype.yml"
       - "docs/specs/DREAMMOD_ARCHITECTURE.md"
-      - "docs/project-memory/**"
   pull_request:
     paths:
       - "mods/dreammod-runtime-prototype/**"
@@ -16,6 +15,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: dreammod-runtime-prototype-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test-interpreted-runtime-candidate:
@@ -26,7 +29,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@1.95.0
+      - name: Check formatting
+        run: cargo fmt --manifest-path mods/dreammod-runtime-prototype/Cargo.toml -- --check
       - name: Run runtime behavior and budget tests
-        run: cargo test --manifest-path mods/dreammod-runtime-prototype/Cargo.toml
+        run: cargo test --all-targets --manifest-path mods/dreammod-runtime-prototype/Cargo.toml
+      - name: Run Clippy
+        run: cargo clippy --all-targets --manifest-path mods/dreammod-runtime-prototype/Cargo.toml -- -D warnings
       - name: Run coarse batch benchmark
         run: cargo run --release --manifest-path mods/dreammod-runtime-prototype/Cargo.toml --example benchmark
