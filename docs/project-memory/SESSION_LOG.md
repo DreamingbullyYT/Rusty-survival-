@@ -922,3 +922,20 @@ Limitations:
 - No ZIP parser, local-header/central-directory consistency check, CRC validation, extraction, package discovery, or real archive fixture tests yet. This policy is only as trustworthy as the metadata supplied by a future parser.
 Next:
 - Verify CI, then integrate a ZIP reader with strict archive-structure checks and fuzzable adversarial fixtures. Do not extract files before all validation passes.
+
+
+## S-2026-11-18-03 — Deterministic dependency planner
+Date: 2026-11-18
+Commit: 1817a3b4b9a3f4ae974793c2d46c9cbce65b3fe6
+Goal: Plan a safe, repeatable dependency-first load order before adding runtime lifecycle behavior.
+Changes:
+- Added a pure dependency planner with an installed-mod count limit.
+- Rejects duplicate IDs, missing dependencies, semver incompatibilities and cycles.
+- Uses a lexicographically ordered ready set to keep load order deterministic.
+- Added tests for ordering, missing/incompatible dependencies, cycles and duplicate IDs.
+Verification:
+- Source committed to `main`; CI has not yet been inspected. Test status remains PENDING.
+Limitations:
+- This does not parse archives, install packages, resolve optional dependencies, execute scripts or grant capabilities.
+Next:
+- Verify the package workflow; then implement a real ZIP reader with central-directory/local-header checks and no filesystem extraction.
