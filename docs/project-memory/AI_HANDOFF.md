@@ -60,3 +60,7 @@ The first concrete Core-side collector now exists at `mods/dreammod-core/src/pla
 
 ## 2026-11-18 authorization seam
 Core player collection now takes a `PlayerReadAuthorization` argument. Implementations must check the specific mod's Enabled lifecycle state and `entities.read` grant. The helper runs the collection closure only after this check; unit regressions cover denial and one authorized call. This trait is not yet implemented by a real per-mod lifecycle adapter, so do not claim end-to-end permission enforcement. Source commit `99929e3`; Core workflow run 44312568247 and API-only overlay run 44312568292 are running.
+
+
+## Core snapshot tests
+Core-local `#[cfg(test)]` tests now cover malformed names/dimensions/coordinates, duplicate UUIDs and batch size (commit `ebe0914`). Current Core Actions use `cargo-horizon-mod check`; do not assume that executes unit tests. Verify workflow behavior and add a compatible `cargo test` step only after confirming the generated pinned SDK dependency path.
