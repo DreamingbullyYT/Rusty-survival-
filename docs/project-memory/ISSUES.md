@@ -2,65 +2,38 @@
 
 Status vocabulary: OPEN, INVESTIGATING, IMPLEMENTED, VERIFIED, BLOCKED.
 
-## I-001 — Exact Minecraft Java target specification
-Status: INVESTIGATING
-The target version is Minecraft Java Edition 26.3. Detailed version-pinned mechanics and test fixtures are not complete.
-
-## I-002 — Minelib license and provenance boundaries
+## DM-001 — Horizon baseline and integration pin
 Status: OPEN
-The root project is AGPLv3; individual crates may have distinct declared licenses. Any code reuse requires file-level provenance, license compatibility review and attribution/obligations review. No Minelib source has been copied into this repository.
+Need to inspect current Horizon main/release, horizon-mixins revision and hooks/API version. Pin exact revisions before writing the HNMod integration.
 
-## I-003 — Android platform support in Minelib
+## DM-002 — HNMod build-time integration contract
 Status: INVESTIGATING
-Upstream README describes Android/iOS support as in preparation. Desktop-only platform assumptions must not enter the Android engine boundary.
+Current documentation describes native HNMod packages as Rust source built against a pinned Horizon revision. Need verify the exact minimal integration path and ensure the player receives a prebuilt distribution, not HNMod source to compile locally.
 
-## I-004 — Java world/chunk/block-state incompatibility
+## DM-003 — Interpreted language selection
 Status: OPEN
-Minelib's current chunk height, block IDs, registry and generator are not Java-compatible drop-ins. Only isolated algorithms may be adapted after tests.
+Rhai is a candidate only. Compare true source interpretation, Android/ARM64, performance, safe API exposure, sandbox, diagnostics and maintenance. Do not accidentally introduce bytecode compilation.
 
-## I-005 — Java-compatible world generation, lighting and fluids
+## DM-004 — Deep subsystem replacement boundaries
 Status: OPEN
-Custom Minelib algorithms do not establish Java parity. Implement against version-pinned reference behavior and fixtures.
+Horizon internals cannot be assumed replaceable merely because hooks exist. Identify extension points and define complete contracts for AI, physics, rendering and other systems.
 
-## I-006 — Renderer integration on Android
-Status: INVESTIGATING
-Minelib renderer is an adaptation candidate, not a verified Android renderer. Vulkan surface and lifecycle support need hardware proof.
-
-## I-007 — Asset provenance and redistribution
+## DM-005 — Script performance in hot paths
 Status: OPEN
-Do not bundle Mojang assets until lawful acquisition, redistribution basis and provenance are documented.
+Interpreted callbacks may be too slow at per-entity/per-vertex frequency. Use batching/coarse-grained dispatch and benchmark representative workloads before promising full replacement.
 
-## I-008 — Networking protocol compatibility and security
+## DM-006 — Script sandbox and capabilities
 Status: OPEN
-Minelib networking requires protocol, authentication, encryption and security review before reuse.
+Need per-mod isolation, explicit capability grants, memory/execution budgets, safe resource access, cancellation and fault containment.
 
-## I-009 — Android Vulkan POC device validation
-Status: INVESTIGATING
-Evidence: CI run 44127492869 completed SUCCESS. ARM64 native library compilation and Gradle debug APK packaging both passed. Artifact ID 14347124661 (2,379,313 bytes; SHA-256 d4ec89aca87ae27dbd22f7505965be1017b5f522790323363581cb8ed4fafd61).
-Required action: Install on a real device; verify Vulkan adapter selection, first present, pause/resume, rotation and repeated surface recreation. CI compilation/package success is not proof of runtime support.
-
-
-## I-010 — Engine core test coverage and parity evidence
-Status: INVESTIGATING
-A minimal horizontal coordinate primitive and tests have been added. These test coordinate invariants only. No version-pinned Minecraft Java 26.3 differential fixtures or gameplay tests exist yet.
-Evidence: Engine Tests run 44140955601 passed formatting, all workspace targets, and Clippy on PR head f504ba1f3629702330380c3bb71c44c4a5879150. PMCS run 44140955639 also passed.
-Required action: Add version-pinned Java 26.3 reference fixtures and expand coverage in dependency order. Mark parity VERIFIED only after comparison with captured reference behavior.
-
-
-## I-011 — Reference-artifact acquisition and non-publication
+## DM-007 — API stability and upstream compatibility
 Status: OPEN
-The Java 26.3 fixture runner and downloader are not implemented. Future CI must resolve official Mojang metadata, verify size/hash, use $RUNNER_TEMP, and delete inputs on every exit path. It must not cache or upload Mojang jars/assets. The public workflow must be transparent; hiding the download mechanism is not a compliance strategy.
+DreamMod must pin Horizon/mixins/hooks revisions and version its public API. Define compatibility ranges and migration rules.
 
-## I-012 — Engine crate boundaries and staged implementation
+## DM-008 — Package format and lifecycle
+Status: OPEN
+Manifest, permissions, dependency resolution, deterministic load order, enable/disable, reload and error reporting are draft requirements only.
+
+## DM-009 — Historical engine prototype scope
 Status: INVESTIGATING
-A readable target layout is documented, but only engine-core exists. Do not create placeholder crates or implement version-specific world semantics before fixture evidence exists.
-
-
-## I-013 — Fixture validation versus reference execution
-Status: INVESTIGATING
-The version-pinned JSON fixture contract and synthetic validator tests are implemented in `crates/testkit`. No Java 26.3 oracle capture, artifact downloader, output comparator or differential execution exists yet. Synthetic fixtures must never be counted as vanilla parity.
-
-
-## I-014 — Reference artifact workflow verification
-Status: INVESTIGATING
-The official metadata resolver, server artifact downloader, offline Python tests and manual Actions workflow have been implemented. Offline tests passed (9 tests), and the push-triggered cleanup step passed with no artifact directory present. The actual manual download and deliberate-failure paths remain unverified because this GitHub connection exposes no workflow-dispatch action. The workflow is artifact-only and does not claim to run a Java oracle or prove parity. No Mojang binary is uploaded, cached or committed.
+Existing engine-core, testkit, Mojang artifact tooling, Minelib audits and Android Vulkan POC were built for the former independent-engine direction. Preserve them for history; do not treat them as DreamMod implementation or extend them without a new explicit scope decision.
