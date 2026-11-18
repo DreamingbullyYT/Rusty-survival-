@@ -3,10 +3,10 @@
 ## Phase 0 — Project continuity
 - [x] Preserve PMCS, validator, regression tests and GitHub Actions workflow.
 - [x] Record the 2026-11-18 DreamMod project pivot in persistent memory.
-- [x] Define the initial DreamMod architecture and HNMod/prebuilt-distribution model.
+- [x] Define the initial DreamMod architecture and prebuilt-distribution model.
 
 ## Phase 1 — Horizon integration research
-- [ ] [x] Audit current Horizon mod API/host, package formats, native route and WASM runtime.
+- [x] Audit current Horizon mod API/host, package formats, native route and WASM runtime.
 - [ ] Identify exact native .hmod build and prebuilt library packaging path.
 - [ ] Pin Horizon revision, horizon-mixins revision, hooks/API revision and Rust toolchain.
 - [ ] Build a minimal native .hmod that embeds a no-op DreamMod Core bootstrap.
