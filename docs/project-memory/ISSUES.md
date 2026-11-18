@@ -106,3 +106,8 @@ Added CapabilityGate::from_approvals(), allows() and require(). It can only be c
 ## DM-022 — Owned player snapshot bridge contract
 Status: VERIFIED
 Added `bridge::PlayerSnapshot`, an owned DTO containing UUID, validated player name, dimension identifier and finite bounded position. The type contains no Horizon references or handles. `HostAdapter::read_player_snapshot()` checks the `entities.read` grant and enabled lifecycle state before running the supplied host-read closure, then rejects invalid DTOs. Regression tests cover DTO validation and prove denied calls do not invoke the read closure. This is not yet a concrete Horizon `ServerHost` adapter, runtime script binding, sandbox or end-to-end player API. Source commits: `3e8baf1`, `8845d96`, `7bae3ea`; package Actions run `44309091208` passed formatting, all tests and Clippy.
+
+
+## DM-023 — Concrete Core-side online-player collector
+Status: IMPLEMENTED — SDK verification pending
+Added a Core-local owned snapshot DTO and bounded collector using the pinned `ServerHost::players().server_players()` service. The collector rejects batches above 256 before reading, preserves connection order, reads each player's name/dimension/entity position while the host borrow is valid, and copies only owned values. It rejects unavailable handles/fields, invalid names/dimensions/coordinates and duplicate UUIDs. No Horizon handle escapes. The collector is not yet called by the .dmod runtime and does not itself enforce per-mod capabilities; the runtime must call it only after an `entities.read` grant is checked. Source commits: `7ecd981`, `b2362c6`. Core SDK check pending in Actions run 44310547586.
