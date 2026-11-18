@@ -1025,3 +1025,20 @@ Limitations:
 - No filesystem installation, permission grant, script execution or production sandbox.
 Next:
 - Define the package trust/permission boundary and a pluggable runtime input contract before implementing execution.
+
+
+## S-2026-11-18-24 — Add explicit default-deny capability planning
+Date: 2026-11-18
+Commit: d83b3491b747bc880b657e4cf17e259a8af2ff62
+Goal: Separate manifest capability requests from explicit user approvals before any runtime integration.
+Changes:
+- Added CapabilityPlan and plan_capability_grants().
+- Empty approvals grant nothing; requested-but-unapproved capabilities are denied.
+- Reject unknown, unrequested and duplicate approval values.
+- Added regression tests for default-deny, partial grants and invalid approvals.
+Verification:
+- Dedicated package workflow triggered; result pending.
+Limitations:
+- The planner returns metadata only. No permission UI, runtime host enforcement, sandbox or script execution exists.
+Next:
+- Verify CI, then define the host-side capability gate and package lifecycle state machine before connecting an interpreter.
