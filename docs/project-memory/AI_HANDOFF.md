@@ -155,3 +155,6 @@ The local `dreammod-contract` crate was removed after overlay run `44362776804` 
 
 ### Core callback verification update — 2026-11-18
 Core run `44363904945` is green: pinned Horizon checker, native API/host-WASM, engine mirror parity, formatting, tests and source bundle upload all passed. Overlay run `44363904976` has passed API-only compilation and `$ORIGIN` RUNPATH setup; its real native host load test without overlay environment overrides is in progress. Wait for host load, archive inspection and upload before claiming overlay readiness.
+
+## Entrypoint source bridge — 2026-11-18
+`ModLifecycle::ensure_enabled` checks activation without a fake `scripts.execute` capability. `ModManager::entrypoint_source` borrows the validated entrypoint bytes only after the mod is Enabled. Host operations remain protected by explicit named capabilities. Package CI after commit `ee903d7` is pending. This only exposes source bytes; no parser/interpreter/sandbox executes them.
