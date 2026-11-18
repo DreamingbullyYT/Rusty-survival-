@@ -64,3 +64,8 @@ Use a fixed [u128; 256] stack scratch array for duplicate UUID detection in Core
 
 ## Decision D-2026-11-18-03 — share snapshot batches immutably
 Use Arc<[PlayerSnapshot]> as PlayerSnapshotBatch backing storage. Cloning a batch is a cheap reference-count increment rather than a deep clone. Snapshot contents remain immutable. A future dispatcher may share a batch only after checking the receiving mod's lifecycle/capability; no cross-mod authorization bypass is allowed.
+
+## DECISION — isolate shared authorization contracts from package inspection (2026-11-18)
+- Decision: use a minimal `dreammod-contract` crate for the player-read authorization trait and capability identifier. Both Core and package/lifecycle depend on it.
+- Rationale: Core must not inherit ZIP, JSON, semver or archive-inspection dependencies merely to check per-mod authorization; a shared trait avoids duplicate contracts and supports a future runtime owner.
+- Consequence: this is an integration seam, not proof that a runtime manager currently connects the two crates. The package lifecycle remains separate from Horizon host handles. Revisit only if the public capability model is redesigned.
