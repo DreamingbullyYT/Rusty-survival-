@@ -10,14 +10,12 @@ pub mod package;
 pub mod runtime;
 pub mod script;
 
-pub use manifest::{
-    Capability, ModDependency, ModId, ModManifest, ModSide,
-};
+pub use manifest::{Capability, ModDependency, ModId, ModManifest, ModSide};
 pub use package::{DmodPackage, PackageError, PackageLimits, PackageLoader};
 pub use runtime::{
-    AllowAllForTests, AuthorizedCommand, CommandAuthorizer, CommandEnvelope,
-    DeniedOperation, DenyAll, DispatchReport, DreamModRuntime, LoadReport,
-    PermissionPolicy, ProviderMode, ProviderRegistration, RegisteredProvider,
-    RuntimeConfig, RuntimeError, RuntimeEvent, RuntimeSide, ScriptFailure,
+    AllowAllForTests, AuthorizedCommand, CommandAuthorizer, CommandEnvelope, DeniedOperation,
+    DenyAll, DispatchReport, DreamModRuntime, LoadReport, PermissionPolicy, ProviderMode,
+    ProviderRegistration, RegisteredProvider, RuntimeConfig, RuntimeError, RuntimeEvent,
+    RuntimeSide, ScriptFailure,
 };
 pub use script::{ExecutionLimits, RhaiEngine, ScriptEngine, ScriptError};
