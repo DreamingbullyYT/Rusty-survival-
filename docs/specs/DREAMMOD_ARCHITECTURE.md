@@ -1,6 +1,6 @@
 # DreamMod — Architecture and Integration Plan
 
-Status: CORE BOOTSTRAP VERIFIED IN CI; INTERPRETER CANDIDATE PROTOTYPE ADDED; PREBUILT DISTRIBUTION NOT VERIFIED
+Status: NATIVE CORE SOURCE PACKAGE ADDED; OFFICIAL PACKAGE CI PENDING; RHAI CANDIDATE TESTS/CLIPPY VERIFIED; PREBUILT DISTRIBUTION NOT VERIFIED
 Date: 2026-11-18
 Target engine: Horizon (upstream engine; reuse its .hmod/native mod API and host, with horizon-mixins only where required)
 Repository role: DreamMod runtime, API, package format, tests and integration source
@@ -106,9 +106,10 @@ OPEN — no final language has been selected.
 
 Initial shortlist:
 - **Rhai 1.27.0:** Rust-native embedding, source parser produces an AST which is evaluated by the AST walker. The optional Rhai Grain bytecode VM is deliberately not enabled in DreamMod. The prototype also disables AST optimization so we can measure the interpreter path rather than optimized-away script logic.
-- **Starlark 0.14.x:** Rust interpreter with an explicit parse-to-AST and evaluator API; useful comparison for deterministic behavior and a constrained language surface.
+- **Sprite (research-only reference):** a small MIT tree-walking interpreter with no bytecode/VM, but its current value model and language surface are far too limited for DreamMod without substantial development. It is not adopted as a dependency.
+- **Starlark 0.14.x:** rejected for the strict no-bytecode rule. Its public API parses to AST, but its evaluator compiles the AST to bytecode before execution.
 
-The first Rhai evaluation prototype now exists at `mods/dreammod-runtime-prototype`. It covers event-style function calls, a coarse-grained batch host query, a batched physics-provider function, and an execution-operation budget. Its existence is not a final language decision and it is not yet integrated into DreamMod Core.
+The first Rhai evaluation prototype now exists at `mods/dreammod-runtime-prototype`. It covers event-style function calls, a coarse-grained batch host query, a batched physics-provider function, and an execution-operation budget. CI run 44283982705 passed formatting, four behavior/budget tests and Clippy. A first corrected desktop benchmark still showed a large interpreted-vs-native gap; the methodology was further tightened with equivalent input cloning and observable output checks, and the newest result is pending. Its existence is not a final language decision and it is not yet integrated into DreamMod Core.
 
 Important terminology: parsing source into an AST is required by ordinary interpreters and is not native-code or bytecode compilation. The player must never run a native compiler, bytecode compiler/VM preparation step, JIT, or game rebuild for a `.dmod`. The prototype must keep Rhai's Grain feature disabled and must not serialize compiled executable artifacts.
 
