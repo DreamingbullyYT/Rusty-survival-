@@ -245,3 +245,10 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 6. [ ] Verify the actual Horizon resource registration APIs before implementing the host adapter.
 
 Scope note: current registry is metadata bookkeeping only; no Horizon resource is registered or visible in-game.
+
+
+### Resource registry CI follow-up
+- [x] All 51 unit tests passed on run `44385572845`.
+- [x] Rust formatting passed on run `44385572845`.
+- [x] Correct strict Clippy findings from that run.
+- [ ] Confirm follow-up package run after `d1d89c64aad8` passes tests, formatting and Clippy.
