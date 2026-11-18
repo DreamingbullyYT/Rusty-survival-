@@ -261,3 +261,9 @@ Limitations: this does not register real Horizon assets, renderer/UI resources, 
 
 ### DM-037 verification follow-up (2026-11-18)
 The first resource registry package run passed all 51 tests and formatting, but strict Clippy rejected manual saturating arithmetic and an unused mutable binding. Both were corrected in commits `7edd2f4` and `d1d89c6`. Follow-up CI is pending; do not mark DM-037 fully verified until Clippy passes.
+
+
+### DM-038 — Resource reservation lifecycle integration (2026-11-18)
+ModManager now owns the internal ResourceRegistry. Mods can reserve IDs only after enablement and only under their own manifest namespace. Reservations are released on successful disable and on failure of the mod or any transitive dependent. Tests cover activation gating, namespace checks and cleanup paths.
+
+Limitations / follow-up: the registry is not a Horizon resource manager. It only tracks IDs in memory; it does not register textures, models, sounds, UI, blocks or other host objects. Implement external host publication only after verifying the pinned SDK APIs, with staged publication and rollback on partial failure. CI run `44386150155` pending at this update.
