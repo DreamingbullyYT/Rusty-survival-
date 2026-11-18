@@ -322,3 +322,7 @@ Repository HEAD: resolve dynamically from `main`; latest verified package CI com
 - `ModLifecycle::ensure_enabled` checks activation state without inventing a `scripts.execute` capability.
 - `ModManager::entrypoint_source` returns a borrowed slice of the validated entrypoint only when the mod is Enabled. Host API permissions remain separately capability-gated.
 - Regression test covers denied before enable and allowed after enable. Package workflow after `ee903d7` pending.
+
+### Entrypoint source verification
+- Package run `44365010182`: PASS — 44 tests, formatting and Clippy. Entry-point source is borrowed only after activation.
+- Overlay run `44363904976`: API-only compile and Linux RUNPATH passed; native host load test still in progress.
