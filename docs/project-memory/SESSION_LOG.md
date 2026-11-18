@@ -1154,3 +1154,25 @@ Limitations:
 - This verifies the package/lifecycle crate only. It does not verify concrete Horizon host integration or a sandbox.
 Next:
 - Continue with the first narrow, owned-value Horizon adapter after its operation contract is specified.
+
+
+## S-2026-11-18-30 — Add owned player snapshot boundary
+Date: 2026-11-18
+Commits:
+- DTO: 3e8baf14cd1750ff0ec2ce45ebbb55aaf13aa4e6
+- Export: 8845d96f3130e90a381aab85244546dcad447f3d
+- Capability-gated adapter: 7bae3eaad6128ff815e657541dd3cd1880dca485
+- Bridge contract docs: c20caab7545a15f4511c3e0acc4f30e2de80c468
+Goal: Define the first typed, owned-value contract between Horizon and interpreted DreamMod without allowing Horizon handles to escape.
+Changes:
+- Added PlayerSnapshot with owned UUID, bounded player name, validated dimension identifier and finite bounded position.
+- Added HostAdapter::read_player_snapshot(), which checks Enabled state and the entities.read grant before invoking the supplied Horizon read closure.
+- Added tests for valid and invalid snapshots, denied callback non-invocation and malformed DTO rejection.
+- Updated the Horizon bridge contract to specify the ownership and capability rules.
+Verification:
+- DreamMod package Actions run 44309091208: SUCCESS. Rust formatting, all package tests and Clippy succeeded on source commit 7bae3eaad6128ff815e657541dd3cd1880dca485.
+- PMCS validation is triggered by the documentation updates; result pending.
+Limitations:
+- No concrete ServerHost closure is implemented in DreamMod Core; the DTO is not exposed to an interpreter. No production sandbox or end-to-end .dmod execution exists.
+Next:
+- Implement and compile the Core-side player snapshot reader against the pinned Horizon SDK. Verify the exact event and handle method signatures in CI before adding script bindings.
