@@ -218,3 +218,7 @@ Shared authorization contract is verified by Core run `44362777239`: pinned Hori
 
 ### DM-033 verification update (2026-11-18)
 ModManager is verified by package run `44363502581`: rustfmt, all 41 tests including the five `manager::tests`, and Clippy with `-D warnings` passed. The cascade regression test passes after the topological-order correction. PMCS validation pending.
+
+## DM-034 — HNMod source staging excludes local Cargo path dependencies
+Status: FIX IMPLEMENTED — CI verification pending
+Overlay run `44362776804` failed during API-only compilation with `unresolved import dreammod_contract`; Horizon's prebuilt package staging did not carry the local path dependency into the staged mod source. Removed that dependency/crate. Core now accepts an authorization closure, and `ModManager::require_capability` supplies the per-mod enabled-state+grant check. A real runtime coordinator/hook call site remains open. Verify the new Core/package/overlay runs before closing this issue.
