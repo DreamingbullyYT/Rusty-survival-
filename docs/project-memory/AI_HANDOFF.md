@@ -161,3 +161,6 @@ Core run `44363904945` is green: pinned Horizon checker, native API/host-WASM, e
 
 ### Entrypoint bridge CI update
 Package run `44365010182` passed all 44 tests, rustfmt and Clippy. The new entrypoint source test passed. Overlay run `44363904976` has passed API-only compilation and Linux RUNPATH setup; the real native host load test is still running.
+
+### Overlay test harness correction
+The overlay build step's `DREAMMOD_PREBUILT_DIR` export does not carry into a later GitHub Actions step. The host-load step now explicitly exports `$RUNNER_TEMP/dreammod-prebuilt`, prints file/RUNPATH diagnostics and uses a 180-second timeout. Previous run `44363904976` passed API-only build and RUNPATH setup but was superseded during host loading. Check the new overlay run after commit `9347eb4`.
