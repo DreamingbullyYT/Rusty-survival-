@@ -201,3 +201,10 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 - [x] PMCS validation: run `44364312080` passed.
 - [ ] Callback refactor Core verification: run `44363904945` still building `cargo-horizon-mod`.
 - [ ] Overlay API-only build and native host loading: run `44363904976` still compiling API-only overlay.
+
+## Asset API milestone — 2026-11-18
+1. [x] Expose validated asset bytes through `ModManager::read_asset` without extraction.
+2. [x] Enforce Enabled state and explicit `assets.read` capability.
+3. [x] Revalidate asset namespace/path and test denied, allowed, traversal and missing cases.
+4. [ ] Verify package CI after commit `f90d0b1`.
+5. [ ] Add bounded decoding/registration transactions and cache ownership only after interpreter/runtime budgets are specified.
