@@ -312,3 +312,13 @@
 - Added regression tests for deterministic ordering and invalid dependency graphs.
 - Commit: 1817a3b4b9a3f4ae974793c2d46c9cbce65b3fe6.
 - Verification: Actions status has not yet been inspected; no passing result is claimed.
+
+
+## 2026-11-18 — Implement real in-memory .dmod ZIP inspection
+- Added an exact-pinned zip dependency (9.6.1, default features disabled, Deflate only).
+- Added strict archive header consistency validation before accessing entries.
+- Added compressed-input, entry-count, per-file, aggregate expanded-size and compression-ratio limits; rejects encrypted entries, symlinks, unsupported compression, unsafe/duplicate paths and unsupported roots.
+- Metadata is preflighted before decompression. The manifest is parsed first; all regular files are then streamed to EOF without extraction to validate actual output size and CRC.
+- Added real ZIP fixture tests for valid packages, path traversal, malformed/truncated input and payload corruption.
+- Commits: 32d52810bb2181c7c6bb03a4f7152b402a8c8d9e, d7e7794567efb0cf1873686964fe47e7364ccbf4, 8bea071635acc45098bd4e93c5c66cbdf5296b30, 15c650a0e61ed3707e6ff76f784180f7f9115452, fc6af40387fa9b861b19ec7fb6b148046c83df8d, 6add01bb156b8ff0e826de40dbd7712a014daf41.
+- Verification: CI not yet inspected; no passing result claimed.
