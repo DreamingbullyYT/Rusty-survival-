@@ -1703,3 +1703,12 @@ Commit: `51aa347d1140f52358db7387d35a98f9d0f0bbb1`
 - Confirmed ModManager resource lifecycle integration passed package CI run `44386150155`: 55 tests, rustfmt and Clippy with `-D warnings`.
 - Strengthened the manager regression suite with duplicate-ID batch rejection and verified the failed batch leaves no reservations. Renamed the foreign namespace test so its name matches its actual assertion.
 - Follow-up package run after this test-only commit is pending. PMCS run `44386238578` for the prior documentation commit remained pending without a started job at the time of this entry.
+
+
+## S-2026-11-18-57 — Resource lifecycle CI and Horizon API research
+Date: 2026-11-18
+- Package run `44386384391` on `51aa347d1140`: PASS — 55 tests, formatting and Clippy with warnings denied. This includes duplicate-ID batch rejection with no partial reservation.
+- Inspected pinned Horizon `0b14f8acfd97fa2c750e42795249dcc981178ca4` hook declaration `crates/horizon-mod-vocab/src/hooks/register_texture_atlases.rs` and its native forwarder. Confirmed client-side collect/registration hook runs on first client load and every resource reload before stitching. The callback must re-submit atlas declarations each time; definitions resolve through `assets/<namespace>/atlases/<path>.json`.
+- Horizon's docs specify mod-owned namespaces, refuse `minecraft` and `horizon` namespaces, and cap the combined registrations at 32 atlases / 4096 sprites; invalid/duplicate declarations are skipped. Resource-pack overrides affect definitions like vanilla resources.
+- This does not yet mean DreamMod scripts can register atlases: Core's Hooks implementation remains empty and there is no runtime coordinator/interpreter. The next integration must expose a safe immutable declaration snapshot to this registration hook and retain reload semantics.
+- PMCS run `44386455360` was queued/pending with no job started at the time of this entry.
