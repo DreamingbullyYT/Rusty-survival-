@@ -473,3 +473,10 @@
 - Run 44331401582 passed: 10 Rust tests total, format, Clippy, archive integrity and cleanup.
 - Clarified that this is not yet differential parity; engine remains a coordinate foundation with a test-fixture contract.
 - Corrected overlay artifact metadata to Rust 1.99.1. Prebuilt compilation passed in run 44328650675; native-host loading and artifact upload remain pending in rerun 44330930078.
+
+## 2026-11-18 — Add three-axis section addressing and repair host-loader test environment
+- Added `SectionPos`, `SectionAddress` and `BlockPos::section_address()` to engine-core. Coordinates use Euclidean division on X/Y/Z, including negative coordinates; section geometry does not imply dimension height, block-state storage, palette encoding or chunk serialization.
+- Exposed the same primitives through DreamMod Core's HNMod bridge and mirrored the canonical coordinate source byte-for-byte. The sync check remains part of Core and overlay CI.
+- Overlay run 44335372878 compiled the API-only client successfully but native-host loading failed because Linux could not resolve the sibling `libhorizon_mod_runtime.so`. The workflow now prepends the overlay directory to `LD_LIBRARY_PATH` for the native-host test (commit f64b016a6cf8dae17769d2ae53cd0680227f3acc); rerun 44341223178 was queued/in progress, not yet verified.
+- The first section-coordinate engine run exposed formatting differences and an invalid overflow test assumption. The impossible test was removed and rustfmt's exact formatting applied to canonical and mirrored sources. Latest engine/Core/overlay workflows must be checked before marking the new primitives verified.
+- No full engine, chunk storage, world simulation, or end-to-end .dmod runtime is claimed.
