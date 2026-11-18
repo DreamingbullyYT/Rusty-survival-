@@ -1,3 +1,8 @@
+## 2026-11-18 — Switch account-free prebuilt proof to server export
+- Horizon's official client `prepare` step refuses to fetch Minecraft 26.3 unless the owner is authenticated; a client native-build also refuses an unprepared instance. We will not bypass this ownership check or redistribute Mojang files.
+- Changed the CI proof to Horizon's official `native-build --server-output ... --version nightly-2026-11-18-0b14f8a` path, which exports a standalone headless engine and native library inventory without selecting a client instance. This verifies the same API-only SDK route; it is not yet a client distribution or clean game launch.
+- Renamed the artifact to `dreammod-horizon-nightly-native-server` for accuracy.
+
 ## 2026-11-18 — Set the initial script/provider performance boundary
 - Recorded the 462.94× synthetic x86_64 Rhai-vs-Rust batch-loop gap as a design constraint.
 - Initial script providers must be coarse-grained; Rust owns per-entity/per-vertex hot loops and batch storage. Arbitrary interpreted loops in physics/rendering are not promised.
