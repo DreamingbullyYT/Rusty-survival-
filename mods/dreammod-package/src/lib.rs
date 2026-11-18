@@ -4,6 +4,8 @@
 use semver::Version;
 use serde::Deserialize;
 use std::collections::{BTreeMap, BTreeSet};
+use std::io::{Cursor, Read, Seek};
+use zip::{CompressionMethod, ZipArchive};
 
 pub const MANIFEST_SCHEMA_VERSION: u32 = 1;
 pub const MAX_MANIFEST_BYTES: usize = 64 * 1024;
@@ -155,6 +157,7 @@ fn valid_relative_script_path(path: &str) -> bool {
 }
 
 /// Limits applied to ZIP central-directory metadata before any entry is opened.
+pub const MAX_ARCHIVE_INPUT_BYTES: usize = 32 * 1024 * 1024;
 pub const MAX_ARCHIVE_ENTRIES: usize = 1_024;
 pub const MAX_ARCHIVE_UNCOMPRESSED_BYTES: u64 = 64 * 1024 * 1024;
 pub const MAX_ARCHIVE_FILE_BYTES: u64 = 16 * 1024 * 1024;
@@ -182,6 +185,12 @@ pub struct ArchiveEntry {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ArchiveError {
+    InputTooLarge,
+    InvalidZip(String),
+    InvalidUtf8Path,
+    UnsupportedCompression(String),
+    ContentSizeMismatch(String),
+    InvalidManifest(String),
     TooManyEntries,
     UnsafePath(String),
     DuplicatePath(String),
@@ -195,6 +204,120 @@ pub enum ArchiveError {
     MultipleManifests,
     MissingEntrypoint(String),
     InvalidManifestEntrySize,
+}
+
+/// A validated package inventory. Archive content is read and CRC-checked in memory;
+/// no filesystem extraction or capability grant occurs.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ValidatedPackage {
+    pub manifest: Manifest,
+    pub entries: Vec<ArchiveEntry>,
+}
+
+/// Parse and validate a complete package ZIP from memory.
+///
+/// Only Stored and Deflate entries are accepted. Every regular file is streamed
+/// to EOF so the ZIP implementation can verify CRC; bytes are never written to disk.
+pub fn inspect_dmod(input: &[u8]) -> Result<ValidatedPackage, ArchiveError> {
+    if input.len() > MAX_ARCHIVE_INPUT_BYTES {
+        return Err(ArchiveError::InputTooLarge);
+    }
+
+    let mut archive = ZipArchive::new(Cursor::new(input))
+        .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
+    if archive.len() > MAX_ARCHIVE_ENTRIES {
+        return Err(ArchiveError::TooManyEntries);
+    }
+
+    let mut entries = Vec::with_capacity(archive.len());
+    for index in 0..archive.len() {
+        let file = archive
+            .by_index(index)
+            .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
+        let path = std::str::from_utf8(file.name_raw())
+            .map_err(|_| ArchiveError::InvalidUtf8Path)?
+            .to_owned();
+        let kind = if file.is_symlink() {
+            ArchiveEntryKind::Symlink
+        } else if file.is_dir() {
+            ArchiveEntryKind::Directory
+        } else if file.is_file() {
+            ArchiveEntryKind::File
+        } else {
+            ArchiveEntryKind::Other
+        };
+
+        if !matches!(
+            file.compression(),
+            CompressionMethod::Stored | CompressionMethod::Deflated
+        ) {
+            return Err(ArchiveError::UnsupportedCompression(path));
+        }
+
+        entries.push(ArchiveEntry {
+            path,
+            kind,
+            compressed_bytes: file.compressed_size(),
+            uncompressed_bytes: file.size(),
+            encrypted: file.encrypted(),
+        });
+    }
+
+    let manifest_bytes = read_archive_contents(&mut archive, &entries)?;
+    let manifest = parse_manifest(&manifest_bytes)
+        .map_err(|error| ArchiveError::InvalidManifest(format!("{error:?}")))?;
+    validate_archive_inventory(&entries, &manifest)?;
+    Ok(ValidatedPackage { manifest, entries })
+}
+
+fn read_archive_contents<R: Read + Seek>(
+    archive: &mut ZipArchive<R>,
+    entries: &[ArchiveEntry],
+) -> Result<Vec<u8>, ArchiveError> {
+    let mut manifest_bytes = None;
+    let mut scratch = [0_u8; 8 * 1024];
+
+    for (index, entry) in entries.iter().enumerate() {
+        if entry.kind == ArchiveEntryKind::Directory {
+            continue;
+        }
+        let mut file = archive
+            .by_index(index)
+            .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
+        let mut actual = 0_u64;
+        let mut captured = if entry.path == "manifest.json" {
+            Some(Vec::with_capacity(entry.uncompressed_bytes as usize))
+        } else {
+            None
+        };
+
+        loop {
+            let read = file
+                .read(&mut scratch)
+                .map_err(|error| ArchiveError::InvalidZip(error.to_string()))?;
+            if read == 0 {
+                break;
+            }
+            actual = actual
+                .checked_add(read as u64)
+                .ok_or_else(|| ArchiveError::ContentSizeMismatch(entry.path.clone()))?;
+            if actual > entry.uncompressed_bytes || actual > MAX_ARCHIVE_FILE_BYTES {
+                return Err(ArchiveError::ContentSizeMismatch(entry.path.clone()));
+            }
+            if let Some(bytes) = captured.as_mut() {
+                bytes.extend_from_slice(&scratch[..read]);
+            }
+        }
+
+        if actual != entry.uncompressed_bytes {
+            return Err(ArchiveError::ContentSizeMismatch(entry.path.clone()));
+        }
+        if let Some(bytes) = captured {
+            manifest_bytes = Some(bytes);
+        }
+    }
+
+    manifest_bytes.ok_or(ArchiveError::MissingManifest)
 }
 
 /// Validate untrusted ZIP metadata before opening or extracting any archive member.
