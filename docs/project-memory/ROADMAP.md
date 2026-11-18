@@ -219,3 +219,10 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 - [x] Core closure-based authorization passed run `44363904945`, including pinned Horizon native/API/host-WASM checks, mirror parity, formatting, tests and source packaging.
 - [x] Overlay API-only prebuilt compile and Linux RUNPATH setup passed in `44363904976`.
 - [ ] Finish real native host load test without overlay environment overrides, then inspect and upload overlay artifact.
+
+## Entrypoint bridge milestone — 2026-11-18
+1. [x] Separate enabled-state checks from named capability checks.
+2. [x] Expose borrowed validated entrypoint bytes only after explicit enable.
+3. [x] Add lifecycle regression test for before/after activation.
+4. [ ] Verify package workflow after `ee903d7`.
+5. [ ] Select and sandbox the interpreter; parse/execute source only with deterministic time, memory and instruction budgets.
