@@ -139,3 +139,9 @@ A source-edit regression briefly left the previous collector declaration duplica
 - Replaced the temporary Vec UUID buffer with [u128; 256] stack storage in Core and package bridge; this removes the heap allocation used only for duplicate detection.
 - Core formatting command now targets the DreamMod Core manifest only, avoiding rustfmt diffs in generated pinned SDK sources.
 - Latest Core and package CI runs for the stack-buffer changes are pending. No benchmark or FPS claim is made.
+
+
+## Follow-up — shared immutable snapshot batches (2026-11-18)
+- PlayerSnapshotBatch now uses Arc<[PlayerSnapshot]> in Core and package, with tests proving clone pointer identity.
+- This prepares cheap sharing but does not implement dispatch caching or script execution. Per-mod capability checks must still happen before exposing the shared data.
+- Latest package and Core Actions for this change are pending; no performance benchmark is available.
