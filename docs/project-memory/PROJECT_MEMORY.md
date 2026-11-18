@@ -45,3 +45,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Keep hot gameplay work in trusted Rust/Horizon code; interpreted scripts use coarse-grained, bounded batch operations and event-driven callbacks.
 - Do not run one script callback per entity/item/block/vertex. Reuse one owned snapshot batch within a dispatch where safe; do not invent a tick cache before lifecycle/thread ownership is defined.
 - Benchmark every optimization against the pinned Horizon baseline. No FPS or slowdown target is considered achieved without representative ARM64 measurements.
+
+
+## Allocation-free bounded validation (2026-11-18)
+- For player snapshot batches (maximum 256), duplicate UUID validation uses a fixed stack array of 256 u128 values and sort_unstable. It allocates no heap memory for duplicate detection and preserves original snapshot order.
+- This is a bounded implementation detail, not a measured FPS claim. Keep hot-path script APIs batch-first and benchmark on ARM64.
