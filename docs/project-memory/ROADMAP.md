@@ -150,3 +150,11 @@ This heading is retained for PMCS compatibility; the former standalone engine ex
 3. [ ] Verify actual launcher/game startup on a matching licensed installation after the native-host test is self-contained.
 4. [ ] Wire Core player collection through a concrete per-mod lifecycle/capability adapter and interpreted runtime; current Hooks remain empty.
 5. [ ] Implement the production .dmod interpreter, loader and sandbox; current prototype is not production integration.
+
+## Shared lifecycle-to-Core contract — 2026-11-18
+1. [x] Extract the player-read authorization trait and `entities.read` identifier into dependency-light `mods/dreammod-contract`.
+2. [x] Make Core's bounded online-player collector consume the shared trait.
+3. [x] Implement the shared trait for package `ModLifecycle`, checking Enabled state and explicit capability approval.
+4. [ ] Verify package/Core/overlay Actions for this dependency change.
+5. [ ] Add a runtime manager that owns one `ModLifecycle` per validated package and supplies the matching lifecycle reference to each Core host operation.
+6. [ ] Expose only owned bounded DTOs to the chosen interpreted runtime after per-mod authorization. No interpreter or script binding exists yet.
