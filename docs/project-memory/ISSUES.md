@@ -133,3 +133,9 @@ A source-edit regression briefly left the previous collector declaration duplica
 - Core/package snapshot duplicate checks were changed to a contiguous sorted UUID buffer. Package ZIP inspection gained a cooperative 60-second monotonic deadline. Both changes require fresh CI.
 - No end-to-end runtime load timeout exists yet; no script runtime exists. The deadline currently bounds package archive inspection only.
 - No benchmark/ARM64/FPS measurements exist. Do not report a speedup or the 1.5x goal as achieved.
+
+
+## Follow-up — allocation-free snapshot validation (2026-11-18)
+- Replaced the temporary Vec UUID buffer with [u128; 256] stack storage in Core and package bridge; this removes the heap allocation used only for duplicate detection.
+- Core formatting command now targets the DreamMod Core manifest only, avoiding rustfmt diffs in generated pinned SDK sources.
+- Latest Core and package CI runs for the stack-buffer changes are pending. No benchmark or FPS claim is made.
