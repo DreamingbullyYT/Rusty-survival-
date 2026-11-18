@@ -359,3 +359,9 @@
 - Empty approval input grants nothing. Approvals cannot exceed manifest requests; unknown, unrequested and duplicate approvals are rejected.
 - Added regression tests for default-deny, partial approval and invalid approval inputs.
 - The planner is pure metadata; it does not grant runtime authority or replace host-side enforcement. CI pending.
+
+
+## 2026-11-18 — Verify explicit capability planning
+- Actions run 44300324687 passed on commit d83b3491b747bc880b657e4cf17e259a8af2ff62: formatting, all 21 tests and Clippy with -D warnings.
+- Default-deny, partial approval, unknown/unrequested approval and duplicate approval tests passed.
+- CapabilityPlan remains a pure planning result; actual host-side enforcement is not implemented.
