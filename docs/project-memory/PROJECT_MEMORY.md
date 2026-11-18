@@ -94,3 +94,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Package run `44364198594` on commit `4103668fee`: PASS — rustfmt, 42 tests (all seven ModManager tests included), and Clippy `-D warnings`.
 - PMCS run `44364312080` on the updated documentation head: PASS — six validator regression tests and structural/freshness validation.
 - Core run `44363904945` and API-only overlay run `44363904976` are still in progress at Horizon tooling/API-only compilation; no post-callback Core or host-loader success is claimed yet.
+
+## Capability-gated package asset access (2026-11-18)
+- Added `ModManager::read_asset(mod_id, path)` to expose validated `assets/` files from retained package memory without filesystem extraction.
+- The method checks the mod's Enabled state and explicit `assets.read` grant before looking up bytes, validates the requested path with the same archive-path rules used during inspection, and returns a borrowed immutable byte slice.
+- Tests cover awaiting approval, missing grant, successful byte read, traversal rejection and missing assets. Package workflow after commit `f90d0b1` is pending.
