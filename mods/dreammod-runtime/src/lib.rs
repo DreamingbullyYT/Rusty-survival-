@@ -5,12 +5,14 @@
 //! and returns capability-checked command batches for the Horizon adapter.
 //! It never compiles mod source to native code or bytecode.
 
+pub mod api_router;
 pub mod manifest;
 pub mod package;
 pub mod runtime;
 pub mod script;
 pub mod world_adapter;
 
+pub use api_router::{ApiOperation, ApiOperationSafety, ApiProvider, ApiProviderDescriptor, ApiProviderKind, ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError};
 pub use manifest::{Capability, ModDependency, ModId, ModManifest, ModSide};
 pub use package::{
     DiscoveredDmod, DmodPackage, ModsDirectoryLimits, ModsDirectoryScan, ModsDirectoryScanner,
