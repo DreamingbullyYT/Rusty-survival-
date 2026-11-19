@@ -12,7 +12,7 @@ pub struct ApiOperation {
 }
 
 impl ApiOperation {
-    pub fn new(domain: impl Into<String>, name: impl Into<String>) -> Result<Self, ApiRouterError> {
+    pub fn new(\n        domain: impl Into<String>,\n        name: impl Into<String>,\n    ) -> Result<Self, ApiRouterError> {
         let domain = domain.into();
         let name = name.into();
         if !valid_api_name(&domain) || !valid_api_name(&name) {
@@ -192,7 +192,7 @@ impl ApiRouter {
     }
 
     pub fn providers(&self) -> Vec<ApiProviderDescriptor> {
-        self.providers.values().map(|p| p.descriptor().clone()).collect()
+        self.providers\n            .values()\n            .map(|p| p.descriptor().clone())\n            .collect()
     }
 }
 
@@ -254,11 +254,11 @@ mod tests {
     #[test]
     fn horizon_is_preferred_and_dreammod_is_fallback_when_missing() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
+        router\n            .register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false)))\n            .unwrap();
         let first = router.call(request()).unwrap();
         assert_eq!(first["provider"], "dreammod");
 
-        router.register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
+        router\n            .register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, false)))\n            .unwrap();
         let second = router.call(request()).unwrap();
         assert_eq!(second["provider"], "horizon");
     }
@@ -267,17 +267,17 @@ mod tests {
     fn preference_switches_provider_without_reloading_mods() {
         let mut router = ApiRouter::default();
         router.register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
-        router.register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
+        router\n            .register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false)))\n            .unwrap();
 
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
-        router.set_preference("world", ApiProviderPreference::DreamModFirst).unwrap();
+        router\n            .set_preference("world", ApiProviderPreference::DreamModFirst)\n            .unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "dreammod");
     }
 
     #[test]
     fn provider_failure_does_not_retry_mutations_or_reads_implicitly() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 5, true))).unwrap();
+        router\n            .register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 5, true)))\n            .unwrap();
         router.register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
 
         let error = router.call(request()).unwrap_err();
@@ -289,7 +289,7 @@ mod tests {
         let mut router = ApiRouter::default();
         router.register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
-        router.register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, true))).unwrap();
+        router\n            .register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, true)))\n            .unwrap();
         assert!(router.call(request()).is_err());
         router.unregister_provider("horizon").unwrap();
         assert!(matches!(router.call(request()), Err(ApiRouterError::UnsupportedOperation(_))));
@@ -299,6 +299,6 @@ mod tests {
     fn rejects_invalid_operation_and_provider_ids() {
         assert!(ApiOperation::new("../world", "block_get").is_err());
         let mut router = ApiRouter::default();
-        assert!(router.register_provider(Box::new(fake("../horizon", ApiProviderKind::Horizon, 0, false))).is_err());
+        assert!(router\n            .register_provider(Box::new(fake("../horizon", ApiProviderKind::Horizon, 0, false)))\n            .is_err());
     }
 }
