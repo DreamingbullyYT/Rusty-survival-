@@ -92,3 +92,11 @@ Use Arc<[PlayerSnapshot]> as PlayerSnapshotBatch backing storage. Cloning a batc
 - Decision: provide `ModLifecycle::ensure_enabled` and gate `ModManager::entrypoint_source` on Enabled state.
 - Rationale: a mod's own entrypoint is the code being activated; it should not require an artificial user-grantable `scripts.execute` permission that is absent from the capability allowlist.
 - Privileged host calls remain independently gated by explicit manifest capabilities. Parsing, sandboxing and execution budgets remain future work.
+
+
+## D-010 — Atlas registration uses one manager-owned batch
+Date: 2026-11-19
+Status: ACCEPTED
+Decision: Store atlas declarations by mod in ModManager and expose a deterministic snapshot for enabled owners. Replacement is atomic and checked against the combined active-atlas cap; disable/failure removes owner declarations. Core should consume this batch directly rather than introducing redundant public wrapper layers.
+Reason: Atlas declarations are small, bounded metadata and resource reload needs a complete deterministic collection. This avoids per-declaration bridge calls while preserving ownership and rollback.
+Consequence: This remains package bookkeeping until the pinned Horizon hook is verified and connected; no live registration claim.
