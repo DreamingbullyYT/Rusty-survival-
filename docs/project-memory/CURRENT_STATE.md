@@ -32,3 +32,10 @@
 - Accepted D-013: player `.dmod` packages will be placed in Horizon's existing `horizon-mods/` directory alongside Horizon `.hmod` packages.
 - DreamMod must dispatch only `.dmod`; Horizon continues handling `.hmod`. Do not rename, intercept or process Horizon packages. DreamMod Core is trusted native `.hmod` build integration, distinct from player `.dmod` packages.
 - Directory convention is decided, but a scanner integration into the instance filesystem is not implemented or verified. Next: build a safe deterministic scanner, diagnostics and mixed-extension regression tests.
+
+## Shared `horizon-mods/` scanner — implementation added (2026-11-19)
+- Added `ModsDirectoryScanner` in `dreammod-runtime`: scans only direct children, recognizes `.dmod` case-insensitively, ignores `.hmod` (counted for diagnostics) and unrelated files, and does not recurse.
+- Reports symlinked/non-regular `.dmod` candidates without following them; malformed packages become per-file issues.
+- Bounded to 256 candidates and 256 MiB aggregate archive input by default; each package still uses existing package-loader limits.
+- Duplicate package IDs reject every conflicting candidate rather than choosing one by filename.
+- Added tests for mixed `.dmod`/`.hmod`, unrelated files and directories, duplicate IDs, directory limits and symlink behavior. Runtime CI is triggered; results are not yet verified. This scanner is a library API and is not yet wired to the actual launcher/game instance path.
