@@ -173,3 +173,5 @@ Runtime CI `44544852796` passed 22 tests, rustfmt and Clippy. Valid player `.dmo
 - Initial `crates/dreammod-contract` foundation is in the workspace: ModId, ResourceId, CapabilityId, ApiVersion/Range, opaque Handle, structured Diagnostic. CI pending; no passing status claimed.
 
 - Fixed a literal escaped-newline typo in the contract crate diagnostic unit test; pending Actions verification.
+
+- Contract crate expanded with deterministic capability grant sets (grant/revoke/check) and API feature negotiation identifiers; tests added. Actions verification pending.
