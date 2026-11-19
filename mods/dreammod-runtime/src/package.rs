@@ -177,13 +177,19 @@ impl PackageLoader {
 pub struct ModsDirectoryLimits {
     /// Maximum candidate .dmod files to inspect in one directory.
     pub max_packages: usize,
-    /// Aggregate archive bytes allowed before loading any package.
+    /// Aggregate archive bytes allowed before loading packages.
     pub max_total_archive_bytes: u64,
+    /// Aggregate retained uncompressed package contents.
+    pub max_total_retained_bytes: u64,
 }
 
 impl Default for ModsDirectoryLimits {
     fn default() -> Self {
-        Self { max_packages: 256, max_total_archive_bytes: 256 * 1024 * 1024 }
+        Self {
+            max_packages: 256,
+            max_total_archive_bytes: 256 * 1024 * 1024,
+            max_total_retained_bytes: 512 * 1024 * 1024,
+        }
     }
 }
 
@@ -222,7 +228,10 @@ impl Default for ModsDirectoryScanner {
 
 impl ModsDirectoryScanner {
     pub fn new(package_loader: PackageLoader, limits: ModsDirectoryLimits) -> Self {
-        Self { package_loader, limits }
+        Self {
+            package_loader,
+            limits,
+        }
     }
 
     /// Discover player DreamMod packages directly in Horizon's mods folder.
@@ -230,7 +239,10 @@ impl ModsDirectoryScanner {
     /// Only direct child files with a .dmod extension are considered. Horizon
     /// .hmod files are counted and ignored; other files and directories are
     /// ignored. Symlinked .dmod entries are reported, never followed.
-    pub fn scan(&self, directory: impl AsRef<Path>) -> Result<ModsDirectoryScan, ScanDirectoryError> {
+    pub fn scan(
+        &self,
+        directory: impl AsRef<Path>,
+    ) -> Result<ModsDirectoryScan, ScanDirectoryError> {
         let directory = directory.as_ref();
         let metadata = fs::metadata(directory)?;
         if !metadata.is_dir() {
@@ -242,8 +254,11 @@ impl ModsDirectoryScanner {
             let entry = entry?;
             let name = entry.file_name();
             let name_text = name.to_string_lossy();
-            let extension = Path::new(name_text.as_ref()).extension()
-                .and_then(|ext| ext.to_str()).unwrap_or_default().to_ascii_lowercase();
+            let extension = Path::new(name_text.as_ref())
+                .extension()
+                .and_then(|ext| ext.to_str())
+                .unwrap_or_default()
+                .to_ascii_lowercase();
             if extension != "dmod" && extension != "hmod" {
                 continue;
             }
@@ -251,10 +266,15 @@ impl ModsDirectoryScanner {
         }
         entries.sort_by(|left, right| left.0.cmp(&right.0));
 
-        let candidates = entries.iter().filter(|(name, _, _)| {
-            Path::new(name).extension().and_then(|ext| ext.to_str())
-                .is_some_and(|ext| ext.eq_ignore_ascii_case("dmod"))
-        }).count();
+        let candidates = entries
+            .iter()
+            .filter(|(name, _, _)| {
+                Path::new(name)
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                    .is_some_and(|ext| ext.eq_ignore_ascii_case("dmod"))
+            })
+            .count();
         if candidates > self.limits.max_packages {
             return Err(ScanDirectoryError::TooManyPackages {
                 actual: candidates,
@@ -263,47 +283,79 @@ impl ModsDirectoryScanner {
         }
 
         let mut result = ModsDirectoryScan::default();
-        let mut total_bytes = 0_u64;
+        let mut total_archive_bytes = 0_u64;
+        let mut total_retained_bytes = 0_u64;
         for (name, path, file_type) in entries {
-            let ext = Path::new(&name).extension().and_then(|ext| ext.to_str())
-                .unwrap_or_default().to_ascii_lowercase();
-            if ext == "hmod" {
+            let extension = Path::new(&name)
+                .extension()
+                .and_then(|ext| ext.to_str())
+                .unwrap_or_default()
+                .to_ascii_lowercase();
+            if extension == "hmod" {
                 result.ignored_hmod_count += 1;
                 continue;
             }
             if file_type.is_symlink() {
-                result.issues.push(ScanIssue { path, reason: "symbolic link is not followed".into() });
+                result.issues.push(ScanIssue {
+                    path,
+                    reason: "symbolic link is not followed".into(),
+                });
                 continue;
             }
             if !file_type.is_file() {
-                result.issues.push(ScanIssue { path, reason: "candidate is not a regular file".into() });
+                result.issues.push(ScanIssue {
+                    path,
+                    reason: "candidate is not a regular file".into(),
+                });
                 continue;
             }
 
             let metadata = fs::metadata(&path)?;
-            total_bytes = total_bytes.checked_add(metadata.len())
+            total_archive_bytes = total_archive_bytes
+                .checked_add(metadata.len())
                 .ok_or(ScanDirectoryError::TotalSizeOverflow)?;
-            if total_bytes > self.limits.max_total_archive_bytes {
+            if total_archive_bytes > self.limits.max_total_archive_bytes {
                 return Err(ScanDirectoryError::TotalArchiveBytesExceeded {
-                    actual: total_bytes,
+                    actual: total_archive_bytes,
                     limit: self.limits.max_total_archive_bytes,
                 });
             }
 
             match self.package_loader.load(&path) {
-                Ok(package) => result.packages.push(DiscoveredDmod { path, package }),
-                Err(error) => result.issues.push(ScanIssue { path, reason: error.to_string() }),
+                Ok(package) => {
+                    let package_bytes = package.files.values().try_fold(0_u64, |sum, file| {
+                        sum.checked_add(file.len() as u64)
+                    }).ok_or(ScanDirectoryError::TotalSizeOverflow)?;
+                    total_retained_bytes = total_retained_bytes
+                        .checked_add(package_bytes)
+                        .ok_or(ScanDirectoryError::TotalSizeOverflow)?;
+                    if total_retained_bytes > self.limits.max_total_retained_bytes {
+                        return Err(ScanDirectoryError::TotalRetainedBytesExceeded {
+                            actual: total_retained_bytes,
+                            limit: self.limits.max_total_retained_bytes,
+                        });
+                    }
+                    result.packages.push(DiscoveredDmod { path, package });
+                }
+                Err(error) => result.issues.push(ScanIssue {
+                    path,
+                    reason: error.to_string(),
+                }),
             }
         }
 
         // Reject every package sharing a mod ID; choosing one based on order is unsafe.
         let mut id_paths: BTreeMap<String, Vec<PathBuf>> = BTreeMap::new();
         for package in &result.packages {
-            id_paths.entry(package.package.manifest.id.to_string())
-                .or_default().push(package.path.clone());
+            id_paths
+                .entry(package.package.manifest.id.to_string())
+                .or_default()
+                .push(package.path.clone());
         }
-        let duplicates: BTreeMap<String, Vec<PathBuf>> = id_paths.into_iter()
-            .filter(|(_, paths)| paths.len() > 1).collect();
+        let duplicates: BTreeMap<String, Vec<PathBuf>> = id_paths
+            .into_iter()
+            .filter(|(_, paths)| paths.len() > 1)
+            .collect();
         if !duplicates.is_empty() {
             let packages = std::mem::take(&mut result.packages);
             for package in packages {
@@ -341,12 +393,13 @@ pub enum ScanDirectoryError {
     TooManyPackages { actual: usize, limit: usize },
     #[error("aggregate .dmod archive size exceeds limit: {actual} bytes (limit {limit})")]
     TotalArchiveBytesExceeded { actual: u64, limit: u64 },
+    #[error("aggregate retained package contents exceed limit: {actual} bytes (limit {limit})")]
+    TotalRetainedBytesExceeded { actual: u64, limit: u64 },
     #[error("aggregate archive byte count overflow")]
     TotalSizeOverflow,
     #[error("directory I/O error: {0}")]
     Io(#[from] std::io::Error),
 }
-
 
 fn is_forbidden_executable(path: &str) -> bool {
     let extension = Path::new(path)
@@ -517,7 +570,7 @@ mod tests {
         assert!(matches!(count_limited.scan(dir.path()), Err(ScanDirectoryError::TooManyPackages { .. })));
 
         let size_limited = ModsDirectoryScanner::new(PackageLoader::default(), ModsDirectoryLimits {
-            max_packages: 10, max_total_archive_bytes: 1,
+            max_packages: 10, max_total_archive_bytes: 1024, max_total_retained_bytes: 1,
         });
         assert!(matches!(size_limited.scan(dir.path()), Err(ScanDirectoryError::TotalArchiveBytesExceeded { .. })));
     }
