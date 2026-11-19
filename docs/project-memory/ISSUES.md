@@ -28,3 +28,6 @@
 
 
 - Fixed a missing serde derive on ApiOperation required by serializable script request/result envelopes (commit `1ffd548`); CI verification remains pending.
+
+
+- Script-facing API bridge has now been implemented as event-scoped `api_requests`/`api_results` with authorization and routing; regression test added. CI remains unverified, and bridge error/isolation/queue-limit coverage should be expanded.
