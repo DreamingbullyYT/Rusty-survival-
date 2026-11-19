@@ -206,3 +206,7 @@ The manifest must identify package ID, version, display name, entry points, requ
 
 ## Player package directory contract (accepted 2026-11-19)
 Player `.dmod` packages live in the instance's existing `horizon-mods/` directory alongside Horizon `.hmod` files. Extension-based dispatch is mandatory: DreamMod scans and handles only `.dmod`; Horizon's loader remains responsible for `.hmod`. Do not rename or intercept Horizon packages. The trusted DreamMod Core `.hmod` remains launcher/build integration, not a player package. This convention is accepted, but scanner integration is still pending.
+
+
+### Shared Horizon mods folder scanner
+DreamMod player packages use the existing `horizon-mods/` directory. The runtime scanner examines direct children only, dispatches `.dmod` and ignores `.hmod` (Horizon-owned), and ignores other extensions. It reports invalid package candidates and symlinks, rejects every candidate sharing a duplicate package ID, and defaults to bounded limits of 256 candidates, 256 MiB total archive input and 512 MiB retained uncompressed bytes. This scanner is library-level discovery; launcher instance-path/UI integration is pending.
