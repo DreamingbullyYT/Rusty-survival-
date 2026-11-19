@@ -23,6 +23,9 @@ Updated: 2026-11-19
 - Tests added: script request → provider → next-event result → command; capability denial delivered without disabling; two-mod result isolation using same request ID; scalar payload compatibility; provider-failure error without automatic fallback retry; request-count overflow; stale queue cleanup on disable/re-enable.
 - No concrete Horizon provider/adapter or end-to-end live game calls exist.
 
+## Scoped provider context design
+- Added `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md`: operation-bound borrowed context, context-aware provider method with compatibility default, no cross-operation dispatch, no global handles/unsafe pointers, and fake `world.block_get` test plan. Design only; no code integration or verification.
+
 ## Remaining
 - Provider invocation currently executes synchronously after script dispatch; a slow provider can block the event/tick. No async/task bridge yet.
 - `ApiProvider` currently has no scoped Horizon host context. A live adapter needing `LevelHost`/`LevelWriteHost` must not use globals or pretend it has context; design a safe context-passing interface before implementing real world operations.
@@ -31,7 +34,7 @@ Updated: 2026-11-19
 
 ## Next actions
 1. Verify runtime rustfmt/tests/Clippy through Actions or a Rust-capable environment; repair failures.
-2. Design and implement a scoped provider execution-context interface, compatible with optional Horizon adapters and native DreamMod providers.
+2. Implement the scoped provider execution-context design, compatible with optional Horizon adapters and native DreamMod providers; add fake-context tests.
 3. Build a small version-pinned Horizon adapter vertical slice using a documented hook/host operation; advertise only tested operations.
 4. Implement DreamMod-native providers for gaps, then connect block adapter to actual engine storage.
 5. Unify package approval and runtime activation; keep PMCS fresh.
