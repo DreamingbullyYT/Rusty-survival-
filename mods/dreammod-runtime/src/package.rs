@@ -518,7 +518,8 @@ mod tests {
         let output = File::create(&path).unwrap();
         let mut writer = ZipWriter::new(output);
         let options = SimpleFileOptions::default().compression_method(CompressionMethod::Stored);
-        let manifest = format!(r#"{{
+        let manifest = format!(
+            r#"{{
             "schema_version":1,
             "id":"{mod_id}",
             "version":"1.0.0",
@@ -527,11 +528,14 @@ mod tests {
             "entry":"scripts/main.dream",
             "side":"both",
             "events":["server_tick"]
-        }}"#);
+        }}"#
+        );
         writer.start_file("manifest.json", options).unwrap();
         writer.write_all(manifest.as_bytes()).unwrap();
         writer.start_file("scripts/main.dream", options).unwrap();
-        writer.write_all(b"fn on_server_tick(event) { #{ commands: [] } }").unwrap();
+        writer
+            .write_all(b"fn on_server_tick(event) { #{ commands: [] } }")
+            .unwrap();
         writer.finish().unwrap();
         path
     }
@@ -546,7 +550,10 @@ mod tests {
 
         let scan = ModsDirectoryScanner::default().scan(dir.path()).unwrap();
         assert_eq!(scan.packages.len(), 1);
-        assert_eq!(scan.packages[0].package.manifest.id.as_str(), "dreammod.player");
+        assert_eq!(
+            scan.packages[0].package.manifest.id.as_str(),
+            "dreammod.player"
+        );
         assert_eq!(scan.ignored_hmod_count, 1);
         assert_eq!(scan.issues.len(), 1);
         assert!(scan.issues[0].reason.contains("regular file"));
@@ -561,7 +568,11 @@ mod tests {
         let scan = ModsDirectoryScanner::default().scan(dir.path()).unwrap();
         assert!(scan.packages.is_empty());
         assert_eq!(scan.issues.len(), 2);
-        assert!(scan.issues.iter().all(|issue| issue.reason.contains("duplicate mod ID")));
+        assert!(
+            scan.issues
+                .iter()
+                .all(|issue| issue.reason.contains("duplicate mod ID"))
+        );
     }
 
     #[test]
@@ -587,7 +598,11 @@ mod tests {
         let dir = TempDir::new().unwrap();
         let outside = TempDir::new().unwrap();
         create_dmod(outside.path(), "target.dmod", "dreammod.external");
-        symlink(outside.path().join("target.dmod"), dir.path().join("linked.dmod")).unwrap();
+        symlink(
+            outside.path().join("target.dmod"),
+            dir.path().join("linked.dmod"),
+        )
+        .unwrap();
 
         let scan = ModsDirectoryScanner::default().scan(dir.path()).unwrap();
         assert!(scan.packages.is_empty());
