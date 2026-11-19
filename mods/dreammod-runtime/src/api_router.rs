@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 
-#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ApiOperation {
     pub domain: String,
     pub name: String,
@@ -273,9 +274,9 @@ pub enum ApiScriptRequestError {
 fn valid_request_id(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 64
-        && value.bytes().all(|byte| {
-            byte.is_ascii_alphanumeric() || byte == b'_' || byte == b'-'
-        })
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || byte == b'_' || byte == b'-')
 }
 
 #[cfg(test)]
@@ -439,5 +440,4 @@ mod tests {
         assert!(decoded.result.is_none());
         assert_eq!(decoded.error, Some(ApiScriptResultError::CapabilityDenied));
     }
-
 }
