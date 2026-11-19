@@ -165,3 +165,9 @@ Valid-package directory integration test's first CI attempt was rustfmt-only (tr
 
 ### Shared mods folder end-to-end test passed — 2026-11-19
 Runtime CI `44544852796` passed 22 tests, rustfmt and Clippy. Valid player `.dmod` loading, `.hmod` isolation and bad-package diagnostics verified through runtime API. Launcher path/UI remains unimplemented.
+
+
+### Independent DreamMod API target — 2026-11-19
+- Current target is Rusty-survival's own Rust engine. Horizon/HNMods/.hmod/horizon-mixins are optional historical experiments only.
+- The new `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md` defines stable language-neutral contracts, host adapters, domain API coverage (including physics, vehicle collision channels, AI, worldgen and render), provider replacement rules, capability sandbox, interpreted-source package requirements, performance constraints and staged acceptance gates.
+- Initial `crates/dreammod-contract` foundation is in the workspace: ModId, ResourceId, CapabilityId, ApiVersion/Range, opaque Handle, structured Diagnostic. CI pending; no passing status claimed.
