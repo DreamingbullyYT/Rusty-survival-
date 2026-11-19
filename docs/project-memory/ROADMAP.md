@@ -51,3 +51,8 @@
 - [ ] Verify runtime CI.
 
 - [x] Runtime CI passed after final rustfmt correction: 20 tests, formatting and Clippy.
+
+## Runtime shared-folder integration
+- [x] Connect scanner output to `DreamModRuntime::load_packages` via a public shared-directory entrypoint and preserve diagnostics.
+- [ ] Verify integration test and runtime CI.
+- [ ] Launcher must supply the actual instance `horizon-mods/` path and surface diagnostics in UI.
