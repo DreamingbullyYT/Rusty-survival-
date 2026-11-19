@@ -130,3 +130,9 @@ Status: ACCEPTED
 Decision: The new Rusty-survival engine will host DreamMod directly through engine-owned adapter contracts. DreamMod must not require Horizon, HNMods/.hmod, horizon-mixins, or an external mod host. The .dmod package and no-player-compilation requirement remain. Horizon integration is optional legacy/reference work and must not block the new engine.
 Reason: The new engine's architecture does not want HNMods; the mod API must be native to the engine rather than layered on a rejected mod host.
 Consequences: Design an engine-independent contract crate and a separate engine adapter. API promises are capability-negotiated and implemented only when the engine subsystem exists. Avoid a full engine patch/mixin system. Build/test a vertical slice with the new engine. Existing Horizon Core and shared-folder scanner are retained as legacy experiments, not the integration target.
+
+
+## D-2026-11-19-05 — Authorized command batches cross one engine host boundary
+- Decision: Runtime forwards validated, capability-authorized commands to the engine through an EngineCommandHost batch method; the host contract requires atomic validation/apply. Empty batches do not call the host.
+- Rationale: keep scripts isolated from engine objects and reduce host crossings; a host cannot observe commands before authorization.
+- Consequence: current contract and mock tests are not a concrete engine adapter. Domain-specific validation, rollback and authoritative state checks remain mandatory in engine implementations.
