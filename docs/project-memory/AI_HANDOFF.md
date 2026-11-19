@@ -61,3 +61,6 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - Implemented event-scoped request/result bridge in `runtime.rs`; script response schema supports `api_requests` and event payload receives `api_results` on the next callback.
 - Capability authorizer and provider router are reused. Input/result byte bounds and duplicate IDs are checked; request results are isolated per mod and one-shot.
 - Commits `9934644`, `6ee5b26`. No CI evidence yet; don't mark verified.
+
+
+- Bridge hardening since initial implementation: aggregate queued result bytes capped at `max_output_bytes`, error envelopes are budgeted, provider-fault auto-disable clears pending API results, and a capability-denial regression test was added. Commits `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`; CI remains unverified.
