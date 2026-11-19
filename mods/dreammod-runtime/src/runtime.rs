@@ -1058,5 +1058,4 @@ mod tests {
         assert_eq!(report.issues.len(), 1);
         assert!(report.issues[0].path.ends_with("bad.dmod"));
     }
-
 }
