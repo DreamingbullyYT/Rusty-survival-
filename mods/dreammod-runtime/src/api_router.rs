@@ -59,6 +59,15 @@ pub struct ApiProviderDescriptor {
 pub trait ApiProvider: Send {
     fn descriptor(&self) -> &ApiProviderDescriptor;
     fn invoke(&mut self, request: &ApiRequest) -> Result<Value, String>;
+
+    /// Context-aware path. Existing self-contained providers remain compatible.
+    fn invoke_with_context(
+        &mut self,
+        request: &ApiRequest,
+        _context: &mut dyn ApiOperationContext,
+    ) -> Result<Value, String> {
+        self.invoke(request)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -85,6 +94,8 @@ pub enum ApiRouterError {
         operation: String,
         message: String,
     },
+    #[error("execution context does not match operation '{operation}'")]
+    ContextMismatch { operation: String },
 }
 
 pub struct ApiRouter {
@@ -193,6 +204,59 @@ impl ApiRouter {
             operation: operation_key,
             message,
         })
+    }
+
+    /// Calls a provider with a borrowed, operation-scoped host context.
+    /// Context mismatch is rejected before provider code is invoked.
+    pub fn call_with_context(
+        &mut self,
+        request: ApiRequest,
+        context: &mut dyn ApiOperationContext,
+    ) -> Result<Value, ApiRouterError> {
+        if !valid_name(&request.operation.domain) || !valid_name(&request.operation.name) {
+            return Err(ApiRouterError::InvalidOperation {
+                domain: request.operation.domain,
+                name: request.operation.name,
+            });
+        }
+        let operation_key = request.operation.key();
+        if context.operation() != &request.operation || context.safety() != request.safety {
+            return Err(ApiRouterError::ContextMismatch {
+                operation: operation_key,
+            });
+        }
+        let preference = self.preference(&request.operation.domain);
+        let mut candidates = self
+            .providers
+            .iter()
+            .filter(|(_, provider)| provider.descriptor().operations.contains(&request.operation))
+            .map(|(id, provider)| {
+                let descriptor = provider.descriptor();
+                let preferred = matches!(
+                    (preference, descriptor.kind),
+                    (ApiProviderPreference::HorizonFirst, ApiProviderKind::Horizon)
+                        | (ApiProviderPreference::DreamModFirst, ApiProviderKind::DreamMod)
+                );
+                (id.clone(), preferred, descriptor.priority)
+            })
+            .collect::<Vec<_>>();
+        candidates.sort_by(|a, b| {
+            b.1.cmp(&a.1)
+                .then_with(|| b.2.cmp(&a.2).then_with(|| a.0.cmp(&b.0)))
+        });
+
+        let Some((provider_id, _, _)) = candidates.first() else {
+            return Err(ApiRouterError::UnsupportedOperation(operation_key));
+        };
+        let provider_id = provider_id.clone();
+        let provider = self.providers.get_mut(&provider_id).expect("candidate exists");
+        provider
+            .invoke_with_context(&request, context)
+            .map_err(|message| ApiRouterError::ProviderFailed {
+                provider: provider_id,
+                operation: operation_key,
+                message,
+            })
     }
 
     pub fn providers(&self) -> Vec<ApiProviderDescriptor> {
@@ -324,6 +388,101 @@ mod tests {
             safety: ApiOperationSafety::ReadOnly,
             input: json!({"position":[1,2,3]}),
         }
+    }
+
+    struct FakeOperationContext {
+        operation: ApiOperation,
+        safety: ApiOperationSafety,
+        result: Value,
+        calls: usize,
+    }
+
+    impl ApiOperationContext for FakeOperationContext {
+        fn operation(&self) -> &ApiOperation {
+            &self.operation
+        }
+
+        fn safety(&self) -> ApiOperationSafety {
+            self.safety
+        }
+
+        fn execute(&mut self, _input: &Value) -> Result<Value, String> {
+            self.calls += 1;
+            Ok(self.result.clone())
+        }
+    }
+
+    struct ContextProvider {
+        descriptor: ApiProviderDescriptor,
+    }
+
+    impl ApiProvider for ContextProvider {
+        fn descriptor(&self) -> &ApiProviderDescriptor {
+            &self.descriptor
+        }
+
+        fn invoke(&mut self, _request: &ApiRequest) -> Result<Value, String> {
+            Err("context required".to_owned())
+        }
+
+        fn invoke_with_context(
+            &mut self,
+            request: &ApiRequest,
+            context: &mut dyn ApiOperationContext,
+        ) -> Result<Value, String> {
+            context.execute(&request.input)
+        }
+    }
+
+    #[test]
+    fn scoped_context_is_forwarded_to_context_aware_provider() {
+        let mut router = ApiRouter::default();
+        router.register_provider(Box::new(ContextProvider {
+            descriptor: ApiProviderDescriptor {
+                id: "ctx_provider".to_owned(),
+                kind: ApiProviderKind::DreamMod,
+                priority: 0,
+                operations: [op()].into(),
+            },
+        })).unwrap();
+
+        let expected = json!({"block":"minecraft:stone"});
+        let mut context = FakeOperationContext {
+            operation: op(),
+            safety: ApiOperationSafety::ReadOnly,
+            result: expected.clone(),
+            calls: 0,
+        };
+
+        assert_eq!(router.call_with_context(request(), &mut context).unwrap(), expected);
+        assert_eq!(context.calls, 1);
+    }
+
+    #[test]
+    fn mismatched_context_is_rejected_before_provider_invocation() {
+        let mut router = ApiRouter::default();
+        router.register_provider(Box::new(ContextProvider {
+            descriptor: ApiProviderDescriptor {
+                id: "ctx_provider".to_owned(),
+                kind: ApiProviderKind::DreamMod,
+                priority: 0,
+                operations: [op()].into(),
+            },
+        })).unwrap();
+
+        let other_operation = ApiOperation::new("entity", "get").unwrap();
+        let mut context = FakeOperationContext {
+            operation: other_operation,
+            safety: ApiOperationSafety::ReadOnly,
+            result: Value::Null,
+            calls: 0,
+        };
+
+        assert!(matches!(
+            router.call_with_context(request(), &mut context),
+            Err(ApiRouterError::ContextMismatch { .. })
+        ));
+        assert_eq!(context.calls, 0);
     }
 
     #[test]
