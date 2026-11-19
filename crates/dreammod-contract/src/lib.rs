@@ -5,12 +5,14 @@
 mod capability;
 mod diagnostic;
 mod ids;
+mod feature;
 mod version;
 
-pub use capability::CapabilityId;
+pub use capability::{CapabilityId, CapabilitySet};
 pub use diagnostic::{Diagnostic, DiagnosticCode, Severity};
 pub use ids::{ModId, ResourceId, Handle, HandleKind};
 pub use version::{ApiVersion, ApiVersionRange};
+pub use feature::{ApiFeatureId, FeatureIdError};
 
 #[cfg(test)]
 mod tests {
@@ -40,6 +42,15 @@ mod tests {
         assert!(CapabilityId::new("physics.body.create").is_ok());
         assert!(CapabilityId::new("World.Read").is_err());
         assert!(CapabilityId::new("filesystem").is_err());
+        let mut grants = CapabilitySet::new();
+        let read = CapabilityId::new("world.read").unwrap();
+        assert!(grants.grant(read.clone()));
+        assert!(!grants.grant(read.clone()));
+        assert!(grants.contains(&read));
+        assert!(grants.revoke(&read));
+        assert!(!grants.contains(&read));
+        assert!(ApiFeatureId::new("physics.vehicle.suspension").is_ok());
+        assert!(ApiFeatureId::new("invalid").is_err());
     }
 
     #[test]
