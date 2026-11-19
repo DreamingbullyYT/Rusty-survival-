@@ -11,7 +11,10 @@ pub mod runtime;
 pub mod script;
 
 pub use manifest::{Capability, ModDependency, ModId, ModManifest, ModSide};
-pub use package::{DmodPackage, PackageError, PackageLimits, PackageLoader};
+pub use package::{
+    DiscoveredDmod, DmodPackage, ModsDirectoryLimits, ModsDirectoryScan, ModsDirectoryScanner,
+    PackageError, PackageLimits, PackageLoader, ScanDirectoryError, ScanIssue,
+};
 pub use runtime::{
     AllowAllForTests, AuthorizedCommand, CommandAuthorizer, CommandEnvelope, DeniedOperation,
     DenyAll, DispatchReport, DreamModRuntime, LoadReport, PermissionPolicy, ProviderMode,
