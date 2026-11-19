@@ -291,7 +291,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                     script,
                     granted,
                     consecutive_failures: 0,
-                    enabled: true,
+                    enabled: false,
                     providers: BTreeMap::new(),
                 },
             ));
@@ -437,6 +437,18 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                 );
                 Err(failure)
             }
+        }
+    }
+
+    /// Explicitly activate a mod after package loading and permission approval.
+    /// Loading never executes callbacks; callers must opt in per mod.
+    pub fn enable_mod(&mut self, mod_id: &ModId) -> bool {
+        if let Some(instance) = self.mods.get_mut(mod_id) {
+            instance.enabled = true;
+            instance.consecutive_failures = 0;
+            true
+        } else {
+            false
         }
     }
 
@@ -834,6 +846,8 @@ mod tests {
         runtime
             .load_packages(vec![mod_package], &AllowAllForTests)
             .unwrap();
+        assert!(!runtime.is_enabled(&ModId::parse("dreammod.example").unwrap()));
+        runtime.enable_mod(&ModId::parse("dreammod.example").unwrap());
         let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
         let report = runtime.dispatch_event(&event, &TestAuthorizer);
 
@@ -850,6 +864,31 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(provider_output["processed"], 12);
+    }
+
+    #[test]
+    fn packages_are_loaded_disabled_until_explicit_activation() {
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_package = package(
+            "dreammod.inactive",
+            "fn on_server_tick(event) { #{} }",
+            &["server_tick"],
+            &[],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        let id = ModId::parse("dreammod.inactive").unwrap();
+        assert!(!runtime.is_enabled(&id));
+        let report = runtime.dispatch_event(
+            &RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({})),
+            &TestAuthorizer,
+        );
+        assert!(report.commands.is_empty());
+        assert!(report.providers.is_empty());
+        assert!(runtime.enable_mod(&id));
+        assert!(runtime.is_enabled(&id));
+        assert!(!runtime.enable_mod(&ModId::parse("dreammod.missing").unwrap()));
     }
 
     #[test]
@@ -966,6 +1005,8 @@ mod tests {
         runtime
             .load_packages(vec![bad, good], &AllowAllForTests)
             .unwrap();
+        runtime.enable_mod(&ModId::parse("dreammod.bad").unwrap());
+        runtime.enable_mod(&ModId::parse("dreammod.good").unwrap());
 
         let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
         let first = runtime.dispatch_event(&event, &TestAuthorizer);
@@ -974,7 +1015,7 @@ mod tests {
         assert_eq!(first.failures.len(), 1);
         assert_eq!(second.failures.len(), 1);
         assert!(!runtime.is_enabled(&ModId::parse("dreammod.bad").unwrap()));
-        assert!(runtime.is_enabled(&ModId::parse("dreammod.good").unwrap()));
+        assert!(!runtime.is_enabled(&ModId::parse("dreammod.good").unwrap()));
     }
 
     #[test]
@@ -997,6 +1038,7 @@ mod tests {
         runtime
             .load_packages(vec![mod_package], &AllowAllForTests)
             .unwrap();
+        runtime.enable_mod(&ModId::parse("dreammod.limited").unwrap());
 
         let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
         let report = runtime.dispatch_event(&event, &TestAuthorizer);
