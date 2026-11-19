@@ -20,7 +20,7 @@ Updated: 2026-11-19
 
 ## Latest verification status
 - Script API bridge code and tests are committed, but current source commits have no reported GitHub combined statuses/workflow runs in the available lookup. Local Cargo/Rust toolchain is unavailable in this environment. Latest bridge CI is therefore **unverified**.
-- Tests added: script request → provider → next-event result → command; capability denial delivered without disabling; two-mod result isolation using same request ID; scalar payload compatibility; provider-failure error without automatic fallback retry.
+- Tests added: script request → provider → next-event result → command; capability denial delivered without disabling; two-mod result isolation using same request ID; scalar payload compatibility; provider-failure error without automatic fallback retry; request-count overflow; stale queue cleanup on disable/re-enable.
 - No concrete Horizon provider/adapter or end-to-end live game calls exist.
 
 ## Remaining
@@ -37,5 +37,5 @@ Updated: 2026-11-19
 5. Unify package approval and runtime activation; keep PMCS fresh.
 
 ## Script API bridge implementation — 2026-11-19
-- Source commits: `9934644`, `6ee5b26`, `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`, `8c2f410`, `037eaed`, `0e40e51`, `7750687`.
+- Source commits: `9934644`, `6ee5b26`, `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`, `8c2f410`, `037eaed`, `0e40e51`, `7750687`, `4615d5f`, `b3e06b8`, `50a2401`.
 - PMCS updates follow. CI is not confirmed.
