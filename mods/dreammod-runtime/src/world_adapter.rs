@@ -175,7 +175,8 @@ impl<B: BlockWorldBackend> EngineCommandHost for WorldBlockCommandAdapter<B> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::runtime::{CommandEnvelope, ModId};
+    use crate::manifest::ModId;
+    use crate::runtime::CommandEnvelope;
     use serde_json::json;
     use std::collections::BTreeMap;
 
