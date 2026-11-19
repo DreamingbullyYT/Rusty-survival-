@@ -205,3 +205,5 @@ The scanner-to-runtime end-to-end test is now green: `44544852796` passed rustfm
 - Read `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md` first. DreamMod is built-in through engine-owned adapters and its own crates; .dmod source interpreted without player-side native/bytecode/JIT compilation.
 - D-014 accepted. Horizon Core, prebuilt .hmod experiments and shared Horizon mods-folder scanner are historical/optional.
 - Contract foundation crate added to workspace. Verify Actions before asserting compilation/tests pass. Next: contract review, API host/fake host, interpreter selection, execution budget, and first end-to-end vertical slice.
+
+- The contract foundation diagnostic test had an escaped-newline source typo corrected. Verify latest Actions (fmt/tests/Clippy) before proceeding.
