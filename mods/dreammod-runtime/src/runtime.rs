@@ -373,6 +373,9 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                                 &mut instance.enabled,
                                 config.max_failures_before_disable,
                             );
+                            if failure.disabled {
+                                instance.providers.clear();
+                            }
                             report.failures.push(failure);
                         }
                     }
@@ -386,6 +389,9 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                         &mut instance.enabled,
                         config.max_failures_before_disable,
                     );
+                    if failure.disabled {
+                        instance.providers.clear();
+                    }
                     report.failures.push(failure);
                 }
             }
@@ -435,6 +441,9 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                     &mut instance.enabled,
                     self.config.max_failures_before_disable,
                 );
+                if failure.disabled {
+                    instance.providers.clear();
+                }
                 Err(failure)
             }
         }
@@ -1018,6 +1027,47 @@ mod tests {
         assert_eq!(second.failures.len(), 1);
         assert!(!runtime.is_enabled(&ModId::parse("dreammod.bad").unwrap()));
         assert!(runtime.is_enabled(&ModId::parse("dreammod.good").unwrap()));
+    }
+
+    #[test]
+    fn fault_disabling_mod_removes_provider_registrations() {
+        let mut runtime = DreamModRuntime::new(
+            RhaiEngine::new(ExecutionLimits {
+                max_operations: 32,
+                ..ExecutionLimits::default()
+            }),
+            RuntimeConfig {
+                max_failures_before_disable: 1,
+                ..RuntimeConfig::default()
+            },
+        );
+        let mod_package = package(
+            "dreammod.faulty_provider",
+            r#"
+                fn on_server_tick(event) {
+                    #{ providers: [
+                        #{ subsystem: "physics", function: "broken_physics", priority: 1, mode: "replace" }
+                    ] }
+                }
+                fn broken_physics(input) { loop { } }
+            "#,
+            &["server_tick"],
+            &[Capability::PhysicsOverride],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        let id = ModId::parse("dreammod.faulty_provider").unwrap();
+        runtime.enable_mod(&id);
+        let report = runtime.dispatch_event(
+            &RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({})),
+            &TestAuthorizer,
+        );
+        assert_eq!(report.providers.len(), 1);
+        assert!(runtime.invoke_provider(&id, "physics", &json!({})).is_err());
+        assert!(!runtime.is_enabled(&id));
+        assert!(runtime.enable_mod(&id));
+        assert_eq!(runtime.invoke_provider(&id, "physics", &json!({})), Ok(None));
     }
 
     #[test]
