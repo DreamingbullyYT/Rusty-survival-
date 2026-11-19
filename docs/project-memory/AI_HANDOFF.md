@@ -188,3 +188,5 @@ Scanner verification: runtime run `44543680876` passed formatting, 20 tests and 
 Scanner integration has advanced: `DreamModRuntime::load_from_horizon_mods_dir` (and a configurable-scanner variant) now connects directory scan to `load_packages`, preserving scan issues and ignored `.hmod` count. Integration test is added. Verify current runtime CI; launcher still needs to supply its instance path and present diagnostics.
 
 Runtime scanner-to-loader entrypoint CI initially stopped at rustfmt; corrected re-export order, scan-error formatting and test-module whitespace. Verify the rerun before claiming this integration passes.
+
+The second scanner-to-runtime integration CI run still stopped at one rustfmt trailing blank line; removed in commit `20940cf`. Confirm latest runtime run reaches tests and Clippy.
