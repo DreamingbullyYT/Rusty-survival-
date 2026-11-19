@@ -1,5 +1,5 @@
 //! DreamMod Core: trusted Horizon native bootstrap and engine bridge.
-use mod_api::{Hooks, RegistrationContext, TextureAtlasRegistration};
+use mod_api::{Hooks, RegistrationContext, RegisterTextureAtlasesEvent};
 
 pub mod atlas_registry;
 pub mod engine_bridge;
@@ -14,8 +14,8 @@ impl Hooks for DreamModCore {
     fn register_texture_atlases(
         &self,
         _context: &RegistrationContext,
-        atlases: &mut Vec<TextureAtlasRegistration>,
+        event: &mut RegisterTextureAtlasesEvent<'_>,
     ) {
-        atlases.extend(atlas_registry::snapshot());
+        event.atlases.extend(atlas_registry::snapshot());
     }
 }
