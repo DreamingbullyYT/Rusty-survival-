@@ -155,9 +155,15 @@ impl ApiRouter {
     pub fn call(&mut self, request: ApiRequest) -> Result<Value, ApiRouterError> {
         let key = request.operation.key();
         let preference = self.preference(&request.operation.domain);
-        let mut candidates = self.providers
+        let mut candidates = self
+            .providers
             .iter()
-            .filter(|(_, provider)| provider.descriptor().operations.contains(&request.operation))
+            .filter(|(_, provider)| {
+                provider
+                    .descriptor()
+                    .operations
+                    .contains(&request.operation)
+            })
             .map(|(id, provider)| {
                 let descriptor = provider.descriptor();
                 let preferred = matches!(
@@ -168,7 +174,10 @@ impl ApiRouter {
                 (id.clone(), preferred, descriptor.priority)
             })
             .collect::<Vec<_>>();
-        candidates.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| b.2.cmp(&a.2).then_with(|| a.0.cmp(&b.0))));
+        candidates.sort_by(|a, b| {
+            b.1.cmp(&a.1)
+                .then_with(|| b.2.cmp(&a.2).then_with(|| a.0.cmp(&b.0)))
+        });
 
         let Some((provider_id, _, _)) = candidates.first() else {
             return Err(ApiRouterError::UnsupportedOperation(key));
@@ -190,7 +199,9 @@ impl ApiRouter {
 fn valid_api_name(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 64
-        && value.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-')
+        && value.bytes().all(|b| {
+            b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-'
+        })
 }
 
 #[cfg(test)]
@@ -200,7 +211,6 @@ mod tests {
 
     struct FakeProvider {
         descriptor: ApiProviderDescriptor,
-        answer: Value,
         fail: bool,
     }
 
@@ -229,7 +239,6 @@ mod tests {
                 priority,
                 operations: [operation()].into(),
             },
-            answer: json!({}),
             fail,
         }
     }
