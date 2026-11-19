@@ -61,3 +61,10 @@
 
 ### Valid `.dmod` loading verified — 2026-11-19
 - Runtime run `44544852796` passed rustfmt, 22 tests and Clippy (`-D warnings`) on `0790dc4`. The new end-to-end test loads a valid package from the shared folder, ignores Horizon `.hmod`, and reports the malformed sibling. Instance-path/UI integration remains pending.
+
+
+### Independent DreamMod API target — 2026-11-19
+- Superseded the mandatory Horizon/HNMods integration decision: DreamMod is now designed as an engine-owned host for Rusty-survival, with no Horizon/.hmod/horizon-mixins dependency.
+- Added comprehensive architecture spec `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md` and marked the previous Horizon architecture as historical.
+- Added workspace crate `dreammod-contract` with validated ModId/ResourceId/CapabilityId, API versions/ranges, opaque typed handles and structured diagnostics.
+- Added workspace membership and push/PR CI trigger for engine checks. Verification is pending; do not claim crate tests or Clippy passed until Actions finishes.
