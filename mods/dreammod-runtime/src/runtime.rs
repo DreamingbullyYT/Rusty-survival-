@@ -227,7 +227,9 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
         scanner: &ModsDirectoryScanner,
         policy: &P,
     ) -> Result<ModsDirectoryLoadReport, RuntimeError> {
-        let scan = scanner.scan(directory).map_err(RuntimeError::ScanDirectory)?;
+        let scan = scanner
+            .scan(directory)
+            .map_err(RuntimeError::ScanDirectory)?;
         let packages = scan
             .packages
             .into_iter()
