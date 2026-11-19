@@ -953,7 +953,10 @@ mod tests {
             let mut staged = Vec::with_capacity(commands.len());
             for command in commands {
                 let payload = &command.command.payload;
-                match (command.command.namespace.as_str(), command.command.name.as_str()) {
+                match (
+                    command.command.namespace.as_str(),
+                    command.command.name.as_str(),
+                ) {
                     ("world", "set_block") => {
                         let x = payload["x"].as_i64().ok_or("x must be an integer")?;
                         let y = payload["y"].as_i64().ok_or("y must be an integer")?;
@@ -965,22 +968,35 @@ mod tests {
                             return Err("block position is out of bounds".to_owned());
                         }
                         let block = payload["block"].as_str().ok_or("block must be a string")?;
-                        let block_name = block.strip_prefix("minecraft:").ok_or("unsupported block namespace")?;
+                        let block_name = block
+                            .strip_prefix("minecraft:")
+                            .ok_or("unsupported block namespace")?;
                         if block_name.is_empty()
-                            || !block_name.chars().all(|ch| ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '_')
+                            || !block_name.chars().all(|ch| {
+                                ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '_'
+                            })
                         {
                             return Err("invalid block identifier".to_owned());
                         }
-                        staged.push(Mutation::Block((x as i32, y as i32, z as i32), block.to_owned()));
+                        staged.push(Mutation::Block(
+                            (x as i32, y as i32, z as i32),
+                            block.to_owned(),
+                        ));
                     }
                     ("entity", "set_health") => {
-                        let entity = payload["entity"].as_str().ok_or("entity must be a string")?;
-                        if entity.is_empty() || entity.len() > 64
-                            || !entity.chars().all(|ch| ch.is_ascii_alphanumeric() || ch == '_' || ch == '-')
+                        let entity = payload["entity"]
+                            .as_str()
+                            .ok_or("entity must be a string")?;
+                        if entity.is_empty()
+                            || entity.len() > 64
+                            || !entity
+                                .chars()
+                                .all(|ch| ch.is_ascii_alphanumeric() || ch == '_' || ch == '-')
                         {
                             return Err("invalid entity handle".to_owned());
                         }
-                        let health = payload["health"].as_f64().ok_or("health must be numeric")? as f32;
+                        let health =
+                            payload["health"].as_f64().ok_or("health must be numeric")? as f32;
                         if !health.is_finite() || !(0.0..=1000.0).contains(&health) {
                             return Err("health is out of bounds".to_owned());
                         }
@@ -992,8 +1008,12 @@ mod tests {
 
             for mutation in staged {
                 match mutation {
-                    Mutation::Block(pos, block) => { self.blocks.insert(pos, block); }
-                    Mutation::EntityHealth(entity, health) => { self.entity_health.insert(entity, health); }
+                    Mutation::Block(pos, block) => {
+                        self.blocks.insert(pos, block);
+                    }
+                    Mutation::EntityHealth(entity, health) => {
+                        self.entity_health.insert(entity, health);
+                    }
                 }
             }
             Ok(())
@@ -1075,8 +1095,14 @@ mod tests {
         let before_blocks = host.blocks.clone();
         let before_entities = host.entity_health.clone();
         assert!(host.execute_atomic_batch(&invalid_commands).is_err());
-        assert_eq!(host.blocks, before_blocks, "invalid batch must not partially mutate world");
-        assert_eq!(host.entity_health, before_entities, "invalid batch must not partially mutate entities");
+        assert_eq!(
+            host.blocks, before_blocks,
+            "invalid batch must not partially mutate world"
+        );
+        assert_eq!(
+            host.entity_health, before_entities,
+            "invalid batch must not partially mutate entities"
+        );
     }
 
     #[test]
