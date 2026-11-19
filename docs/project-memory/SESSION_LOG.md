@@ -190,3 +190,11 @@ Date: 2026-11-19
 - Added an end-to-end Rhai test: script requests `world.block_get`, fake provider returns data, next tick consumes it and emits an authorized command.
 - Commits: `9934644` implementation, `6ee5b26` test; docs/spec and PMCS updated. GitHub checks/run lookups returned empty; CI remains unverified.
 - Limitations: deferred (not synchronous), provider calls happen after script response parsing, and script API request batches are not transactionally coupled to command batches.
+
+
+## S-2026-11-19-105 — Bridge result-budget and fault cleanup hardening
+Date: 2026-11-19
+- Added aggregate `max_output_bytes` accounting for queued API result envelopes, in addition to per-response size checks. Oversized results become structured response-size errors; error envelopes that cannot fit are omitted to preserve the memory budget.
+- Fault-disable through provider invocation now clears pending API results too.
+- Added a script-facing capability denial test; expected denial does not disable the mod.
+- Commits: `db1189d` (aggregate budget), `4fc88f8` (fault cleanup), `09222b5` (authorization unwrap cleanup), `39d0166` (format cleanup), `26d955b` (denial test). CI status still unavailable.
