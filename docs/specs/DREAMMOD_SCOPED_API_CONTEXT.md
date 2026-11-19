@@ -2,7 +2,7 @@
 
 ## Status
 
-Design accepted for implementation; no code integration or test verification is claimed yet.
+Design accepted. Router-level context contract is implemented in source; runtime dispatch integration and test verification are pending.
 
 ## Problem
 
@@ -39,7 +39,7 @@ pub trait ApiProvider: Send {
 
 The provider router adds a context-aware call path. The existing context-free call remains available for providers that are self-contained. Context-required adapters must fail clearly if invoked without a valid scoped context; they must not invent or cache a host context.
 
-The real code may use a different signature if object-safety, borrowing, or ergonomics require it, but must preserve these invariants.
+Implemented router contract: `ApiOperationContext` exposes its bound operation and safety and a scoped `execute(input)` method; `ApiProvider::invoke_with_context` defaults to the legacy `invoke`; `ApiRouter::call_with_context` rejects mismatched operation/safety before invoking a provider. This source change is not yet CI-verified.
 
 ## Safety and routing invariants
 
@@ -56,10 +56,10 @@ The real code may use a different signature if object-safety, borrowing, or ergo
 
 ## Runtime integration points
 
-- `ApiRouter::call_with_context`: selects provider exactly as normal routing and passes the borrowed context to that provider.
+- `ApiRouter::call_with_context`: selects provider exactly as normal routing and passes the borrowed context to that provider. This router path is implemented; runtime entrypoints do not yet supply contexts.
 - Runtime host-call API: add a context-aware variant, retaining current context-free behavior.
 - Script event dispatch: add a context-aware dispatch entrypoint for events whose host can provide operation contexts. The current deferred script request flow resolves providers during event dispatch, so this scoped context must be supplied there.
-- Context-free providers/tests continue to work. Tests must cover context propagation, absence of context, operation binding, errors, no context reuse, and provider selection without Horizon dependencies.
+- Context-free providers/tests continue to work. Tests added at router level cover context propagation and mismatched-operation rejection. Runtime-level tests for missing context, errors, no context reuse and dispatch integration remain.
 
 ## First vertical slice
 
