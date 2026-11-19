@@ -119,3 +119,10 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Mock-host tests for authorized delivery and denied-command suppression.
 - [x] Verify host-boundary commits in CI: runtime formatting, 26 tests and Clippy passed on 406b8e5; root offline engine test passed on 4d47315.
 - [ ] Replace mock with typed engine adapter and actual state/rollback tests.
+
+
+## Mock block-world vertical slice
+- [x] Add a test-only stateful block host with validation-before-commit.
+- [x] Exercise successful writes and prove an invalid batch leaves state unchanged.
+- [ ] Verify CI for the new tests.
+- [ ] Add entity adapter tests and cross-domain transaction coverage.
