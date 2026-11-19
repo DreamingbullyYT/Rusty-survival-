@@ -25,3 +25,6 @@
 
 
 - Typed script API request/result envelopes have been added, but their processing pipeline remains absent; CI for `f484db8` is unconfirmed.
+
+
+- Fixed a missing serde derive on ApiOperation required by serializable script request/result envelopes (commit `1ffd548`); CI verification remains pending.
