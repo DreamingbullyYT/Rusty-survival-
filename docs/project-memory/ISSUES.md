@@ -19,3 +19,6 @@
 - Library scanner is implemented but not connected to the launcher's actual instance `horizon-mods/` path, mod-management UI, permission prompts or runtime activation.
 - Runtime test/Clippy/rustfmt verification is pending. The first PMCS attempt failed because required project-memory files were missing updates; those updates are being completed.
 - Scanner uses bounded candidate/archive/retained-byte budgets and ignores Horizon `.hmod`; the common folder decision itself is accepted.
+
+### Scanner verification status — formatting rerun (2026-11-19)
+- Initial runtime workflow failed at formatting only; no compile, test or Clippy stage executed. Formatting correction has been committed; a fresh run is pending.
