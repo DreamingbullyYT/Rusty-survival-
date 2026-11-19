@@ -33,3 +33,8 @@
 - Added a generic engine host contract to DreamMod Runtime. The event helper dispatches scripts, then sends only validated/authorized commands as one batch to the host; empty command batches do not call the host.
 - Added mock-host regression tests for authorized command delivery and denied-command suppression.
 - Commits: 6b914d9 (runtime), 463abba (public exports). Status: IMPLEMENTED; CI verification pending.
+
+
+### Host boundary rustfmt correction — 2026-11-19
+- Fixed rustfmt-only layout in runtime exports and host-boundary tests after the first CI attempt stopped at formatting. Tests and Clippy did not run on that attempt.
+- Corrected commits: 925137f and f349bc6. Verification pending.
