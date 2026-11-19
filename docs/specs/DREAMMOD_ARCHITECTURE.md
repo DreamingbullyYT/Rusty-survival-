@@ -1,13 +1,13 @@
-# DreamMod — Architecture and Integration Plan
+# DreamMod — Historical Horizon Integration Plan
 
-Status: CORE SOURCE AND UNIT TESTS VERIFIED; API-ONLY PREBUILT OVERLAY CI HARNESS UNDER REPAIR; RHAI CANDIDATE PROVISIONAL
-Date: 2026-11-18
-Target engine: Horizon (upstream engine; reuse its .hmod/native mod API and host, with horizon-mixins only where required)
+Status: HISTORICAL / SUPERSEDED 2026-11-19 — retained for audit trail only.
+Original target: Horizon (upstream engine, .hmod/native mod API, horizon-mixins)
+Current target: independent Rusty-survival engine; see [DREAMMOD_ENGINE_INDEPENDENT_API.md](DREAMMOD_ENGINE_INDEPENDENT_API.md).
 Repository role: DreamMod runtime, API, package format, tests and integration source
 
-## 1. Mission
+## 1. Original mission (historical)
 
-Build DreamMod: a deeply extensible runtime modding platform for Horizon. It must let mods add new gameplay and engine systems, customize existing behavior, and replace supported subsystems through explicit runtime extension points.
+This document records the superseded Horizon-specific plan. It must not be used as the current implementation target. The active independent-engine mission and architecture are defined in DREAMMOD_ENGINE_INDEPENDENT_API.md.
 
 Player-installed `.dmod` packages must not require Rust compilation, native compilation, bytecode compilation, or a game rebuild. Their source is interpreted at runtime.
 
