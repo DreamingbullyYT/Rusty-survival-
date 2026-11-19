@@ -9,7 +9,13 @@ pub struct ApiVersion {
 }
 
 impl ApiVersion {
-    pub const fn new(major: u16, minor: u16, patch: u16) -> Self { Self { major, minor, patch } }
+    pub const fn new(major: u16, minor: u16, patch: u16) -> Self {
+        Self {
+            major,
+            minor,
+            patch,
+        }
+    }
 }
 
 impl fmt::Display for ApiVersion {
@@ -26,15 +32,26 @@ pub struct ApiVersionRange {
 }
 
 impl ApiVersionRange {
-    pub fn new(min_inclusive: ApiVersion, max_exclusive: ApiVersion) -> Result<Self, VersionRangeError> {
+    pub fn new(
+        min_inclusive: ApiVersion,
+        max_exclusive: ApiVersion,
+    ) -> Result<Self, VersionRangeError> {
         if min_inclusive >= max_exclusive {
             return Err(VersionRangeError::InvalidBounds);
         }
-        Ok(Self { min_inclusive, max_exclusive })
+        Ok(Self {
+            min_inclusive,
+            max_exclusive,
+        })
     }
 
-    pub const fn min_inclusive(&self) -> ApiVersion { self.min_inclusive }
-    pub const fn max_exclusive(&self) -> ApiVersion { self.max_exclusive }
+    pub const fn min_inclusive(&self) -> ApiVersion {
+        self.min_inclusive
+    }
+
+    pub const fn max_exclusive(&self) -> ApiVersion {
+        self.max_exclusive
+    }
 
     pub fn contains(&self, version: ApiVersion) -> bool {
         version >= self.min_inclusive && version < self.max_exclusive
@@ -42,4 +59,6 @@ impl ApiVersionRange {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum VersionRangeError { InvalidBounds }
+pub enum VersionRangeError {
+    InvalidBounds,
+}
