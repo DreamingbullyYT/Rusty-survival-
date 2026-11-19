@@ -29,7 +29,7 @@
 - [x] Export validation/snapshot helper with enabled-owner filtering, deterministic ordering, duplicate rejection and 32-entry cap.
 - [x] Integrate batch replacement and snapshot into ModManager; release owner declarations on disable/failure.
 - [ ] Verify package CI.
-- [ ] Core hook consumes the direct snapshot and resubmits declarations on each resource reload (signature corrected; CI verification pending).
+- [ ] Core hook consumes the direct snapshot and resubmits declarations on each resource reload (signature corrected; rustfmt cleanup pending).
 
 ## Exit criteria before engine implementation
 - Confirm package/runtime safety architecture, extension contracts, host integration route, and representative compatibility tests before expanding engine implementation.

@@ -28,3 +28,8 @@ Date: 2026-11-19
 Date: 2026-11-19
 - Actions failure showed generated hook expects `RegisterTextureAtlasesEvent`, not raw Vec. Updated the Core implementation to use the generated event wrapper and its atlas output field.
 - The new commit triggers Core, overlay and PMCS checks; no pass is claimed yet.
+
+## S-2026-11-19-63 — Core formatting cleanup
+Date: 2026-11-19
+- Actions review: PMCS `44470999045` passed; API-only overlay `44470917220` passed; Core `44470917203` failed on rustfmt differences only in the shown log tail.
+- Corrected hook signature remains in source; compile is not yet verified because formatting check stops the job. Formatting-only cleanup and PMCS updates are next.

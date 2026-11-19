@@ -13,10 +13,10 @@
 
 ## Not implemented / not verified
 - No interpreted .dmod runtime, sandbox, scheduler or live Horizon hook.
-- Core implements the collect hook with the generated event signature; its compile is pending after a CI-caught signature correction. No .dmod interpreter is connected to the registry yet.
+- Core implements the collect hook with the generated event signature. Latest Core Actions failed at rustfmt check; formatting is being corrected before compilation can be verified. No .dmod interpreter is connected to the registry yet.
 - Deep subsystem replacement remains a design goal, not implemented.
 
 ## Next actions
 - Validate package CI and PMCS.
-- Confirm exact pinned Horizon atlas hook signature and registration context.
-- Verify the corrected Core hook build and confirm the event output field in the generated contract.
+- Confirm the corrected Core hook builds after rustfmt cleanup.
+- Verify the event output field in the generated contract.

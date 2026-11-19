@@ -1,5 +1,5 @@
 //! DreamMod Core: trusted Horizon native bootstrap and engine bridge.
-use mod_api::{Hooks, RegistrationContext, RegisterTextureAtlasesEvent};
+use mod_api::{Hooks, RegisterTextureAtlasesEvent, RegistrationContext};
 
 pub mod atlas_registry;
 pub mod engine_bridge;

@@ -17,3 +17,6 @@
 
 ### Atlas hook signature correction — 2026-11-19
 - Corrected Core hook implementation to accept Horizon's generated `RegisterTextureAtlasesEvent` instead of a raw Vec. CI caught the contract mismatch; revalidation is pending.
+
+### Core hook formatting cleanup — 2026-11-19
+- Latest Core run `44470917203` failed at rustfmt check: formatting in `atlas_registry.rs` and import order in `lib.rs`. Hook signature correction is present; compilation is not yet confirmed. Overlay run `44470917220` passed and PMCS run `44470999045` passed.
