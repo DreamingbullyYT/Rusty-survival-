@@ -98,3 +98,12 @@ Date: 2026-11-19
 - Runtime Actions run `44544852796` passed formatting, 22 tests and Clippy with warnings denied on `0790dc4`.
 - New integration test proves a valid `.dmod` ZIP loads from a mixed directory, `.hmod` remains ignored, and malformed `.dmod` is reported.
 - Launcher still needs to pass the actual instance path and present diagnostics. PMCS for this update pending.
+
+
+## S-2026-11-19-76 — Independent DreamMod architecture reset and contract foundation
+Date: 2026-11-19
+- User confirmed the new Rust engine does not want HNMods; DreamMod must be complete and directly integrated into Rusty-survival.
+- Added independent API architecture spec covering domain APIs, adapter boundaries, provider replacement contracts, performance, sandbox, package format and implementation gates.
+- Superseded Horizon integration decision D-005 with accepted D-014. Horizon Core/.hmod and scanner are historical/optional, not active target.
+- Added `dreammod-contract` workspace crate and base validated types (IDs, capabilities, API semantic versions/ranges, opaque generation handles, diagnostics) with unit tests.
+- Workspace CI now runs on push/PR; current tests/Clippy are pending Actions.
