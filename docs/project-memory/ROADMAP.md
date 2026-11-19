@@ -183,3 +183,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [ ] Build optional, version-pinned Horizon adapter on top of that context; test a small operation end-to-end.
 
 - Provider-error test commit `7750687`; CI still not verified.
+
+- Added request-count and pending-result cleanup tests in `4615d5f`, `b3e06b8`, corrected in `50a2401`; CI pending.
