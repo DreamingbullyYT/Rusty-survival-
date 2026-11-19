@@ -781,37 +781,38 @@ fn resolve_script_api_requests<A: CommandAuthorizer>(
                 name: operation.name.clone(),
                 payload: request.input.clone(),
             };
-            let required = authorizer.required_capability(&command);
-            if required.is_none() {
-                result.error = Some(ApiScriptResultError::UnknownOperation);
-            } else if !granted.contains(&required.expect("capability checked above")) {
-                result.error = Some(ApiScriptResultError::CapabilityDenied);
-            } else {
-                let api_request = ApiRequest {
-                    operation,
-                    safety: request.safety,
-                    input: request.input,
-                };
-                match router.call(api_request) {
-                    Ok(value) => {
-                        let response_size = serde_json::to_vec(&value)
-                            .map_or(usize::MAX, |bytes| bytes.len());
-                        if response_size > config.max_output_bytes {
-                            result.error = Some(ApiScriptResultError::ResponseTooLarge);
-                        } else {
-                            result.result = Some(value);
+            if let Some(required) = authorizer.required_capability(&command) {
+                if !granted.contains(&required) {
+                    result.error = Some(ApiScriptResultError::CapabilityDenied);
+                } else {
+                    let api_request = ApiRequest {
+                        operation,
+                        safety: request.safety,
+                        input: request.input,
+                    };
+                    match router.call(api_request) {
+                        Ok(value) => {
+                            let response_size = serde_json::to_vec(&value)
+                                .map_or(usize::MAX, |bytes| bytes.len());
+                            if response_size > config.max_output_bytes {
+                                result.error = Some(ApiScriptResultError::ResponseTooLarge);
+                            } else {
+                                result.result = Some(value);
+                            }
+                        }
+                        Err(ApiRouterError::UnsupportedOperation(_)) => {
+                            result.error = Some(ApiScriptResultError::ProviderUnavailable);
+                        }
+                        Err(ApiRouterError::ProviderFailed { .. }) => {
+                            result.error = Some(ApiScriptResultError::ProviderFailed);
+                        }
+                        Err(_) => {
+                            result.error = Some(ApiScriptResultError::InvalidRequest);
                         }
                     }
-                    Err(ApiRouterError::UnsupportedOperation(_)) => {
-                        result.error = Some(ApiScriptResultError::ProviderUnavailable);
-                    }
-                    Err(ApiRouterError::ProviderFailed { .. }) => {
-                        result.error = Some(ApiScriptResultError::ProviderFailed);
-                    }
-                    Err(_) => {
-                        result.error = Some(ApiScriptResultError::InvalidRequest);
-                    }
                 }
+            } else {
+                result.error = Some(ApiScriptResultError::UnknownOperation);
             }
         }
 
