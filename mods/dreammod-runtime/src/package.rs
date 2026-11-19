@@ -305,15 +305,26 @@ impl ModsDirectoryScanner {
         let duplicates: BTreeMap<String, Vec<PathBuf>> = id_paths.into_iter()
             .filter(|(_, paths)| paths.len() > 1).collect();
         if !duplicates.is_empty() {
-            result.packages.retain(|package| {
+            let packages = std::mem::take(&mut result.packages);
+            for package in packages {
                 if let Some(paths) = duplicates.get(package.package.manifest.id.as_str()) {
+                    let other_paths = paths
+                        .iter()
+                        .filter(|other| other.as_path() != package.path.as_path())
+                        .map(|other| other.display().to_string())
+                        .collect::<Vec<_>>();
                     result.issues.push(ScanIssue {
                         path: package.path.clone(),
-                        reason: format!("duplicate mod ID '{}' also found in: {}", package.package.manifest.id, paths.iter().filter(|p| **p != package.path).map(|p| p.display().to_string()).collect::<Vec<_>>().join(", ")),
+                        reason: format!(
+                            "duplicate mod ID '{}' also found in: {}",
+                            package.package.manifest.id,
+                            other_paths.join(", ")
+                        ),
                     });
-                    false
-                } else { true }
-            });
+                } else {
+                    result.packages.push(package);
+                }
+            }
         }
 
         result.packages.sort_by(|a, b| a.path.cmp(&b.path));
