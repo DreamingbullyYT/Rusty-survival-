@@ -41,3 +41,7 @@
 - Added tests for mixed `.dmod`/`.hmod`, unrelated files and directories, duplicate IDs, directory limits and symlink behavior. Runtime CI is triggered; results are not yet verified. This scanner is a library API and is not yet wired to the actual launcher/game instance path.
 
 - Scanner's first two CI attempts stopped at rustfmt only; the reported remaining formatting diffs have been corrected. Fresh runtime CI is pending.
+
+### Scanner verification — 2026-11-19
+- Runtime Actions run `44543680876` passed rustfmt, 20 tests and Clippy `-D warnings` on scanner implementation commit `4abbd917`.
+- PMCS run `44543782146` passed on the latest documentation HEAD. No launcher/instance path integration is claimed.
