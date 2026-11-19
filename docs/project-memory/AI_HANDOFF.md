@@ -21,8 +21,8 @@ Rusty-survival independent engine with engine-owned DreamMod. Horizon/HNMods are
 - Verified commit 406b8e5: rustfmt passed, 26 runtime tests passed, Clippy passed with warnings denied. Root offline engine tests passed on 4d47315.
 - This is only a generic host boundary; no concrete engine adapter or actual world/entity/physics mutations exist.
 
-## Latest implementation (verification pending)
-- Test-only mock host now supports block writes plus entity health updates in one atomic staged batch. Validation failure must preserve both maps. Added in b82c05b and cd78cb3; CI pending.
+## Latest implementation and verification
+- Test-only mock host supports block writes plus entity health updates in one atomic staged batch. Invalid batch preserves both maps. Verified on fd4109a: DreamMod Runtime 27 tests, rustfmt and Clippy passed; workspace offline tests and Clippy passed.
 
 ## Next steps
 1. Verify CI for cross-domain atomic mock.

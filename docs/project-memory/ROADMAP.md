@@ -131,4 +131,4 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Extend mock host to stage block and entity-health commands together.
 - [x] Add validation for entity handles and finite health values.
 - [x] Add test asserting invalid command rolls back staged world and entity mutations.
-- [ ] Verify CI for implementation commits b82c05b and cd78cb3.
+- [x] Verify CI: fd4109a passed DreamMod Runtime (27 tests, rustfmt, Clippy) and workspace offline tests/Clippy.

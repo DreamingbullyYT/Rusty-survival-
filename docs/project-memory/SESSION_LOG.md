@@ -107,3 +107,10 @@ Date: 2026-11-19
 - Extended the test-only host with entity.set_health, strict handle and health validation, and a staged mutation enum covering blocks and entities.
 - Added a successful three-command script batch and a failure test proving both block and entity maps remain unchanged when the final command is invalid.
 - Implementation commits b82c05b and cd78cb3. CI verification pending.
+
+
+## S-2026-11-19-93 — Cross-domain host CI verified
+Date: 2026-11-19
+- Fixed rustfmt issues from the first CI attempt and committed formatting in fd4109a.
+- DreamMod Runtime CI passed: 27 tests, formatting, and Clippy with warnings denied. Workspace offline tests and Clippy also passed; PMCS validation passed on the docs snapshot commit before the implementation change.
+- Mock host remains test-only; no production world/entity adapter exists.

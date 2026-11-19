@@ -66,3 +66,6 @@
 
 ## 2026-11-19
 - Added typed mock entity-health mutation to mock world host and atomic cross-domain rollback test. CI pending (b82c05b, cd78cb3).
+
+## 2026-11-19
+- Verified cross-domain test-only mock host (world block writes + entity health): DreamMod Runtime CI 27 tests, rustfmt and Clippy passed; workspace offline tests and Clippy passed (fd4109a).

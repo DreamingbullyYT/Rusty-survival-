@@ -19,7 +19,7 @@ Updated: 2026-11-19
 - Stateful test-only mock block-world host validates and stages block writes before commit. Tests cover successful writes and batch rollback behavior on invalid input. Runtime CI passed on c89b038: formatting, 27 tests, and Clippy with warnings denied.
 
 ## Not implemented / not verified
-- Cross-domain world/entity mock host and rollback test added in cd78cb3; CI verification pending.
+- Mock cross-domain host is verified, but is test-only; production adapters and authoritative world/entity state are still absent.
 
 ## Remaining
 - Concrete engine host adapters and world/entity/physics/render/audio/UI/AI/worldgen subsystems.
@@ -28,7 +28,7 @@ Updated: 2026-11-19
 - Language decision and production sandbox remain open; Rhai is a candidate runtime.
 
 ## Next actions
-1. Verify cross-domain mock host (block + entity) formatting, tests and Clippy in CI.
+1. Implement first production world/block adapter and integrate it with engine-owned state.
 2. Unify package approval and runtime activation through one coordinator.
 3. Add the first concrete domain adapter, preferably world/block commands, then entity and physics.
 4. Keep PMCS fresh and append the session log for each substantial implementation change.
