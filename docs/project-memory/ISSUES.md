@@ -6,3 +6,5 @@
 - Runtime language decision and production sandbox/security remain open; current Rhai is a candidate runtime.
 - No real world/entity/physics/rendering/audio/input/UI/AI/worldgen systems exist yet.
 - Host batch atomicity is specified but future concrete adapters must implement and test validation/rollback.
+
+- Cross-domain mock host is implemented in test-only code; pending CI. Still no real entity/world engine adapter.
