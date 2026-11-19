@@ -169,23 +169,12 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [ ] Expand result-isolation and provider-error tests; verify runtime format, tests and Clippy in CI.
 
 
-## Script API bridge contract primitives
-- [x] Add serializable request/result envelope types and request-ID/operation validation.
-- [x] Add tests for validation and envelope serialization.
-- [ ] Verify commit `f484db8` with runtime CI (status/run list currently empty).
-- [ ] Implement request processing, authorizer capability enforcement, provider routing, response injection, per-mod queue isolation and cleanup.
-
-
-## Script API bridge progress
-- Source and basic end-to-end test implemented in commits `9934644` and `6ee5b26`; PMCS updated.
-- GitHub status/workflow lookup did not expose checks. Treat CI as unverified until Actions results are available.
-
-- Script bridge hardening source/test commits: `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`; Actions still unverified.
-
-- Isolation test commit `8c2f410`; Actions remains unverified.
-
-- Scalar event compatibility commits `037eaed`/`0e40e51`; Actions pending.
-
+## Script API bridge verification status
+- Source commits: `9934644`, `6ee5b26`, `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`, `8c2f410`, `037eaed`, `0e40e51`.
+- Tests cover request→provider→next-event result→command, capability denial, per-mod result isolation, and scalar payload compatibility.
+- Aggregate result size and fault-disable cleanup are implemented.
+- CI status/run lookup did not return checks; local cargo/rustfmt unavailable. Treat latest source as unverified.
+- Remaining verification/tests: provider-error no-retry at script bridge, count limits, unloaded/disabled cleanup, rustfmt, tests and Clippy.
 
 ## Horizon adapter architecture constraint
 - [x] Research documented Horizon hook/host model and version/stability contract.
