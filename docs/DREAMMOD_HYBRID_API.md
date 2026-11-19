@@ -54,7 +54,7 @@ This matrix is a plan, not a claim that every Horizon surface currently exists o
 - Script requests use the same operation-to-capability authorizer, request/result byte limits, and provider router. Results are one-shot and mod-isolated.
 - No concrete Horizon adapter is linked or tested end-to-end yet.
 - The current provider invocation lacks scoped host context; the adapter context contract must be designed before implementing live world operations.
-- The existing command host and world block adapter remain separate until the integration bridge is implemented.
+- The typed world/block adapter is not connected to authoritative engine world/chunk storage; no live block reads/writes are implemented.
 
 ## Reference
 
