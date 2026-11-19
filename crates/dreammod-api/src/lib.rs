@@ -4,9 +4,7 @@
 
 mod registration;
 
-pub use registration::{
-    Registration, RegistrationKind, RegistrationRegistry, RegistryError,
-};
+pub use registration::{Registration, RegistrationKind, RegistrationRegistry, RegistryError};
 
 #[cfg(test)]
 mod tests {

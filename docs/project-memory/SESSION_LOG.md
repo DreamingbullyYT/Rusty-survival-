@@ -13,3 +13,4 @@ Date: 2026-11-19
 - Added default-disabled runtime packages and public `enable_mod`; dispatch/provider behavior remains gated by enabled state. Added test for disabled event dispatch and updated affected tests to activate explicitly.
 - CI surfaced rustfmt failures (runtime plus contract crate files) and PMCS marker validation failures. Runtime tests and Clippy were skipped; this change is IMPLEMENTED, not VERIFIED.
 - Next: formatting and PMCS repair, then rerun Actions and unify package approval with runtime activation.
+\n\nProject continuity log policy: this file is chronological and append-only.\n
