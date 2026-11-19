@@ -56,3 +56,5 @@
 - [x] Connect scanner output to `DreamModRuntime::load_packages` via a public shared-directory entrypoint and preserve diagnostics.
 - [ ] Verify integration test and runtime CI.
 - [ ] Launcher must supply the actual instance `horizon-mods/` path and surface diagnostics in UI.
+
+- [ ] Verify runtime scanner-to-loader entrypoint after rustfmt correction (tests and Clippy).
