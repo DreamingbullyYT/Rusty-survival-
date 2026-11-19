@@ -84,3 +84,9 @@
 - Started hybrid direction: DreamMod API routes to Horizon when a provider advertises a compatible operation, with DreamMod-native fallback for gaps and per-domain preference.
 - Added provider abstraction/router, runtime replacement/removal, tests, and architecture note. This is routing scaffolding, not an integrated Horizon adapter; CI pending.
 - D-015 supersedes D-014's blanket Horizon integration prohibition while retaining engine independence.
+
+
+### Hybrid API runtime integration — 2026-11-19
+- Fixed router source formatting/content and integrated ApiRouter into DreamModRuntime.
+- Added runtime provider registration, removal and per-domain preference methods; added capability-gated API calls requiring mod enabled and recognized operation.
+- Added tests for disabled mod, successful routing, missing capability and unknown operation. CI pending.
