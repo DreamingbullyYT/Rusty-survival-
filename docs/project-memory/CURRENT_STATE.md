@@ -39,3 +39,5 @@
 - Bounded by default to 256 candidates, 256 MiB aggregate archive input, and 512 MiB aggregate retained uncompressed package content; each package still uses existing package-loader limits.
 - Duplicate package IDs reject every conflicting candidate rather than choosing one by filename.
 - Added tests for mixed `.dmod`/`.hmod`, unrelated files and directories, duplicate IDs, directory limits and symlink behavior. Runtime CI is triggered; results are not yet verified. This scanner is a library API and is not yet wired to the actual launcher/game instance path.
+
+- Scanner's first two CI attempts stopped at rustfmt only; the reported remaining formatting diffs have been corrected. Fresh runtime CI is pending.
