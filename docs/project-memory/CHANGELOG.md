@@ -18,3 +18,7 @@
 
 ### Fault-disable provider cleanup — 2026-11-19
 - Provider registrations are cleared when a script fault threshold disables a mod, whether the fault occurs in event dispatch or provider invocation. Regression test verifies re-enable does not resurrect a stale provider. Verification pending.
+
+
+### Fault cleanup formatting and CI follow-up — 2026-11-19
+- Rust runtime regression-test formatting was corrected after CI flagged style-only differences. Root core checks passed; runtime-specific tests are rerunning.
