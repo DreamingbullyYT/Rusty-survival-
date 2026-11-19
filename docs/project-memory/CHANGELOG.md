@@ -43,3 +43,8 @@
 ### Second host-test formatting correction — 2026-11-19
 - Runtime CI caught one remaining unformatted chained load call in the denied-command mock-host test. Corrected it; this attempt again stopped before tests/Clippy.
 - Fix commit: 406b8e5. Awaiting rerun.
+
+
+### Authorized command host boundary verified — 2026-11-19
+- DreamMod Runtime CI passed on commit 406b8e525eb99ae276633a32336fa1615b1298c3: rustfmt, 26 tests (0 failures), and Clippy with warnings denied.
+- Root offline engine test workflow passed on the later memory commit 4d4731573ae63a64dbf747b90084b265d43a87b6. The new host boundary is still a mock-only seam, not live engine execution.
