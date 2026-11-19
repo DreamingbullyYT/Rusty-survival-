@@ -9,6 +9,7 @@
 - [x] Explicit capabilities, approvals, lifecycle and deterministic dependencies.
 - [x] Asset and entrypoint access gates.
 - [x] Resource ID ownership bookkeeping.
+- [x] Atlas declaration batches owned by ModManager, enabled-owner snapshot and rollback validation (CI pending).
 
 ## Phase 2 — Runtime foundation
 - [ ] Select scripting language only after comparative evaluation and representative benchmarks.
@@ -25,9 +26,10 @@
 - [ ] Test large mod sets, failure isolation, resource reloads and ARM64 performance.
 
 ## Atlas declarations groundwork
-- [x] Add exported validation/snapshot helper for mod-owned atlas declarations, enabled-owner filtering, deterministic ordering, duplicate rejection and 32-entry cap.
-- [x] Package CI run `44467917911` passed.
-- [ ] Integrate declarations into ModManager and the direct batched Core-facing API; submit on every verified Horizon resource reload hook.
+- [x] Export validation/snapshot helper with enabled-owner filtering, deterministic ordering, duplicate rejection and 32-entry cap.
+- [x] Integrate batch replacement and snapshot into ModManager; release owner declarations on disable/failure.
+- [ ] Verify package CI.
+- [ ] Integrate with Core and resubmit on each verified Horizon resource reload hook.
 
 ## Exit criteria before engine implementation
 - Confirm package/runtime safety architecture, extension contracts, host integration route, and representative compatibility tests before expanding engine implementation.
