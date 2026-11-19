@@ -59,3 +59,7 @@
 ### Formatting and PMCS marker correction — 2026-11-19
 - Corrected rustfmt output for the mock host and restored validator-required PMCS headings (Ground rules, Continuity system, Not implemented / not verified, Next actions).
 - Implementation correction commit: c89b038. CI verification pending.
+
+
+### Mock block-world host verified — 2026-11-19
+- Runtime workflow passed on c89b038: rustfmt, 27 tests (0 failures), Clippy with warnings denied. This verifies the mock host test only, not a live engine adapter.
