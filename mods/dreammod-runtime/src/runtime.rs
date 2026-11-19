@@ -998,4 +998,21 @@ mod tests {
         assert!(report.commands.is_empty());
         assert_eq!(report.denied.len(), 1);
     }
+    #[test]
+    fn directory_loading_keeps_horizon_mods_separate_and_reports_bad_packages() {
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::write(directory.path().join("Horizon.hmod"), b"horizon").unwrap();
+        std::fs::write(directory.path().join("broken.dmod"), b"not a zip").unwrap();
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let report = runtime
+            .load_from_horizon_mods_dir(directory.path(), &DenyAll)
+            .unwrap();
+
+        assert!(report.load.loaded.is_empty());
+        assert_eq!(report.ignored_hmod_count, 1);
+        assert_eq!(report.issues.len(), 1);
+        assert!(report.issues[0].reason.contains("zip"));
+    }
+
 }
