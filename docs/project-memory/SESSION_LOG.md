@@ -165,3 +165,12 @@ Date: 2026-11-19
 - Added `docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md` describing a deferred, event-scoped request/response bridge: script emits request envelopes; runtime authorizes and routes; correlated results are injected into the next event and consumed once.
 - Chose deferred flow for the first version to avoid global synchronous callback context, reentrancy, and cross-mod permission-context hazards.
 - Design and PMCS updates only; no implementation or tests claimed. Commit `05fc065` created the design document.
+
+
+## S-2026-11-19-102 — Script API bridge contract primitives
+Date: 2026-11-19
+- Added public typed `ApiScriptRequest`, `ApiScriptResult`, and `ApiScriptResultError` envelopes in api_router; request IDs and operation identifiers are validated.
+- Added unit tests for valid request serialization round-trip, invalid request ID and operation rejection, and result error serialization round-trip.
+- Exported types from runtime crate root.
+- Commits: `d820307` (types), `8c1107b` (tests), `f484db8` (exports).
+- CI status/workflow run list returned empty for `f484db8`; source verification is pending. This is not a script bridge implementation yet.
