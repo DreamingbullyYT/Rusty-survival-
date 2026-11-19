@@ -27,3 +27,6 @@
 
 ### Scanner CI status update (2026-11-19)
 - Verified: runtime Actions `44543680876` passed rustfmt, 20 tests and Clippy on `4abbd917`; PMCS `44543782146` passed. Remaining issue is instance-path/UI integration, not scanner validation.
+
+### Shared-folder runtime entrypoint (2026-11-19)
+- Runtime API can now scan a caller-provided `horizon-mods/` directory and pass validated `.dmod` packages into existing runtime loading. Actual launcher path discovery, permission UI and diagnostics display remain unimplemented. CI pending.
