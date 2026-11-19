@@ -192,3 +192,5 @@ Runtime scanner-to-loader entrypoint CI initially stopped at rustfmt; corrected 
 The second scanner-to-runtime integration CI run still stopped at one rustfmt trailing blank line; removed in commit `20940cf`. Confirm latest runtime run reaches tests and Clippy.
 
 Runtime scanner-to-loader integration is verified: run `44544390519` passed rustfmt, 21 tests and Clippy on `20940cf`. Public `load_from_horizon_mods_dir` scans and loads valid `.dmod` packages and returns issues/ignored-Horizon count. Actual launcher instance path and UI remain the next integration task.
+
+A further integration regression test creates a valid `.dmod` ZIP and confirms it loads from a mixed folder while `.hmod` is ignored and malformed sibling is reported. Check latest CI.
