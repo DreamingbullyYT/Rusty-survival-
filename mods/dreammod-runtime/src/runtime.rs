@@ -1320,6 +1320,54 @@ mod tests {
     }
 
     #[test]
+    fn script_api_request_count_limit_rejects_overflowing_batch() {
+        let mut runtime = DreamModRuntime::new(
+            RhaiEngine::default(),
+            RuntimeConfig {
+                max_commands_per_event: 1,
+                ..RuntimeConfig::default()
+            },
+        );
+        let mod_id = ModId::parse("dreammod.api_limit").unwrap();
+        let source = r#"
+            fn on_server_tick(event) {
+                #{
+                    api_requests: [
+                        #{
+                            request_id: "first",
+                            operation: #{ domain: "world", name: "block_get" },
+                            safety: "read_only",
+                            input: #{ x: 1 }
+                        },
+                        #{
+                            request_id: "second",
+                            operation: #{ domain: "world", name: "block_get" },
+                            safety: "read_only",
+                            input: #{ x: 2 }
+                        }
+                    ]
+                }
+            }
+        "#;
+        let mod_package = package(
+            "dreammod.api_limit",
+            source,
+            &["server_tick"],
+            &[Capability::WorldRead],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime.enable_mod(&mod_id);
+
+        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
+        let report = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert_eq!(report.failures.len(), 1);
+        assert!(report.failures[0].message.contains("too many API requests"));
+        assert!(runtime.is_enabled(&mod_id));
+    }
+
+    #[test]
     fn script_provider_failure_is_returned_without_fallback_retry() {
         use crate::api_router::{ApiOperation, ApiProviderDescriptor, ApiProviderKind};
 
