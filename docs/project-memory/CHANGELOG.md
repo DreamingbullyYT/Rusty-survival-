@@ -36,3 +36,7 @@
 - CI initially stopped at rustfmt; formatted the scanner implementation and test fixtures. Runtime tests and Clippy have not yet run on the corrected commit.
 
 - Applied remaining rustfmt corrections after Actions identified two additional formatting diffs; latest runtime test and PMCS runs are pending.
+
+### Shared mods scanner verification — 2026-11-19
+- Runtime workflow `44543680876` passed formatting, all 20 tests and Clippy (`-D warnings`) on scanner code commit `4abbd917`.
+- PMCS run `44543782146` passed on the documentation-updated HEAD. Scanner is library-level only; actual instance path/UI integration remains open.
