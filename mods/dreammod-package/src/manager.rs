@@ -720,4 +720,84 @@ mod tests {
         )]);
         assert!(matches!(result, Err(ModManagerError::Dependencies(_))));
     }
+    #[test]
+    fn atlas_batch_requires_enabled_owner_and_is_replaced_atomically() {
+        let mut manager = ModManager::new(vec![package("example.atlas", &[], &[])])
+            .unwrap();
+        let declarations = vec![AtlasDeclaration::new(
+            "example.atlas",
+            "example.atlas:icons",
+            "example.atlas:ui/icons",
+        ).unwrap()];
+        assert_eq!(
+            manager.replace_atlas_declarations("example.atlas", declarations.clone()),
+            Err(ModManagerError::Lifecycle(LifecycleError::NotEnabled))
+        );
+        manager.approve("example.atlas", &[]).unwrap();
+        manager.enable("example.atlas").unwrap();
+        manager.replace_atlas_declarations("example.atlas", declarations.clone()).unwrap();
+        assert_eq!(manager.atlas_snapshot().unwrap().declarations(), declarations.as_slice());
+
+        let foreign = vec![AtlasDeclaration::new(
+            "other.mod", "other.mod:icons", "other.mod:icons",
+        ).unwrap()];
+        assert!(matches!(
+            manager.replace_atlas_declarations("example.atlas", foreign),
+            Err(ModManagerError::Atlas(AtlasError::NamespaceMismatch { .. }))
+        ));
+        assert_eq!(manager.atlas_snapshot().unwrap().declarations(), declarations.as_slice());
+    }
+
+    #[test]
+    fn atlas_snapshot_is_sorted_and_global_limit_failure_rolls_back() {
+        let mut manager = ModManager::new(vec![
+            package("example.alpha", &[], &[]),
+            package("example.beta", &[], &[]),
+        ]).unwrap();
+        for id in ["example.alpha", "example.beta"] {
+            manager.approve(id, &[]).unwrap();
+            manager.enable(id).unwrap();
+        }
+        let alpha = vec![
+            AtlasDeclaration::new("example.alpha", "example.alpha:z", "example.alpha:z").unwrap(),
+            AtlasDeclaration::new("example.alpha", "example.alpha:a", "example.alpha:a").unwrap(),
+        ];
+        manager.replace_atlas_declarations("example.alpha", alpha).unwrap();
+        let beta = (0..31).map(|i| AtlasDeclaration::new(
+            "example.beta", format!("example.beta:b{i:02}"), format!("example.beta:b{i:02}"),
+        ).unwrap()).collect::<Vec<_>>();
+        assert!(matches!(
+            manager.replace_atlas_declarations("example.beta", beta),
+            Err(ModManagerError::Atlas(AtlasError::LimitExceeded { maximum: 32 }))
+        ));
+        let snapshot = manager.atlas_snapshot().unwrap();
+        assert_eq!(snapshot.declarations().len(), 2);
+        assert_eq!(snapshot.declarations()[0].atlas_id, "example.alpha:a");
+        assert_eq!(snapshot.declarations()[1].atlas_id, "example.alpha:z");
+    }
+
+    #[test]
+    fn atlas_declarations_are_cleaned_up_on_disable_and_failure() {
+        let mut manager = ModManager::new(vec![
+            package("example.base", &[], &[]),
+            package("example.addon", &[("example.base", "^1.0")], &[]),
+        ]).unwrap();
+        for id in ["example.base", "example.addon"] {
+            manager.approve(id, &[]).unwrap();
+            manager.enable(id).unwrap();
+            manager.replace_atlas_declarations(id, vec![AtlasDeclaration::new(
+                id, format!("{id}:atlas"), format!("{id}:atlas"),
+            ).unwrap()]).unwrap();
+        }
+        assert_eq!(manager.atlas_snapshot().unwrap().declarations().len(), 2);
+        manager.disable("example.addon").unwrap();
+        assert_eq!(manager.atlas_snapshot().unwrap().declarations().len(), 1);
+        manager.enable("example.addon").unwrap();
+        manager.replace_atlas_declarations("example.addon", vec![AtlasDeclaration::new(
+            "example.addon", "example.addon:again", "example.addon:again",
+        ).unwrap()]).unwrap();
+        manager.fail("example.base", "host error").unwrap();
+        assert!(manager.atlas_snapshot().unwrap().is_empty());
+    }
+
 }
