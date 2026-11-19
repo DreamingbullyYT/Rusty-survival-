@@ -162,7 +162,9 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Add per-mod one-shot result queues and event payload injection.
 - [x] Route script requests through the same capability checks and provider router as host calls.
 - [x] Add end-to-end script → provider → next-event result → command regression test.
-- [ ] Expand tests for denial/error, result isolation, cleanup and count/size bounds; verify runtime format, tests and Clippy in CI.
+- [x] Add capability-denial result test; denial does not disable the mod.
+- [x] Bound aggregate queued API-result bytes and clear results on disable/fault-disable.
+- [ ] Expand result-isolation and provider-error tests; verify runtime format, tests and Clippy in CI.
 
 
 ## Script API bridge contract primitives
@@ -175,3 +177,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 ## Script API bridge progress
 - Source and basic end-to-end test implemented in commits `9934644` and `6ee5b26`; PMCS updated.
 - GitHub status/workflow lookup did not expose checks. Treat CI as unverified until Actions results are available.
+
+- Script bridge hardening source/test commits: `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`; Actions still unverified.
