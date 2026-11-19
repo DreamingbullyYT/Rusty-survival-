@@ -45,3 +45,7 @@
 ### Scanner verification — 2026-11-19
 - Runtime Actions run `44543680876` passed rustfmt, 20 tests and Clippy `-D warnings` on scanner implementation commit `4abbd917`.
 - PMCS run `44543782146` passed on the latest documentation HEAD. No launcher/instance path integration is claimed.
+
+### Runtime scanner-to-loader connection — 2026-11-19
+- Added `DreamModRuntime::load_from_horizon_mods_dir` and a custom-scanner variant. It scans the common folder, passes validated packages to the existing dependency/API/capability-checked `load_packages` transaction, and returns loaded IDs plus per-file scan issues and ignored `.hmod` count.
+- Added a runtime integration regression test for mixed Horizon `.hmod` and malformed `.dmod` inputs. CI is pending; this remains a caller-supplied directory API, not automatic launcher instance discovery.
