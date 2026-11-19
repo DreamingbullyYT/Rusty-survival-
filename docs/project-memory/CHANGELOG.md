@@ -90,3 +90,8 @@
 - Fixed router source formatting/content and integrated ApiRouter into DreamModRuntime.
 - Added runtime provider registration, removal and per-domain preference methods; added capability-gated API calls requiring mod enabled and recognized operation.
 - Added tests for disabled mod, successful routing, missing capability and unknown operation. CI pending.
+
+
+### Hybrid API request hardening — 2026-11-19
+- Validate provider-declared operations and request operation IDs; reject oversized API payloads using runtime configured limits.
+- Added runtime payload-limit test. Script-facing direct bridge is still pending; host-side runtime API only. CI not verified.
