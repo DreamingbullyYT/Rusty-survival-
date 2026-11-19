@@ -44,3 +44,8 @@
 
 ### Valid package shared-folder loading verified (2026-11-19)
 - Runtime Actions `44544852796` passed 22 tests, formatting and Clippy. The library path is verified; launcher instance-path and diagnostics UI integration remain.
+
+
+### Independent engine mod API direction — 2026-11-19
+- Horizon/HNMods integration was superseded by D-014; the new Rusty-survival engine must host DreamMod directly and not depend on an external mod framework.
+- Architecture spec and contract crate added. Initial workspace CI is pending. The production interpreter, engine host adapter, and end-to-end mod execution remain unimplemented.
