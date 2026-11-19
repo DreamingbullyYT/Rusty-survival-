@@ -503,6 +503,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                 );
                 if failure.disabled {
                     instance.providers.clear();
+                    instance.pending_api_results.clear();
                 }
                 Err(failure)
             }
