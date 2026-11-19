@@ -1028,17 +1028,21 @@ mod tests {
             Vec::new(),
             0,
         );
-        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime
+            .load_packages(vec![mod_package], &AllowAllForTests)
+            .unwrap();
 
         let operation = ApiOperation::new("world", "block_get").unwrap();
-        runtime.register_api_provider(Box::new(EchoApiProvider {
-            descriptor: crate::api_router::ApiProviderDescriptor {
-                id: "horizon_world".into(),
-                kind: ApiProviderKind::Horizon,
-                priority: 0,
-                operations: [operation.clone()].into(),
-            },
-        })).unwrap();
+        runtime
+            .register_api_provider(Box::new(EchoApiProvider {
+                descriptor: crate::api_router::ApiProviderDescriptor {
+                    id: "horizon_world".into(),
+                    kind: ApiProviderKind::Horizon,
+                    priority: 0,
+                    operations: [operation.clone()].into(),
+                },
+            }))
+            .unwrap();
 
         let request = ApiRequest {
             operation,
@@ -1050,7 +1054,9 @@ mod tests {
             Err(ApiCallError::ModDisabled)
         ));
         runtime.enable_mod(&mod_id);
-        let output = runtime.call_api(&mod_id, request.clone(), &TestAuthorizer).unwrap();
+        let output = runtime
+            .call_api(&mod_id, request.clone(), &TestAuthorizer)
+            .unwrap();
         assert_eq!(output["source"], "horizon_world");
         assert_eq!(output["payload"]["x"], 3);
         let oversized = ApiRequest {
@@ -1062,7 +1068,6 @@ mod tests {
             runtime.call_api(&mod_id, oversized, &TestAuthorizer),
             Err(ApiCallError::PayloadTooLarge)
         ));
-
     }
 
     #[test]
