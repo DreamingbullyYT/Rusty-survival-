@@ -19,3 +19,6 @@
 - Hot switching stateful providers is only route selection today; state migration/rollback contracts are required before switching stateful subsystems.
 
 - API router host integration is now implemented but .dmod scripts cannot call it directly yet; a safe synchronous/asynchronous script bridge and API result handling are needed.
+
+
+- Script API bridge design exists, but only as a proposal. Scripts cannot issue API requests yet. The proposed deferred response flow must be implemented and tested before claiming script-facing API access.
