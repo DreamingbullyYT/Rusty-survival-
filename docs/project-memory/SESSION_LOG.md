@@ -84,3 +84,7 @@ Date: 2026-11-19
 - Runtime Actions run `44544390519` passed rustfmt, 21 tests and Clippy with warnings denied on commit `20940cf`.
 - The new scan-and-load integration test passed. Runtime accepts a caller-provided directory, reports malformed candidates and ignores Horizon `.hmod`; launcher path/UI integration remains pending.
 - PMCS after this result is pending.
+
+## S-2026-11-19-73 — Valid package shared-folder integration test
+Date: 2026-11-19
+- Added end-to-end fixture ZIP test for `load_from_horizon_mods_dir`: valid source package loads, Horizon `.hmod` is ignored, and malformed `.dmod` is surfaced in scan issues. Await CI.
