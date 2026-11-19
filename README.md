@@ -13,4 +13,4 @@ This repository owns the API, package format, runtime, host integration, tests a
 
 Read [AI_HANDOFF.md](docs/project-memory/AI_HANDOFF.md), [independent API architecture](docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md), [engine layout](docs/specs/ENGINE_LAYOUT.md) and [project state](docs/project-memory/CURRENT_STATE.md).
 
-**Status:** architecture is defined and package/runtime foundations are partially implemented. The new engine currently has only coordinate primitives. The production source interpreter, engine adapter, full API domains and end-to-end `.dmod` execution are not yet implemented or verified.
+**Status:** architecture is defined and package/runtime foundations are partially implemented. The new engine currently has only coordinate primitives. The contract and registration foundation crates are in progress; the production source interpreter, live engine adapter, full API domains and end-to-end `.dmod` execution are not yet implemented or verified.

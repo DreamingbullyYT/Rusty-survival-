@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use dreammod_contract::{ApiFeatureId, ModId, ResourceId};
 
@@ -85,7 +85,7 @@ impl RegistrationRegistry {
         owner: &ModId,
         batch: Vec<Registration>,
     ) -> Result<usize, RegistryError> {
-        let mut batch_ids = BTreeMap::new();
+        let mut batch_ids = BTreeSet::new();
         for entry in &batch {
             if entry.owner != *owner {
                 return Err(RegistryError::OwnerMismatch);
@@ -93,10 +93,9 @@ impl RegistrationRegistry {
             if entry.id.namespace() != owner.as_str() {
                 return Err(RegistryError::NamespaceMismatch);
             }
-            if self.entries.contains_key(&entry.id) || batch_ids.contains_key(&entry.id) {
+            if self.entries.contains_key(&entry.id) || !batch_ids.insert(entry.id.clone()) {
                 return Err(RegistryError::DuplicateId);
             }
-            batch_ids.insert(entry.id.clone(), ());
         }
 
         let count = batch.len();
@@ -124,11 +123,7 @@ impl RegistrationRegistry {
             .values()
             .filter(|entry| kind.is_none_or(|wanted| entry.kind == wanted))
             .collect();
-        entries.sort_by(|a, b| {
-            b.priority
-                .cmp(&a.priority)
-                .then_with(|| a.id.cmp(&b.id))
-        });
+        entries.sort_by(|a, b| b.priority.cmp(&a.priority).then_with(|| a.id.cmp(&b.id)));
         entries
     }
 
