@@ -3,6 +3,12 @@
 Status: NATIVE CORE SOURCE PACKAGE ADDED; OFFICIAL PACKAGE CI PENDING; RHAI CANDIDATE TESTS/CLIPPY VERIFIED; PREBUILT DISTRIBUTION NOT VERIFIED.
 Target engine: Horizon.
 
+## Current runtime support (source inspection, 2026-11-19)
+- Player format: .dmod interpreted source + assets; validation/lifecycle exist, execution runtime does not.
+- Rhai: isolated AST-walking prototype only; not integrated or final choice.
+- WASM: not implemented in DreamMod. Existing Horizon cold-cache WASM compilation is not adopted under the no-player-compilation rule.
+- Native: trusted DreamMod Core only, as Horizon .hmod build-time integration. No player-native extension loader.
+
 ## Build and distribution layers
 - Upstream Horizon remains the engine.
 - DreamMod Core is integrated once into a pinned Horizon build through the current `.hmod` native-mod route; use horizon-mixins only for required native source transformations.
