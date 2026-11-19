@@ -3,7 +3,7 @@
 Updated: 2026-11-19
 
 ## Implemented
-- Generic API provider router integrated into DreamModRuntime: Horizon-first default, DreamMod fallback by advertised operation, per-domain preference switch, provider hot replacement/removal. Runtime host API calls require enabled mod, recognized operation, granted capability and bounded payload. These are host-side calls, not yet callable directly from .dmod scripts. Concrete Horizon provider still not implemented.
+- Generic API provider router integrated into DreamModRuntime: Horizon-first default, DreamMod fallback by advertised operation, per-domain preference switch, provider hot replacement/removal. Runtime host API calls require enabled mod, recognized operation, granted capability and bounded request and response sizes. These are host-side calls, not yet callable directly from .dmod scripts. Concrete Horizon provider still not implemented.
 - Engine-independent DreamMod contract crate and owner-scoped metadata registry.
 - .dmod package validation/scanning and interpreted Rhai runtime foundation.
 - Capability filtering and response validation for commands/providers.
