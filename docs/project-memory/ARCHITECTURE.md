@@ -1,7 +1,7 @@
 # Architecture — DreamMod
 
-Status: NATIVE CORE SOURCE PACKAGE ADDED; OFFICIAL PACKAGE CI PENDING; RHAI CANDIDATE TESTS/CLIPPY VERIFIED; PREBUILT DISTRIBUTION NOT VERIFIED.
-Target engine: Horizon.
+Status: HORIZON INTEGRATION HISTORICAL; INDEPENDENT DREAMMOD API DESIGN ACTIVE (2026-11-19).
+Target engine: Rusty-survival independent Rust engine. Horizon/HNMods is no longer required.
 
 ## Current runtime support (source inspection, 2026-11-19)
 - Player format: .dmod interpreted source + assets; validation/lifecycle exist, execution runtime does not.
@@ -9,11 +9,10 @@ Target engine: Horizon.
 - WASM: not implemented in DreamMod. Existing Horizon cold-cache WASM compilation is not adopted under the no-player-compilation rule.
 - Native: trusted DreamMod Core only, as Horizon .hmod build-time integration. No player-native extension loader.
 
-## Build and distribution layers
-- Upstream Horizon remains the engine.
-- DreamMod Core is integrated once into a pinned Horizon build through the current `.hmod` native-mod route; use horizon-mixins only for required native source transformations.
-- The build pipeline emits a prebuilt game distribution containing DreamMod Core. Current API-only Core is eligible for Horizon's source-verified Route::Api: the game executable remains unchanged and Core is compiled into adjacent dynamic libraries.
-- The separate launcher installs and updates that distribution.
+## Current build/distribution target
+- Rusty-survival is the engine and must host DreamMod directly. No HNMods/.hmod, Horizon, horizon-mixins or external mod host dependency.
+- DreamMod contract/runtime crates are engine-independent; a dedicated adapter crate connects API operations to engine-owned systems.
+- Player .dmod source is interpreted and never compiled to native code or bytecode on the device. The launcher only installs package files and engine builds.
 
 ## Runtime layers
 1. Package discovery and validation.
@@ -23,7 +22,7 @@ Target engine: Horizon.
 5. Stable, versioned DreamMod API facade.
 6. Event/lifecycle scheduler and batched engine calls.
 7. Extension-point registry and subsystem provider/override coordinator.
-8. Horizon integration adapters pinned to exact upstream revisions.
+8. Rusty-survival engine adapter (engine-owned contracts; no Horizon dependency).
 
 ## Mod package
 Draft .dmod structure:
@@ -129,3 +128,7 @@ The package manager now owns per-enabled-mod atlas declaration batches. `replace
 
 ## Core atlas hook bridge
 DreamMod Core owns a bounded registry of per-owner `TextureAtlasRegistration` batches. A caller supplies an authorization callback before batch validation/mutation. Owner namespaces and safe paths are checked, replacement is atomic, duplicate atlas IDs and more than 32 active declarations are rejected, and snapshots are sorted. The Core `register_texture_atlases` collect hook appends the snapshot on each initial registration/resource reload. The script runtime and package ModManager are not connected to this Core registry yet; capability enforcement must be provided by the future script adapter, and no arbitrary native pointers are exposed.
+
+
+## Superseded Horizon integration notes
+The native DreamMod Core `.hmod`, Horizon pin, prebuilt overlay, API Route and mixins investigations are retained as historical experiments. They are not the active architecture and must not be prerequisites for the independent engine. See `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md`.
