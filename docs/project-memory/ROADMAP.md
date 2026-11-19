@@ -150,7 +150,7 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Default to Horizon-first preference with DreamMod fallback when the Horizon provider does not advertise an operation.
 - [x] Runtime domain preference, provider hot replacement/removal and tests added (CI pending).
 - [x] Connect router to host-side runtime API calls and authorization pipeline (enabled-mod check, recognized operation, capability grant).
-- [ ] Expose API requests directly to .dmod scripts with capability enforcement and result handling; currently API calls are host-invoked only.
+- [x] Expose event-scoped API requests to .dmod scripts with capability enforcement, routing and next-event result handling (CI pending).
 - [ ] Implement and pin concrete Horizon adapter(s); verify actual operations against current public API.
 - [ ] Provide DreamMod-native implementations for gaps; add operation-specific integration tests.
 - [ ] Define safe migration/snapshot contracts before hot-switching stateful providers.
@@ -158,11 +158,11 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 
 ## Script API bridge design — 2026-11-19
 - [x] Define event-scoped request/response design with request IDs, per-mod result isolation, authorization, bounds and cleanup requirements (`docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md`).
-- [ ] Implement typed request/result envelopes and strict validation.
-- [ ] Add per-mod one-shot result queues and event payload injection.
-- [ ] Route script requests through the same capability checks and provider router as host calls.
-- [ ] Test request/result correlation, result isolation/consumption, cleanup and size/count bounds.
-- [ ] CI verify runtime format, tests and Clippy.
+- [x] Implement typed request/result envelopes and strict validation.
+- [x] Add per-mod one-shot result queues and event payload injection.
+- [x] Route script requests through the same capability checks and provider router as host calls.
+- [x] Add end-to-end script → provider → next-event result → command regression test.
+- [ ] Expand tests for denial/error, result isolation, cleanup and count/size bounds; verify runtime format, tests and Clippy in CI.
 
 
 ## Script API bridge contract primitives
@@ -170,3 +170,8 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Add tests for validation and envelope serialization.
 - [ ] Verify commit `f484db8` with runtime CI (status/run list currently empty).
 - [ ] Implement request processing, authorizer capability enforcement, provider routing, response injection, per-mod queue isolation and cleanup.
+
+
+## Script API bridge progress
+- Source and basic end-to-end test implemented in commits `9934644` and `6ee5b26`; PMCS updated.
+- GitHub status/workflow lookup did not expose checks. Treat CI as unverified until Actions results are available.
