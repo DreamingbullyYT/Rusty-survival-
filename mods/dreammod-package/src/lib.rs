@@ -8,6 +8,7 @@ use std::io::{Cursor, Read, Seek};
 use std::time::{Duration, Instant};
 use zip::{CompressionMethod, ZipArchive};
 
+pub mod atlas;
 pub mod bridge;
 pub mod lifecycle;
 pub mod manager;
