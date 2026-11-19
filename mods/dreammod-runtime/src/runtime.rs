@@ -1215,6 +1215,79 @@ mod tests {
     }
 
     #[test]
+    fn script_api_results_are_isolated_per_mod() {
+        use crate::api_router::{ApiOperation, ApiProviderDescriptor, ApiProviderKind};
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let source_a = r#"
+            fn on_server_tick(event) {
+                if event.api_results.len() == 0 {
+                    #{ api_requests: [#{
+                        request_id: "same_id",
+                        operation: #{ domain: "world", name: "block_get" },
+                        safety: "read_only",
+                        input: #{ x: 1, y: 64, z: 0 }
+                    }] }
+                } else {
+                    #{ commands: [#{
+                        namespace: "world", name: "set_block",
+                        payload: #{ x: event.api_results[0].result.payload.x, y: 65, z: 0 }
+                    }] }
+                }
+            }
+        "#;
+        let source_b = source_a.replace("x: 1, y: 64", "x: 2, y: 64");
+        let packages = vec![
+            package(
+                "dreammod.isolation_a",
+                source_a,
+                &["server_tick"],
+                &[Capability::WorldRead, Capability::WorldWrite],
+                Vec::new(),
+                0,
+            ),
+            package(
+                "dreammod.isolation_b",
+                &source_b,
+                &["server_tick"],
+                &[Capability::WorldRead, Capability::WorldWrite],
+                Vec::new(),
+                0,
+            ),
+        ];
+        runtime.load_packages(packages, &AllowAllForTests).unwrap();
+        let id_a = ModId::parse("dreammod.isolation_a").unwrap();
+        let id_b = ModId::parse("dreammod.isolation_b").unwrap();
+        runtime.enable_mod(&id_a);
+        runtime.enable_mod(&id_b);
+
+        runtime
+            .register_api_provider(Box::new(EchoApiProvider {
+                descriptor: ApiProviderDescriptor {
+                    id: "horizon_world".into(),
+                    kind: ApiProviderKind::Horizon,
+                    priority: 0,
+                    operations: [ApiOperation::new("world", "block_get").unwrap()].into(),
+                },
+            }))
+            .unwrap();
+
+        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
+        let first = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(first.failures.is_empty());
+        let second = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(second.failures.is_empty(), "{:?}", second.failures);
+        assert_eq!(second.commands.len(), 2);
+        let mut values = second
+            .commands
+            .iter()
+            .map(|command| command.command.payload["x"].as_i64().unwrap())
+            .collect::<Vec<_>>();
+        values.sort();
+        assert_eq!(values, vec![1, 2]);
+    }
+
+    #[test]
     fn script_api_capability_denial_is_delivered_without_disabling_mod() {
         let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
         let mod_id = ModId::parse("dreammod.denied_script_api").unwrap();
