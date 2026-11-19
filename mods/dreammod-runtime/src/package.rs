@@ -572,7 +572,7 @@ mod tests {
         let size_limited = ModsDirectoryScanner::new(PackageLoader::default(), ModsDirectoryLimits {
             max_packages: 10, max_total_archive_bytes: 1024, max_total_retained_bytes: 1,
         });
-        assert!(matches!(size_limited.scan(dir.path()), Err(ScanDirectoryError::TotalArchiveBytesExceeded { .. })));
+        assert!(matches!(size_limited.scan(dir.path()), Err(ScanDirectoryError::TotalRetainedBytesExceeded { .. })));
     }
 
     #[cfg(unix)]
