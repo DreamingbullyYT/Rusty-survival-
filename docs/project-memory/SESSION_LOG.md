@@ -219,3 +219,10 @@ Date: 2026-11-19
 - Reviewed current official Horizon docs: code mods implement `mod_api::Hooks`; callbacks receive typed host/event contexts. Level operations are exposed through access-specific hosts (read host vs write host), not a global API object. Native API is experimental/version-pinned.
 - Architectural consequence: current DreamMod `ApiProvider::invoke` lacks a scoped host context and cannot implement live world operations safely without globals or fabricated/stale snapshots. Next design should pass a scoped, engine-neutral provider context through runtime/router, with Horizon-specific optional adapter and no mandatory SDK dependency in the base runtime.
 - Updated `docs/DREAMMOD_HYBRID_API.md` and normalized `CURRENT_STATE.md`. Official references: https://playhorizon.dev/docs/mod-code and https://playhorizon.dev/docs/api/stability.
+
+
+## S-2026-11-19-109 — Script provider error/no-retry test
+Date: 2026-11-19
+- Added a script-level test with a failing Horizon-priority provider and a DreamMod fallback provider for the same operation.
+- Script receives `provider_failed` on the next callback; the test asserts no command success, the failure path is surfaced, and the mod stays enabled. This checks the runtime bridge does not silently retry a provider mutation/read after an error.
+- Commit `7750687`; CI still unverified.
