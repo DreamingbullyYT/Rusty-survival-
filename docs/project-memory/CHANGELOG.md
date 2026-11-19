@@ -31,3 +31,6 @@
 - Added exported `ModsDirectoryScanner` to the player runtime: direct-child `.dmod` discovery, `.hmod` ignored for Horizon, no recursion, per-file diagnostics, duplicate-ID exclusion, and symlink/non-file rejection.
 - Bounded defaults: 256 candidates, 256 MiB aggregate archive input, and 512 MiB retained uncompressed package content.
 - Four scanner regression tests added. Runtime Actions/PMCS are being verified; scanner is not wired to launcher instance path or UI.
+
+### Scanner formatting correction — 2026-11-19
+- CI initially stopped at rustfmt; formatted the scanner implementation and test fixtures. Runtime tests and Clippy have not yet run on the corrected commit.
