@@ -112,3 +112,10 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Root Rust core tests, formatting, Clippy and offline engine workflow passed at `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
 - [ ] Unify explicit activation with package ModManager approval lifecycle.
 - [ ] Build mock engine host command executor, provider resolver and end-to-end tests.
+
+
+## Engine host boundary milestone
+- [x] Add runtime API that forwards only authorized commands to an engine host in one atomic batch.
+- [x] Mock-host tests for authorized delivery and denied-command suppression.
+- [ ] Verify host-boundary commits in CI.
+- [ ] Replace mock with typed engine adapter and actual state/rollback tests.
