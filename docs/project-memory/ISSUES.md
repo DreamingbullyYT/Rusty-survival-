@@ -12,3 +12,5 @@
 - World/block adapter added but CI pending; native engine storage remains unimplemented.
 
 - Adapter implementation initially failed rustfmt checks; formatting corrected in 285f264/68a6c13, CI rerun pending.
+
+- Corrected test-only ModId import after CI compile failure; pending re-verification.
