@@ -124,5 +124,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 ## Mock block-world vertical slice
 - [x] Add a test-only stateful block host with validation-before-commit.
 - [x] Exercise successful writes and prove an invalid batch leaves state unchanged.
-- [ ] Verify CI for the new tests.
+- [x] Verify CI for the new tests: rustfmt, 27 tests, Clippy passed on c89b038.
 - [ ] Add entity adapter tests and cross-domain transaction coverage.
