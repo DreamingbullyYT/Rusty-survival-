@@ -19,6 +19,7 @@ pub use package::{
     PackageError, PackageLimits, PackageLoader, ScanDirectoryError, ScanIssue,
 };
 pub use runtime::{
+    ApiCallError,
     AllowAllForTests, AuthorizedCommand, CommandAuthorizer, CommandEnvelope, DeniedOperation,
     DenyAll, DispatchReport, DreamModRuntime, EngineCommandHost, HostDispatchReport, LoadReport,
     ModsDirectoryLoadReport, PermissionPolicy, ProviderMode, ProviderRegistration,
