@@ -65,3 +65,13 @@
 ### End-to-end directory loading verification — 2026-11-19
 - Runtime CI `44544852796` passed rustfmt, 22 tests and Clippy on `0790dc4`. Valid `.dmod` package loading, `.hmod` isolation and malformed-file diagnostics are covered end-to-end.
 - Only caller-side launcher integration (instance path and UI) remains outside this runtime repository.
+
+
+## DreamMod target reset — 2026-11-19
+- User direction: implement the full mod API for the new Rusty-survival engine, which does not want HNMods.
+- Accepted architecture: independent DreamMod contract/runtime and engine adapter, embedded into the new engine. No Horizon, HNMods/.hmod, horizon-mixins, or external mod host dependency.
+- New architecture specification: `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md`.
+- The API coverage target includes core/lifecycle, events, systems/scheduler, registries/content, world/worldgen, physics, vehicles (including wheel-only collision channels), AI/entities, player/input/inventory, render/assets, audio/UI/network/save.
+- Current reality: engine only has coordinate primitives in `engine-core`; DreamMod package/runtime foundations exist but production interpreter and engine integration do not. API spec is not implementation.
+- Horizon-specific native Core, prebuilt overlay and shared `horizon-mods/` scanner are historical/optional experiments and must not be treated as requirements for the new engine.
+- Next implementation order: contract types → host adapter/fake host → interpreter decision & execution budgets → vertical slice → domain APIs as engine subsystems land.
