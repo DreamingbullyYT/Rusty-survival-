@@ -263,8 +263,12 @@ mod tests {
     #[test]
     fn preference_switches_provider_without_mod_reload() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
-        router.register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
+        router
+            .register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false)))
+            .unwrap();
+        router
+            .register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false)))
+            .unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
         router.set_preference("world", ApiProviderPreference::DreamModFirst).unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "dreammod");
