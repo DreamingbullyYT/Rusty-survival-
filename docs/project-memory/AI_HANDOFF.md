@@ -66,3 +66,9 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - Bridge hardening since initial implementation: aggregate queued result bytes capped at `max_output_bytes`, error envelopes are budgeted, provider-fault auto-disable clears pending API results, and a capability-denial regression test was added. Commits `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`; CI remains unverified.
 
 - Scalar event compatibility is covered: payloads are passed through untouched before any API results; if results arrive for a scalar payload, they are injected via `{event_payload, api_results}`. Regression test commit `0e40e51`; CI pending.
+
+
+## Horizon adapter context constraint
+- Official Horizon code mods implement `mod_api::Hooks` and receive typed hook-specific host/event contexts; Level reads and writes use different host types. Current Horizon native mod API is experimental/version-pinned.
+- DreamMod's provider trait currently has no host context argument. Do not implement a live Horizon world provider via globals, unsafe pointers, or stale snapshots. Next design scoped context injection through dispatch/router/provider, keeping Horizon SDK optional.
+- Research references: https://playhorizon.dev/docs/mod-code, https://playhorizon.dev/docs/api/stability.
