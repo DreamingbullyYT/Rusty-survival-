@@ -33,3 +33,8 @@ Date: 2026-11-19
 - Fixed runtime fault paths to clear provider registrations when failure threshold disables a mod; applies to event callbacks, invalid response processing and provider invocation.
 - Added regression test that registers a broken physics provider, trips fault-disable, re-enables the mod, and confirms the stale provider is gone.
 - Verification pending; Actions was triggered for runtime CI.
+
+
+## Fault-cleanup CI formatting
+- [x] Correct runtime test formatting after Actions reported the exact rustfmt diff.
+- [ ] Re-run DreamMod Runtime tests and Clippy.

@@ -1056,7 +1056,9 @@ mod tests {
             Vec::new(),
             0,
         );
-        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime
+            .load_packages(vec![mod_package], &AllowAllForTests)
+            .unwrap();
         let id = ModId::parse("dreammod.faulty_provider").unwrap();
         runtime.enable_mod(&id);
         let report = runtime.dispatch_event(
@@ -1067,7 +1069,10 @@ mod tests {
         assert!(runtime.invoke_provider(&id, "physics", &json!({})).is_err());
         assert!(!runtime.is_enabled(&id));
         assert!(runtime.enable_mod(&id));
-        assert_eq!(runtime.invoke_provider(&id, "physics", &json!({})), Ok(None));
+        assert_eq!(
+            runtime.invoke_provider(&id, "physics", &json!({})),
+            Ok(None)
+        );
     }
 
     #[test]

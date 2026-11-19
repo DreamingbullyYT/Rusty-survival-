@@ -9,3 +9,7 @@
 
 
 - Runtime fault-disable previously left provider registrations stored. Call paths still gated by enabled state, but stale provider state could be revived by explicit re-enable. Fix now clears owner providers when threshold trips. CI pending.
+
+
+## Implemented
+- Formatting corrected in the new runtime fault cleanup regression test. Runtime CI re-run pending.

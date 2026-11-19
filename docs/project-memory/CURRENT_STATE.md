@@ -31,3 +31,7 @@
 
 ## Implemented
 - Fault-threshold disable now clears provider registrations in runtime dispatch/provider invocation; regression test ensures reactivation cannot revive stale provider state. Verification pending.
+
+
+### Runtime fault cleanup formatting correction — 2026-11-19
+- Corrected rustfmt-only layout for the fault-cleanup regression test. Root core workflow passed; runtime-specific formatting will be rechecked.

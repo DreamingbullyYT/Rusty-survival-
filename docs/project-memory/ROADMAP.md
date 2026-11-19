@@ -101,3 +101,6 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 ## Runtime fault cleanup
 - [x] Clear provider registrations when a runtime mod is auto-disabled due to repeated script failures, both from event and provider callback paths.
 - [ ] Verify fault cleanup regression test in DreamMod Runtime CI.
+
+
+- Fault cleanup behavior is implemented, but runtime CI first stopped at rustfmt; corrected formatting and rerunning.
