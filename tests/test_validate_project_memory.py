@@ -62,7 +62,7 @@ class ValidatorRegressionTests(unittest.TestCase):
     def test_existing_session_log_lines_are_append_only(self) -> None:
         path = self.root / "docs/project-memory/SESSION_LOG.md"
         content = path.read_text(encoding="utf-8")
-        path.write_text(content.replace("This file is chronological and append-only. ", "", 1), encoding="utf-8")
+        path.write_text(content.replace("This file is chronological and append-only.", "This file was rewritten.", 1), encoding="utf-8")
         self.commit_all("rewrite existing session log line")
         result = self.validate("--base", self.base)
         self.assertNotEqual(result.returncode, 0)
@@ -83,7 +83,7 @@ class ValidatorRegressionTests(unittest.TestCase):
     def test_reusing_a_legacy_session_id_fails(self) -> None:
         path = self.root / "docs/project-memory/SESSION_LOG.md"
         with path.open("a", encoding="utf-8") as handle:
-            handle.write("\n## S-2026-11-18-01 — Reused legacy ID\nDate: test\n")
+            handle.write("\n## S-2026-11-19-58 — Reused legacy ID\nDate: test\n")
         self.commit_all("reuse a legacy session ID")
         result = self.validate("--base", self.base)
         self.assertNotEqual(result.returncode, 0)
