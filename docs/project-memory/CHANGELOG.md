@@ -45,3 +45,5 @@
 - Added runtime methods to scan a caller-provided Horizon mods directory and load validated `.dmod` packages through existing runtime dependency/API/capability checks.
 - Report returns successfully loaded mod IDs, scanner issues, and count of ignored `.hmod` files. Added integration test with a Horizon `.hmod` and malformed `.dmod`; CI pending.
 - Still no launcher instance-path discovery or UI connection.
+
+- Runtime directory-loading entrypoint's first CI attempt stopped at rustfmt; formatting corrections were applied. Runtime test/Clippy verification is pending.
