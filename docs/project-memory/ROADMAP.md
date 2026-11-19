@@ -65,3 +65,5 @@
 - [ ] Launcher supplies actual instance `horizon-mods/` path and presents diagnostics in UI.
 
 - [ ] Verify valid-package end-to-end directory test with runtime CI.
+
+- [ ] Verify valid-package end-to-end test after rustfmt correction.
