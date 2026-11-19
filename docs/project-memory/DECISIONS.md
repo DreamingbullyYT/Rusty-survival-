@@ -136,3 +136,9 @@ Consequences: Design an engine-independent contract crate and a separate engine 
 - Decision: Runtime forwards validated, capability-authorized commands to the engine through an EngineCommandHost batch method; the host contract requires atomic validation/apply. Empty batches do not call the host.
 - Rationale: keep scripts isolated from engine objects and reduce host crossings; a host cannot observe commands before authorization.
 - Consequence: current contract and mock tests are not a concrete engine adapter. Domain-specific validation, rollback and authoritative state checks remain mandatory in engine implementations.
+
+
+## D-2026-11-19-06 — Engine command batches validate before mutation
+- Decision: domain adapters validate every command and stage all changes before committing a batch. A batch failure must leave authoritative state unchanged.
+- Rationale: prevents scripts from causing partial world changes when a later command is invalid; keeps transaction semantics at native host boundary.
+- Consequence: adapters need either staging/transaction support or an equivalent rollback mechanism. Mock block-world test demonstrates the rule but is not production engine code.
