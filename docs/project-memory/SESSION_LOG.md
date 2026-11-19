@@ -237,3 +237,12 @@ Date: 2026-11-19
 Date: 2026-11-19
 - Added a regression test: issue a request, disable and re-enable the mod, then verify the stale result is not consumed; a fresh request is made and its response arrives on the following callback.
 - Commit `b3e06b8`, syntax fix `50a2401`; CI pending.
+
+
+## S-2026-11-19-112 — Scoped provider context foundation
+Date: 2026-11-19
+- Defined the safe context design in `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md`: operation-bound borrowed host access, no globals/unsafe/raw handles, context expiry after invocation, compatibility path for existing providers.
+- Implemented router-level `ApiOperationContext`, default `ApiProvider::invoke_with_context`, `ApiRouter::call_with_context`, and operation+safety mismatch rejection. Exported the trait from crate root.
+- Added fake context/provider tests for context forwarding and mismatch rejection before provider execution.
+- Runtime dispatch and host-call entrypoints still do not pass contexts; no live Horizon adapter or engine storage integration. CI status is empty/pending for source commit `433797c`; Cargo unavailable locally, so implementation/tests are unverified.
+- Commits: spec `e58177a`, docs `0f17bd2`, router `944f719`, export `433797c`, PMCS follow-up commits.
