@@ -164,3 +164,11 @@ Package run `44365010182` passed all 44 tests, rustfmt and Clippy. The new entry
 
 ### Overlay test harness correction
 The overlay build step's `DREAMMOD_PREBUILT_DIR` export does not carry into a later GitHub Actions step. The host-load step now explicitly exports `$RUNNER_TEMP/dreammod-prebuilt`, prints file/RUNPATH diagnostics and uses a 180-second timeout. Previous run `44363904976` passed API-only build and RUNPATH setup but was superseded during host loading. Check the new overlay run after commit `9347eb4`.
+
+
+## Runtime format status — 2026-11-19 (do not overclaim)
+- .dmod is the intended player package (interpreted source + assets); validation, manager/lifecycle and bookkeeping exist, but production script execution is absent.
+- Rhai AST-walker is an isolated evaluation prototype only; no final language decision and not connected to Core.
+- DreamMod WASM runtime/format/adapter is not implemented. Horizon cold-cache WASM compiles via child process/Wasmtime; not adopted under no-player-compilation rule.
+- Player native .so/DLL mods are not implemented. Trusted native DreamMod Core is Horizon .hmod build-time integration only.
+- Check source before claiming dual-runtime support. Any WASM/native player support requires explicit trust, compatibility, sandbox, API-adapter and verification work.
