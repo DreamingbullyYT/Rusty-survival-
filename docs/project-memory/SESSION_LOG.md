@@ -246,3 +246,9 @@ Date: 2026-11-19
 - Added fake context/provider tests for context forwarding and mismatch rejection before provider execution.
 - Runtime dispatch and host-call entrypoints still do not pass contexts; no live Horizon adapter or engine storage integration. CI status is empty/pending for source commit `433797c`; Cargo unavailable locally, so implementation/tests are unverified.
 - Commits: spec `e58177a`, docs `0f17bd2`, router `944f719`, export `433797c`, PMCS follow-up commits.
+
+
+## S-2026-11-19-113 — Router context source review
+Date: 2026-11-19
+- Re-read the committed router diff and found that the first edit had referenced `ApiOperationContext` without inserting its trait definition because the text replacement did not match the source. Added the missing trait definition in `6585943` before continuing.
+- GitHub commit status remains pending with no checks and no workflow runs returned; local Rust toolchain is unavailable. The context changes remain unverified; source review is not a substitute for compile/test/Clippy.
