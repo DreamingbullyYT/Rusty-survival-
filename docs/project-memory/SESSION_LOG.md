@@ -77,3 +77,11 @@ Date: 2026-11-19
 - Root offline engine test workflow passed on 4d47315. This verifies the generic boundary and tests only; concrete engine integration remains unimplemented.
 
 Project continuity log policy: this file is chronological and append-only.
+
+
+## S-2026-11-19-89 — Stateful mock block-world host
+Date: 2026-11-19
+- Added a test-only MockBlockWorldHost with block writes, position bounds, namespace/name validation and validate-then-commit staging. A two-command test confirms writes apply; an invalid second command in a batch confirms no partial changes.
+- Commits: 4067841 and 6d2a232. CI pending.
+
+Project continuity log policy: this file is chronological and append-only.
