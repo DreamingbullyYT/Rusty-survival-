@@ -172,3 +172,6 @@ The overlay build step's `DREAMMOD_PREBUILT_DIR` export does not carry into a la
 - DreamMod WASM runtime/format/adapter is not implemented. Horizon cold-cache WASM compiles via child process/Wasmtime; not adopted under no-player-compilation rule.
 - Player native .so/DLL mods are not implemented. Trusted native DreamMod Core is Horizon .hmod build-time integration only.
 - Check source before claiming dual-runtime support. Any WASM/native player support requires explicit trust, compatibility, sandbox, API-adapter and verification work.
+
+## Accepted player package folder convention (2026-11-19)
+D-013: Use the instance's existing `horizon-mods/` for both formats. DreamMod handles `.dmod` only; Horizon handles `.hmod` only. Do not rename or intercept `.hmod`. DreamMod Core is trusted native Horizon `.hmod` integration, not a player package. Scanner implementation remains a next step; safe bounded discovery, mixed-extension tests and diagnostics must be added before claiming it integrated.
