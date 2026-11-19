@@ -22,3 +22,5 @@
 
 ### Scanner verification status — formatting rerun (2026-11-19)
 - Initial runtime workflow failed at formatting only; no compile, test or Clippy stage executed. Formatting correction has been committed; a fresh run is pending.
+
+- Follow-up runtime run also found two remaining rustfmt-only diffs; they are corrected. The next workflow is the first attempt expected to reach test compilation, but no result is claimed yet.
