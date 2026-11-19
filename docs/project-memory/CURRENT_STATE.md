@@ -72,3 +72,5 @@ Updated: 2026-11-19
 - Added a capability-denial regression test; denial is surfaced to the script as a structured error and does not disable it. CI remains unverified.
 
 - Added result-isolation regression test for two mods using the same request ID but receiving separate data (commit `8c2f410`). CI still not visible/verified.
+
+- Event payload compatibility fix: scalar payloads are unchanged when no API results exist; result-bearing scalar events are wrapped with `event_payload` and `api_results`. Regression test added (commit `0e40e51`).
