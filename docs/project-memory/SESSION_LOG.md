@@ -155,3 +155,5 @@ Date: 2026-11-19
 - Runtime integration tests also cover oversized payload rejection. Source/formatting/CI checks are still not available from this session; treat as unverified.
 - Confirmed the router is callable from the runtime host interface, not directly from Rhai scripts. Direct script bridge/result delivery remains a distinct next task.
 - Follow-up commits: c146761, f9befbf, 0c663f9, 86b4ed9.
+
+- Follow-up: also bound serialized provider responses by `max_output_bytes`; runtime test uses a reduced limit to check oversized provider results are rejected. Source commits 9aaa889 and 1f10eea.
