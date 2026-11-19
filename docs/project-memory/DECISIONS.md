@@ -107,3 +107,11 @@ Status: ACCEPTED
 Decision: The Core `register_texture_atlases` collect hook consumes one sorted registry snapshot and resubmits it on initial registration/resource reload. Script adapters must authorize before batch replacement.
 Reason: Horizon requires atlas declarations on every reload; batch snapshot avoids per-resource bridge calls and keeps validation/ownership at Core boundary.
 Consequence: This is not end-to-end .dmod support until the interpreter and ModManager call the registry; no native handles or unrestricted access are exposed.
+
+
+## D-012 — Runtime formats are not assumed to be dual-mode
+Date: 2026-11-19
+Status: ACCEPTED
+Decision: The current player-package path remains intended interpreted-source .dmod. Rhai is only an isolated prototype and not selected. DreamMod does not implement WASM or player-native module execution. DreamMod Core is trusted native Horizon .hmod build-time integration. Do not promise dual WASM/native player-mod support until separate runtimes and security boundaries exist and are verified.
+Reason: Source inspection found no DreamMod WASM runtime or player-native loader. Horizon's existing WASM cold-cache compilation path conflicts with the no-player-compilation rule.
+Consequence: WASM needs a compliant precompiled module/runtime design and Host API adapter; player-native mods remain out of scope pending explicit trust-model approval.
