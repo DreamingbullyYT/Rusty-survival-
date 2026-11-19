@@ -72,6 +72,8 @@ pub enum ApiRouterError {
     InvalidOperation { domain: String, name: String },
     #[error("invalid provider ID '{0}'")]
     InvalidProviderId(String),
+    #[error("provider '{0}' declares invalid API operations")]
+    InvalidProviderDescriptor(String),
     #[error("provider '{0}' is not registered")]
     ProviderNotRegistered(String),
     #[error("no provider supports operation '{0}'")]
@@ -116,7 +118,10 @@ impl ApiRouter {
                 .iter()
                 .any(|operation| !valid_name(&operation.domain) || !valid_name(&operation.name))
         {
-            return Err(ApiRouterError::InvalidProviderId(descriptor.id.clone()));
+            if !valid_name(&descriptor.id) {
+                return Err(ApiRouterError::InvalidProviderId(descriptor.id.clone()));
+            }
+            return Err(ApiRouterError::InvalidProviderDescriptor(descriptor.id.clone()));
         }
         self.providers.insert(descriptor.id.clone(), provider);
         Ok(())
