@@ -198,3 +198,10 @@ Date: 2026-11-19
 - Fault-disable through provider invocation now clears pending API results too.
 - Added a script-facing capability denial test; expected denial does not disable the mod.
 - Commits: `db1189d` (aggregate budget), `4fc88f8` (fault cleanup), `09222b5` (authorization unwrap cleanup), `39d0166` (format cleanup), `26d955b` (denial test). CI status still unavailable.
+
+
+## S-2026-11-19-106 — Script result isolation test
+Date: 2026-11-19
+- Added two-mod regression test issuing the same request ID in parallel to `world.block_get`, receiving distinct inputs, and consuming each mod's own result on the next tick.
+- Asserted both returned command payloads contain their respective values (1 and 2), proving queues are per-mod rather than global.
+- Commit `8c2f410`. GitHub status/workflow lookup still returned empty; CI pending.
