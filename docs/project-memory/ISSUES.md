@@ -51,3 +51,5 @@
 - Architecture spec and contract crate added. Initial workspace CI is pending. The production interpreter, engine host adapter, and end-to-end mod execution remain unimplemented.
 
 - Contract foundation test source had one escaped-newline typo; corrected. Latest workspace Actions verification is pending.
+
+- Contract foundation now also includes deterministic capability grant-set operations and API feature identifiers. GitHub formatting/test/Clippy verification is pending.
