@@ -31,3 +31,5 @@
 
 
 - Script-facing API bridge has now been implemented as event-scoped `api_requests`/`api_results` with authorization and routing; regression test added. CI remains unverified, and bridge error/isolation/queue-limit coverage should be expanded.
+
+- Event-scoped API bridge has per-mod one-shot results, request/result bounds and scalar payload compatibility; regression tests added for roundtrip, denial, isolation, and scalar injection. Latest CI is still not confirmed.
