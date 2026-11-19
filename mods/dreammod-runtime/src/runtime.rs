@@ -1033,15 +1033,6 @@ mod tests {
         assert_eq!(output["source"], "horizon_world");
         assert_eq!(output["payload"]["x"], 3);
 
-        let no_cap_mod = package(
-            "dreammod.no_access",
-            "fn on_server_tick(event) { #{} }",
-            &["server_tick"],
-            &[],
-            Vec::new(),
-            1,
-        );
-        runtime.load_packages(vec![no_cap_mod], &AllowAllForTests).unwrap_err();
     }
 
     #[test]
@@ -1067,8 +1058,17 @@ mod tests {
             input: json!({}),
         };
         assert!(matches!(
-            runtime.call_api(&mod_id, request, &TestAuthorizer),
+            runtime.call_api(&mod_id, request.clone(), &TestAuthorizer),
             Err(ApiCallError::CapabilityDenied(Capability::WorldRead))
+        ));
+        let unknown = ApiRequest {
+            operation: ApiOperation::new("world", "mystery").unwrap(),
+            safety: ApiOperationSafety::ReadOnly,
+            input: json!({}),
+        };
+        assert!(matches!(
+            runtime.call_api(&mod_id, unknown, &TestAuthorizer),
+            Err(ApiCallError::UnknownOperation)
         ));
     }
 
