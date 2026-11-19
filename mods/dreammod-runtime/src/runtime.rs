@@ -1027,7 +1027,13 @@ mod tests {
     fn runtime_api_calls_require_enabled_mod_and_granted_capability_then_route() {
         use crate::api_router::{ApiOperation, ApiOperationSafety, ApiProviderKind, ApiRequest};
 
-        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mut runtime = DreamModRuntime::new(
+            RhaiEngine::default(),
+            RuntimeConfig {
+                max_output_bytes: 128,
+                ..RuntimeConfig::default()
+            },
+        );
         let mod_id = ModId::parse("dreammod.api_test").unwrap();
         let mod_package = package(
             "dreammod.api_test",
@@ -1076,6 +1082,15 @@ mod tests {
         assert!(matches!(
             runtime.call_api(&mod_id, oversized, &TestAuthorizer),
             Err(ApiCallError::PayloadTooLarge)
+        ));
+        let large_response = ApiRequest {
+            operation: request.operation.clone(),
+            safety: ApiOperationSafety::ReadOnly,
+            input: json!({"blob": "y".repeat(200)}),
+        };
+        assert!(matches!(
+            runtime.call_api(&mod_id, large_response, &TestAuthorizer),
+            Err(ApiCallError::ResponseTooLarge)
         ));
     }
 
