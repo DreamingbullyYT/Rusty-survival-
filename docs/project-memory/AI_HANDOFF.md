@@ -40,3 +40,9 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - Important limitation: scripts cannot call this host API directly yet; implement a safe script bridge and result path before claiming script API usability.
 - Architecture and API surface mapping: `docs/DREAMMOD_HYBRID_API.md`.
 - No concrete Horizon adapter/end-to-end API exists yet. Don't claim Horizon integration until tested.
+
+
+## Script API bridge design
+- Read `docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md` before implementation.
+- Safe initial design is event-scoped deferred request/response: scripts emit `api_requests`; runtime routes/authorizes; responses are delivered in the next event under `api_results` and correlated by mod-local IDs.
+- Design only: no bridge code, queue, script schema, or integration tests exist yet. Host-side `call_api` is still the only entry point.
