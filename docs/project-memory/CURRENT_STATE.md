@@ -61,3 +61,7 @@
 - Added a valid generated `.dmod` ZIP end-to-end test for the runtime directory loader, alongside ignored `.hmod` and malformed-package diagnostic assertions. CI pending.
 
 - Valid-package integration test first CI attempt was rustfmt-only; trailing whitespace corrected and rerun pending.
+
+### End-to-end directory loading verification — 2026-11-19
+- Runtime CI `44544852796` passed rustfmt, 22 tests and Clippy on `0790dc4`. Valid `.dmod` package loading, `.hmod` isolation and malformed-file diagnostics are covered end-to-end.
+- Only caller-side launcher integration (instance path and UI) remains outside this runtime repository.
