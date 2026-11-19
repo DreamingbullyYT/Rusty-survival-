@@ -66,4 +66,4 @@
 
 - [ ] Verify valid-package end-to-end directory test with runtime CI.
 
-- [ ] Verify valid-package end-to-end test after rustfmt correction.
+- [x] Valid-package end-to-end test verified: runtime CI `44544852796` passed 22 tests, formatting and Clippy.
