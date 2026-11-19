@@ -53,3 +53,6 @@
 ### Scanner-to-runtime integration verified — 2026-11-19
 - Runtime Actions `44544390519` passed on `20940cf`: formatting, all 21 tests and Clippy `-D warnings`.
 - The runtime now exposes a direct scan-and-load API for a supplied Horizon mods directory. It returns package load IDs, scanner diagnostics and `.hmod` ignore count. The launcher still needs to pass the actual instance path and render diagnostics.
+
+### Valid-package directory load integration test — 2026-11-19
+- Added an end-to-end runtime test that writes a valid `.dmod` ZIP into a mixed directory and confirms runtime loads it, ignores `.hmod`, and reports a malformed sibling package. Runtime CI pending.
