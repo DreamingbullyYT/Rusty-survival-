@@ -160,3 +160,5 @@ Runtime directory-loading CI found one final rustfmt trailing blank line after t
 Runtime run `44544390519` passed 21 tests, formatting and Clippy. The scan/load entrypoint is verified in the runtime crate; automatic instance path discovery and UI diagnostics remain outside the implemented scope.
 
 A valid ZIP package end-to-end test was added for the directory-loading entrypoint; it checks successful loading, `.hmod` isolation and malformed-package diagnostics. CI pending.
+
+Valid-package directory integration test's first CI attempt was rustfmt-only (trailing blank line); corrected in `0790dc4`, verification pending.
