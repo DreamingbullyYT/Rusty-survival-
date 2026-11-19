@@ -1,4 +1,6 @@
+# Current Issues
 
-
-### Atlas declaration helper status (2026-11-19)
-A host-independent `atlas` module now validates identifiers/path safety, enabled-owner filtering, duplicate atlas IDs, deterministic order, and declaration count. Package CI run `44467917911` passed. PMCS run `44467917951` failed because the implementation commit did not include the required project-memory updates; this documentation repair is in progress. No live atlas registration or script-facing API is implemented. Prefer a direct batched Core API when wiring the verified Horizon hook; avoid extra wrapper layers.
+### Atlas declaration integration (2026-11-19)
+- Package-level declaration ownership and snapshot integration has been implemented in ModManager and awaits CI validation.
+- No Core/Horizon integration yet: the Core hook is empty and the Horizon reload registration contract still needs exact source/API verification.
+- API should remain direct/batched. Atlas JSON parsing, sprite validation and resource publication belong to the host hook/runtime integration.
