@@ -131,11 +131,11 @@ Use one concept per file. `lib.rs` and `mod.rs` declare/re-export; keep implemen
 
 Minelib's root license is AGPLv3. No Minelib code is copied at present. Any future source reuse requires file-level provenance and legal review first.
 
-## 6. Scope boundary
+## 6. Scope boundary — updated 2026-11-19
 
-This phase is the Rust vanilla engine only. Do not design or implement mod loaders, mod APIs, hooks, mixins, scripting runtimes, mod registries or launcher modding features. Revisit only if the user explicitly changes scope.
+The new engine remains vanilla-first for parity, but DreamMod API design and its independent integration are now explicitly in scope. DreamMod must not depend on Horizon, HNMods, .hmod, horizon-mixins, or another external mod host. Keep mod API implementation in DreamMod-owned crates and expose it through explicit engine-owned adapter contracts; do not add invasive mixins or scatter mod-specific code through vanilla modules.
 
-Android is the intended first platform, but current work remains focused on headless engine foundations and reference tests. Android device work stays paused unless explicitly resumed.
+Build only the API contracts for engine systems that exist or are concretely planned. The API may describe future domains (physics, vehicles, worldgen, rendering, AI, etc.) but must mark them unsupported until engine implementation and integration tests exist. Android-first remains the target; no player-side compilation.
 
 ## 7. Current reality
 
