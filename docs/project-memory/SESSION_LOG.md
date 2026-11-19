@@ -129,3 +129,12 @@ Date: 2026-11-19
 
 ## S-2026-11-19-97 — Adapter test compile correction
 - Runtime test compile reported ModId import visibility; changed test to import ModId from manifest. Commit 106a1c5; verification pending.
+
+
+## S-2026-11-19-98 — Hybrid Horizon API routing foundation
+Date: 2026-11-19
+- User changed integration direction: reuse Horizon's new documented API where compatible; DreamMod-native providers cover unsupported features. Keep unified .dmod contracts, runtime hot-swapping and engine independence.
+- Added `ApiRouter`, provider descriptors/kinds, per-domain preference, operation support declarations, provider replacement/unregister, and tests for Horizon-first selection, DreamMod fallback, preference switching, failure no-retry and invalid IDs.
+- Added `docs/DREAMMOD_HYBRID_API.md` with policy, planned surface map and explicit non-implementation caveats. D-014 superseded by D-015.
+- Implementation commits: 66681bc (router), d9f6b6a (exports), f4ce9de/09dadb9 (format cleanup), 173cc89 (architecture doc); PMCS updates follow.
+- Not yet connected to runtime dispatch; no concrete Horizon adapter. CI verification pending.
