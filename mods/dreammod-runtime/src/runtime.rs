@@ -548,7 +548,14 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
         if !instance.granted.contains(&required) {
             return Err(ApiCallError::CapabilityDenied(required));
         }
-        self.api_router.call(request).map_err(ApiCallError::Router)
+        let response = self.api_router.call(request).map_err(ApiCallError::Router)?;
+        let response_bytes = serde_json::to_vec(&response)
+            .map_err(|_| ApiCallError::InvalidOperation)?
+            .len();
+        if response_bytes > self.config.max_output_bytes {
+            return Err(ApiCallError::ResponseTooLarge);
+        }
+        Ok(response)
     }
 
     pub fn api_providers(&self) -> Vec<crate::api_router::ApiProviderDescriptor> {
@@ -839,6 +846,8 @@ pub enum ApiCallError {
     InvalidOperation,
     #[error("API request payload exceeds the configured byte limit")]
     PayloadTooLarge,
+    #[error("API provider response exceeds the configured byte limit")]
+    ResponseTooLarge,
     #[error("mod lacks capability {0:?}")]
     CapabilityDenied(Capability),
     #[error(transparent)]
