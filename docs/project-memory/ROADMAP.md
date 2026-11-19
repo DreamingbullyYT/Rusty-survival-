@@ -149,7 +149,8 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Define provider abstraction and per-operation capability declarations.
 - [x] Default to Horizon-first preference with DreamMod fallback when the Horizon provider does not advertise an operation.
 - [x] Runtime domain preference, provider hot replacement/removal and tests added (CI pending).
-- [x] Connect router to runtime API calls and authorization pipeline (enabled-mod check, recognized operation, capability grant).
+- [x] Connect router to host-side runtime API calls and authorization pipeline (enabled-mod check, recognized operation, capability grant).
+- [ ] Expose API requests directly to .dmod scripts with capability enforcement and result handling; currently API calls are host-invoked only.
 - [ ] Implement and pin concrete Horizon adapter(s); verify actual operations against current public API.
 - [ ] Provide DreamMod-native implementations for gaps; add operation-specific integration tests.
 - [ ] Define safe migration/snapshot contracts before hot-switching stateful providers.
