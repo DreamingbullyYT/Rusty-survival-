@@ -8,20 +8,21 @@ Updated: 2026-11-19
 - Capability filtering and response validation for commands/providers.
 - Runtime package loading defaults to disabled; explicit activation is required.
 - Fault-disable cleanup removes a mod's provider registrations.
-- Generic EngineCommandHost boundary: dispatch produces authorized commands and submits a non-empty batch to a host; host promises atomic apply. Mock-host tests cover delivery and denied command suppression.
+- Generic EngineCommandHost boundary: dispatch produces authorized commands and submits a non-empty batch to a host; host contract requires atomic apply. Mock-host tests cover delivery and denied-command suppression.
 
 ## Verified
-- Runtime lifecycle/provider cleanup: runtime CI passed 24 tests, formatting and Clippy at 6bae66f43f6e51b9c92301beea34224e9bb03ac6.
-- Root Rust core formatting/tests/Clippy and offline engine test workflow passed at that verified commit.
+- Runtime CI passed on 406b8e525eb99ae276633a32336fa1615b1298c3: formatting, 26 tests, Clippy with -D warnings.
+- Root offline engine test workflow passed on 4d4731573ae63a64dbf747b90084b265d43a87b6.
+- Explicit activation and fault-disable provider cleanup were previously verified on 6bae66f43f6e51b9c92301beea34224e9bb03ac6.
 
-## Not implemented / pending verification
-- Latest host-boundary commits 6b914d9 and 463abba have not yet been CI-verified.
+## Remaining
 - Concrete engine host adapters and world/entity/physics/render/audio/UI/AI/worldgen subsystems.
-- Runtime activation still is not unified with package ModManager approvals.
-- PMSC freshness validator has to be run on the host-boundary change.
+- Runtime activation is not unified with package ModManager approvals.
+- Host batch atomicity is a contract for future adapters; no real engine mutations/rollback implementation exists.
+- Language decision and production sandbox remain open; Rhai is a candidate runtime.
 
 ## Next
-1. Verify host-boundary formatting, tests and Clippy.
-2. Build a mock engine state adapter that applies typed world/entity mutations with batch validation and rollback.
-3. Unify package approval and runtime activation.
-4. Define persistent mod state, save format/versioning and bounded storage policy (PMCS project continuity is separate from game mod-state persistence).
+1. Create a typed mock engine adapter with real mock-state mutations and batch validation/rollback tests.
+2. Unify package approval and runtime activation through one coordinator.
+3. Add the first concrete domain adapter, preferably world/block commands, then entity and physics.
+4. Keep PMCS fresh and append the session log for each substantial implementation change.
