@@ -52,3 +52,6 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - Added typed request/result envelope types in `api_router.rs` and public exports. Tests cover validation and serialization.
 - No request execution pipeline yet. Do not claim scripts can call API; next implement `api_requests` response schema, per-mod result queue, event injection, and same authorization/routing.
 - Commit `f484db8`; Actions/status currently returned no checks/runs, so verification is pending.
+
+
+- Follow-up compile fix: `ApiOperation` now derives serde traits for request/result envelopes; commit `1ffd548`. CI remains unconfirmed.
