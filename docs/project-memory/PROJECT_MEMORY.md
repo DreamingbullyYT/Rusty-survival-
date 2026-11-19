@@ -171,3 +171,5 @@ Runtime CI `44544852796` passed 22 tests, rustfmt and Clippy. Valid player `.dmo
 - Current target is Rusty-survival's own Rust engine. Horizon/HNMods/.hmod/horizon-mixins are optional historical experiments only.
 - The new `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md` defines stable language-neutral contracts, host adapters, domain API coverage (including physics, vehicle collision channels, AI, worldgen and render), provider replacement rules, capability sandbox, interpreted-source package requirements, performance constraints and staged acceptance gates.
 - Initial `crates/dreammod-contract` foundation is in the workspace: ModId, ResourceId, CapabilityId, ApiVersion/Range, opaque Handle, structured Diagnostic. CI pending; no passing status claimed.
+
+- Fixed a literal escaped-newline typo in the contract crate diagnostic unit test; pending Actions verification.
