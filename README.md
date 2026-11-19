@@ -1,16 +1,16 @@
 # DreamMod
 
-A deeply extensible, interpreted runtime modding platform for Horizon.
+A deeply extensible interpreted modding API built for the independent Rusty-survival engine.
 
-- Player-installed `.dmod` packages execute as interpreted source.
-- No per-mod Rust/native compilation, bytecode build, or game rebuild on player devices.
-- DreamMod Core is built once as a trusted native Horizon mod and distributed prebuilt.
-- Reuse Horizon's typed mod API and native host; extend only where required.
-- Add systems and replace designated subsystems through versioned contracts.
-- Sandbox scripts by default with explicit capabilities and execution budgets.
+- Player mods use `.dmod` packages containing interpreted source, assets and data.
+- No player-side native compilation, bytecode compilation, JIT or engine rebuild.
+- DreamMod is built into the engine through its own contract/runtime/host adapter crates.
+- **No dependency on Horizon, HNMods, `.hmod`, horizon-mixins or an external mod host.**
+- API coverage is planned across world/worldgen, blocks/items, entities/AI, physics/vehicles, player/inventory, rendering/assets, audio/UI, networking and saves.
+- Deep subsystem replacement uses versioned contracts, engine-native providers, capability checks, budgets and fallback behavior.
 
-This repository owns DreamMod Core, runtime, mod-facing APIs, package format, tests and documentation. The launcher is separate.
+This repository owns the API, package format, runtime, host integration, tests and documentation. The launcher only installs/updates the engine and mod packages.
 
-Read [AI_HANDOFF.md](docs/project-memory/AI_HANDOFF.md), [architecture](docs/specs/DREAMMOD_ARCHITECTURE.md) and [Horizon platform audit](docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md).
+Read [AI_HANDOFF.md](docs/project-memory/AI_HANDOFF.md), [independent API architecture](docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md), [engine layout](docs/specs/ENGINE_LAYOUT.md) and [project state](docs/project-memory/CURRENT_STATE.md).
 
-**Status:** native `.hmod` Core bootstrap compiles against pinned Horizon in CI. An isolated Rhai AST-interpreter evaluation prototype has been added, but its CI run is pending and Rhai is not the final language choice. No `.dmod` loader, production sandbox, prebuilt native distribution or game startup is verified.
+**Status:** architecture is defined and package/runtime foundations are partially implemented. The new engine currently has only coordinate primitives. The production source interpreter, engine adapter, full API domains and end-to-end `.dmod` execution are not yet implemented or verified.
