@@ -1,6 +1,9 @@
 # DreamMod Engine Host Contract (Draft)
 
-Status: design based on source audit, not yet implemented.
+Status: partially implemented (generic authorized-command host boundary); concrete engine adapters remain draft.
+Date: 2026-11-19
+
+Implementation note: DreamMod Runtime now provides EngineCommandHost and dispatch_event_and_execute. The runtime forwards only its authorized command list; the host must apply it atomically. Mock-host tests exercise the boundary, but do not establish native engine integration.
 Date: 2026-11-19
 
 ## Ownership
