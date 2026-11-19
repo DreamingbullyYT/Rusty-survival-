@@ -1148,9 +1148,7 @@ mod tests {
 
     #[test]
     fn dmod_script_can_request_api_and_receive_result_on_next_event() {
-        use crate::api_router::{
-            ApiOperation, ApiOperationSafety, ApiProviderDescriptor, ApiProviderKind,
-        };
+        use crate::api_router::{ApiOperation, ApiProviderDescriptor, ApiProviderKind};
 
         let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
         let mod_id = ModId::parse("dreammod.script_api").unwrap();
@@ -1197,19 +1195,15 @@ mod tests {
         runtime
             .register_api_provider(Box::new(EchoApiProvider {
                 descriptor: ApiProviderDescriptor {
-                id: "horizon_world".into(),
-                kind: ApiProviderKind::Horizon,
-                priority: 0,
+                    id: "horizon_world".into(),
+                    kind: ApiProviderKind::Horizon,
+                    priority: 0,
                     operations: [operation].into(),
                 },
             }))
             .unwrap();
 
-        let event = RuntimeEvent::new(
-            "server_tick",
-            RuntimeSide::Server,
-            json!({ "tick": 1 }),
-        );
+        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({ "tick": 1 }));
         let first = runtime.dispatch_event(&event, &TestAuthorizer);
         assert!(first.commands.is_empty());
         assert!(first.failures.is_empty());
@@ -1218,6 +1212,55 @@ mod tests {
         assert!(second.failures.is_empty(), "{:?}", second.failures);
         assert_eq!(second.commands.len(), 1);
         assert_eq!(second.commands[0].command.payload["x"], 7);
+    }
+
+    #[test]
+    fn script_api_capability_denial_is_delivered_without_disabling_mod() {
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_id = ModId::parse("dreammod.denied_script_api").unwrap();
+        let source = r#"
+            fn on_server_tick(event) {
+                if event.api_results.len() == 0 {
+                    #{
+                        api_requests: [
+                            #{
+                                request_id: "denied_lookup",
+                                operation: #{ domain: "world", name: "block_get" },
+                                safety: "read_only",
+                                input: #{ x: 1, y: 2, z: 3 }
+                            }
+                        ]
+                    }
+                } else if event.api_results[0].error == "capability_denied" {
+                    #{
+                        commands: [
+                            #{ namespace: "world", name: "unknown_probe", payload: #{} }
+                        ]
+                    }
+                } else {
+                    #{}
+                }
+            }
+        "#;
+        let mod_package = package(
+            "dreammod.denied_script_api",
+            source,
+            &["server_tick"],
+            &[],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &DenyAll).unwrap();
+        runtime.enable_mod(&mod_id);
+
+        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
+        let first = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(first.failures.is_empty());
+        let second = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(second.failures.is_empty(), "{:?}", second.failures);
+        assert_eq!(second.denied.len(), 1);
+        assert_eq!(second.denied[0].reason, "unknown command");
+        assert!(runtime.is_enabled(&mod_id));
     }
 
     #[test]
