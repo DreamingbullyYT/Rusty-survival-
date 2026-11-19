@@ -36,7 +36,7 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 
 ## Hybrid API routing — implemented, verification pending
 - `ApiRouter` integrated in `DreamModRuntime`: Horizon-first provider selection, DreamMod fallback by advertised operation, per-domain preference, hot replacement/removal.
-- `call_api` requires a loaded and enabled mod, an authorizer-recognized operation and granted capability; validates operation IDs and limits serialized payload size. Runtime tests added; CI pending.
+- `call_api` requires a loaded and enabled mod, an authorizer-recognized operation and granted capability; validates operation IDs and limits serialized request/response sizes. Runtime tests added; CI pending.
 - Important limitation: scripts cannot call this host API directly yet; implement a safe script bridge and result path before claiming script API usability.
 - Architecture and API surface mapping: `docs/DREAMMOD_HYBRID_API.md`.
 - No concrete Horizon adapter/end-to-end API exists yet. Don't claim Horizon integration until tested.
