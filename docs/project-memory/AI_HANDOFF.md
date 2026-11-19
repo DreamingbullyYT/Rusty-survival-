@@ -1,7 +1,7 @@
 # DreamMod AI Handoff
 
 ## Mandatory Entry Point
-Read this handoff, then PROJECT_MEMORY.md, CURRENT_STATE.md, DECISIONS.md and the append-only SESSION_LOG.md before continuing.
+Read this handoff, then `PROJECT_MEMORY.md`, `CURRENT_STATE.md`, `DECISIONS.md` and append-only `SESSION_LOG.md` before continuing.
 
 ## Target
 Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compatible through optional adapters; DreamMod-native providers fill missing operations. Keep the mod-facing contract engine/provider-neutral and hot-swappable. Horizon/HNMods must not be mandatory dependencies.
@@ -13,62 +13,33 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - PMCS is persistent project context. Append session history and refresh current-state snapshots after substantial work.
 - IMPLEMENTED is not VERIFIED: do not claim checks passed without CI evidence.
 
-## Latest implementation and verification
-- Runtime packages load disabled and require explicit enable_mod.
-- Provider registrations are cleared on fault-disable.
-- Runtime exposes EngineCommandHost and dispatch_event_and_execute. Only authorized commands reach a host; it is contractually atomic. Empty batches skip the host.
-- Mock-host tests verify command delivery and denied-command suppression.
-- Verified commit 406b8e5: rustfmt passed, 26 runtime tests passed, Clippy passed with warnings denied. Root offline engine tests passed on 4d47315.
-- This is only a generic host boundary; no concrete engine adapter or actual world/entity/physics mutations exist.
+## Verified historical milestones
+- Runtime CI passed on `406b8e5`: format, 26 tests and Clippy with warnings denied.
+- Runtime CI passed on `c89b038`: format, 27 tests and Clippy.
+- Runtime CI passed on `fd4109a`: 27 tests, format and Clippy; root offline engine tests/Clippy also passed.
+- This is historical verification; it does not verify current bridge code.
 
-## Latest implementation and verification
-- Test-only mock host supports block writes plus entity health updates in one atomic staged batch. Invalid batch preserves both maps. Verified on fd4109a: DreamMod Runtime 27 tests, rustfmt and Clippy passed; workspace offline tests and Clippy passed.
+## Current implementation
+- Runtime packages load disabled and require explicit activation; provider registrations and pending API results are cleared on fault-disable.
+- EngineCommandHost boundary and test-only transactional mock are implemented. No actual world/entity engine adapter/storage is connected.
+- Hybrid ApiRouter: Horizon-first default, provider fallback by advertised operation, per-domain preference, replacement/removal. No concrete Horizon adapter yet.
+- Script bridge: `.dmod` returns `api_requests`; requests are validated, operation authorizer/capability checked, then routed. Results appear once on the same mod's next callback as `event.api_results`.
+- Request count, per-request input/result sizes, and aggregate queued result bytes are bounded. Errors are structured; expected denial does not disable the mod. Scalar event payloads remain unchanged before results and are wrapped under `event_payload` when results are injected.
+- Regression tests cover script request→provider→next event→command, capability denial, two-mod isolation using identical request IDs, and scalar payload compatibility.
+
+## Verification status
+- Latest bridge commits: `9934644`, `6ee5b26`, `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`, `8c2f410`, `037eaed`, `0e40e51`.
+- GitHub status/workflow lookups returned empty for latest code; local Cargo/Rust tools are unavailable. Do not claim latest tests/format/Clippy passed.
+- Check CI or run `cargo fmt --manifest-path mods/dreammod-runtime/Cargo.toml -- --check`, `cargo test --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml`, and `cargo clippy --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml -- -D warnings` before marking verified.
+
+## Horizon adapter blocker
+- Official Horizon code mods implement `mod_api::Hooks` and receive typed hook-specific host/event contexts; Level reads and writes use access-specific host types. Native API is experimental and revision-pinned.
+- DreamMod's current `ApiProvider::invoke` has no scoped host-context argument. Do not implement live Horizon world operations using global mutable state, unsafe host pointers or fabricated snapshots.
+- Next: design a scoped engine-neutral provider context and pass it through dispatch/router/provider invocation, with Horizon-specific optional adapter and no SDK dependency in base runtime. Research: https://playhorizon.dev/docs/mod-code and https://playhorizon.dev/docs/api/stability.
 
 ## Next steps
-1. Verify CI for hybrid ApiRouter (format, tests, Clippy).
-2. Build a concrete version-pinned Horizon adapter for a small API slice, with contract-type translation and integration tests.
-4. Implement DreamMod-native fallbacks for gaps; integrate real world/block storage and entity/physics adapters.
-5. Unify package approval and runtime activation in a coordinator.
-
-## Current vertical slice (verification pending)
-- Typed block command adapter in runtime crate is implemented; native world backend must fulfill atomicity. Tests added; CI pending. The engine still has no actual chunk/block storage adapter.
-
-
-## Hybrid API routing — implemented, verification pending
-- `ApiRouter` integrated in `DreamModRuntime`: Horizon-first provider selection, DreamMod fallback by advertised operation, per-domain preference, hot replacement/removal.
-- `call_api` requires a loaded and enabled mod, an authorizer-recognized operation and granted capability; validates operation IDs and limits serialized request/response sizes. Runtime tests added; CI pending.
-- Script API bridge implemented: scripts return `api_requests`; results route with authorizer/capability checks and appear once in the same mod's next callback under `api_results`. Regression test added; CI pending.
-- Architecture and API surface mapping: `docs/DREAMMOD_HYBRID_API.md`.
-- No concrete Horizon adapter/end-to-end API exists yet. Don't claim Horizon integration until tested.
-
-
-## Script API bridge design
-- Read `docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md` before implementation.
-- Safe initial design is event-scoped deferred request/response: scripts emit `api_requests`; runtime routes/authorizes; responses are delivered in the next event under `api_results` and correlated by mod-local IDs.
-- Bridge source and a request→provider→next-event result→command test now exist. CI remains unverified; next add denial/error, isolation and bounds tests, then implement a real Horizon provider.
-
-
-## Bridge contract primitives (verification pending)
-- Added typed request/result envelope types in `api_router.rs` and public exports. Tests cover validation and serialization.
-- No request execution pipeline yet. Do not claim scripts can call API; next implement `api_requests` response schema, per-mod result queue, event injection, and same authorization/routing.
-- Commit `f484db8`; Actions/status currently returned no checks/runs, so verification is pending.
-
-
-- Follow-up compile fix: `ApiOperation` now derives serde traits for request/result envelopes; commit `1ffd548`. CI remains unconfirmed.
-
-
-## Latest script API bridge
-- Implemented event-scoped request/result bridge in `runtime.rs`; script response schema supports `api_requests` and event payload receives `api_results` on the next callback.
-- Capability authorizer and provider router are reused. Input/result byte bounds and duplicate IDs are checked; request results are isolated per mod and one-shot.
-- Commits `9934644`, `6ee5b26`. No CI evidence yet; don't mark verified.
-
-
-- Bridge hardening since initial implementation: aggregate queued result bytes capped at `max_output_bytes`, error envelopes are budgeted, provider-fault auto-disable clears pending API results, and a capability-denial regression test was added. Commits `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`; CI remains unverified.
-
-- Scalar event compatibility is covered: payloads are passed through untouched before any API results; if results arrive for a scalar payload, they are injected via `{event_payload, api_results}`. Regression test commit `0e40e51`; CI pending.
-
-
-## Horizon adapter context constraint
-- Official Horizon code mods implement `mod_api::Hooks` and receive typed hook-specific host/event contexts; Level reads and writes use different host types. Current Horizon native mod API is experimental/version-pinned.
-- DreamMod's provider trait currently has no host context argument. Do not implement a live Horizon world provider via globals, unsafe pointers, or stale snapshots. Next design scoped context injection through dispatch/router/provider, keeping Horizon SDK optional.
-- Research references: https://playhorizon.dev/docs/mod-code, https://playhorizon.dev/docs/api/stability.
+1. Verify latest runtime CI and fix any compilation/rustfmt/Clippy failures.
+2. Design scoped provider execution context and test it with context-aware mock providers.
+3. Implement a small optional, version-pinned Horizon adapter vertical slice and advertise only tested operations.
+4. Add DreamMod-native fallback providers and connect typed world/block adapter to real engine storage.
+5. Unify package approval and runtime activation.
