@@ -8,8 +8,8 @@
 pub mod manifest;
 pub mod package;
 pub mod runtime;
-pub mod world_adapter;
 pub mod script;
+pub mod world_adapter;
 
 pub use manifest::{Capability, ModDependency, ModId, ModManifest, ModSide};
 pub use package::{
@@ -23,4 +23,7 @@ pub use runtime::{
     RegisteredProvider, RuntimeConfig, RuntimeError, RuntimeEvent, RuntimeSide, ScriptFailure,
 };
 pub use script::{ExecutionLimits, RhaiEngine, ScriptEngine, ScriptError};
-pub use world_adapter::{BlockAdapterError, BlockId, BlockMutation, BlockPosition, BlockWorldBackend, WorldBlockCommandAdapter};
+pub use world_adapter::{
+    BlockAdapterError, BlockId, BlockMutation, BlockPosition, BlockWorldBackend,
+    WorldBlockCommandAdapter,
+};
