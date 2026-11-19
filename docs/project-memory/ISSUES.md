@@ -39,3 +39,5 @@
 - Runtime workflow `44544390519` passed formatting, 21 tests and Clippy. The code path is validated as a library API; instance path discovery, mod UI and permission UX remain pending.
 
 - Added a successful-load integration test for a real generated `.dmod` ZIP in the shared directory; CI pending.
+
+- Valid-package integration test CI initially stopped at a trailing blank line only; corrected, with rerun pending.
