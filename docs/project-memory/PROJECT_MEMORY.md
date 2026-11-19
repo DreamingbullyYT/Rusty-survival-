@@ -22,3 +22,9 @@ Package validation/scanning, interpreted runtime foundation, owner-scoped API re
 
 ## World/block adapter implementation
 - Added typed block ID/position/mutation and WorldBlockCommandAdapter in runtime crate (47d6e6e). Converts authorized world.set_block envelopes; validates schema, namespaced IDs, X/Z world-border bounds; stages complete batch before invoking native backend atomic contract. Tests cover successful batch, mod namespaces, invalid final command, unknown payload, bounds, and unsupported commands. CI pending.
+
+
+## Current unverified work (2026-11-19)
+- Hybrid API router and event-scoped script API bridge are implemented in source: `.dmod` requests route through capability authorization and provider selection; one-shot per-mod results arrive as `event.api_results`. Regression tests cover roundtrip, denial, isolation and scalar payload compatibility. CI is not verified.
+- Horizon's native mod API is hook-scoped and version-pinned; DreamMod provider calls currently have no scoped host-context argument. Design that context before implementing a real Horizon adapter; keep SDK optional.
+- See CURRENT_STATE.md and AI_HANDOFF.md for the current source commit list and exact next steps.
