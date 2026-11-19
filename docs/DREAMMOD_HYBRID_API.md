@@ -36,9 +36,9 @@ The design is now specified in `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md`.
 
 Providers will receive a borrowed operation-scoped host context through a context-aware invocation path. The context is bound to the already-authorized operation, expires when the invocation returns, and cannot be used to dispatch another operation. Existing self-contained providers keep the legacy `invoke` entrypoint through a compatibility default. Context-free calls remain available for those providers; adapters that require a host context must fail explicitly when it is missing.
 
-The context interface is engine-neutral. A Horizon adapter will translate the scoped operation into typed callback host calls without exposing Horizon types to scripts or adding Horizon SDK dependencies to the base runtime. No global mutable handles, unsafe pointers, stale snapshots, or context caching.
+The context interface is engine-neutral. Router-level context support is implemented (but CI-unverified); runtime dispatch does not yet pass contexts. A Horizon adapter will translate the scoped operation into typed callback host calls without exposing Horizon types to scripts or adding Horizon SDK dependencies to the base runtime. No global mutable handles, unsafe pointers, stale snapshots, or context caching.
 
-The first planned contract test is a fake scoped `world.block_get` context/provider pair, including context propagation, mismatched-operation rejection, missing-context behavior and provider-error handling. This is not yet implemented or verified.
+Router tests now include a fake context/provider pair for context propagation and mismatched-operation rejection. Runtime-level missing-context/provider-error cases remain. The tests are not yet verified by CI.
 
 ## Horizon surface mapping (planned)
 
