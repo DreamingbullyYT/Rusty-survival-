@@ -213,6 +213,71 @@ fn valid_name(value: &str) -> bool {
         })
 }
 
+/// Request emitted by a script for the runtime's event-scoped API bridge.
+/// The first bridge version is deferred: the result is delivered in a later event.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ApiScriptRequest {
+    pub request_id: String,
+    pub operation: ApiOperation,
+    pub safety: ApiOperationSafety,
+    #[serde(default)]
+    pub input: Value,
+}
+
+impl ApiScriptRequest {
+    pub fn validate(&self) -> Result<(), ApiScriptRequestError> {
+        if !valid_request_id(&self.request_id) {
+            return Err(ApiScriptRequestError::InvalidRequestId);
+        }
+        if !valid_name(&self.operation.domain) || !valid_name(&self.operation.name) {
+            return Err(ApiScriptRequestError::InvalidOperation);
+        }
+        Ok(())
+    }
+}
+
+/// Result envelope delivered to the requesting mod only.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ApiScriptResult {
+    pub request_id: String,
+    pub operation: ApiOperation,
+    #[serde(default)]
+    pub result: Option<Value>,
+    #[serde(default)]
+    pub error: Option<ApiScriptResultError>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ApiScriptResultError {
+    InvalidRequest,
+    UnknownOperation,
+    CapabilityDenied,
+    ProviderUnavailable,
+    ProviderFailed,
+    PayloadTooLarge,
+    ResponseTooLarge,
+    ModDisabled,
+}
+
+#[derive(Debug, Error, Clone, Copy, Eq, PartialEq)]
+pub enum ApiScriptRequestError {
+    #[error("invalid request ID")]
+    InvalidRequestId,
+    #[error("invalid API operation identifier")]
+    InvalidOperation,
+}
+
+fn valid_request_id(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 64
+        && value.bytes().all(|byte| {
+            byte.is_ascii_alphanumeric() || byte == b'_' || byte == b'-'
+        })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
