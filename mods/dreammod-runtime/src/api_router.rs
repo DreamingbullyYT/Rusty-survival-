@@ -105,7 +105,10 @@ impl ApiRouter {
         }
     }
 
-    pub fn register_provider(&mut self, provider: Box<dyn ApiProvider>) -> Result<(), ApiRouterError> {
+    pub fn register_provider(
+        &mut self,
+        provider: Box<dyn ApiProvider>,
+    ) -> Result<(), ApiRouterError> {
         let descriptor = provider.descriptor();
         if !valid_name(&descriptor.id) {
             return Err(ApiRouterError::InvalidProviderId(descriptor.id.clone()));
@@ -247,9 +250,13 @@ mod tests {
     #[test]
     fn horizon_first_and_native_fallback_by_supported_operation() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
+        router
+            .register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false)))
+            .unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "dreammod");
-        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
+        router
+            .register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false)))
+            .unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
     }
 
@@ -266,9 +273,14 @@ mod tests {
     #[test]
     fn provider_failure_is_not_automatically_retried() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 5, true))).unwrap();
+        router
+            .register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 5, true)))
+            .unwrap();
         router.register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
-        assert!(matches!(router.call(request()), Err(ApiRouterError::ProviderFailed { provider, .. }) if provider == "horizon"));
+        assert!(matches!(
+            router.call(request()),
+            Err(ApiRouterError::ProviderFailed { provider, .. }) if provider == "horizon"
+        ));
     }
 
     #[test]
@@ -276,7 +288,9 @@ mod tests {
         let mut router = ApiRouter::default();
         router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
-        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, true))).unwrap();
+        router
+            .register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, true)))
+            .unwrap();
         assert!(router.call(request()).is_err());
         router.unregister_provider("horizon").unwrap();
         assert!(matches!(router.call(request()), Err(ApiRouterError::UnsupportedOperation(_))));
@@ -286,6 +300,8 @@ mod tests {
     fn invalid_operation_and_provider_ids_are_rejected() {
         assert!(ApiOperation::new("../world", "block_get").is_err());
         let mut router = ApiRouter::default();
-        assert!(router.register_provider(Box::new(provider("../horizon", ApiProviderKind::Horizon, 0, false))).is_err());
+        assert!(router
+            .register_provider(Box::new(provider("../horizon", ApiProviderKind::Horizon, 0, false)))
+            .is_err());
     }
 }
