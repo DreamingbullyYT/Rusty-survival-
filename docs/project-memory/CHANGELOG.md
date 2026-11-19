@@ -95,3 +95,5 @@
 ### Hybrid API request hardening — 2026-11-19
 - Validate provider-declared operations and request operation IDs; reject oversized API payloads using runtime configured limits.
 - Added runtime payload-limit test. Script-facing direct bridge is still pending; host-side runtime API only. CI not verified.
+
+- Also enforce configured response-size limit on provider results; regression test added for oversized response rejection.
