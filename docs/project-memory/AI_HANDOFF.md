@@ -182,3 +182,5 @@ A library scanner now exists in `mods/dreammod-runtime/src/package.rs` and is ex
 Scanner CI note: first runtime Actions attempt stopped at `cargo fmt --check`, so tests/Clippy did not execute. Rustfmt-only corrections were committed in the follow-up. Verify the fresh runtime workflow before claiming scanner tests pass.
 
 Latest scanner formatting follow-up: the second CI output identified two remaining rustfmt differences; both corrected in commit `4abbd917`. A new runtime workflow is pending. Confirm tests/Clippy before marking scanner verified.
+
+Scanner verification: runtime run `44543680876` passed formatting, 20 tests and Clippy on `4abbd917`; PMCS run `44543782146` passed after docs update. Remaining scanner task is to connect this library API to the actual instance `horizon-mods/` path and expose per-file diagnostics in the mod UI.
