@@ -7,3 +7,10 @@
 
 ### Atlas hook signature correction
 - First Core compile exposed a mismatch: the generated Horizon collect hook accepts `RegisterTextureAtlasesEvent`, not `Vec<TextureAtlasRegistration>`. Updated implementation to event wrapper; CI is blocked by rustfmt check; compile verification remains pending.
+
+
+### Runtime-format scope clarification (2026-11-19)
+- Production .dmod script interpreter is not connected; Rhai is an isolated prototype.
+- No DreamMod WASM runtime or player-native module loader exists. Horizon cold-cache WASM compilation is not adopted under no-player-compilation.
+- Trusted native .hmod DreamMod Core is build-time integration, not player-native mod support.
+- Future WASM/native player formats need explicit architecture/trust decisions, shared capability-gated Host API and verification before being advertised.
