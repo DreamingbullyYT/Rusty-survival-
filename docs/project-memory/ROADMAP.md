@@ -164,6 +164,7 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Add end-to-end script → provider → next-event result → command regression test.
 - [x] Add capability-denial result test; denial does not disable the mod.
 - [x] Add two-mod result-isolation test using same request ID but different input values.
+- [x] Preserve scalar event payloads before results are present; test scalar wrapping when results arrive.
 - [x] Bound aggregate queued API-result bytes and clear results on disable/fault-disable.
 - [ ] Expand result-isolation and provider-error tests; verify runtime format, tests and Clippy in CI.
 
@@ -182,3 +183,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - Script bridge hardening source/test commits: `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`; Actions still unverified.
 
 - Isolation test commit `8c2f410`; Actions remains unverified.
+
+- Scalar event compatibility commits `037eaed`/`0e40e51`; Actions pending.
