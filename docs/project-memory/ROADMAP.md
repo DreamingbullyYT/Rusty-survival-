@@ -49,3 +49,5 @@
 - [x] Add bounded package-count and aggregate archive-size limits with regression tests.
 - [ ] Wire scanner to actual launcher/game instance `horizon-mods/` path and surface diagnostics in mod manager UI.
 - [ ] Verify runtime CI.
+
+- [ ] Re-run scanner runtime CI after final rustfmt correction; confirm tests and Clippy actually execute.
