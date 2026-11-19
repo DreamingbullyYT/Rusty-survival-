@@ -90,3 +90,9 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [ ] Verify the new activation regression test in CI (latest checks failed formatting before tests ran).
 - [ ] Connect explicit activation to the single package approval/lifecycle authority.
 - [ ] Implement mock engine command executor and provider resolver; live native adapters remain unimplemented.
+
+
+## Verification status update — 2026-11-19
+- [x] Root workspace format, tests and Clippy passed at commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.
+- [ ] Runtime-specific workflow for `mods/dreammod-runtime` is not yet confirmed.
+- [ ] PMCS validator freshness check for the latest source/test commit.

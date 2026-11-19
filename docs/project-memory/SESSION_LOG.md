@@ -19,3 +19,10 @@ Project continuity log policy: this file is chronological and append-only.
 
 
 This file is chronological and append-only.
+
+
+## S-2026-11-19-81 — Contract test inference and CI repair
+Date: 2026-11-19
+- Fixed the contract test generic inference by specifying `Handle::<()>::new`; also made PMCS duplicate-ID regression test select an existing ID and import regex.
+- Root Rust core workflow passed formatting, unit tests and Clippy on commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.
+- The project-memory validator's regression tests passed, but freshness validation required these memory files to be updated for the source test change. Runtime-specific CI still needs verification.

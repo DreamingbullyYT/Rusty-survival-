@@ -9,3 +9,8 @@
 - Changed newly loaded runtime mods to disabled by default and added explicit `enable_mod`. Added regression coverage that inactive mods receive no event dispatch.
 - Commit: `b2d6f04ec1d9ca0ff28a7a6308f14a6956ee1b8d`; test assertion correction: `30a4edabbc2dfb237650d57f8fbffeaa65bea456`.
 - Status: IMPLEMENTED; not verified. CI stopped at formatting and PMCS validator failures; Rust tests and Clippy were skipped.
+
+
+### Handle type inference fix — 2026-11-19
+- Fixed contract unit test to specify `Handle::<()>::new`; the default generic type was not inferred by Rust in the test.
+- Root Rust core checks (format, test, Clippy) passed on commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.

@@ -20,3 +20,10 @@
 2. Re-run Actions and fix compile/test/Clippy failures.
 3. Unify package approval/lifecycle with runtime explicit activation.
 4. Implement mock engine host and end-to-end `.dmod` -> interpreted response -> authorization -> adapter test.
+
+
+## Implemented
+- Contract test now explicitly specifies the generic handle type. Root Rust checks passed at commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.
+
+## Not implemented / not verified
+- Latest PMCS validator still needs this memory freshness update for the test-source commit; the runtime-specific workflow remains to be checked separately.
