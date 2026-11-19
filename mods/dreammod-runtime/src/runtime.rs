@@ -1150,6 +1150,21 @@ mod tests {
     }
 
     #[test]
+    fn api_result_injection_preserves_legacy_scalar_payloads_without_results() {
+        assert_eq!(with_api_results(&json!(17), Vec::new()), json!(17));
+
+        let result = ApiScriptResult {
+            request_id: "scalar_test".to_owned(),
+            operation: crate::api_router::ApiOperation::new("world", "block_get").unwrap(),
+            result: Some(json!({"ok": true})),
+            error: None,
+        };
+        let injected = with_api_results(&json!(17), vec![result]);
+        assert_eq!(injected["event_payload"], 17);
+        assert_eq!(injected["api_results"][0]["result"]["ok"], true);
+    }
+
+    #[test]
     fn dmod_script_can_request_api_and_receive_result_on_next_event() {
         use crate::api_router::{ApiOperation, ApiProviderDescriptor, ApiProviderKind};
 
