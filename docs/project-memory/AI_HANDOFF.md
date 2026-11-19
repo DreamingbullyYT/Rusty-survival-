@@ -35,7 +35,7 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 ## Scoped context progress
 - Spec: `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md`.
 - Implemented router-level `ApiOperationContext`, default `invoke_with_context` compatibility, and `ApiRouter::call_with_context` operation+safety mismatch guard. Exported the trait. Router tests cover propagation and mismatched context.
-- Not CI-verified; runtime dispatch/host call entrypoints still do not pass contexts. Next implement runtime integration and tests. Do not claim a live Horizon adapter.
+- Latest source commit: `6585943` defines the context trait (a code review caught and fixed a missing trait definition before handoff). Not CI-verified; runtime dispatch/host call entrypoints still do not pass contexts. Next implement runtime integration and tests. Do not claim a live Horizon adapter.
 
 ## Horizon adapter blocker
 - Official Horizon code mods implement `mod_api::Hooks` and receive typed hook-specific host/event contexts; Level reads and writes use access-specific host types. Native API is experimental and revision-pinned.
