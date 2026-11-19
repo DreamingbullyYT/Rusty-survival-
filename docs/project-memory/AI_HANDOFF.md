@@ -28,7 +28,7 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - Regression tests cover script request→provider→next event→command, capability denial, two-mod isolation using identical request IDs, and scalar payload compatibility.
 
 ## Verification status
-- Latest bridge commits: `9934644`, `6ee5b26`, `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`, `8c2f410`, `037eaed`, `0e40e51`, `7750687`.
+- Latest bridge commits: `9934644`, `6ee5b26`, `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`, `8c2f410`, `037eaed`, `0e40e51`, `7750687`, `4615d5f`, `b3e06b8`, `50a2401`.
 - GitHub status/workflow lookups returned empty for latest code; local Cargo/Rust tools are unavailable. Do not claim latest tests/format/Clippy passed.
 - Check CI or run `cargo fmt --manifest-path mods/dreammod-runtime/Cargo.toml -- --check`, `cargo test --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml`, and `cargo clippy --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml -- -D warnings` before marking verified.
 
@@ -38,7 +38,7 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - Next: design a scoped engine-neutral provider context and pass it through dispatch/router/provider invocation, with Horizon-specific optional adapter and no SDK dependency in base runtime. Research: https://playhorizon.dev/docs/mod-code and https://playhorizon.dev/docs/api/stability.
 
 ## Next steps
-1. Verify latest runtime CI and fix any compilation/rustfmt/Clippy failures; remaining test gaps include request-count bounds and disabled/unloaded cleanup.
+1. Verify latest runtime CI and fix any compilation/rustfmt/Clippy failures; remaining test gap is unload cleanup.
 2. Design scoped provider execution context and test it with context-aware mock providers.
 3. Implement a small optional, version-pinned Horizon adapter vertical slice and advertise only tested operations.
 4. Add DreamMod-native fallback providers and connect typed world/block adapter to real engine storage.
