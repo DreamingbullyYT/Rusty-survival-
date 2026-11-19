@@ -30,3 +30,5 @@
 
 ### Shared-folder runtime entrypoint (2026-11-19)
 - Runtime API can now scan a caller-provided `horizon-mods/` directory and pass validated `.dmod` packages into existing runtime loading. Actual launcher path discovery, permission UI and diagnostics display remain unimplemented. CI pending.
+
+- Runtime scanner-to-loader entrypoint's initial Actions attempt stopped at rustfmt; formatting was corrected. No test or compile failure is established yet; await rerun.
