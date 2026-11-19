@@ -179,10 +179,7 @@ pub struct DispatchReport {
 pub trait EngineCommandHost {
     type Error;
 
-    fn execute_atomic_batch(
-        &mut self,
-        commands: &[AuthorizedCommand],
-    ) -> Result<(), Self::Error>;
+    fn execute_atomic_batch(&mut self, commands: &[AuthorizedCommand]) -> Result<(), Self::Error>;
 }
 
 /// Dispatch result plus optional native-host execution result.
@@ -953,7 +950,9 @@ mod tests {
             Vec::new(),
             0,
         );
-        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime
+            .load_packages(vec![mod_package], &AllowAllForTests)
+            .unwrap();
         let mod_id = ModId::parse("dreammod.host_test").unwrap();
         runtime.enable_mod(&mod_id);
         let mut host = RecordingHost::default();
