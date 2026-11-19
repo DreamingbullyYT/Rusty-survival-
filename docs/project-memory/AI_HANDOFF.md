@@ -4,7 +4,7 @@
 Read this handoff, then PROJECT_MEMORY.md, CURRENT_STATE.md, DECISIONS.md and the append-only SESSION_LOG.md before continuing.
 
 ## Target
-Rusty-survival independent engine with engine-owned DreamMod. Horizon/HNMods are legacy and must not become dependencies.
+Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compatible through optional adapters; DreamMod-native providers fill missing operations. Keep the mod-facing contract engine/provider-neutral and hot-swappable. Horizon/HNMods must not be mandatory dependencies.
 
 ## Ground rules
 - Player-installed .dmod mods use interpreted source/assets; no player-device compilation.
@@ -25,9 +25,17 @@ Rusty-survival independent engine with engine-owned DreamMod. Horizon/HNMods are
 - Test-only mock host supports block writes plus entity health updates in one atomic staged batch. Invalid batch preserves both maps. Verified on fd4109a: DreamMod Runtime 27 tests, rustfmt and Clippy passed; workspace offline tests and Clippy passed.
 
 ## Next steps
-1. Verify CI for cross-domain atomic mock.
-2. Unify package approval and runtime activation in a coordinator.
-3. Begin concrete world/block adapter, then entity and physics.
+1. Verify CI for hybrid ApiRouter (format, tests, Clippy).
+2. Connect ApiRouter to runtime dispatch and capability checks.
+3. Build a concrete version-pinned Horizon adapter for a small API slice, with contract-type translation and integration tests.
+4. Implement DreamMod-native fallbacks for gaps; integrate real world/block storage and entity/physics adapters.
+5. Unify package approval and runtime activation in a coordinator.
 
 ## Current vertical slice (verification pending)
 - Typed block command adapter in runtime crate is implemented; native world backend must fulfill atomicity. Tests added; CI pending. The engine still has no actual chunk/block storage adapter.
+
+
+## Hybrid API routing — implemented, verification pending
+- Generic `ApiRouter` with Horizon-first default, fallback to compatible DreamMod provider, per-domain preference, replacement/unregister and tests.
+- Architecture and API surface mapping: `docs/DREAMMOD_HYBRID_API.md`.
+- Still not wired to the .dmod runtime and no concrete Horizon adapter exists. Don't claim integration until tested.
