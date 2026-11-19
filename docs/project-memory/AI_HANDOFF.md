@@ -180,3 +180,5 @@ D-013: Use the instance's existing `horizon-mods/` for both formats. DreamMod ha
 A library scanner now exists in `mods/dreammod-runtime/src/package.rs` and is exported from the runtime crate. It scans direct children only, dispatches `.dmod`, ignores `.hmod`/other extensions, reports symlinks and non-files, validates packages, excludes every package involved in duplicate IDs, and applies defaults of 256 packages and 256 MiB total archive input. Regression tests were added. It is not connected to a launcher/game instance directory or UI yet; CI must be checked before claiming it passes.
 
 Scanner CI note: first runtime Actions attempt stopped at `cargo fmt --check`, so tests/Clippy did not execute. Rustfmt-only corrections were committed in the follow-up. Verify the fresh runtime workflow before claiming scanner tests pass.
+
+Latest scanner formatting follow-up: the second CI output identified two remaining rustfmt differences; both corrected in commit `4abbd917`. A new runtime workflow is pending. Confirm tests/Clippy before marking scanner verified.
