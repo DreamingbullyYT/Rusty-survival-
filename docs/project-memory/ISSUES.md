@@ -41,3 +41,6 @@
 - Added a successful-load integration test for a real generated `.dmod` ZIP in the shared directory; CI pending.
 
 - Valid-package integration test CI initially stopped at a trailing blank line only; corrected, with rerun pending.
+
+### Valid package shared-folder loading verified (2026-11-19)
+- Runtime Actions `44544852796` passed 22 tests, formatting and Clippy. The library path is verified; launcher instance-path and diagnostics UI integration remain.
