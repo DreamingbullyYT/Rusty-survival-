@@ -15,6 +15,9 @@ Updated: 2026-11-19
 - Root offline engine test workflow passed on 4d4731573ae63a64dbf747b90084b265d43a87b6.
 - Explicit activation and fault-disable provider cleanup were previously verified on 6bae66f43f6e51b9c92301beea34224e9bb03ac6.
 
+## In progress / pending verification
+- Stateful test-only mock block-world host now validates and stages block writes before commit. A test covers successful writes and batch rollback behavior on invalid input. Latest implementation commits 4067841 and 6d2a232 await CI.
+
 ## Remaining
 - Concrete engine host adapters and world/entity/physics/render/audio/UI/AI/worldgen subsystems.
 - Runtime activation is not unified with package ModManager approvals.
@@ -22,7 +25,7 @@ Updated: 2026-11-19
 - Language decision and production sandbox remain open; Rhai is a candidate runtime.
 
 ## Next
-1. Create a typed mock engine adapter with real mock-state mutations and batch validation/rollback tests.
+1. Verify the mock block-world host tests, then extend the mock to typed entity commands and cross-domain rollback.
 2. Unify package approval and runtime activation through one coordinator.
 3. Add the first concrete domain adapter, preferably world/block commands, then entity and physics.
 4. Keep PMCS fresh and append the session log for each substantial implementation change.
