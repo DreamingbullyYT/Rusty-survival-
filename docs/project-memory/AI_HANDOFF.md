@@ -1,19 +1,26 @@
+# DreamMod AI Handoff
 
-- `dreammod-api` crate now exists with an owner-scoped registration registry (commands/events/systems/content/providers/resources), batch atomicity, namespace checks, deterministic ordering, feature requirements and cleanup. It does not dispatch or call the engine yet. Check latest Actions before claiming tests pass.
+## Mandatory Entry Point
+Read this handoff, then PROJECT_MEMORY.md, CURRENT_STATE.md, DECISIONS.md and the append-only SESSION_LOG.md before continuing.
 
+## Target
+Rusty-survival independent engine with engine-owned DreamMod. Horizon/HNMods are legacy and must not become dependencies.
 
-# Mandatory Entry Point
+## Ground rules
+- Player-installed .dmod mods use interpreted source/assets; no player-device compilation.
+- Engine APIs are broad and engine-neutral; native engine adapters own heavy work.
+- Use owned snapshots, opaque typed handles, batches and explicit capability checks.
+- PMCS is persistent project context. Append session history and refresh current-state snapshots after substantial work.
+- IMPLEMENTED is not VERIFIED: do not claim checks passed without CI evidence.
 
-Read this handoff, then `PROJECT_MEMORY.md`, `CURRENT_STATE.md`, `DECISIONS.md`, and the append-only `SESSION_LOG.md` before continuing.
+## Latest implementation
+- Runtime packages load disabled and require explicit enable_mod.
+- Provider registrations are cleared on fault-disable.
+- Runtime now exposes EngineCommandHost and dispatch_event_and_execute. The host receives only capability-authorized commands and must apply the batch atomically. Mock tests cover delivery and denied-operation suppression.
+- Latest host boundary code commits: 6b914d9 and 463abba. CI verification is pending.
 
-# Horizon
-
-Horizon/HNMods are legacy experiments only. The active target is the independent Rusty-survival engine and engine-owned DreamMod host; do not make Horizon a dependency.
-
-# IMPLEMENTED is not VERIFIED
-
-Runtime source changes and tests are implemented but must not be reported verified until formatting, Rust tests, Clippy and relevant CI pass.
-
-## Latest change
-
-DreamMod runtime now loads packages disabled and exposes explicit `enable_mod`. The lifecycle test ensures inactive mods do not dispatch events. Commit `b2d6f04` introduced the fix; `30a4edabbc2dfb237650d57f8fbffeaa65bea456` corrected its test assertion. Latest Actions were failing on rustfmt and PMCS markers; runtime tests did not run yet.
+## Next steps
+1. Check CI on latest code commit and fix format/test/Clippy failures.
+2. Add typed mock-engine state adapter with atomic batch validation/rollback.
+3. Connect package ModManager approval and runtime activation in one coordinator.
+4. Then implement actual world/entity/physics domain adapters, starting with a minimal vertical slice.
