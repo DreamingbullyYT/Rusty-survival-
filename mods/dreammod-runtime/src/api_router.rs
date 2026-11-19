@@ -112,15 +112,12 @@ impl ApiRouter {
         provider: Box<dyn ApiProvider>,
     ) -> Result<(), ApiRouterError> {
         let descriptor = provider.descriptor();
-        if !valid_name(&descriptor.id)
-            || descriptor
-                .operations
-                .iter()
-                .any(|operation| !valid_name(&operation.domain) || !valid_name(&operation.name))
-        {
-            if !valid_name(&descriptor.id) {
-                return Err(ApiRouterError::InvalidProviderId(descriptor.id.clone()));
-            }
+        if !valid_name(&descriptor.id) {
+            return Err(ApiRouterError::InvalidProviderId(descriptor.id.clone()));
+        }
+        if descriptor.operations.iter().any(|operation| {
+            !valid_name(&operation.domain) || !valid_name(&operation.name)
+        }) {
             return Err(ApiRouterError::InvalidProviderDescriptor(descriptor.id.clone()));
         }
         self.providers.insert(descriptor.id.clone(), provider);
@@ -296,7 +293,9 @@ mod tests {
         router
             .register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 5, true)))
             .unwrap();
-        router.register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
+        router
+            .register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false)))
+            .unwrap();
         assert!(matches!(
             router.call(request()),
             Err(ApiRouterError::ProviderFailed { provider, .. }) if provider == "horizon"
@@ -306,7 +305,9 @@ mod tests {
     #[test]
     fn replacement_and_removal_apply_to_subsequent_calls() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
+        router
+            .register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false)))
+            .unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
         router
             .register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, true)))
