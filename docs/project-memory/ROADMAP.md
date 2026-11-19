@@ -154,3 +154,12 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [ ] Implement and pin concrete Horizon adapter(s); verify actual operations against current public API.
 - [ ] Provide DreamMod-native implementations for gaps; add operation-specific integration tests.
 - [ ] Define safe migration/snapshot contracts before hot-switching stateful providers.
+
+
+## Script API bridge design — 2026-11-19
+- [x] Define event-scoped request/response design with request IDs, per-mod result isolation, authorization, bounds and cleanup requirements (`docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md`).
+- [ ] Implement typed request/result envelopes and strict validation.
+- [ ] Add per-mod one-shot result queues and event payload injection.
+- [ ] Route script requests through the same capability checks and provider router as host calls.
+- [ ] Test request/result correlation, result isolation/consumption, cleanup and size/count bounds.
+- [ ] CI verify runtime format, tests and Clippy.
