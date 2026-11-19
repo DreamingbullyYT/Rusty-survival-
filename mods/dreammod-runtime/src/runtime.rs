@@ -940,7 +940,10 @@ mod tests {
     impl EngineCommandHost for MockBlockWorldHost {
         type Error = String;
 
-        fn execute_atomic_batch(&mut self, commands: &[AuthorizedCommand]) -> Result<(), Self::Error> {
+        fn execute_atomic_batch(
+            &mut self,
+            commands: &[AuthorizedCommand],
+        ) -> Result<(), Self::Error> {
             // Validate and stage every mutation before touching live mock state.
             let mut staged = Vec::with_capacity(commands.len());
             for command in commands {
@@ -960,7 +963,9 @@ mod tests {
                 }
 
                 let block = payload["block"].as_str().ok_or("block must be a string")?;
-                let block_name = block.strip_prefix("minecraft:").ok_or("unsupported block namespace")?;
+                let block_name = block
+                    .strip_prefix("minecraft:")
+                    .ok_or("unsupported block namespace")?;
                 if block_name.is_empty()
                     || !block_name
                         .chars()
@@ -1013,8 +1018,14 @@ mod tests {
         );
         assert_eq!(valid.dispatch.commands.len(), 2);
         assert_eq!(valid.execution, Some(Ok(())));
-        assert_eq!(host.blocks.get(&(1, 2, 3)).map(String::as_str), Some("minecraft:stone"));
-        assert_eq!(host.blocks.get(&(4, 5, 6)).map(String::as_str), Some("minecraft:dirt"));
+        assert_eq!(
+            host.blocks.get(&(1, 2, 3)).map(String::as_str),
+            Some("minecraft:stone")
+        );
+        assert_eq!(
+            host.blocks.get(&(4, 5, 6)).map(String::as_str),
+            Some("minecraft:dirt")
+        );
 
         // A second batch contains one valid write followed by an invalid block ID.
         let invalid_commands = vec![
@@ -1037,7 +1048,10 @@ mod tests {
         ];
         let before = host.blocks.clone();
         assert!(host.execute_atomic_batch(&invalid_commands).is_err());
-        assert_eq!(host.blocks, before, "invalid batch must not partially mutate world");
+        assert_eq!(
+            host.blocks, before,
+            "invalid batch must not partially mutate world"
+        );
     }
 
     #[test]
