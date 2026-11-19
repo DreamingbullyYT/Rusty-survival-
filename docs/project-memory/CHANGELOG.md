@@ -75,3 +75,6 @@
 
 ## 2026-11-19
 - Follow-up commits formatted the new world/block adapter and public exports after CI's rustfmt check; tests pending rerun.
+
+## 2026-11-19
+- Fixed test-only private ModId import in adapter tests; CI rerun pending.
