@@ -1011,12 +1011,14 @@ mod tests {
                         #{ namespace: "world", name: "set_block",
                            payload: #{ x: 1, y: 2, z: 3, block: "minecraft:stone" } },
                         #{ namespace: "world", name: "set_block",
-                           payload: #{ x: 4, y: 5, z: 6, block: "minecraft:dirt" } }
+                           payload: #{ x: 4, y: 5, z: 6, block: "minecraft:dirt" } },
+                        #{ namespace: "entity", name: "set_health",
+                           payload: #{ entity: "player_1", health: 75.0 } }
                     ] }
                 }
             "#,
             &["server_tick"],
-            &[Capability::WorldWrite],
+            &[Capability::WorldWrite, Capability::EntityWrite],
             Vec::new(),
             0,
         );
@@ -1031,7 +1033,7 @@ mod tests {
             &TestAuthorizer,
             &mut host,
         );
-        assert_eq!(valid.dispatch.commands.len(), 2);
+        assert_eq!(valid.dispatch.commands.len(), 3);
         assert_eq!(valid.execution, Some(Ok(())));
         assert_eq!(
             host.blocks.get(&(1, 2, 3)).map(String::as_str),
@@ -1041,9 +1043,18 @@ mod tests {
             host.blocks.get(&(4, 5, 6)).map(String::as_str),
             Some("minecraft:dirt")
         );
+        assert_eq!(host.entity_health.get("player_1"), Some(&75.0));
 
         // A second batch contains one valid write followed by an invalid block ID.
         let invalid_commands = vec![
+            AuthorizedCommand {
+                mod_id: ModId::parse("dreammod.mock_world").unwrap(),
+                command: CommandEnvelope {
+                    namespace: "entity".to_owned(),
+                    name: "set_health".to_owned(),
+                    payload: json!({ "entity": "player_1", "health": 20.0 }),
+                },
+            },
             AuthorizedCommand {
                 mod_id: ModId::parse("dreammod.mock_world").unwrap(),
                 command: CommandEnvelope {
@@ -1061,12 +1072,11 @@ mod tests {
                 },
             },
         ];
-        let before = host.blocks.clone();
+        let before_blocks = host.blocks.clone();
+        let before_entities = host.entity_health.clone();
         assert!(host.execute_atomic_batch(&invalid_commands).is_err());
-        assert_eq!(
-            host.blocks, before,
-            "invalid batch must not partially mutate world"
-        );
+        assert_eq!(host.blocks, before_blocks, "invalid batch must not partially mutate world");
+        assert_eq!(host.entity_health, before_entities, "invalid batch must not partially mutate entities");
     }
 
     #[test]
