@@ -1,4 +1,10 @@
-use std::{collections::BTreeMap, fs::{self, File}, io::Read, path::{Path, PathBuf}, sync::Arc};
+use std::{
+    collections::BTreeMap,
+    fs::{self, File},
+    io::Read,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use sha2::{Digest, Sha256};
 use thiserror::Error;
@@ -170,7 +176,6 @@ impl PackageLoader {
         })
     }
 }
-
 
 /// Limits for discovery within Horizon's shared `horizon-mods/` folder.
 #[derive(Clone, Copy, Debug)]
