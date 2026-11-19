@@ -12,6 +12,10 @@
 - [x] Atlas declaration batches owned by ModManager, enabled-owner snapshot and rollback validation (CI pending).
 
 ## Phase 2 — Runtime foundation
+- [ ] Decide and implement interpreted-source runtime (Rhai remains prototype, not selected).
+- [ ] Evaluate a WASM runtime only if it can use precompiled modules without player-side compilation; no DreamMod WASM support exists currently.
+- [ ] Player native .so/DLL runtime is not implemented; Core native build integration is separate.
+- [ ] Implement sandbox, execution budgets, lifecycle callbacks and fault isolation.
 - [ ] Select scripting language only after comparative evaluation and representative benchmarks.
 - [ ] Implement sandbox, execution budgets, lifecycle callbacks and fault isolation.
 - [ ] Create direct, batch-oriented host APIs and extension contracts.
