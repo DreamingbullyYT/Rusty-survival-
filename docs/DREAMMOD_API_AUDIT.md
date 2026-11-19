@@ -51,3 +51,10 @@ Commit inspected: 0d78b4dc3940c068227ee33ef60eede6066357e5
 - Invalid or over-budget batch rejected before native execution; a batch is atomic or has explicitly documented partial semantics.
 - Package dependency/version failure does not partially activate the load set.
 - End-to-end tests use a mock engine first; live engine integration must be reported separately.
+
+## Contract mismatches found during deeper inspection
+
+- Package crate capability whitelist currently includes a smaller legacy set (assets.read, entities.read/write, events.emit/listen, ui.register, world.read/write) than the runtime Capability enum (world/entity, physics, AI, render, audio, UI, network, registry, commands).
+- Package manifest uses `entrypoint` and API min/max; runtime manifest uses `entry` and `dreammod_api` range. These are incompatible schemas and need a canonical schema plus migration/adapter.
+- Package lifecycle explicitly requires approval then enable; runtime loading currently creates loaded mods with `enabled: true`. This discrepancy must be fixed before player-facing use.
+- Provider modes and priority are accepted in runtime response but no complete arbitration/scheduling behavior is verified yet.
