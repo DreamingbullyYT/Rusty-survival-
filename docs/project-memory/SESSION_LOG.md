@@ -212,3 +212,10 @@ Date: 2026-11-19
 - Changed API-result injection so scalar event payloads are preserved unchanged when there are no results; when a result arrives, scalar data is wrapped under `event_payload` with `api_results`.
 - Added a unit test for this compatibility behavior.
 - Commits `037eaed` and `0e40e51`; CI unverified.
+
+
+## S-2026-11-19-108 — Horizon adapter context research
+Date: 2026-11-19
+- Reviewed current official Horizon docs: code mods implement `mod_api::Hooks`; callbacks receive typed host/event contexts. Level operations are exposed through access-specific hosts (read host vs write host), not a global API object. Native API is experimental/version-pinned.
+- Architectural consequence: current DreamMod `ApiProvider::invoke` lacks a scoped host context and cannot implement live world operations safely without globals or fabricated/stale snapshots. Next design should pass a scoped, engine-neutral provider context through runtime/router, with Horizon-specific optional adapter and no mandatory SDK dependency in the base runtime.
+- Updated `docs/DREAMMOD_HYBRID_API.md` and normalized `CURRENT_STATE.md`. Official references: https://playhorizon.dev/docs/mod-code and https://playhorizon.dev/docs/api/stability.
