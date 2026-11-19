@@ -174,3 +174,9 @@ Date: 2026-11-19
 - Exported types from runtime crate root.
 - Commits: `d820307` (types), `8c1107b` (tests), `f484db8` (exports).
 - CI status/workflow run list returned empty for `f484db8`; source verification is pending. This is not a script bridge implementation yet.
+
+
+## S-2026-11-19-103 — Envelope serialization compile fix
+Date: 2026-11-19
+- Code review found ApiOperation was not serializable even though the new script request/result envelopes require it. Added Serialize/Deserialize derives and strict unknown-field handling.
+- Commit `1ffd548`. GitHub combined status and workflow-run lookups returned no checks/runs; CI remains unverified.
