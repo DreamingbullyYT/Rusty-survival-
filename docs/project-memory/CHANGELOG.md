@@ -72,3 +72,6 @@
 
 ## 2026-11-19
 - Added typed world/block command adapter and atomic backend contract; test coverage added, verification pending.
+
+## 2026-11-19
+- Follow-up commits formatted the new world/block adapter and public exports after CI's rustfmt check; tests pending rerun.

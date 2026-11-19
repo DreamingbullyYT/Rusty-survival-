@@ -10,3 +10,5 @@
 - Cross-domain mock host (world blocks + entity health) is implemented and CI verified. It is test-only; no real world/entity engine adapter yet.
 
 - World/block adapter added but CI pending; native engine storage remains unimplemented.
+
+- Adapter implementation initially failed rustfmt checks; formatting corrected in 285f264/68a6c13, CI rerun pending.

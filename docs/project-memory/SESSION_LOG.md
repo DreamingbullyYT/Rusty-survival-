@@ -121,3 +121,7 @@ Date: 2026-11-19
 - Added public WorldBlockCommandAdapter and typed BlockId/BlockPosition/BlockMutation plus BlockWorldBackend atomic contract.
 - Adapter accepts only authorized world.set_block commands, validates strict payload and identifiers, enforces horizontal world-border bounds, stages batch, and delegates atomic commit.
 - Unit tests cover conversion/mod block IDs, invalid late mutation, unknown fields, out-of-bounds, and unsupported domain. Commit 47d6e6e; CI pending.
+
+
+## S-2026-11-19-96 — Rustfmt corrections
+- Re-formatted adapter and public exports after first CI reported rustfmt-only diffs. Commit 285f264 and 68a6c13; rerun CI pending.

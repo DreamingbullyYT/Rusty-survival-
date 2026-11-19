@@ -139,3 +139,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Stage all mutations before invoking backend's atomic batch method.
 - [ ] Verify runtime/workspace CI and formatting.
 - [ ] Connect adapter to engine-owned world/chunk storage (storage not implemented yet).
+
+- [ ] Verify formatted WorldBlockCommandAdapter runtime workflow.
