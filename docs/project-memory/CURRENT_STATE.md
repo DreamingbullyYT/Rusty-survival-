@@ -35,3 +35,13 @@
 
 ### Runtime fault cleanup formatting correction — 2026-11-19
 - Corrected rustfmt-only layout for the fault-cleanup regression test. Root core workflow passed; runtime-specific formatting will be rechecked.
+
+
+## Verified
+- DreamMod Runtime CI: 24 tests passed; formatting and Clippy passed at `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
+- Root Rust core format/tests/Clippy and offline engine test workflow passed at the same commit.
+- Default-disabled activation and provider fault cleanup regression tests are verified.
+
+## Remaining gaps
+- No live engine adapter or real world/entity/physics/rendering systems exist yet; engine-core is still coordinates and primitives only.
+- Runtime package approval and activation are not yet unified with the separate package ModManager lifecycle.

@@ -22,3 +22,8 @@
 
 ### Fault cleanup formatting and CI follow-up — 2026-11-19
 - Rust runtime regression-test formatting was corrected after CI flagged style-only differences. Root core checks passed; runtime-specific tests are rerunning.
+
+
+### Runtime activation and fault-cleanup verification — 2026-11-19
+- DreamMod Runtime CI passed 24 tests, formatting and Clippy at `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
+- Root Rust core checks and offline engine test workflow also passed at that commit.

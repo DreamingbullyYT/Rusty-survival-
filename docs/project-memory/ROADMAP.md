@@ -104,3 +104,11 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 
 
 - Fault cleanup behavior is implemented, but runtime CI first stopped at rustfmt; corrected formatting and rerunning.
+
+
+## Verified runtime lifecycle and cleanup
+- [x] Default-disabled runtime activation and regression test: verified in DreamMod Runtime CI (24 tests, formatting and Clippy passed).
+- [x] Provider registrations are removed on fault disable; reactivation does not resurrect provider; regression test passed.
+- [x] Root Rust core tests, formatting, Clippy and offline engine workflow passed at `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
+- [ ] Unify explicit activation with package ModManager approval lifecycle.
+- [ ] Build mock engine host command executor, provider resolver and end-to-end tests.

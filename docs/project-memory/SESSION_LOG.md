@@ -38,3 +38,10 @@ Date: 2026-11-19
 ## Fault-cleanup CI formatting
 - [x] Correct runtime test formatting after Actions reported the exact rustfmt diff.
 - [ ] Re-run DreamMod Runtime tests and Clippy.
+
+
+## S-2026-11-19-84 — Lifecycle and provider cleanup verified
+Date: 2026-11-19
+- DreamMod Runtime CI passed: 24 tests, formatting and Clippy at commit `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
+- Root Rust core format, unit tests and Clippy passed, as did the offline engine test workflow.
+- Explicit activation and fault-disable provider cleanup are now verified. Next milestone is lifecycle unification and mock engine-host vertical slice; no live engine adapters yet.

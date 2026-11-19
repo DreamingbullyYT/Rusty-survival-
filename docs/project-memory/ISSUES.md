@@ -13,3 +13,6 @@
 
 ## Implemented
 - Formatting corrected in the new runtime fault cleanup regression test. Runtime CI re-run pending.
+
+
+- Verified lifecycle/fault cleanup: DreamMod Runtime CI passed 24 tests, formatting and Clippy at `6bae66f43f6e51b9c92301beea34224e9bb03ac6`; root Rust core and offline engine tests passed. Engine adapters remain absent and activation is not integrated with package manager approval.
