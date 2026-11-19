@@ -163,3 +163,10 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [ ] Route script requests through the same capability checks and provider router as host calls.
 - [ ] Test request/result correlation, result isolation/consumption, cleanup and size/count bounds.
 - [ ] CI verify runtime format, tests and Clippy.
+
+
+## Script API bridge contract primitives
+- [x] Add serializable request/result envelope types and request-ID/operation validation.
+- [x] Add tests for validation and envelope serialization.
+- [ ] Verify commit `f484db8` with runtime CI (status/run list currently empty).
+- [ ] Implement request processing, authorizer capability enforcement, provider routing, response injection, per-mod queue isolation and cleanup.
