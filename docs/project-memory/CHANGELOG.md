@@ -68,3 +68,5 @@
 - Added comprehensive architecture spec `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md` and marked the previous Horizon architecture as historical.
 - Added workspace crate `dreammod-contract` with validated ModId/ResourceId/CapabilityId, API versions/ranges, opaque typed handles and structured diagnostics.
 - Added workspace membership and push/PR CI trigger for engine checks. Verification is pending; do not claim crate tests or Clippy passed until Actions finishes.
+
+- Corrected an escaped newline in the contract test source; fresh workspace CI is pending.
