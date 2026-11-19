@@ -110,7 +110,12 @@ impl ApiRouter {
         provider: Box<dyn ApiProvider>,
     ) -> Result<(), ApiRouterError> {
         let descriptor = provider.descriptor();
-        if !valid_name(&descriptor.id) {
+        if !valid_name(&descriptor.id)
+            || descriptor
+                .operations
+                .iter()
+                .any(|operation| !valid_name(&operation.domain) || !valid_name(&operation.name))
+        {
             return Err(ApiRouterError::InvalidProviderId(descriptor.id.clone()));
         }
         self.providers.insert(descriptor.id.clone(), provider);
@@ -148,6 +153,12 @@ impl ApiRouter {
     }
 
     pub fn call(&mut self, request: ApiRequest) -> Result<Value, ApiRouterError> {
+        if !valid_name(&request.operation.domain) || !valid_name(&request.operation.name) {
+            return Err(ApiRouterError::InvalidOperation {
+                domain: request.operation.domain,
+                name: request.operation.name,
+            });
+        }
         let operation_key = request.operation.key();
         let preference = self.preference(&request.operation.domain);
         let mut candidates = self
