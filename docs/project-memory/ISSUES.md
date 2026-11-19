@@ -14,3 +14,6 @@
 - Adapter implementation initially failed rustfmt checks; formatting corrected in 285f264/68a6c13, CI rerun pending.
 
 - Corrected test-only ModId import after CI compile failure; pending re-verification.
+
+- Hybrid API router is implemented as a generic contract but is not wired into .dmod dispatch. No Horizon adapter/end-to-end calls exist yet; CI pending.
+- Hot switching stateful providers is only route selection today; state migration/rollback contracts are required before switching stateful subsystems.
