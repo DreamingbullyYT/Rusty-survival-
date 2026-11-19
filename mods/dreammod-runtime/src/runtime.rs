@@ -10,7 +10,7 @@ use thiserror::Error;
 
 use crate::{
     manifest::{Capability, ManifestError, ModId, ModManifest, ModSide},
-    package::DmodPackage,
+    package::{DmodPackage, ModsDirectoryScanner, ScanDirectoryError, ScanIssue},
     script::{ScriptEngine, ScriptError},
 };
 
@@ -154,6 +154,15 @@ pub struct LoadReport {
     pub loaded: Vec<ModId>,
 }
 
+/// Result of discovering packages in Horizon's shared mods directory and loading
+/// every validated package into this runtime.
+#[derive(Clone, Debug, Default)]
+pub struct ModsDirectoryLoadReport {
+    pub load: LoadReport,
+    pub issues: Vec<ScanIssue>,
+    pub ignored_hmod_count: usize,
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct DispatchReport {
     pub commands: Vec<AuthorizedCommand>,
@@ -194,6 +203,44 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
             mods: BTreeMap::new(),
             load_order: Vec::new(),
         }
+    }
+
+    /// Scan the shared Horizon mods folder using default limits, then load
+    /// every valid .dmod package. Horizon .hmod files are left to Horizon.
+    pub fn load_from_horizon_mods_dir<P: PermissionPolicy>(
+        &mut self,
+        directory: impl AsRef<std::path::Path>,
+        policy: &P,
+    ) -> Result<ModsDirectoryLoadReport, RuntimeError> {
+        self.load_from_horizon_mods_dir_with_scanner(
+            directory,
+            &ModsDirectoryScanner::default(),
+            policy,
+        )
+    }
+
+    /// Same as the default entrypoint, but lets the caller provide explicit
+    /// scanner/package limits for testing or a host policy.
+    pub fn load_from_horizon_mods_dir_with_scanner<P: PermissionPolicy>(
+        &mut self,
+        directory: impl AsRef<std::path::Path>,
+        scanner: &ModsDirectoryScanner,
+        policy: &P,
+    ) -> Result<ModsDirectoryLoadReport, RuntimeError> {
+        let scan = scanner.scan(directory).map_err(RuntimeError::ScanDirectory)?;
+        let packages = scan
+            .packages
+            .into_iter()
+            .map(|discovered| discovered.package)
+            .collect();
+        let issues = scan.issues;
+        let ignored_hmod_count = scan.ignored_hmod_count;
+        let load = self.load_packages(packages, policy)?;
+        Ok(ModsDirectoryLoadReport {
+            load,
+            issues,
+            ignored_hmod_count,
+        })
     }
 
     pub fn load_packages<P: PermissionPolicy>(
@@ -681,6 +728,8 @@ pub enum RuntimeError {
         mod_id: ModId,
         capability: Capability,
     },
+    #[error("mods directory scan failed: {0}")]
+    ScanDirectory(#[from] ScanDirectoryError),
     #[error("manifest error: {0}")]
     Manifest(#[from] ManifestError),
     #[error("script error: {0}")]
