@@ -207,3 +207,5 @@ The scanner-to-runtime end-to-end test is now green: `44544852796` passed rustfm
 - Contract foundation crate added to workspace. Verify Actions before asserting compilation/tests pass. Next: contract review, API host/fake host, interpreter selection, execution budget, and first end-to-end vertical slice.
 
 - The contract foundation diagnostic test had an escaped-newline source typo corrected. Verify latest Actions (fmt/tests/Clippy) before proceeding.
+
+- Contract foundation now includes `CapabilitySet` and `ApiFeatureId`; source was manually formatted because local Cargo/rustfmt are unavailable. Check latest Actions before proceeding.
