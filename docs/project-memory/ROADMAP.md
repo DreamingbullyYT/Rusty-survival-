@@ -82,3 +82,11 @@
 - [ ] Engine API compatibility/feature negotiation and automated package compatibility tests.
 
 Horizon native Core/.hmod and the shared Horizon mods-folder scanner are historical/optional experiments, not blockers or dependencies for the new engine.
+
+
+## Phase 2 — runtime activation and integration status
+
+- [x] Runtime package loading is default-disabled and requires explicit `enable_mod` activation.
+- [ ] Verify the new activation regression test in CI (latest checks failed formatting before tests ran).
+- [ ] Connect explicit activation to the single package approval/lifecycle authority.
+- [ ] Implement mock engine command executor and provider resolver; live native adapters remain unimplemented.
