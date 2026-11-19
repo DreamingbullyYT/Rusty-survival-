@@ -186,3 +186,5 @@ Latest scanner formatting follow-up: the second CI output identified two remaini
 Scanner verification: runtime run `44543680876` passed formatting, 20 tests and Clippy on `4abbd917`; PMCS run `44543782146` passed after docs update. Remaining scanner task is to connect this library API to the actual instance `horizon-mods/` path and expose per-file diagnostics in the mod UI.
 
 Scanner integration has advanced: `DreamModRuntime::load_from_horizon_mods_dir` (and a configurable-scanner variant) now connects directory scan to `load_packages`, preserving scan issues and ignored `.hmod` count. Integration test is added. Verify current runtime CI; launcher still needs to supply its instance path and present diagnostics.
+
+Runtime scanner-to-loader entrypoint CI initially stopped at rustfmt; corrected re-export order, scan-error formatting and test-module whitespace. Verify the rerun before claiming this integration passes.
