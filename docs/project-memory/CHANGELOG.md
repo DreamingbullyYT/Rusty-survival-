@@ -69,3 +69,6 @@
 
 ## 2026-11-19
 - Verified cross-domain test-only mock host (world block writes + entity health): DreamMod Runtime CI 27 tests, rustfmt and Clippy passed; workspace offline tests and Clippy passed (fd4109a).
+
+## 2026-11-19
+- Added typed world/block command adapter and atomic backend contract; test coverage added, verification pending.

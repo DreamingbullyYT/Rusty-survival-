@@ -28,3 +28,6 @@ Rusty-survival independent engine with engine-owned DreamMod. Horizon/HNMods are
 1. Verify CI for cross-domain atomic mock.
 2. Unify package approval and runtime activation in a coordinator.
 3. Begin concrete world/block adapter, then entity and physics.
+
+## Current vertical slice (verification pending)
+- Typed block command adapter in runtime crate is implemented; native world backend must fulfill atomicity. Tests added; CI pending. The engine still has no actual chunk/block storage adapter.

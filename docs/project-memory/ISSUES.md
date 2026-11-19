@@ -8,3 +8,5 @@
 - Host batch atomicity is specified but future concrete adapters must implement and test validation/rollback.
 
 - Cross-domain mock host (world blocks + entity health) is implemented and CI verified. It is test-only; no real world/entity engine adapter yet.
+
+- World/block adapter added but CI pending; native engine storage remains unimplemented.

@@ -132,3 +132,10 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Add validation for entity handles and finite health values.
 - [x] Add test asserting invalid command rolls back staged world and entity mutations.
 - [x] Verify CI: fd4109a passed DreamMod Runtime (27 tests, rustfmt, Clippy) and workspace offline tests/Clippy.
+
+## World/block adapter vertical slice
+- [x] Add typed block ID, position, mutation structures and host adapter for world.set_block.
+- [x] Validate payload schema, IDs, horizontal world border, and reject unsupported command domains.
+- [x] Stage all mutations before invoking backend's atomic batch method.
+- [ ] Verify runtime/workspace CI and formatting.
+- [ ] Connect adapter to engine-owned world/chunk storage (storage not implemented yet).

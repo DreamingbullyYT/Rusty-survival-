@@ -26,7 +26,7 @@ fn valid_path(v: &str) -> bool {
         && v.split('/').all(|p| !p.is_empty() && p != "." && p != ".."
             && p.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-' || b == b'.'))
 }
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Hash)]
 pub struct BlockPosition { pub x: i32, pub y: i32, pub z: i32 }
 impl BlockPosition { pub const fn new(x:i32,y:i32,z:i32)->Self { Self{x,y,z} } }
 #[derive(Clone, Debug, Eq, PartialEq)]

@@ -32,3 +32,5 @@ Updated: 2026-11-19
 2. Unify package approval and runtime activation through one coordinator.
 3. Add the first concrete domain adapter, preferably world/block commands, then entity and physics.
 4. Keep PMCS fresh and append the session log for each substantial implementation change.
+
+- Typed WorldBlockCommandAdapter is now implemented in runtime crate; it translates authorized block commands and delegates atomic commit to a native backend contract. CI pending.

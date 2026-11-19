@@ -114,3 +114,10 @@ Date: 2026-11-19
 - Fixed rustfmt issues from the first CI attempt and committed formatting in fd4109a.
 - DreamMod Runtime CI passed: 27 tests, formatting, and Clippy with warnings denied. Workspace offline tests and Clippy also passed; PMCS validation passed on the docs snapshot commit before the implementation change.
 - Mock host remains test-only; no production world/entity adapter exists.
+
+
+## S-2026-11-19-94 — Typed world block adapter
+Date: 2026-11-19
+- Added public WorldBlockCommandAdapter and typed BlockId/BlockPosition/BlockMutation plus BlockWorldBackend atomic contract.
+- Adapter accepts only authorized world.set_block commands, validates strict payload and identifiers, enforces horizontal world-border bounds, stages batch, and delegates atomic commit.
+- Unit tests cover conversion/mod block IDs, invalid late mutation, unknown fields, out-of-bounds, and unsupported domain. Commit 47d6e6e; CI pending.
