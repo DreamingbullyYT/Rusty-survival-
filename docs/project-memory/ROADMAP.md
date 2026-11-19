@@ -117,5 +117,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 ## Engine host boundary milestone
 - [x] Add runtime API that forwards only authorized commands to an engine host in one atomic batch.
 - [x] Mock-host tests for authorized delivery and denied-command suppression.
-- [ ] Verify host-boundary commits in CI.
+- [x] Verify host-boundary commits in CI: runtime formatting, 26 tests and Clippy passed on 406b8e5; root offline engine test passed on 4d47315.
 - [ ] Replace mock with typed engine adapter and actual state/rollback tests.
