@@ -48,3 +48,9 @@
 ### Authorized command host boundary verified — 2026-11-19
 - DreamMod Runtime CI passed on commit 406b8e525eb99ae276633a32336fa1615b1298c3: rustfmt, 26 tests (0 failures), and Clippy with warnings denied.
 - Root offline engine test workflow passed on the later memory commit 4d4731573ae63a64dbf747b90084b265d43a87b6. The new host boundary is still a mock-only seam, not live engine execution.
+
+
+### Mock block-world host — 2026-11-19
+- Added a stateful test-only engine host for `world.set_block`: validates namespace/command, integer coordinates and bounds, block identifier, stages the full batch, then commits.
+- Added a runtime-to-host integration test for two valid block mutations and an invalid second batch entry proving no partial state mutation.
+- Implementation commits: 4067841 and 6d2a232. CI verification pending.
