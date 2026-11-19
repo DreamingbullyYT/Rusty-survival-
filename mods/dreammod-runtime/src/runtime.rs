@@ -1015,7 +1015,7 @@ mod tests {
         assert_eq!(first.failures.len(), 1);
         assert_eq!(second.failures.len(), 1);
         assert!(!runtime.is_enabled(&ModId::parse("dreammod.bad").unwrap()));
-        assert!(!runtime.is_enabled(&ModId::parse("dreammod.good").unwrap()));
+        assert!(runtime.is_enabled(&ModId::parse("dreammod.good").unwrap()));
     }
 
     #[test]
