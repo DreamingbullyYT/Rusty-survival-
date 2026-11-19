@@ -27,3 +27,8 @@
 - Validate package CI and PMCS.
 - Confirm the corrected Core hook builds after rustfmt cleanup.
 - Verify the event output field in the generated contract.
+
+## Shared player mods directory decision — 2026-11-19
+- Accepted D-013: player `.dmod` packages will be placed in Horizon's existing `horizon-mods/` directory alongside Horizon `.hmod` packages.
+- DreamMod must dispatch only `.dmod`; Horizon continues handling `.hmod`. Do not rename, intercept or process Horizon packages. DreamMod Core is trusted native `.hmod` build integration, distinct from player `.dmod` packages.
+- Directory convention is decided, but a scanner integration into the instance filesystem is not implemented or verified. Next: build a safe deterministic scanner, diagnostics and mixed-extension regression tests.
