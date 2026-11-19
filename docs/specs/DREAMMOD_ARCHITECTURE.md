@@ -36,7 +36,18 @@ Current Horizon documentation describes .hmod native packages as Rust source tha
 - Support enable/disable/reload and deterministic lifecycle transitions where safe.
 - Keep package assets/data separate from executable scripts.
 
-## 3. Reuse the existing Horizon mod platform
+## 3. Current format/runtime reality (verified 2026-11-19)
+| Format/runtime | Repository status |
+|---|---|
+| .dmod interpreted source | Intended player format; package validation/manager/lifecycle exists, script execution does not |
+| Rhai | Isolated AST-walking prototype; not integrated or selected |
+| WASM | No DreamMod runtime/format/adapter. Horizon cold-cache route compiles via child process/Wasmtime; not adopted |
+| Native .hmod | Trusted DreamMod Core build-time integration only, CI-built and intended for prebuilt distribution |
+| Player native .so/DLL | Not implemented |
+
+Do not describe current API as supporting both WASM and native player mods. WASM would need to meet no-player-compilation and use the capability-checked Host API. Player-native execution requires a separate trust/security decision.
+
+## 4. Reuse the existing Horizon mod platform
 
 Horizon already supplies a typed mod API and host: Hooks, Host/ServerHost/ClientHost, Registrar, Parts, attachments, capabilities, dependency ordering and typed API injection points. Native-only mixins, bridges, loop slots and support modules reach private game code where necessary. DreamMod should adapt interpreted scripts to these existing contracts and extend only proven gaps; it must not create a parallel event bus, registry or dependency resolver. The current WASM runtime performs module compilation through a child process and Wasmtime when its cache is cold, so it does not satisfy the strict no-player-compilation requirement. Ordinary native .hmod source is also compiled by the launcher. See docs/audits/HORIZON_MOD_PLATFORM_AUDIT.md for pinned source evidence and unresolved feasibility checks.
 
