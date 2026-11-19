@@ -70,3 +70,5 @@ Updated: 2026-11-19
 
 - Bridge hardening: aggregate pending-result serialization is capped by `max_output_bytes`; if the result envelope exceeds budget it becomes `response_too_large` or is omitted if even the error envelope cannot fit. Provider-callback fault-disable now also clears pending results.
 - Added a capability-denial regression test; denial is surfaced to the script as a structured error and does not disable it. CI remains unverified.
+
+- Added result-isolation regression test for two mods using the same request ID but receiving separate data (commit `8c2f410`). CI still not visible/verified.
