@@ -175,3 +175,6 @@ The overlay build step's `DREAMMOD_PREBUILT_DIR` export does not carry into a la
 
 ## Accepted player package folder convention (2026-11-19)
 D-013: Use the instance's existing `horizon-mods/` for both formats. DreamMod handles `.dmod` only; Horizon handles `.hmod` only. Do not rename or intercept `.hmod`. DreamMod Core is trusted native Horizon `.hmod` integration, not a player package. Scanner implementation remains a next step; safe bounded discovery, mixed-extension tests and diagnostics must be added before claiming it integrated.
+
+## `horizon-mods/` scanner implementation (2026-11-19)
+A library scanner now exists in `mods/dreammod-runtime/src/package.rs` and is exported from the runtime crate. It scans direct children only, dispatches `.dmod`, ignores `.hmod`/other extensions, reports symlinks and non-files, validates packages, excludes every package involved in duplicate IDs, and applies defaults of 256 packages and 256 MiB total archive input. Regression tests were added. It is not connected to a launcher/game instance directory or UI yet; CI must be checked before claiming it passes.
