@@ -158,3 +158,5 @@ Runtime directory-loading CI found one final rustfmt trailing blank line after t
 
 ### Scanner-to-runtime verified milestone — 2026-11-19
 Runtime run `44544390519` passed 21 tests, formatting and Clippy. The scan/load entrypoint is verified in the runtime crate; automatic instance path discovery and UI diagnostics remain outside the implemented scope.
+
+A valid ZIP package end-to-end test was added for the directory-loading entrypoint; it checks successful loading, `.hmod` isolation and malformed-package diagnostics. CI pending.
