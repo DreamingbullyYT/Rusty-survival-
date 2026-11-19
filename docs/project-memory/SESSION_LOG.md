@@ -70,3 +70,7 @@ Date: 2026-11-19
 Date: 2026-11-19
 - Added `load_from_horizon_mods_dir` plus a scanner-configurable variant to DreamModRuntime. Scan diagnostics and `.hmod` count are retained in the report while validated `.dmod` packages go through existing load/dependency/API/permission checks.
 - Added regression test mixing an ignored `.hmod` and a malformed `.dmod`; CI is pending. Caller must still supply the game's instance path; UI integration is not implemented.
+
+## S-2026-11-19-70 — Runtime entrypoint formatting correction
+Date: 2026-11-19
+- Actions found rustfmt-only diffs in the public re-export ordering, scanner error propagation and test-module trailing whitespace. Corrected these; new runtime workflow is pending.
