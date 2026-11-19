@@ -413,7 +413,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                     match result {
                         Ok(api_requests) => {
                             instance.pending_api_results = resolve_script_api_requests(
-                                &id, &instance.granted, api_requests, authorizer, config, api_router,
+                                &instance.granted, api_requests, authorizer, config, api_router,
                             );
                             instance.consecutive_failures = 0;
                         },
@@ -746,7 +746,6 @@ fn with_api_results(payload: &Value, results: Vec<ApiScriptResult>) -> Value {
 }
 
 fn resolve_script_api_requests<A: CommandAuthorizer>(
-    mod_id: &ModId,
     granted: &BTreeSet<Capability>,
     requests: Vec<ApiScriptRequest>,
     authorizer: &A,
@@ -1121,6 +1120,70 @@ mod tests {
         fn invoke(&mut self, request: &crate::api_router::ApiRequest) -> Result<Value, String> {
             Ok(json!({"source": self.descriptor.id, "payload": request.input}))
         }
+    }
+
+    #[test]
+    fn dmod_script_can_request_api_and_receive_result_on_next_event() {
+        use crate::api_router::{ApiOperation, ApiOperationSafety, ApiProviderKind, ApiProviderDescriptor};
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_id = ModId::parse("dreammod.script_api").unwrap();
+        let source = r#"
+            fn on_server_tick(event) {
+                if event.api_results.len() == 0 {
+                    #{
+                        api_requests: [
+                            #{
+                                request_id: "block_lookup",
+                                operation: #{ domain: "world", name: "block_get" },
+                                safety: "read_only",
+                                input: #{ x: 7, y: 64, z: -2 }
+                            }
+                        ]
+                    }
+                } else {
+                    #{
+                        commands: [
+                            #{
+                                namespace: "world",
+                                name: "set_block",
+                                payload: #{ x: event.api_results[0].result.payload.x, y: 65, z: -2 }
+                            }
+                        ]
+                    }
+                }
+            }
+        "#;
+        let mod_package = package(
+            "dreammod.script_api",
+            source,
+            &["server_tick"],
+            &[Capability::WorldRead, Capability::WorldWrite],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime.enable_mod(&mod_id);
+
+        let operation = ApiOperation::new("world", "block_get").unwrap();
+        runtime.register_api_provider(Box::new(EchoApiProvider {
+            descriptor: ApiProviderDescriptor {
+                id: "horizon_world".into(),
+                kind: ApiProviderKind::Horizon,
+                priority: 0,
+                operations: [operation].into(),
+            },
+        })).unwrap();
+
+        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({ "tick": 1 }));
+        let first = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(first.commands.is_empty());
+        assert!(first.failures.is_empty());
+
+        let second = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(second.failures.is_empty(), "{:?}", second.failures);
+        assert_eq!(second.commands.len(), 1);
+        assert_eq!(second.commands[0].command.payload["x"], 7);
     }
 
     #[test]
