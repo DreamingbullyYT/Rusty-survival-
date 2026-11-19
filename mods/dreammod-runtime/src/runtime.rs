@@ -1149,6 +1149,20 @@ mod tests {
         }
     }
 
+    struct FailingApiProvider {
+        descriptor: crate::api_router::ApiProviderDescriptor,
+    }
+
+    impl crate::api_router::ApiProvider for FailingApiProvider {
+        fn descriptor(&self) -> &crate::api_router::ApiProviderDescriptor {
+            &self.descriptor
+        }
+
+        fn invoke(&mut self, _request: &crate::api_router::ApiRequest) -> Result<Value, String> {
+            Err("provider intentionally failed".to_owned())
+        }
+    }
+
     #[test]
     fn api_result_injection_preserves_legacy_scalar_payloads_without_results() {
         assert_eq!(with_api_results(&json!(17), Vec::new()), json!(17));
@@ -1303,6 +1317,83 @@ mod tests {
             .collect::<Vec<_>>();
         values.sort();
         assert_eq!(values, vec![1, 2]);
+    }
+
+    #[test]
+    fn script_provider_failure_is_returned_without_fallback_retry() {
+        use crate::api_router::{ApiOperation, ApiProviderDescriptor, ApiProviderKind};
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_id = ModId::parse("dreammod.provider_error").unwrap();
+        let source = r#"
+            fn on_server_tick(event) {
+                if event.api_results.len() == 0 {
+                    #{
+                        api_requests: [#{
+                            request_id: "failed_query",
+                            operation: #{ domain: "world", name: "block_get" },
+                            safety: "read_only",
+                            input: #{ x: 4, y: 64, z: 0 }
+                        }]
+                    }
+                } else if event.api_results[0].error == "provider_failed" {
+                    #{
+                        commands: [#{
+                            namespace: "world", name: "unknown_probe", payload: #{}
+                        }]
+                    }
+                } else {
+                    #{
+                        commands: [#{
+                            namespace: "world", name: "set_block",
+                            payload: #{ x: event.api_results[0].result.payload.x, y: 65, z: 0 }
+                        }]
+                    }
+                }
+            }
+        "#;
+        let mod_package = package(
+            "dreammod.provider_error",
+            source,
+            &["server_tick"],
+            &[Capability::WorldRead, Capability::WorldWrite],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime.enable_mod(&mod_id);
+
+        let operation = ApiOperation::new("world", "block_get").unwrap();
+        runtime
+            .register_api_provider(Box::new(FailingApiProvider {
+                descriptor: ApiProviderDescriptor {
+                    id: "horizon_failing".into(),
+                    kind: ApiProviderKind::Horizon,
+                    priority: 10,
+                    operations: [operation.clone()].into(),
+                },
+            }))
+            .unwrap();
+        runtime
+            .register_api_provider(Box::new(EchoApiProvider {
+                descriptor: ApiProviderDescriptor {
+                    id: "dreammod_fallback".into(),
+                    kind: ApiProviderKind::DreamMod,
+                    priority: 0,
+                    operations: [operation].into(),
+                },
+            }))
+            .unwrap();
+
+        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
+        let first = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(first.failures.is_empty());
+        let second = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(second.failures.is_empty(), "{:?}", second.failures);
+        assert!(second.commands.is_empty());
+        assert_eq!(second.denied.len(), 1);
+        assert_eq!(second.denied[0].reason, "unknown command");
+        assert!(runtime.is_enabled(&mod_id));
     }
 
     #[test]
