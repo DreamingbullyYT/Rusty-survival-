@@ -45,6 +45,13 @@ A synchronous Rhai native callback would need a per-invocation authorization con
 - Completed results are injected into the next matching mod callback under `event.api_results`; queue is one-shot and mod-local. Disabling clears pending results.
 - Automated test covers a script requesting `world.block_get` through a fake Horizon provider, then consuming the returned data on the next tick to emit a command. Test/format/Clippy CI is not yet verified.
 
+## Current implementation
+
+- Rhai script output accepts `api_requests` alongside commands/providers.
+- Runtime validates request envelopes and duplicate IDs, applies operation authorizer/capability grants, routes via ApiRouter, bounds input/result size and returns stable error envelopes.
+- Completed results are injected into the next matching mod callback under `event.api_results`; queue is one-shot and mod-local. Disabling clears pending results.
+- Automated test covers a script requesting `world.block_get` through a fake Horizon provider, then consuming the returned data on the next tick to emit a command. Test/format/Clippy CI is not yet verified.
+
 ## Acceptance tests
 - valid request routes to the preferred provider and result is correlated by request ID.
 - unknown operation and missing capability are denied.
