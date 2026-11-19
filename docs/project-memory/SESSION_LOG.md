@@ -85,3 +85,11 @@ Date: 2026-11-19
 - Commits: 4067841 and 6d2a232. CI pending.
 
 Project continuity log policy: this file is chronological and append-only.
+
+
+## S-2026-11-19-90 — Mock host formatting and PMCS structure correction
+Date: 2026-11-19
+- Applied rustfmt corrections after CI reported formatting-only diffs. Restored the PMCS validator's required section markers in PROJECT_MEMORY and CURRENT_STATE.
+- Implementation commit c89b038. CI pending.
+
+Project continuity log policy: this file is chronological and append-only.
