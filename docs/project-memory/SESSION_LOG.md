@@ -125,3 +125,7 @@ Date: 2026-11-19
 
 ## S-2026-11-19-96 — Rustfmt corrections
 - Re-formatted adapter and public exports after first CI reported rustfmt-only diffs. Commit 285f264 and 68a6c13; rerun CI pending.
+
+
+## S-2026-11-19-97 — Adapter test compile correction
+- Runtime test compile reported ModId import visibility; changed test to import ModId from manifest. Commit 106a1c5; verification pending.
