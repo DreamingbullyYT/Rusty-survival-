@@ -45,3 +45,12 @@ Date: 2026-11-19
 - DreamMod Runtime CI passed: 24 tests, formatting and Clippy at commit `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
 - Root Rust core format, unit tests and Clippy passed, as did the offline engine test workflow.
 - Explicit activation and fault-disable provider cleanup are now verified. Next milestone is lifecycle unification and mock engine-host vertical slice; no live engine adapters yet.
+
+
+## S-2026-11-19-85 — Authorized command host boundary
+Date: 2026-11-19
+- Added EngineCommandHost contract and dispatch_event_and_execute helper. Only the runtime's validated and capability-authorized command list is passed to the host; host API requires atomic batch execution.
+- Added tests for script command reaching a mock host and denied commands never invoking the host.
+- Commits: 6b914d9 and 463abba. CI verification pending; no concrete engine adapter or engine mutations yet.
+
+Project continuity log policy: this file is chronological and append-only.
