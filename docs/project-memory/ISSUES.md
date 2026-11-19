@@ -24,3 +24,6 @@
 - Initial runtime workflow failed at formatting only; no compile, test or Clippy stage executed. Formatting correction has been committed; a fresh run is pending.
 
 - Follow-up runtime run also found two remaining rustfmt-only diffs; they are corrected. The next workflow is the first attempt expected to reach test compilation, but no result is claimed yet.
+
+### Scanner CI status update (2026-11-19)
+- Verified: runtime Actions `44543680876` passed rustfmt, 20 tests and Clippy on `4abbd917`; PMCS `44543782146` passed. Remaining issue is instance-path/UI integration, not scanner validation.
