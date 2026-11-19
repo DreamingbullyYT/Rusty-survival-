@@ -8,4 +8,4 @@
 - Host batch atomicity is a contract; concrete engine adapters must implement and test validation/rollback.
 - Stateful provider hot switching currently changes routing only; migration/snapshot/rollback contracts are required before switching stateful subsystems.
 - Script API bridge is implemented but CI is unverified. Remaining test is unload cleanup; request-count overflow, disable/re-enable cleanup and provider-error/no-retry regressions are covered.
-- Horizon integration blocker: `ApiProvider::invoke` has no scoped host context, but Horizon APIs are hook-scoped. Design a safe engine-neutral context interface before implementing live Horizon operations; do not use global mutable host state or unsafe pointers.
+- Horizon integration blocker: `ApiProvider::invoke` has no scoped host context, but Horizon APIs are hook-scoped. The safe operation-scoped engine-neutral context design is documented in `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md` but not implemented; implement/test it before live Horizon operations. Do not use global mutable host state or unsafe pointers.
