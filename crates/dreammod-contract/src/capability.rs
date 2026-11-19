@@ -11,7 +11,9 @@ impl CapabilityId {
         let valid = parts.clone().count() >= 2
             && parts.all(|part| {
                 !part.is_empty()
-                    && part.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-')
+                    && part
+                        .bytes()
+                        .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-')
             });
         if value.len() > 96 || !valid {
             return Err(CapabilityError::Invalid);
@@ -19,7 +21,9 @@ impl CapabilityId {
         Ok(Self(value))
     }
 
-    pub fn as_str(&self) -> &str { &self.0 }
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
 }
 
 /// Deterministic set of granted capabilities for one mod lifecycle.
@@ -29,7 +33,9 @@ pub struct CapabilitySet {
 }
 
 impl CapabilitySet {
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     /// Adds a grant. Returns true only if it was not already present.
     pub fn grant(&mut self, capability: CapabilityId) -> bool {
@@ -45,11 +51,20 @@ impl CapabilitySet {
         self.grants.contains(capability)
     }
 
-    pub fn len(&self) -> usize { self.grants.len() }
-    pub fn is_empty(&self) -> bool { self.grants.is_empty() }
+    pub fn len(&self) -> usize {
+        self.grants.len()
+    }
 
-    pub fn iter(&self) -> impl Iterator<Item = &CapabilityId> { self.grants.iter() }
+    pub fn is_empty(&self) -> bool {
+        self.grants.is_empty()
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &CapabilityId> {
+        self.grants.iter()
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum CapabilityError { Invalid }
+pub enum CapabilityError {
+    Invalid,
+}
