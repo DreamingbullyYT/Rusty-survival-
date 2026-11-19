@@ -70,3 +70,5 @@
 - Added workspace membership and push/PR CI trigger for engine checks. Verification is pending; do not claim crate tests or Clippy passed until Actions finishes.
 
 - Corrected an escaped newline in the contract test source; fresh workspace CI is pending.
+
+- Expanded contract foundation with deterministic CapabilitySet grant/revoke/check operations and ApiFeatureId negotiation keys; formatted contract crate source. CI pending.
