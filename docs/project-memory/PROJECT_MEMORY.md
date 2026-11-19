@@ -153,3 +153,5 @@ Runtime CI `44543680876` passed scanner code commit `4abbd917`: rustfmt, 20 test
 The scanner now has a runtime connection: DreamModRuntime scans a caller-provided Horizon mods directory, passes valid `.dmod` packages into its existing package load path, and returns scan diagnostics/ignored-Horizon count. Launcher path/UI remains outside this crate; runtime CI pending.
 
 Scanner-to-runtime entrypoint's first CI attempt was a rustfmt-only failure. Formatting has been corrected; tests and Clippy still need verification.
+
+Runtime directory-loading CI found one final rustfmt trailing blank line after the prior fixes; removed in commit `20940cf`. Await latest verification.
