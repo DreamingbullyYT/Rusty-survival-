@@ -519,6 +519,20 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
         request: ApiRequest,
         authorizer: &A,
     ) -> Result<Value, ApiCallError> {
+        if !crate::api_router::ApiOperation::new(
+            request.operation.domain.clone(),
+            request.operation.name.clone(),
+        )
+        .is_ok()
+        {
+            return Err(ApiCallError::InvalidOperation);
+        }
+        let input_bytes = serde_json::to_vec(&request.input)
+            .map_err(|_| ApiCallError::InvalidOperation)?
+            .len();
+        if input_bytes > self.config.max_command_payload_bytes {
+            return Err(ApiCallError::PayloadTooLarge);
+        }
         let instance = self.mods.get(mod_id).ok_or(ApiCallError::ModNotLoaded)?;
         if !instance.enabled {
             return Err(ApiCallError::ModDisabled);
@@ -821,6 +835,10 @@ pub enum ApiCallError {
     ModDisabled,
     #[error("API operation is unknown or unsupported by the authorization policy")]
     UnknownOperation,
+    #[error("API operation identifier is invalid")]
+    InvalidOperation,
+    #[error("API request payload exceeds the configured byte limit")]
+    PayloadTooLarge,
     #[error("mod lacks capability {0:?}")]
     CapabilityDenied(Capability),
     #[error(transparent)]
