@@ -32,10 +32,10 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - GitHub status/workflow lookups returned empty for latest code; local Cargo/Rust tools are unavailable. Do not claim latest tests/format/Clippy passed.
 - Check CI or run `cargo fmt --manifest-path mods/dreammod-runtime/Cargo.toml -- --check`, `cargo test --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml`, and `cargo clippy --all-targets --manifest-path mods/dreammod-runtime/Cargo.toml -- -D warnings` before marking verified.
 
-## Scoped context design (new)
-- Added `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md` and linked it from `docs/DREAMMOD_HYBRID_API.md`.
-- Context is operation-scoped, borrowed, engine-neutral, bound to the already-authorized request, and cannot dispatch a different operation. Existing provider `invoke` remains compatible via a default context-aware method.
-- Design only. Implement router/runtime context paths and fake-context tests next. Do not claim a live Horizon adapter or tests.
+## Scoped context progress
+- Spec: `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md`.
+- Implemented router-level `ApiOperationContext`, default `invoke_with_context` compatibility, and `ApiRouter::call_with_context` operation+safety mismatch guard. Exported the trait. Router tests cover propagation and mismatched context.
+- Not CI-verified; runtime dispatch/host call entrypoints still do not pass contexts. Next implement runtime integration and tests. Do not claim a live Horizon adapter.
 
 ## Horizon adapter blocker
 - Official Horizon code mods implement `mod_api::Hooks` and receive typed hook-specific host/event contexts; Level reads and writes use access-specific host types. Native API is experimental and revision-pinned.
