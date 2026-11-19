@@ -78,3 +78,9 @@
 
 ## 2026-11-19
 - Fixed test-only private ModId import in adapter tests; CI rerun pending.
+
+
+### Hybrid Horizon API provider routing — 2026-11-19
+- Started hybrid direction: DreamMod API routes to Horizon when a provider advertises a compatible operation, with DreamMod-native fallback for gaps and per-domain preference.
+- Added provider abstraction/router, runtime replacement/removal, tests, and architecture note. This is routing scaffolding, not an integrated Horizon adapter; CI pending.
+- D-015 supersedes D-014's blanket Horizon integration prohibition while retaining engine independence.
