@@ -37,3 +37,8 @@
 
 ## Exit criteria before engine implementation
 - Confirm package/runtime safety architecture, extension contracts, host integration route, and representative compatibility tests before expanding engine implementation.
+
+## Shared Horizon mods folder
+- [x] Accept `horizon-mods/` as the common folder for player packages.
+- [ ] Add a bounded deterministic `.dmod` scanner; ignore `.hmod` and unrelated files.
+- [ ] Test mixed extensions, malformed packages, duplicate IDs, unsafe entries, and diagnostics; verify scanner never extracts archives or crosses folder boundaries.
