@@ -62,3 +62,10 @@ Date: 2026-11-19
 - Commits: 925137f and f349bc6. Awaiting fresh runtime CI.
 
 Project continuity log policy: this file is chronological and append-only.
+
+
+## S-2026-11-19-87 — Final host test formatting correction
+Date: 2026-11-19
+- The second runtime CI attempt showed one remaining rustfmt change in the denied-command test's load call. Applied the correction in 406b8e5; runtime tests and Clippy have not run yet.
+
+Project continuity log policy: this file is chronological and append-only.
