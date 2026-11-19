@@ -162,3 +162,6 @@ Runtime run `44544390519` passed 21 tests, formatting and Clippy. The scan/load 
 A valid ZIP package end-to-end test was added for the directory-loading entrypoint; it checks successful loading, `.hmod` isolation and malformed-package diagnostics. CI pending.
 
 Valid-package directory integration test's first CI attempt was rustfmt-only (trailing blank line); corrected in `0790dc4`, verification pending.
+
+### Shared mods folder end-to-end test passed — 2026-11-19
+Runtime CI `44544852796` passed 22 tests, rustfmt and Clippy. Valid player `.dmod` loading, `.hmod` isolation and bad-package diagnostics verified through runtime API. Launcher path/UI remains unimplemented.
