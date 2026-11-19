@@ -55,3 +55,7 @@ Date: 2026-11-19
 Date: 2026-11-19
 - Inspected Actions output: the initial scanner runtime workflow failed at `cargo fmt --check`, before tests/Clippy, with formatting-only diffs.
 - Applied rustfmt corrections to scanner imports, package-size fold and test fixture/assertions. No functional change intended. Re-triggered validation; results pending.
+
+## S-2026-11-19-67 — Remaining rustfmt corrections
+Date: 2026-11-19
+- A second format check identified two remaining style differences in the aggregate-retained-bytes fold and limit-test assertions. Applied exact rustfmt output; runtime test rerun is pending.
