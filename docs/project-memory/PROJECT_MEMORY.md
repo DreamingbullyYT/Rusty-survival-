@@ -140,3 +140,6 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - DreamMod Core now has a bounded owner-scoped atlas registry and the pinned Horizon collect hook re-submits its snapshot at initial registration and every resource reload.
 - Batch replacement accepts an authorization callback, validates namespace/path/duplicates and the 32-entry cap, and is atomic. Snapshot output is deterministic.
 - The bridge is trusted Core infrastructure only; package ModManager and .dmod interpreter do not populate it yet. Compile/PMCS verification is pending.
+
+### Shared mods folder scanner groundwork — 2026-11-19
+Accepted D-013 folder convention now has library implementation: `ModsDirectoryScanner` in dreammod-runtime discovers `.dmod` packages from direct children of the Horizon `horizon-mods/` directory. `.hmod` remains ignored for Horizon, unrelated files ignored, symlinks not followed, invalid packages reported, duplicate IDs excluded for all conflicting packages, and scanning bounded (256 candidate packages, 256 MiB aggregate archives). Tests cover mixed extensions, directory entries, duplicates, limits and symlink handling. This is discovery/validation API only, not launcher path/UI integration. Await runtime CI.
