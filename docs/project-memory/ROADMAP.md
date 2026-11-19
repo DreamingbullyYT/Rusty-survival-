@@ -181,3 +181,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Identify that current provider invocation lacks scoped host context for real Horizon world APIs.
 - [ ] Design scoped engine-neutral provider context, route it through runtime/router/provider calls, and prove tests without Horizon dependencies.
 - [ ] Build optional, version-pinned Horizon adapter on top of that context; test a small operation end-to-end.
+
+- Provider-error test commit `7750687`; CI still not verified.
