@@ -20,3 +20,9 @@
 
 ### Core hook formatting cleanup — 2026-11-19
 - Latest Core run `44470917203` failed at rustfmt check: formatting in `atlas_registry.rs` and import order in `lib.rs`. Hook signature correction is present; compilation is not yet confirmed. Overlay run `44470917220` passed and PMCS run `44470999045` passed.
+
+
+### Runtime format status audit — 2026-11-19
+- Clarified from source: .dmod validation/manager/lifecycle exist but script execution does not; Rhai is separate prototype only; no DreamMod WASM runtime or player-native loader.
+- Trusted native DreamMod Core is Horizon .hmod build-time integration only. Horizon's cold-cache WASM compilation is not adopted because it conflicts with no player-side compilation.
+- PMCS updated to prevent future claims of dual WASM/native player-mod support.
