@@ -3,7 +3,7 @@
 Updated: 2026-11-19
 
 ## Implemented
-- Generic API provider router integrated into DreamModRuntime: Horizon-first default, DreamMod fallback by advertised operation, per-domain preference switch, provider hot replacement/removal. Runtime host API calls require enabled mod, recognized operation, granted capability and bounded request and response sizes. These are host-side calls, not yet callable directly from .dmod scripts. Concrete Horizon provider still not implemented.
+- Generic API provider router integrated into DreamModRuntime: Horizon-first default, DreamMod fallback by advertised operation, per-domain preference switch, provider hot replacement/removal. Runtime host API calls require enabled mod, recognized operation, granted capability and bounded request and response sizes. The event-scoped script bridge is implemented: `.dmod` callbacks can emit `api_requests`; results are capability-checked, routed, bounded, and injected once into that mod's next event as `api_results`. Concrete Horizon provider still not implemented.
 - Engine-independent DreamMod contract crate and owner-scoped metadata registry.
 - .dmod package validation/scanning and interpreted Rhai runtime foundation.
 - Capability filtering and response validation for commands/providers.
@@ -20,8 +20,8 @@ Updated: 2026-11-19
 - Stateful test-only mock block-world host validates and stages block writes before commit. Tests cover successful writes and batch rollback behavior on invalid input. Runtime CI passed on c89b038: formatting, 27 tests, and Clippy with warnings denied.
 
 ## Not implemented / not verified
-- No concrete Horizon API adapter or end-to-end Horizon calls yet; latest router/runtime integration tests and formatting/CI pending.
-- Direct script API bridge (Rhai callable APIs and returned query data) is not implemented yet.
+- No concrete Horizon API adapter or end-to-end Horizon calls yet.
+- Latest script bridge source and regression test are committed; format/test/Clippy CI is unverified.
 - Mock cross-domain host is verified, but is test-only; production adapters and authoritative world/entity state are still absent.
 
 ## Remaining
@@ -31,7 +31,7 @@ Updated: 2026-11-19
 - Language decision and production sandbox remain open; Rhai is a candidate runtime.
 
 ## Next actions
-1. Expose API calls directly to .dmod scripts with capability enforcement and bounded requests/responses.
+1. Verify latest script bridge formatting, runtime tests, and Clippy in CI; fix any failures.
 2. Implement a version-pinned Horizon adapter for a small, verifiable API surface, with translations to DreamMod contract types.
 3. Build DreamMod-native adapters for operations Horizon does not expose; integrate world/block adapter with real engine storage.
 4. Unify package approval and runtime activation through one coordinator; maintain PMCS and verify CI.
@@ -58,3 +58,11 @@ Updated: 2026-11-19
 
 
 - Follow-up fix: `ApiOperation` now derives serde serialization/deserialization, required by the new envelopes. Latest source commit `1ffd548`; CI still unconfirmed (no statuses/workflow runs reported).
+
+
+## Script API bridge implementation — 2026-11-19
+- ScriptResponse now accepts `api_requests`; request validation checks envelopes and duplicate IDs.
+- Each request is mapped through CommandAuthorizer and capability grants before routing; stable per-request errors cover denied/unknown/unavailable/provider-failed/size-limit cases.
+- Provider results are stored for one next callback and injected as `event.api_results` for that mod only; disabling clears the queue.
+- Added Rhai end-to-end test request → fake provider → next tick result → command.
+- Commits: `9934644` runtime bridge; `6ee5b26` regression test. CI is not verified (status and workflow run lookups returned empty).
