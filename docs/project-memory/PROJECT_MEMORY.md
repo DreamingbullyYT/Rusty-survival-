@@ -122,3 +122,9 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Workflow review found the host-load step did not re-export `DREAMMOD_PREBUILT_DIR` in its own step environment; per-step shell exports do not persist across GitHub Actions steps.
 - Updated `.github/workflows/dreammod-prebuilt.yml` to export the exact `$RUNNER_TEMP/dreammod-prebuilt` directory in the loader step, list files and ELF RUNPATHs for diagnostics, and bound the host-load test to 180 seconds.
 - Prior overlay run `44363904976` passed API-only compilation and `$ORIGIN` setup but was cancelled by this workflow correction while the host-test command was running. A new overlay run will verify the corrected environment contract.
+
+
+### ModManager atlas batch ownership — 2026-11-19
+- Atlas declarations are stored per mod by `ModManager`; enabled mods can atomically replace their batch and Core-facing code can request one deterministic snapshot.
+- Validation enforces owner namespace, safe atlas IDs/definition paths, duplicates and the 32-atlas active cap. Rejected batch changes roll back; disable/failure cleanup releases declarations.
+- Package run `44468717308` passed: 62 tests, formatting and Clippy. Still no Core/Horizon live atlas registration.
