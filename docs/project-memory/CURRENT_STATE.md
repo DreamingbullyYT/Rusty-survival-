@@ -41,3 +41,10 @@ Updated: 2026-11-19
 - Typed WorldBlockCommandAdapter has been added and formatted; tests/CI verification pending. Native engine world/chunk storage is still absent.
 
 - Fixed adapter unit-test import: ModId now imports from manifest (106a1c5); runtime CI rerun pending.
+
+
+## Script API bridge design (2026-11-19)
+- Design document added: `docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md`.
+- Proposed first version is deferred/event-scoped request-response rather than synchronous Rhai callbacks; avoids shared callback context and reentrancy hazards.
+- Requests/results are not implemented. Runtime API remains host-callable only; no script-facing API is available yet.
+- Next acceptance gates: result isolation, one-shot delivery, disabled/unloaded cleanup, request/result bounds, provider errors without retry, and capability denials.
