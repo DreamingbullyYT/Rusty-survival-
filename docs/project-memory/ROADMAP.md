@@ -63,3 +63,5 @@
 
 - [x] Scanner-to-runtime entrypoint verified: runtime CI `44544390519` passed 21 tests, formatting and Clippy.
 - [ ] Launcher supplies actual instance `horizon-mods/` path and presents diagnostics in UI.
+
+- [ ] Verify valid-package end-to-end directory test with runtime CI.
