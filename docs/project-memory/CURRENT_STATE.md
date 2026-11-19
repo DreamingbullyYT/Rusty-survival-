@@ -51,3 +51,5 @@
 - Added a runtime integration regression test for mixed Horizon `.hmod` and malformed `.dmod` inputs. CI is pending; this remains a caller-supplied directory API, not automatic launcher instance discovery.
 
 - Scanner-to-runtime loading entrypoint's first CI attempt failed at formatting only. Corrections applied; fresh runtime CI pending.
+
+- Second runtime directory-loading CI attempt found one remaining rustfmt whitespace diff; removed and awaiting a clean run.
