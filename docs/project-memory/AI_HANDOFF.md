@@ -26,8 +26,7 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 
 ## Next steps
 1. Verify CI for hybrid ApiRouter (format, tests, Clippy).
-2. Connect ApiRouter to runtime dispatch and capability checks.
-3. Build a concrete version-pinned Horizon adapter for a small API slice, with contract-type translation and integration tests.
+2. Build a concrete version-pinned Horizon adapter for a small API slice, with contract-type translation and integration tests.
 4. Implement DreamMod-native fallbacks for gaps; integrate real world/block storage and entity/physics adapters.
 5. Unify package approval and runtime activation in a coordinator.
 
@@ -36,6 +35,7 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 
 
 ## Hybrid API routing — implemented, verification pending
-- Generic `ApiRouter` with Horizon-first default, fallback to compatible DreamMod provider, per-domain preference, replacement/unregister and tests.
+- `ApiRouter` integrated in `DreamModRuntime`: Horizon-first provider selection, DreamMod fallback by advertised operation, per-domain preference, hot replacement/removal.
+- `call_api` requires a loaded and enabled mod, an authorizer-recognized operation and granted capability. Runtime tests added; CI pending.
 - Architecture and API surface mapping: `docs/DREAMMOD_HYBRID_API.md`.
-- Still not wired to the .dmod runtime and no concrete Horizon adapter exists. Don't claim integration until tested.
+- No concrete Horizon adapter/end-to-end API exists yet. Don't claim Horizon integration until tested.
