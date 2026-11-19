@@ -143,3 +143,5 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 
 ### Shared mods folder scanner groundwork — 2026-11-19
 Accepted D-013 folder convention now has library implementation: `ModsDirectoryScanner` in dreammod-runtime discovers `.dmod` packages from direct children of the Horizon `horizon-mods/` directory. `.hmod` remains ignored for Horizon, unrelated files ignored, symlinks not followed, invalid packages reported, duplicate IDs excluded for all conflicting packages, and scanning bounded (256 candidate packages, 256 MiB aggregate archives). Tests cover mixed extensions, directory entries, duplicates, limits and symlink handling. This is discovery/validation API only, not launcher path/UI integration. Await runtime CI.
+
+Scanner CI had two formatting-only failures before tests ran. The exact remaining rustfmt diffs were corrected in commit `4abbd917`; next run must verify test compilation and Clippy.
