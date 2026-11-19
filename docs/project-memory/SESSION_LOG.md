@@ -43,3 +43,10 @@ Date: 2026-11-19
 - Horizon's existing WASM cold-cache route compiles via child process/Wasmtime; not adopted because it conflicts with no-player-compilation.
 - Updated PMCS/spec to record distinctions. WASM evaluation must require precompiled modules and the shared permission-checked Host API; native player mods need explicit trust/security decision.
 - No implementation code changed; PMCS CI validation pending.
+
+## S-2026-11-19-65 — DreamMod scanner for Horizon's shared mods directory
+Date: 2026-11-19
+- User confirmed the common folder convention: player `.dmod` files go in Horizon `horizon-mods/`, alongside Horizon `.hmod` files, while format loaders remain separate.
+- Implemented `ModsDirectoryScanner` in dreammod-runtime: direct-child only; recognizes `.dmod`; counts and ignores `.hmod`; ignores unrelated files; reports symlink/non-regular/malformed candidates; rejects all duplicate-ID packages; deterministic output.
+- Default budgets: 256 `.dmod` candidates, 256 MiB aggregate archive bytes, 512 MiB aggregate retained uncompressed bytes. Added regression tests for mixed extensions, directories, duplicate IDs, budgets and symlink handling.
+- Exported scanner API. Not integrated with launcher/game filesystem or UI. Rust toolchain unavailable in this environment; Actions verification pending. PMCS first run failed because required CHANGELOG/ISSUES/SESSION_LOG updates were omitted; corrected docs are now committed.
