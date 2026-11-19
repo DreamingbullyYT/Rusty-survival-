@@ -66,3 +66,7 @@ Updated: 2026-11-19
 - Provider results are stored for one next callback and injected as `event.api_results` for that mod only; disabling clears the queue.
 - Added Rhai end-to-end test request → fake provider → next tick result → command.
 - Commits: `9934644` runtime bridge; `6ee5b26` regression test. CI is not verified (status and workflow run lookups returned empty).
+
+
+- Bridge hardening: aggregate pending-result serialization is capped by `max_output_bytes`; if the result envelope exceeds budget it becomes `response_too_large` or is omitted if even the error envelope cannot fit. Provider-callback fault-disable now also clears pending results.
+- Added a capability-denial regression test; denial is surfaced to the script as a structured error and does not disable it. CI remains unverified.
