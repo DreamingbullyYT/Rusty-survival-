@@ -58,3 +58,5 @@
 - [ ] Launcher must supply the actual instance `horizon-mods/` path and surface diagnostics in UI.
 
 - [ ] Verify runtime scanner-to-loader entrypoint after rustfmt correction (tests and Clippy).
+
+- [ ] Confirm scanner-to-runtime entrypoint's latest CI after final whitespace correction.
