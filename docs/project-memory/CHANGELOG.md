@@ -40,3 +40,8 @@
 ### Shared mods scanner verification — 2026-11-19
 - Runtime workflow `44543680876` passed formatting, all 20 tests and Clippy (`-D warnings`) on scanner code commit `4abbd917`.
 - PMCS run `44543782146` passed on the documentation-updated HEAD. Scanner is library-level only; actual instance path/UI integration remains open.
+
+### Scanner-to-runtime loading entrypoint — 2026-11-19
+- Added runtime methods to scan a caller-provided Horizon mods directory and load validated `.dmod` packages through existing runtime dependency/API/capability checks.
+- Report returns successfully loaded mod IDs, scanner issues, and count of ignored `.hmod` files. Added integration test with a Horizon `.hmod` and malformed `.dmod`; CI pending.
+- Still no launcher instance-path discovery or UI connection.
