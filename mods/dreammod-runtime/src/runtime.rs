@@ -1320,6 +1320,69 @@ mod tests {
     }
 
     #[test]
+    fn disabling_mod_discards_pending_api_results() {
+        use crate::api_router::{ApiOperation, ApiProviderDescriptor, ApiProviderKind};
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_id = ModId::parse("dreammod.pending_cleanup").unwrap();
+        let source = r#"
+            fn on_server_tick(event) {
+                if event.api_results.len() == 0 {
+                    #{
+                        api_requests: [#{
+                            request_id: "cleanup_test",
+                            operation: #{ domain: "world", name: "block_get" },
+                            safety: "read_only",
+                            input: #{ x: 9, y: 64, z: 0 }
+                        }]
+                    }
+                } else {
+                    #{
+                        commands: [#{
+                            namespace: "world", name: "set_block",
+                            payload: #{ x: event.api_results[0].result.payload.x, y: 65, z: 0 }
+                        }]
+                    }
+                }
+            }
+        "#;
+        let mod_package = package(
+            "dreammod.pending_cleanup",
+            source,
+            &["server_tick"],
+            &[Capability::WorldRead, Capability::WorldWrite],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime.enable_mod(&mod_id);
+        runtime
+            .register_api_provider(Box::new(EchoApiProvider {
+                descriptor: ApiProviderDescriptor {
+                    id: "horizon_world".into(),
+                    kind: ApiProviderKind::Horizon,
+                    priority: 0,
+                    operations: [ApiOperation::new("world", "block_get").unwrap()].into(),
+                },
+            }))
+            .unwrap();
+
+        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({}));
+        let initial = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(initial.failures.is_empty());
+        assert!(runtime.disable_mod(&mod_id));
+        assert!(runtime.enable_mod(&mod_id);
+
+        let after_enable = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(after_enable.failures.is_empty());
+        assert!(after_enable.commands.is_empty());
+        let after_request = runtime.dispatch_event(&event, &TestAuthorizer);
+        assert!(after_request.failures.is_empty());
+        assert_eq!(after_request.commands.len(), 1);
+        assert_eq!(after_request.commands[0].command.payload["x"], 9);
+    }
+
+    #[test]
     fn script_api_request_count_limit_rejects_overflowing_batch() {
         let mut runtime = DreamModRuntime::new(
             RhaiEngine::default(),
