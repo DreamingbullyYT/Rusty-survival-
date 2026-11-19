@@ -100,3 +100,10 @@ Date: 2026-11-19
 - DreamMod Runtime CI passed on c89b038: formatting, 27 tests (0 failed), and Clippy with warnings denied. Mock batch rollback test is verified; no production engine adapter is claimed.
 
 Project continuity log policy: this file is chronological and append-only.
+
+
+## S-2026-11-19-92 — Cross-domain mock host implementation
+Date: 2026-11-19
+- Extended the test-only host with entity.set_health, strict handle and health validation, and a staged mutation enum covering blocks and entities.
+- Added a successful three-command script batch and a failure test proving both block and entity maps remain unchanged when the final command is invalid.
+- Implementation commits b82c05b and cd78cb3. CI verification pending.
