@@ -48,3 +48,10 @@ Updated: 2026-11-19
 - Proposed first version is deferred/event-scoped request-response rather than synchronous Rhai callbacks; avoids shared callback context and reentrancy hazards.
 - Requests/results are not implemented. Runtime API remains host-callable only; no script-facing API is available yet.
 - Next acceptance gates: result isolation, one-shot delivery, disabled/unloaded cleanup, request/result bounds, provider errors without retry, and capability denials.
+
+
+## Script API bridge progress
+- Added typed serializable `ApiScriptRequest`, `ApiScriptResult`, and `ApiScriptResultError` envelopes plus request ID/operation validation.
+- Unit tests cover valid request serialization round-trip, invalid request IDs/operation identifiers, and result error-envelope round-trip.
+- These are contract primitives only. Script response parsing, dispatch routing, capability checks for script requests, per-mod queues, and event result injection are not implemented.
+- CI for commit `f484db8` is not visible/confirmed; formatting, tests, and Clippy are unverified.
