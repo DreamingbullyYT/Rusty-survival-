@@ -126,7 +126,7 @@ Consequences: A library scanner is now implemented in dreammod-runtime for direc
 
 ## D-014 — DreamMod is independent of Horizon/HNMods
 Date: 2026-11-19
-Status: ACCEPTED
+Status: SUPERSEDED by D-015
 Decision: The new Rusty-survival engine will host DreamMod directly through engine-owned adapter contracts. DreamMod must not require Horizon, HNMods/.hmod, horizon-mixins, or an external mod host. The .dmod package and no-player-compilation requirement remain. Horizon integration is optional legacy/reference work and must not block the new engine.
 Reason: The new engine's architecture does not want HNMods; the mod API must be native to the engine rather than layered on a rejected mod host.
 Consequences: Design an engine-independent contract crate and a separate engine adapter. API promises are capability-negotiated and implemented only when the engine subsystem exists. Avoid a full engine patch/mixin system. Build/test a vertical slice with the new engine. Existing Horizon Core and shared-folder scanner are retained as legacy experiments, not the integration target.
@@ -142,3 +142,11 @@ Consequences: Design an engine-independent contract crate and a separate engine 
 - Decision: domain adapters validate every command and stage all changes before committing a batch. A batch failure must leave authoritative state unchanged.
 - Rationale: prevents scripts from causing partial world changes when a later command is invalid; keeps transaction semantics at native host boundary.
 - Consequence: adapters need either staging/transaction support or an equivalent rollback mechanism. Mock block-world test demonstrates the rule but is not production engine code.
+
+
+## D-015 — Hybrid Horizon API with DreamMod-native fallback
+Date: 2026-11-19
+Status: ACCEPTED
+Decision: DreamMod's public API will route through a stable provider contract. Reuse Horizon's documented API for compatible operations, use DreamMod-native providers for missing capabilities, and allow runtime provider preference/switching per domain. Keep .dmod scripts provider-agnostic; do not expose Horizon engine types in the script contract. Horizon is optional compatibility, not a hard dependency of the new engine.
+Reason: User wants to reuse Horizon's new API where available without sacrificing the project's hot-swappable architecture or deep engine extensibility.
+Consequences: Add a generic API router first; concrete Horizon adapters must be pinned/version-negotiated and verified operation by operation. Provider errors do not trigger automatic retries because mutations may have partially completed. State migration is required before hot-swapping stateful providers. This supersedes D-014's blanket prohibition on Horizon API reuse, while retaining engine independence and no-player-compilation requirements.
