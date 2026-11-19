@@ -36,6 +36,6 @@
 ## Shared `horizon-mods/` scanner — implementation added (2026-11-19)
 - Added `ModsDirectoryScanner` in `dreammod-runtime`: scans only direct children, recognizes `.dmod` case-insensitively, ignores `.hmod` (counted for diagnostics) and unrelated files, and does not recurse.
 - Reports symlinked/non-regular `.dmod` candidates without following them; malformed packages become per-file issues.
-- Bounded to 256 candidates and 256 MiB aggregate archive input by default; each package still uses existing package-loader limits.
+- Bounded by default to 256 candidates, 256 MiB aggregate archive input, and 512 MiB aggregate retained uncompressed package content; each package still uses existing package-loader limits.
 - Duplicate package IDs reject every conflicting candidate rather than choosing one by filename.
 - Added tests for mixed `.dmod`/`.hmod`, unrelated files and directories, duplicate IDs, directory limits and symlink behavior. Runtime CI is triggered; results are not yet verified. This scanner is a library API and is not yet wired to the actual launcher/game instance path.
