@@ -1053,6 +1053,15 @@ mod tests {
         let output = runtime.call_api(&mod_id, request.clone(), &TestAuthorizer).unwrap();
         assert_eq!(output["source"], "horizon_world");
         assert_eq!(output["payload"]["x"], 3);
+        let oversized = ApiRequest {
+            operation: request.operation.clone(),
+            safety: ApiOperationSafety::ReadOnly,
+            input: json!({"blob": "x".repeat(40_000)}),
+        };
+        assert!(matches!(
+            runtime.call_api(&mod_id, oversized, &TestAuthorizer),
+            Err(ApiCallError::PayloadTooLarge)
+        ));
 
     }
 
