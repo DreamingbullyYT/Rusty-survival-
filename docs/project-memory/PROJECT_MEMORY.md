@@ -1,7 +1,7 @@
 # Project Memory — DreamMod
 
 ## Mission
-Build an engine-native, highly extensible mod platform for Rusty-survival with interpreted .dmod source/assets, wide subsystem APIs, deterministic lifecycle, permissions and replacement providers.
+Build an engine-native, highly extensible mod platform for Rusty-survival with interpreted .dmod source/assets, broad subsystem APIs, deterministic lifecycle, permissions and replacement providers.
 
 ## Non-negotiable decisions
 - No compilation of ordinary player mods on device.
@@ -11,5 +11,5 @@ Build an engine-native, highly extensible mod platform for Rusty-survival with i
 - Persistent project memory (PMCS) is the source of continuity. Read AI_HANDOFF, CURRENT_STATE, DECISIONS and SESSION_LOG before continuing; append session entries.
 - Do not report tests as verified without CI evidence.
 
-## Implemented snapshot
-Package validation/scanning, interpreted runtime foundation, owner-scoped API registration metadata, explicit runtime activation, provider fault cleanup, and the generic authorized-command host boundary. The latest host boundary commits 6b914d9 and 463abba are awaiting CI verification. No concrete world/entity/physics adapter exists yet.
+## Implemented and verified snapshot
+Package validation/scanning, interpreted runtime foundation, owner-scoped API registration metadata, explicit runtime activation, provider fault cleanup, and generic authorized-command host boundary. Runtime CI passed on 406b8e5 (format, 26 tests, Clippy); root offline engine tests passed on 4d47315. Host boundary is verified, but concrete engine adapters, real state mutation and rollback remain future work.
