@@ -20,11 +20,10 @@ Date: 2026-11-17
 Status: HISTORICAL
 The repository was reset to a clean project bootstrap while retaining Git history.
 
-## D-005 — Horizon integration
+## D-005 — Horizon integration (SUPERSEDED)
 Date: 2026-11-18
-Status: ACCEPTED
-Decision: Use Horizon as the target engine and integrate DreamMod Core through a pinned HNMod/horizon-mixins build-time integration. Do not copy Horizon source into this repository.
-Reason: User explicitly selected Horizon as the engine base and approved the prebuilt-distribution architecture.
+Status: SUPERSEDED by D-014
+Historical decision: Use Horizon as the target engine and integrate DreamMod Core through pinned HNMod/horizon-mixins build-time integration. This no longer governs the new independent Rusty-survival engine.
 
 ## D-006 — No compilation for player-installed mods
 Date: 2026-11-18
@@ -117,9 +116,17 @@ Reason: Source inspection found no DreamMod WASM runtime or player-native loader
 Consequence: WASM needs a compliant precompiled module/runtime design and Host API adapter; player-native mods remain out of scope pending explicit trust-model approval.
 
 
-## D-013 — DreamMod packages share Horizon's mods directory
+## D-013 — DreamMod packages share Horizon's mods directory (LEGACY HORIZON TARGET)
 Date: 2026-11-19
 Status: ACCEPTED
 Decision: DreamMod player packages (`.dmod`) are placed directly in Horizon's existing `horizon-mods/` directory. Do not create a separate `dreammod-mods/` directory. Keep the extensions and loaders distinct: Horizon owns `.hmod`; DreamMod owns `.dmod`. DreamMod's scanner must recognize only `.dmod` packages and must not alter, rename, consume, or intercept `.hmod` files. DreamMod Core remains trusted native Horizon `.hmod` build-time integration and is not a player `.dmod`.
 Rationale: One familiar mods folder is simpler for players, while extension-based dispatch preserves clear format identity and compatibility with Horizon's loader.
 Consequences: A library scanner is now implemented in dreammod-runtime for direct-child `.dmod` discovery with bounded package/archive/retained-memory budgets, duplicate-ID rejection, and per-file diagnostics. It ignores `.hmod` for Horizon, does not recurse, extract archives or intentionally follow symlinks. Launcher/game path and UI integration remain pending; CI verification is pending.
+
+
+## D-014 — DreamMod is independent of Horizon/HNMods
+Date: 2026-11-19
+Status: ACCEPTED
+Decision: The new Rusty-survival engine will host DreamMod directly through engine-owned adapter contracts. DreamMod must not require Horizon, HNMods/.hmod, horizon-mixins, or an external mod host. The .dmod package and no-player-compilation requirement remain. Horizon integration is optional legacy/reference work and must not block the new engine.
+Reason: The new engine's architecture does not want HNMods; the mod API must be native to the engine rather than layered on a rejected mod host.
+Consequences: Design an engine-independent contract crate and a separate engine adapter. API promises are capability-negotiated and implemented only when the engine subsystem exists. Avoid a full engine patch/mixin system. Build/test a vertical slice with the new engine. Existing Horizon Core and shared-folder scanner are retained as legacy experiments, not the integration target.
