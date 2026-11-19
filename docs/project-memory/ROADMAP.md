@@ -42,3 +42,10 @@
 - [x] Accept `horizon-mods/` as the common folder for player packages.
 - [ ] Add a bounded deterministic `.dmod` scanner; ignore `.hmod` and unrelated files.
 - [ ] Test mixed extensions, malformed packages, duplicate IDs, unsafe entries, and diagnostics; verify scanner never extracts archives or crosses folder boundaries.
+
+## Shared Horizon mods folder scanner
+- [x] Implement direct-child `.dmod` discovery in runtime library; ignore `.hmod` and unrelated files.
+- [x] Reject duplicate package IDs deterministically; report malformed package, symlink and non-regular candidate diagnostics.
+- [x] Add bounded package-count and aggregate archive-size limits with regression tests.
+- [ ] Wire scanner to actual launcher/game instance `horizon-mods/` path and surface diagnostics in mod manager UI.
+- [ ] Verify runtime CI.
