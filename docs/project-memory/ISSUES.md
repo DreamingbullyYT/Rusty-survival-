@@ -17,3 +17,5 @@
 
 - Runtime hybrid API routing is implemented with enabled-mod and capability checks; no concrete Horizon adapter/end-to-end calls exist yet; CI pending.
 - Hot switching stateful providers is only route selection today; state migration/rollback contracts are required before switching stateful subsystems.
+
+- API router host integration is now implemented but .dmod scripts cannot call it directly yet; a safe synchronous/asynchronous script bridge and API result handling are needed.
