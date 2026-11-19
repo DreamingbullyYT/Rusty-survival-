@@ -111,3 +111,8 @@ Date: 2026-11-19
 ## S-2026-11-19-77 — Contract test source correction
 Date: 2026-11-19
 - Removed a literal escaped newline from the diagnostic test after source inspection. Workspace CI is pending; no compile/test result claimed.
+
+## S-2026-11-19-78 — Capability grants and API feature keys
+Date: 2026-11-19
+- Added deterministic CapabilitySet with grant/revoke/contains and an ApiFeatureId for feature negotiation.
+- Added tests for grant lifecycle and feature identifier validation. Manually formatted source; GitHub workspace verification pending.
