@@ -390,4 +390,54 @@ mod tests {
             .register_provider(Box::new(provider("../horizon", ApiProviderKind::Horizon, 0, false)))
             .is_err());
     }
+    #[test]
+    fn script_request_envelopes_validate_and_round_trip() {
+        let request = ApiScriptRequest {
+            request_id: "lookup_1".to_owned(),
+            operation: op(),
+            safety: ApiOperationSafety::ReadOnly,
+            input: json!({"position": [1, 2, 3]}),
+        };
+        request.validate().unwrap();
+        let encoded = serde_json::to_string(&request).unwrap();
+        let decoded: ApiScriptRequest = serde_json::from_str(&encoded).unwrap();
+        assert_eq!(decoded, request);
+
+        let invalid_id = ApiScriptRequest {
+            request_id: "../escape".to_owned(),
+            ..request.clone()
+        };
+        assert_eq!(
+            invalid_id.validate(),
+            Err(ApiScriptRequestError::InvalidRequestId)
+        );
+
+        let invalid_operation = ApiScriptRequest {
+            operation: ApiOperation {
+                domain: "../world".to_owned(),
+                name: "block_get".to_owned(),
+            },
+            ..request
+        };
+        assert_eq!(
+            invalid_operation.validate(),
+            Err(ApiScriptRequestError::InvalidOperation)
+        );
+    }
+
+    #[test]
+    fn script_result_envelope_serializes_error_without_data() {
+        let result = ApiScriptResult {
+            request_id: "req-2".to_owned(),
+            operation: op(),
+            result: None,
+            error: Some(ApiScriptResultError::CapabilityDenied),
+        };
+        let decoded: ApiScriptResult =
+            serde_json::from_str(&serde_json::to_string(&result).unwrap()).unwrap();
+        assert_eq!(decoded, result);
+        assert!(decoded.result.is_none());
+        assert_eq!(decoded.error, Some(ApiScriptResultError::CapabilityDenied));
+    }
+
 }
