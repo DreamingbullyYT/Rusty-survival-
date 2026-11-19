@@ -61,7 +61,8 @@ mod tests {
 
     #[test]
     fn diagnostics_are_structured() {
-        let d = Diagnostic::new(DiagnosticCode::CapabilityDenied, Severity::Warning, "Capability denied")\n            .with_subject("mod.foo")\n            .with_detail("world.read");
+        let d = Diagnostic::new(DiagnosticCode::CapabilityDenied, Severity::Warning, "Capability denied")
+            .with_subject("mod.foo")\n            .with_detail("world.read");
         assert_eq!(d.code(), DiagnosticCode::CapabilityDenied);
         assert_eq!(d.subject(), Some("mod.foo"));
         assert_eq!(d.detail(), Some("world.read"));
