@@ -55,3 +55,6 @@ Updated: 2026-11-19
 - Unit tests cover valid request serialization round-trip, invalid request IDs/operation identifiers, and result error-envelope round-trip.
 - These are contract primitives only. Script response parsing, dispatch routing, capability checks for script requests, per-mod queues, and event result injection are not implemented.
 - CI for commit `f484db8` is not visible/confirmed; formatting, tests, and Clippy are unverified.
+
+
+- Follow-up fix: `ApiOperation` now derives serde serialization/deserialization, required by the new envelopes. Latest source commit `1ffd548`; CI still unconfirmed (no statuses/workflow runs reported).
