@@ -205,3 +205,10 @@ Date: 2026-11-19
 - Added two-mod regression test issuing the same request ID in parallel to `world.block_get`, receiving distinct inputs, and consuming each mod's own result on the next tick.
 - Asserted both returned command payloads contain their respective values (1 and 2), proving queues are per-mod rather than global.
 - Commit `8c2f410`. GitHub status/workflow lookup still returned empty; CI pending.
+
+
+## S-2026-11-19-107 — Event payload compatibility
+Date: 2026-11-19
+- Changed API-result injection so scalar event payloads are preserved unchanged when there are no results; when a result arrives, scalar data is wrapped under `event_payload` with `api_results`.
+- Added a unit test for this compatibility behavior.
+- Commits `037eaed` and `0e40e51`; CI unverified.
