@@ -50,4 +50,4 @@
 - [ ] Wire scanner to actual launcher/game instance `horizon-mods/` path and surface diagnostics in mod manager UI.
 - [ ] Verify runtime CI.
 
-- [ ] Re-run scanner runtime CI after final rustfmt correction; confirm tests and Clippy actually execute.
+- [x] Runtime CI passed after final rustfmt correction: 20 tests, formatting and Clippy.
