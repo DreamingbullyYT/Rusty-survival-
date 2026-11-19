@@ -53,3 +53,7 @@
 - Scanner-to-runtime loading entrypoint's first CI attempt failed at formatting only. Corrections applied; fresh runtime CI pending.
 
 - Second runtime directory-loading CI attempt found one remaining rustfmt whitespace diff; removed and awaiting a clean run.
+
+### Scanner-to-runtime verification — 2026-11-19
+- Runtime Actions `44544390519` passed formatting, 21 tests and Clippy on `20940cf`, including the new directory-loading integration test. PMCS for the result documentation is pending.
+- The API scans and loads a caller-supplied path. Launcher instance discovery and UI diagnostics remain unimplemented.
