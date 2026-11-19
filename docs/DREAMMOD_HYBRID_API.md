@@ -22,6 +22,14 @@ DreamMod presents one stable API to player-installed `.dmod` mods. Where Horizon
 6. Provider support is negotiated per operation. Never advertise a function that has no tested implementation.
 7. Hot swap is a provider/route switch, not arbitrary replacement of authoritative state. Stateful subsystems require migration/snapshot/rollback contracts before switching.
 
+## Adapter execution context
+
+Horizon's documented code-mod surface is hook-based: each hook receives a typed host/event context, not a global API handle. Level reads/writes are available through access-specific hosts, and the native mod API is version-pinned/experimental. A live adapter must therefore run within the appropriate Horizon hook and receive that scoped host context.
+
+Current DreamMod `ApiProvider::invoke` does not accept a host context. It is suitable for self-contained providers and test fakes, but cannot safely implement live Horizon world operations without a context contract. Do not use global mutable host pointers, unsafe cross-thread access, or fabricated snapshots. The next architecture change is a scoped provider context (engine-neutral in DreamMod, Horizon-specific in an optional adapter) passed through dispatch/router/provider invocation.
+
+The adapter should remain optional: the base runtime must build and run without Horizon SDK dependencies. Pin adapter compatibility to the Horizon API revision, advertise only operations it actually supports, and route missing operations to DreamMod-native providers.
+
 ## Horizon surface mapping (planned)
 
 | Domain | Horizon reuse | DreamMod-native fallback/extensions |
@@ -45,6 +53,7 @@ This matrix is a plan, not a claim that every Horizon surface currently exists o
 - Router is integrated with host-side runtime calls and the deferred script request bridge: scripts return `api_requests`; results are injected into the requesting mod's next event as `api_results`.
 - Script requests use the same operation-to-capability authorizer, request/result byte limits, and provider router. Results are one-shot and mod-isolated.
 - No concrete Horizon adapter is linked or tested end-to-end yet.
+- The current provider invocation lacks scoped host context; the adapter context contract must be designed before implementing live world operations.
 - The existing command host and world block adapter remain separate until the integration bridge is implemented.
 
 ## Reference
