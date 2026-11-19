@@ -742,6 +742,9 @@ fn collect_response<A: CommandAuthorizer>(
 
 /// Inject completed asynchronous API requests into the next script event.
 fn with_api_results(payload: &Value, results: Vec<ApiScriptResult>) -> Value {
+    if results.is_empty() && !payload.is_object() {
+        return payload.clone();
+    }
     let results = serde_json::to_value(results).unwrap_or_else(|_| Value::Array(Vec::new()));
     match payload {
         Value::Object(object) => {
