@@ -138,3 +138,12 @@ Date: 2026-11-19
 - Added `docs/DREAMMOD_HYBRID_API.md` with policy, planned surface map and explicit non-implementation caveats. D-014 superseded by D-015.
 - Implementation commits: 66681bc (router), d9f6b6a (exports), f4ce9de/09dadb9 (format cleanup), 173cc89 (architecture doc); PMCS updates follow.
 - Not yet connected to runtime dispatch; no concrete Horizon adapter. CI verification pending.
+
+
+## S-2026-11-19-99 — Hybrid API connected to runtime authorization
+Date: 2026-11-19
+- Corrected malformed literal newline escapes in `api_router.rs`, replacing it with clean Rust source.
+- Integrated ApiRouter into DreamModRuntime; providers can be registered/replaced/unregistered and per-domain preference changed through runtime methods.
+- Added `call_api`: mod must be loaded and enabled, authorizer must recognize the API operation, and the mod must have the required capability before dispatch.
+- Added runtime tests for disabled mods, successful Horizon provider routing, capability denial and unknown operation denial. CI not yet checked.
+- Source commits: 8fd1b0e, d125032, 81232ce, 83ed487, c2694cf.
