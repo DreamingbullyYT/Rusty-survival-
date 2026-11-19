@@ -565,7 +565,7 @@ mod tests {
         create_dmod(dir.path(), "one.dmod", "dreammod.one");
         create_dmod(dir.path(), "two.dmod", "dreammod.two");
         let count_limited = ModsDirectoryScanner::new(PackageLoader::default(), ModsDirectoryLimits {
-            max_packages: 1, max_total_archive_bytes: 1024,
+            max_packages: 1, max_total_archive_bytes: 1024, max_total_retained_bytes: 1024,
         });
         assert!(matches!(count_limited.scan(dir.path()), Err(ScanDirectoryError::TooManyPackages { .. })));
 
