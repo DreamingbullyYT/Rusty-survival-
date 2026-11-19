@@ -49,3 +49,5 @@
 ### Runtime scanner-to-loader connection — 2026-11-19
 - Added `DreamModRuntime::load_from_horizon_mods_dir` and a custom-scanner variant. It scans the common folder, passes validated packages to the existing dependency/API/capability-checked `load_packages` transaction, and returns loaded IDs plus per-file scan issues and ignored `.hmod` count.
 - Added a runtime integration regression test for mixed Horizon `.hmod` and malformed `.dmod` inputs. CI is pending; this remains a caller-supplied directory API, not automatic launcher instance discovery.
+
+- Scanner-to-runtime loading entrypoint's first CI attempt failed at formatting only. Corrections applied; fresh runtime CI pending.
