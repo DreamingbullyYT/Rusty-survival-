@@ -3,7 +3,7 @@
 Updated: 2026-11-19
 
 ## Implemented
-- Generic API provider router integrated into DreamModRuntime: Horizon-first default, DreamMod fallback by advertised operation, per-domain preference switch, provider hot replacement/removal. Runtime calls require enabled mod, recognized operation and granted capability. Concrete Horizon provider still not implemented.
+- Generic API provider router integrated into DreamModRuntime: Horizon-first default, DreamMod fallback by advertised operation, per-domain preference switch, provider hot replacement/removal. Runtime host API calls require enabled mod, recognized operation, granted capability and bounded payload. These are host-side calls, not yet callable directly from .dmod scripts. Concrete Horizon provider still not implemented.
 - Engine-independent DreamMod contract crate and owner-scoped metadata registry.
 - .dmod package validation/scanning and interpreted Rhai runtime foundation.
 - Capability filtering and response validation for commands/providers.
@@ -21,6 +21,7 @@ Updated: 2026-11-19
 
 ## Not implemented / not verified
 - No concrete Horizon API adapter or end-to-end Horizon calls yet; latest router/runtime integration tests and formatting/CI pending.
+- Direct script API bridge (Rhai callable APIs and returned query data) is not implemented yet.
 - Mock cross-domain host is verified, but is test-only; production adapters and authoritative world/entity state are still absent.
 
 ## Remaining
@@ -30,9 +31,10 @@ Updated: 2026-11-19
 - Language decision and production sandbox remain open; Rhai is a candidate runtime.
 
 ## Next actions
-1. Implement a version-pinned Horizon adapter for a small, verifiable API surface, with translations to DreamMod contract types.
-2. Build DreamMod-native adapters for operations Horizon does not expose; integrate world/block adapter with real engine storage.
-3. Unify package approval and runtime activation through one coordinator; maintain PMCS and verify CI.
+1. Expose API calls directly to .dmod scripts with capability enforcement and bounded requests/responses.
+2. Implement a version-pinned Horizon adapter for a small, verifiable API surface, with translations to DreamMod contract types.
+3. Build DreamMod-native adapters for operations Horizon does not expose; integrate world/block adapter with real engine storage.
+4. Unify package approval and runtime activation through one coordinator; maintain PMCS and verify CI.
 
 - Typed WorldBlockCommandAdapter is now implemented in runtime crate; it translates authorized block commands and delegates atomic commit to a native backend contract. CI pending.
 
