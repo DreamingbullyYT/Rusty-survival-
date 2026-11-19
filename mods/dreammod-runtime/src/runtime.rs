@@ -987,7 +987,9 @@ mod tests {
             Vec::new(),
             0,
         );
-        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime
+            .load_packages(vec![mod_package], &AllowAllForTests)
+            .unwrap();
         runtime.enable_mod(&ModId::parse("dreammod.denied_host").unwrap());
         let mut host = RecordingHost::default();
 
