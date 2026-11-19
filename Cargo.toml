@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/engine-core", "crates/testkit", "crates/dreammod-contract"]
+members = ["crates/engine-core", "crates/testkit", "crates/dreammod-contract", "crates/dreammod-api"]
 
 [workspace.package]
 version = "0.1.0"

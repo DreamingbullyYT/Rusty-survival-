@@ -1,0 +1,9 @@
+[package]
+name = "dreammod-api"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+description = "Engine-neutral DreamMod registration and extension contracts"
+
+[dependencies]
+dreammod-contract = { path = "../dreammod-contract" }
