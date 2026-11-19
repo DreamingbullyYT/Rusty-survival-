@@ -4,6 +4,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::{
+    atlas::{AtlasDeclaration, AtlasError, AtlasSnapshot},
     lifecycle::{LifecycleError, LifecycleState, ModLifecycle},
     resolve_load_order, valid_archive_path, ArchiveEntryKind, DependencyError, Manifest,
     ValidatedPackage,
@@ -22,6 +23,7 @@ pub enum ModManagerError {
     Lifecycle(LifecycleError),
     Resource(ResourceError),
     ResourceNamespaceMismatch { mod_id: String, resource_id: String },
+    Atlas(AtlasError),
 }
 
 struct ManagedMod {
@@ -36,6 +38,7 @@ pub struct ModManager {
     dependencies: BTreeMap<String, BTreeSet<String>>,
     load_order: Vec<String>,
     resources: ResourceRegistry,
+    atlas_declarations: BTreeMap<String, Vec<AtlasDeclaration>>,
 }
 
 impl ModManager {
@@ -62,6 +65,7 @@ impl ModManager {
             dependencies,
             load_order,
             resources: ResourceRegistry::new(),
+            atlas_declarations: BTreeMap::new(),
         })
     }
 
@@ -202,6 +206,54 @@ impl ModManager {
             .map_err(ModManagerError::Resource)
     }
 
+    /// Atomically replace this enabled mod's atlas declaration batch.
+    /// This only records declarations; it does not publish resources to Horizon.
+    pub fn replace_atlas_declarations(
+        &mut self,
+        id: &str,
+        declarations: Vec<AtlasDeclaration>,
+    ) -> Result<(), ModManagerError> {
+        let managed = self.mods.get(id).ok_or_else(|| ModManagerError::UnknownMod(id.to_owned()))?;
+        managed.lifecycle.ensure_enabled().map_err(ModManagerError::Lifecycle)?;
+
+        for declaration in &declarations {
+            AtlasDeclaration::new(
+                declaration.owner.clone(),
+                declaration.atlas_id.clone(),
+                declaration.definition_id.clone(),
+            ).map_err(ModManagerError::Atlas)?;
+            if declaration.owner != id {
+                return Err(ModManagerError::Atlas(AtlasError::NamespaceMismatch {
+                    owner: id.to_owned(),
+                    identifier: declaration.atlas_id.clone(),
+                }));
+            }
+        }
+
+        let previous = self.atlas_declarations.insert(id.to_owned(), declarations);
+        if let Err(error) = self.atlas_snapshot() {
+            if let Some(previous) = previous {
+                self.atlas_declarations.insert(id.to_owned(), previous);
+            } else {
+                self.atlas_declarations.remove(id);
+            }
+            return Err(ModManagerError::Atlas(error));
+        }
+        Ok(())
+    }
+
+    /// Build one deterministic batch of declarations for currently enabled mods.
+    /// The host can consume this snapshot during resource registration/reload.
+    pub fn atlas_snapshot(&self) -> Result<AtlasSnapshot, AtlasError> {
+        let enabled = self.mods.iter()
+            .filter_map(|(id, managed)| (managed.lifecycle.state() == LifecycleState::Enabled).then_some(id.clone()))
+            .collect::<BTreeSet<_>>();
+        let declarations = self.atlas_declarations.values()
+            .flat_map(|batch| batch.iter().cloned())
+            .collect();
+        AtlasSnapshot::build(&enabled, declarations)
+    }
+
     /// Return this mod's currently reserved identifiers in deterministic order.
     pub fn registered_resource_ids(&self, id: &str) -> Result<Vec<String>, ModManagerError> {
         if !self.mods.contains_key(id) {
@@ -252,6 +304,7 @@ impl ModManager {
             .disable()
             .map_err(ModManagerError::Lifecycle)?;
         self.resources.remove_owner(id);
+        self.atlas_declarations.remove(id);
         Ok(())
     }
 
@@ -268,6 +321,7 @@ impl ModManager {
             .fail(reason.to_owned())
             .map_err(ModManagerError::Lifecycle)?;
         self.resources.remove_owner(id);
+        self.atlas_declarations.remove(id);
 
         let mut failed = BTreeSet::from([id.to_owned()]);
         for dependent in &self.load_order {
@@ -292,6 +346,7 @@ impl ModManager {
                         .map_err(ModManagerError::Lifecycle)?;
                 }
                 self.resources.remove_owner(dependent);
+                self.atlas_declarations.remove(dependent);
                 failed.insert(dependent.clone());
             }
         }
