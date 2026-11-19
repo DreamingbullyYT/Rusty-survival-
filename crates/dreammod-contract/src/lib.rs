@@ -71,7 +71,7 @@ mod tests {
 
     #[test]
     fn opaque_handles_include_generation_and_kind() {
-        let h = Handle::new(42, 3, HandleKind::Entity);
+        let h = Handle::<()>::new(42, 3, HandleKind::Entity);
         assert_eq!(h.id(), 42);
         assert_eq!(h.generation(), 3);
         assert_eq!(h.kind(), HandleKind::Entity);
