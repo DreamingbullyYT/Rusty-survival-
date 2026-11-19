@@ -34,3 +34,5 @@
 
 ### Scanner formatting correction — 2026-11-19
 - CI initially stopped at rustfmt; formatted the scanner implementation and test fixtures. Runtime tests and Clippy have not yet run on the corrected commit.
+
+- Applied remaining rustfmt corrections after Actions identified two additional formatting diffs; latest runtime test and PMCS runs are pending.
