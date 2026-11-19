@@ -11,3 +11,9 @@ Date: 2026-11-19
 - PMCS remains the mandatory memory system: read AI_HANDOFF, update state/decisions/issues/roadmap/changelog, append session log, and validate in Actions after every substantive change.
 
 This file is chronological and append-only.
+
+## S-2026-11-19-60 — ModManager atlas batches
+Date: 2026-11-19
+- Added atomic per-enabled-mod atlas declaration replacement and one deterministic enabled-mod snapshot.
+- Namespace and atlas-count validation happen before commit; invalid replacement rolls back. Disable and dependency failure remove declarations.
+- Package CI and PMCS validation are pending; no live Horizon atlas publication is claimed.
