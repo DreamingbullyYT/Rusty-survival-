@@ -185,3 +185,10 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - Isolation test commit `8c2f410`; Actions remains unverified.
 
 - Scalar event compatibility commits `037eaed`/`0e40e51`; Actions pending.
+
+
+## Horizon adapter architecture constraint
+- [x] Research documented Horizon hook/host model and version/stability contract.
+- [x] Identify that current provider invocation lacks scoped host context for real Horizon world APIs.
+- [ ] Design scoped engine-neutral provider context, route it through runtime/router/provider calls, and prove tests without Horizon dependencies.
+- [ ] Build optional, version-pinned Horizon adapter on top of that context; test a small operation end-to-end.
