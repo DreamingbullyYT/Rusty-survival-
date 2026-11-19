@@ -33,3 +33,13 @@ Date: 2026-11-19
 Date: 2026-11-19
 - Actions review: PMCS `44470999045` passed; API-only overlay `44470917220` passed; Core `44470917203` failed on rustfmt differences only in the shown log tail.
 - Corrected hook signature remains in source; compile is not yet verified because formatting check stops the job. Formatting-only cleanup and PMCS updates are next.
+
+
+## S-2026-11-19-64 — Current modding runtime formats audited
+Date: 2026-11-19
+- User asked what runtime formats are actually present, not just planned.
+- Inspected main source: .dmod validation, ModManager/lifecycle, capability/resource/atlas bookkeeping exist; production script execution is not implemented. Rhai 1.27 AST-walking prototype is separate, unselected and not connected to Core.
+- DreamMod has no WASM runtime/format/adapter and no player-native .so/DLL loader. DreamMod Core is trusted native Horizon .hmod build-time integration only.
+- Horizon's existing WASM cold-cache route compiles via child process/Wasmtime; not adopted because it conflicts with no-player-compilation.
+- Updated PMCS/spec to record distinctions. WASM evaluation must require precompiled modules and the shared permission-checked Host API; native player mods need explicit trust/security decision.
+- No implementation code changed; PMCS CI validation pending.
