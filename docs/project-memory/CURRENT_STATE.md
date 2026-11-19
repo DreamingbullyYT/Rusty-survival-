@@ -77,3 +77,5 @@
 - Next implementation order: contract types → host adapter/fake host → interpreter decision & execution budgets → vertical slice → domain APIs as engine subsystems land.
 
 - Contract foundation test source typo (literal `\\n`) corrected; latest CI run is pending, so compilation/test status remains unverified.
+
+- Added CapabilitySet and ApiFeatureId to the contract crate, including grant/revoke/check and feature-key tests. Source formatting was applied manually because this environment lacks Cargo/rustfmt; Actions verification is pending.
