@@ -36,3 +36,5 @@ Updated: 2026-11-19
 - Typed WorldBlockCommandAdapter is now implemented in runtime crate; it translates authorized block commands and delegates atomic commit to a native backend contract. CI pending.
 
 - Typed WorldBlockCommandAdapter has been added and formatted; tests/CI verification pending. Native engine world/chunk storage is still absent.
+
+- Fixed adapter unit-test import: ModId now imports from manifest (106a1c5); runtime CI rerun pending.
