@@ -50,3 +50,8 @@ Date: 2026-11-19
 - Implemented `ModsDirectoryScanner` in dreammod-runtime: direct-child only; recognizes `.dmod`; counts and ignores `.hmod`; ignores unrelated files; reports symlink/non-regular/malformed candidates; rejects all duplicate-ID packages; deterministic output.
 - Default budgets: 256 `.dmod` candidates, 256 MiB aggregate archive bytes, 512 MiB aggregate retained uncompressed bytes. Added regression tests for mixed extensions, directories, duplicate IDs, budgets and symlink handling.
 - Exported scanner API. Not integrated with launcher/game filesystem or UI. Rust toolchain unavailable in this environment; Actions verification pending. PMCS first run failed because required CHANGELOG/ISSUES/SESSION_LOG updates were omitted; corrected docs are now committed.
+
+## S-2026-11-19-66 — Scanner CI formatting correction
+Date: 2026-11-19
+- Inspected Actions output: the initial scanner runtime workflow failed at `cargo fmt --check`, before tests/Clippy, with formatting-only diffs.
+- Applied rustfmt corrections to scanner imports, package-size fold and test fixture/assertions. No functional change intended. Re-triggered validation; results pending.
