@@ -147,3 +147,11 @@ Date: 2026-11-19
 - Added `call_api`: mod must be loaded and enabled, authorizer must recognize the API operation, and the mod must have the required capability before dispatch.
 - Added runtime tests for disabled mods, successful Horizon provider routing, capability denial and unknown operation denial. CI not yet checked.
 - Source commits: 8fd1b0e, d125032, 81232ce, 83ed487, c2694cf.
+
+
+## S-2026-11-19-100 — Runtime API hardening and boundary review
+Date: 2026-11-19
+- Added provider descriptor operation validation and runtime operation-name validation; request payload size now bounded by configured payload limit.
+- Runtime integration tests also cover oversized payload rejection. Source/formatting/CI checks are still not available from this session; treat as unverified.
+- Confirmed the router is callable from the runtime host interface, not directly from Rhai scripts. Direct script bridge/result delivery remains a distinct next task.
+- Follow-up commits: c146761, f9befbf, 0c663f9, 86b4ed9.
