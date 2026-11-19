@@ -63,3 +63,6 @@
 
 ### Mock block-world host verified — 2026-11-19
 - Runtime workflow passed on c89b038: rustfmt, 27 tests (0 failures), Clippy with warnings denied. This verifies the mock host test only, not a live engine adapter.
+
+## 2026-11-19
+- Added typed mock entity-health mutation to mock world host and atomic cross-domain rollback test. CI pending (b82c05b, cd78cb3).
