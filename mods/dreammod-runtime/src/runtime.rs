@@ -10,8 +10,8 @@ use thiserror::Error;
 
 use crate::{
     api_router::{
-        ApiProvider, ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError,
-        ApiScriptRequest, ApiScriptResult, ApiScriptResultError,
+        ApiProvider, ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError, ApiScriptRequest,
+        ApiScriptResult, ApiScriptResultError,
     },
     manifest::{Capability, ManifestError, ModId, ModManifest, ModSide},
     package::{DmodPackage, ModsDirectoryScanner, ScanDirectoryError, ScanIssue},
@@ -423,7 +423,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                                 api_router,
                             );
                             instance.consecutive_failures = 0;
-                        },
+                        }
                         Err(message) => {
                             let failure = record_failure(
                                 &id,
@@ -771,8 +771,7 @@ fn resolve_script_api_requests<A: CommandAuthorizer>(
             result: None,
             error: None,
         };
-        let payload_size = serde_json::to_vec(&request.input)
-            .map_or(usize::MAX, |bytes| bytes.len());
+        let payload_size = serde_json::to_vec(&request.input).map_or(usize::MAX, |bytes| bytes.len());
         if payload_size > config.max_command_payload_bytes {
             result.error = Some(ApiScriptResultError::PayloadTooLarge);
         } else {
@@ -816,13 +815,11 @@ fn resolve_script_api_requests<A: CommandAuthorizer>(
             }
         }
 
-        let mut encoded_size = serde_json::to_vec(&result)
-            .map_or(usize::MAX, |bytes| bytes.len());
+        let mut encoded_size = serde_json::to_vec(&result).map_or(usize::MAX, |bytes| bytes.len());
         if total_bytes.saturating_add(encoded_size) > config.max_output_bytes {
             result.result = None;
             result.error = Some(ApiScriptResultError::ResponseTooLarge);
-            encoded_size = serde_json::to_vec(&result)
-                .map_or(usize::MAX, |bytes| bytes.len());
+            encoded_size = serde_json::to_vec(&result).map_or(usize::MAX, |bytes| bytes.len());
         }
         if total_bytes.saturating_add(encoded_size) <= config.max_output_bytes {
             total_bytes += encoded_size;
@@ -1151,7 +1148,9 @@ mod tests {
 
     #[test]
     fn dmod_script_can_request_api_and_receive_result_on_next_event() {
-        use crate::api_router::{ApiOperation, ApiOperationSafety, ApiProviderKind, ApiProviderDescriptor};
+        use crate::api_router::{
+            ApiOperation, ApiOperationSafety, ApiProviderDescriptor, ApiProviderKind,
+        };
 
         let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
         let mod_id = ModId::parse("dreammod.script_api").unwrap();
@@ -1189,20 +1188,28 @@ mod tests {
             Vec::new(),
             0,
         );
-        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime
+            .load_packages(vec![mod_package], &AllowAllForTests)
+            .unwrap();
         runtime.enable_mod(&mod_id);
 
         let operation = ApiOperation::new("world", "block_get").unwrap();
-        runtime.register_api_provider(Box::new(EchoApiProvider {
-            descriptor: ApiProviderDescriptor {
+        runtime
+            .register_api_provider(Box::new(EchoApiProvider {
+                descriptor: ApiProviderDescriptor {
                 id: "horizon_world".into(),
                 kind: ApiProviderKind::Horizon,
                 priority: 0,
-                operations: [operation].into(),
-            },
-        })).unwrap();
+                    operations: [operation].into(),
+                },
+            }))
+            .unwrap();
 
-        let event = RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({ "tick": 1 }));
+        let event = RuntimeEvent::new(
+            "server_tick",
+            RuntimeSide::Server,
+            json!({ "tick": 1 }),
+        );
         let first = runtime.dispatch_event(&event, &TestAuthorizer);
         assert!(first.commands.is_empty());
         assert!(first.failures.is_empty());
