@@ -22,3 +22,6 @@
 
 
 - Script API bridge design exists, but only as a proposal. Scripts cannot issue API requests yet. The proposed deferred response flow must be implemented and tested before claiming script-facing API access.
+
+
+- Typed script API request/result envelopes have been added, but their processing pipeline remains absent; CI for `f484db8` is unconfirmed.
