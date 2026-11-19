@@ -60,3 +60,6 @@
 - [ ] Verify runtime scanner-to-loader entrypoint after rustfmt correction (tests and Clippy).
 
 - [ ] Confirm scanner-to-runtime entrypoint's latest CI after final whitespace correction.
+
+- [x] Scanner-to-runtime entrypoint verified: runtime CI `44544390519` passed 21 tests, formatting and Clippy.
+- [ ] Launcher supplies actual instance `horizon-mods/` path and presents diagnostics in UI.
