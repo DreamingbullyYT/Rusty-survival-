@@ -155,3 +155,6 @@ The scanner now has a runtime connection: DreamModRuntime scans a caller-provide
 Scanner-to-runtime entrypoint's first CI attempt was a rustfmt-only failure. Formatting has been corrected; tests and Clippy still need verification.
 
 Runtime directory-loading CI found one final rustfmt trailing blank line after the prior fixes; removed in commit `20940cf`. Await latest verification.
+
+### Scanner-to-runtime verified milestone — 2026-11-19
+Runtime run `44544390519` passed 21 tests, formatting and Clippy. The scan/load entrypoint is verified in the runtime crate; automatic instance path discovery and UI diagnostics remain outside the implemented scope.
