@@ -18,7 +18,7 @@ pub use package::{
 pub use runtime::{
     AllowAllForTests, AuthorizedCommand, CommandAuthorizer, CommandEnvelope, DeniedOperation,
     DenyAll, DispatchReport, DreamModRuntime, LoadReport, PermissionPolicy, ProviderMode,
-    ProviderRegistration, RegisteredProvider, RuntimeConfig, RuntimeError, RuntimeEvent,
+    ProviderRegistration, RegisteredProvider, ModsDirectoryLoadReport, RuntimeConfig, RuntimeError, RuntimeEvent,
     RuntimeSide, ScriptFailure,
 };
 pub use script::{ExecutionLimits, RhaiEngine, ScriptEngine, ScriptError};
