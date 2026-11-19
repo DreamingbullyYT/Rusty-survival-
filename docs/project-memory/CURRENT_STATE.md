@@ -75,3 +75,5 @@
 - Current reality: engine only has coordinate primitives in `engine-core`; DreamMod package/runtime foundations exist but production interpreter and engine integration do not. API spec is not implementation.
 - Horizon-specific native Core, prebuilt overlay and shared `horizon-mods/` scanner are historical/optional experiments and must not be treated as requirements for the new engine.
 - Next implementation order: contract types → host adapter/fake host → interpreter decision & execution budgets → vertical slice → domain APIs as engine subsystems land.
+
+- Contract foundation test source typo (literal `\\n`) corrected; latest CI run is pending, so compilation/test status remains unverified.
