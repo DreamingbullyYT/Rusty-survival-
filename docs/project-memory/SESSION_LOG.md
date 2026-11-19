@@ -107,3 +107,7 @@ Date: 2026-11-19
 - Superseded Horizon integration decision D-005 with accepted D-014. Horizon Core/.hmod and scanner are historical/optional, not active target.
 - Added `dreammod-contract` workspace crate and base validated types (IDs, capabilities, API semantic versions/ranges, opaque generation handles, diagnostics) with unit tests.
 - Workspace CI now runs on push/PR; current tests/Clippy are pending Actions.
+
+## S-2026-11-19-77 — Contract test source correction
+Date: 2026-11-19
+- Removed a literal escaped newline from the diagnostic test after source inspection. Workspace CI is pending; no compile/test result claimed.
