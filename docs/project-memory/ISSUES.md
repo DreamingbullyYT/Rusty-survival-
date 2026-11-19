@@ -14,3 +14,8 @@
 - No DreamMod WASM runtime or player-native module loader exists. Horizon cold-cache WASM compilation is not adopted under no-player-compilation.
 - Trusted native .hmod DreamMod Core is build-time integration, not player-native mod support.
 - Future WASM/native player formats need explicit architecture/trust decisions, shared capability-gated Host API and verification before being advertised.
+
+### Shared mods-directory scanner integration — 2026-11-19
+- Library scanner is implemented but not connected to the launcher's actual instance `horizon-mods/` path, mod-management UI, permission prompts or runtime activation.
+- Runtime test/Clippy/rustfmt verification is pending. The first PMCS attempt failed because required project-memory files were missing updates; those updates are being completed.
+- Scanner uses bounded candidate/archive/retained-byte budgets and ignores Horizon `.hmod`; the common folder decision itself is accepted.
