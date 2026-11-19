@@ -26,5 +26,5 @@ Package validation/scanning, interpreted runtime foundation, owner-scoped API re
 
 ## Current unverified work (2026-11-19)
 - Hybrid API router and event-scoped script API bridge are implemented in source: `.dmod` requests route through capability authorization and provider selection; one-shot per-mod results arrive as `event.api_results`. Regression tests cover roundtrip, denial, isolation and scalar payload compatibility. CI is not verified.
-- Horizon's native mod API is hook-scoped and version-pinned; DreamMod provider calls currently have no scoped host-context argument. Design that context before implementing a real Horizon adapter; keep SDK optional.
+- Horizon's native mod API is hook-scoped and version-pinned. A safe operation-scoped, borrowed, engine-neutral provider-context design is documented in `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md`; implementation and tests are pending. Keep the SDK optional.
 - See CURRENT_STATE.md and AI_HANDOFF.md for the current source commit list and exact next steps.
