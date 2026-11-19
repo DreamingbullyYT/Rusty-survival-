@@ -203,3 +203,6 @@ The manifest must identify package ID, version, display name, entry points, requ
 - The signed SDK for Horizon commit 0b14f8acfd97fa2c750e42795249dcc981178ca4 was produced using the compiler version declared in that source's tools/ci/rust-version: 1.99.1.
 - Overlay run 44324363090 used Rust 1.95.0 and failed with E0514 for SDK crate mod_api. DreamMod's overlay workflow now uses Rust 1.99.1 and records it in metadata (commit 96d2e74071afb75f5657b0c2fe88caf2e529adc7).
 - Run 44328650675 is the verification rerun. The generated crate::hooks diagnostic is not yet classified as an independent source bug; wait for matching-toolchain evidence.
+
+## Player package directory contract (accepted 2026-11-19)
+Player `.dmod` packages live in the instance's existing `horizon-mods/` directory alongside Horizon `.hmod` files. Extension-based dispatch is mandatory: DreamMod scans and handles only `.dmod`; Horizon's loader remains responsible for `.hmod`. Do not rename or intercept Horizon packages. The trusted DreamMod Core `.hmod` remains launcher/build integration, not a player package. This convention is accepted, but scanner integration is still pending.
