@@ -18,13 +18,15 @@ Updated: 2026-11-19
 ## In progress / pending verification
 - Stateful test-only mock block-world host now validates and stages block writes before commit. A test covers successful writes and batch rollback behavior on invalid input. Latest implementation commits 4067841 and 6d2a232 await CI.
 
+## Not implemented / not verified
+
 ## Remaining
 - Concrete engine host adapters and world/entity/physics/render/audio/UI/AI/worldgen subsystems.
 - Runtime activation is not unified with package ModManager approvals.
 - Host batch atomicity is a contract for future adapters; no real engine mutations/rollback implementation exists.
 - Language decision and production sandbox remain open; Rhai is a candidate runtime.
 
-## Next
+## Next actions
 1. Verify the mock block-world host tests, then extend the mock to typed entity commands and cross-domain rollback.
 2. Unify package approval and runtime activation through one coordinator.
 3. Add the first concrete domain adapter, preferably world/block commands, then entity and physics.
