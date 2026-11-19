@@ -48,6 +48,13 @@ pub struct ApiRequest {
     pub input: Value,
 }
 
+/// Borrowed host access scoped to a single API operation.
+pub trait ApiOperationContext {
+    fn operation(&self) -> &ApiOperation;
+    fn safety(&self) -> ApiOperationSafety;
+    fn execute(&mut self, input: &Value) -> Result<Value, String>;
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ApiProviderDescriptor {
     pub id: String,
