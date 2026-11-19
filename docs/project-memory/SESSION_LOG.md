@@ -26,3 +26,10 @@ Date: 2026-11-19
 - Fixed the contract test generic inference by specifying `Handle::<()>::new`; also made PMCS duplicate-ID regression test select an existing ID and import regex.
 - Root Rust core workflow passed formatting, unit tests and Clippy on commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.
 - The project-memory validator's regression tests passed, but freshness validation required these memory files to be updated for the source test change. Runtime-specific CI still needs verification.
+
+
+## S-2026-11-19-82 — Fault disable cleans provider registrations
+Date: 2026-11-19
+- Fixed runtime fault paths to clear provider registrations when failure threshold disables a mod; applies to event callbacks, invalid response processing and provider invocation.
+- Added regression test that registers a broken physics provider, trips fault-disable, re-enables the mod, and confirms the stale provider is gone.
+- Verification pending; Actions was triggered for runtime CI.

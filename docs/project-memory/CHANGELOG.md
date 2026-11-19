@@ -14,3 +14,7 @@
 ### Handle type inference fix — 2026-11-19
 - Fixed contract unit test to specify `Handle::<()>::new`; the default generic type was not inferred by Rust in the test.
 - Root Rust core checks (format, test, Clippy) passed on commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.
+
+
+### Fault-disable provider cleanup — 2026-11-19
+- Provider registrations are cleared when a script fault threshold disables a mod, whether the fault occurs in event dispatch or provider invocation. Regression test verifies re-enable does not resurrect a stale provider. Verification pending.

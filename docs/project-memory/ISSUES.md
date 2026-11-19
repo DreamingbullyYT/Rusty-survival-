@@ -6,3 +6,6 @@
 
 
 - Contract unit-test compilation error (`Handle<T>` inference) was fixed with an explicit unit marker type. Root Rust core workflow passed format, tests and Clippy at `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`. PMCS freshness must be refreshed for this source test edit.
+
+
+- Runtime fault-disable previously left provider registrations stored. Call paths still gated by enabled state, but stale provider state could be revived by explicit re-enable. Fix now clears owner providers when threshold trips. CI pending.

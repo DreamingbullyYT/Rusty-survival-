@@ -96,3 +96,8 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Root workspace format, tests and Clippy passed at commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.
 - [ ] Runtime-specific workflow for `mods/dreammod-runtime` is not yet confirmed.
 - [ ] PMCS validator freshness check for the latest source/test commit.
+
+
+## Runtime fault cleanup
+- [x] Clear provider registrations when a runtime mod is auto-disabled due to repeated script failures, both from event and provider callback paths.
+- [ ] Verify fault cleanup regression test in DreamMod Runtime CI.

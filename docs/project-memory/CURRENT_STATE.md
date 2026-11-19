@@ -27,3 +27,7 @@
 
 ## Not implemented / not verified
 - Latest PMCS validator still needs this memory freshness update for the test-source commit; the runtime-specific workflow remains to be checked separately.
+
+
+## Implemented
+- Fault-threshold disable now clears provider registrations in runtime dispatch/provider invocation; regression test ensures reactivation cannot revive stale provider state. Verification pending.
