@@ -126,3 +126,9 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [x] Exercise successful writes and prove an invalid batch leaves state unchanged.
 - [x] Verify CI for the new tests: rustfmt, 27 tests, Clippy passed on c89b038.
 - [ ] Add entity adapter tests and cross-domain transaction coverage.
+
+## Cross-domain atomic mock engine
+- [x] Extend mock host to stage block and entity-health commands together.
+- [x] Add validation for entity handles and finite health values.
+- [x] Add test asserting invalid command rolls back staged world and entity mutations.
+- [ ] Verify CI for implementation commits b82c05b and cd78cb3.
