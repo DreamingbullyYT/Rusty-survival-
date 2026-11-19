@@ -30,6 +30,16 @@ Current DreamMod `ApiProvider::invoke` does not accept a host context. It is sui
 
 The adapter should remain optional: the base runtime must build and run without Horizon SDK dependencies. Pin adapter compatibility to the Horizon API revision, advertise only operations it actually supports, and route missing operations to DreamMod-native providers.
 
+## Scoped provider context
+
+The design is now specified in `docs/specs/DREAMMOD_SCOPED_API_CONTEXT.md`.
+
+Providers will receive a borrowed operation-scoped host context through a context-aware invocation path. The context is bound to the already-authorized operation, expires when the invocation returns, and cannot be used to dispatch another operation. Existing self-contained providers keep the legacy `invoke` entrypoint through a compatibility default. Context-free calls remain available for those providers; adapters that require a host context must fail explicitly when it is missing.
+
+The context interface is engine-neutral. A Horizon adapter will translate the scoped operation into typed callback host calls without exposing Horizon types to scripts or adding Horizon SDK dependencies to the base runtime. No global mutable handles, unsafe pointers, stale snapshots, or context caching.
+
+The first planned contract test is a fake scoped `world.block_get` context/provider pair, including context propagation, mismatched-operation rejection, missing-context behavior and provider-error handling. This is not yet implemented or verified.
+
 ## Horizon surface mapping (planned)
 
 | Domain | Horizon reuse | DreamMod-native fallback/extensions |
@@ -53,7 +63,7 @@ This matrix is a plan, not a claim that every Horizon surface currently exists o
 - Router is integrated with host-side runtime calls and the deferred script request bridge: scripts return `api_requests`; results are injected into the requesting mod's next event as `api_results`.
 - Script requests use the same operation-to-capability authorizer, request/result byte limits, and provider router. Results are one-shot and mod-isolated.
 - No concrete Horizon adapter is linked or tested end-to-end yet.
-- The current provider invocation lacks scoped host context; the adapter context contract must be designed before implementing live world operations.
+- The scoped host-context contract is specified, but code integration is not implemented yet; no live world operations are available.
 - The typed world/block adapter is not connected to authoritative engine world/chunk storage; no live block reads/writes are implemented.
 
 ## Reference
