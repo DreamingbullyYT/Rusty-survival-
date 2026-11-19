@@ -15,7 +15,7 @@ pub enum DiagnosticCode {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Severity { Info, Warning, Error }
 
-/// Small structured diagnostic. Text is supplemental; code is stable for tooling.
+/// Structured diagnostic. The code is stable for tooling; message text is supplemental.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Diagnostic {
     code: DiagnosticCode,
@@ -26,12 +26,18 @@ pub struct Diagnostic {
 }
 
 impl Diagnostic {
-    pub fn new(code: DiagnosticCode, severity: Severity, message: impl Into<String>, detail: impl Into<String>) -> Self {
-        Self { code, severity, subject: Some(message.into()), detail: Some(detail.into()), message: String::new() }
+    pub fn new(code: DiagnosticCode, severity: Severity, message: impl Into<String>) -> Self {
+        Self { code, severity, subject: None, detail: None, message: message.into() }
     }
 
-    pub fn message(code: DiagnosticCode, severity: Severity, message: impl Into<String>) -> Self {
-        Self { code, severity, subject: None, detail: None, message: message.into() }
+    pub fn with_subject(mut self, subject: impl Into<String>) -> Self {
+        self.subject = Some(subject.into());
+        self
+    }
+
+    pub fn with_detail(mut self, detail: impl Into<String>) -> Self {
+        self.detail = Some(detail.into());
+        self
     }
 
     pub fn code(&self) -> DiagnosticCode { self.code }
