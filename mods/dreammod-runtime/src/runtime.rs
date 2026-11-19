@@ -932,6 +932,114 @@ mod tests {
         }
     }
 
+    #[derive(Default)]
+    struct MockBlockWorldHost {
+        blocks: BTreeMap<(i32, i32, i32), String>,
+    }
+
+    impl EngineCommandHost for MockBlockWorldHost {
+        type Error = String;
+
+        fn execute_atomic_batch(&mut self, commands: &[AuthorizedCommand]) -> Result<(), Self::Error> {
+            // Validate and stage every mutation before touching live mock state.
+            let mut staged = Vec::with_capacity(commands.len());
+            for command in commands {
+                if command.command.namespace != "world" || command.command.name != "set_block" {
+                    return Err("unsupported mock-engine command".to_owned());
+                }
+
+                let payload = &command.command.payload;
+                let x = payload["x"].as_i64().ok_or("x must be an integer")?;
+                let y = payload["y"].as_i64().ok_or("y must be an integer")?;
+                let z = payload["z"].as_i64().ok_or("z must be an integer")?;
+                if !(-30_000_000..=30_000_000).contains(&x)
+                    || !(-64..=320).contains(&y)
+                    || !(-30_000_000..=30_000_000).contains(&z)
+                {
+                    return Err("block position is out of bounds".to_owned());
+                }
+
+                let block = payload["block"].as_str().ok_or("block must be a string")?;
+                if !block.starts_with("minecraft:")
+                    || block.len() <= "minecraft:".len()
+                    || !block
+                        .chars()
+                        .all(|ch| ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '_' || ch == ':' )
+                {
+                    return Err("invalid block identifier".to_owned());
+                }
+
+                staged.push(((x as i32, y as i32, z as i32), block.to_owned()));
+            }
+
+            // Commit only after the complete batch passed validation.
+            for (pos, block) in staged {
+                self.blocks.insert(pos, block);
+            }
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn mock_world_host_applies_valid_batch_and_rejects_invalid_batch_atomically() {
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_package = package(
+            "dreammod.mock_world",
+            r#"
+                fn on_server_tick(event) {
+                    #{ commands: [
+                        #{ namespace: "world", name: "set_block",
+                           payload: #{ x: 1, y: 2, z: 3, block: "minecraft:stone" } },
+                        #{ namespace: "world", name: "set_block",
+                           payload: #{ x: 4, y: 5, z: 6, block: "minecraft:dirt" } }
+                    ] }
+                }
+            "#,
+            &["server_tick"],
+            &[Capability::WorldWrite],
+            Vec::new(),
+            0,
+        );
+        runtime
+            .load_packages(vec![mod_package], &AllowAllForTests)
+            .unwrap();
+        runtime.enable_mod(&ModId::parse("dreammod.mock_world").unwrap());
+        let mut host = MockBlockWorldHost::default();
+
+        let valid = runtime.dispatch_event_and_execute(
+            &RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({})),
+            &TestAuthorizer,
+            &mut host,
+        );
+        assert_eq!(valid.dispatch.commands.len(), 2);
+        assert_eq!(valid.execution, Some(Ok(())));
+        assert_eq!(host.blocks.get(&(1, 2, 3)).map(String::as_str), Some("minecraft:stone"));
+        assert_eq!(host.blocks.get(&(4, 5, 6)).map(String::as_str), Some("minecraft:dirt"));
+
+        // A second batch contains one valid write followed by an invalid block ID.
+        let invalid_commands = vec![
+            AuthorizedCommand {
+                mod_id: ModId::parse("dreammod.mock_world").unwrap(),
+                command: CommandEnvelope {
+                    namespace: "world".to_owned(),
+                    name: "set_block".to_owned(),
+                    payload: json!({ "x": 7, "y": 8, "z": 9, "block": "minecraft:gold_block" }),
+                },
+            },
+            AuthorizedCommand {
+                mod_id: ModId::parse("dreammod.mock_world").unwrap(),
+                command: CommandEnvelope {
+                    namespace: "world".to_owned(),
+                    name: "set_block".to_owned(),
+                    payload: json!({ "x": 10, "y": 11, "z": 12, "block": "../unsafe" }),
+                },
+            },
+        ];
+        let before = host.blocks.clone();
+        assert!(host.execute_atomic_batch(&invalid_commands).is_err());
+        assert_eq!(host.blocks, before, "invalid batch must not partially mutate world");
+    }
+
     #[test]
     fn event_commands_reach_host_only_after_authorization() {
         let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
