@@ -47,3 +47,5 @@
 - Still no launcher instance-path discovery or UI connection.
 
 - Runtime directory-loading entrypoint's first CI attempt stopped at rustfmt; formatting corrections were applied. Runtime test/Clippy verification is pending.
+
+- Runtime entrypoint's second rustfmt check identified only a trailing blank line in the test module; removed it. Verification pending.
