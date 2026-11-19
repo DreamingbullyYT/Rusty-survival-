@@ -179,8 +179,8 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 ## Horizon adapter architecture constraint
 - [x] Research documented Horizon hook/host model and version/stability contract.
 - [x] Identify that current provider invocation lacks scoped host context for real Horizon world APIs.
-- [x] Design scoped engine-neutral provider context (spec added; implementation pending).
-- [ ] Route context through runtime/router/provider calls and prove tests without Horizon dependencies.
+- [x] Define scoped engine-neutral provider context; router API and operation mismatch guard implemented (CI pending).
+- [ ] Route context through runtime dispatch/host calls and verify tests without Horizon dependencies.
 - [ ] Build optional, version-pinned Horizon adapter on top of that context; test a small operation end-to-end.
 
 - Provider-error test commit `7750687`; CI still not verified.
