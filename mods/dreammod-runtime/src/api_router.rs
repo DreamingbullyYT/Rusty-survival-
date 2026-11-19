@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use thiserror::Error;
 
-/// Stable operation name shared by mods and engine adapters (e.g. world.block.get).
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct ApiOperation {
     pub domain: String,
@@ -12,10 +11,10 @@ pub struct ApiOperation {
 }
 
 impl ApiOperation {
-    pub fn new(\n        domain: impl Into<String>,\n        name: impl Into<String>,\n    ) -> Result<Self, ApiRouterError> {
+    pub fn new(domain: impl Into<String>, name: impl Into<String>) -> Result<Self, ApiRouterError> {
         let domain = domain.into();
         let name = name.into();
-        if !valid_api_name(&domain) || !valid_api_name(&name) {
+        if !valid_name(&domain) || !valid_name(&name) {
             return Err(ApiRouterError::InvalidOperation { domain, name });
         }
         Ok(Self { domain, name })
@@ -52,12 +51,10 @@ pub struct ApiRequest {
 pub struct ApiProviderDescriptor {
     pub id: String,
     pub kind: ApiProviderKind,
-    /// Higher priority wins within a provider preference.
     pub priority: i32,
     pub operations: BTreeSet<ApiOperation>,
 }
 
-/// Provider boundary: implementations adapt to Horizon's API or DreamMod's engine API.
 pub trait ApiProvider: Send {
     fn descriptor(&self) -> &ApiProviderDescriptor;
     fn invoke(&mut self, request: &ApiRequest) -> Result<Value, String>;
@@ -73,23 +70,23 @@ pub enum ApiProviderPreference {
 pub enum ApiRouterError {
     #[error("invalid API operation '{domain}.{name}'")]
     InvalidOperation { domain: String, name: String },
-    #[error("invalid provider id '{0}'")]
+    #[error("invalid provider ID '{0}'")]
     InvalidProviderId(String),
     #[error("provider '{0}' is not registered")]
     ProviderNotRegistered(String),
     #[error("no provider supports operation '{0}'")]
     UnsupportedOperation(String),
     #[error("provider '{provider}' failed operation '{operation}': {message}")]
-    ProviderFailed { provider: String, operation: String, message: String },
+    ProviderFailed {
+        provider: String,
+        operation: String,
+        message: String,
+    },
 }
 
-/// Routes API operations to compatible providers. The active preference can be
-/// changed at runtime and providers can be replaced/unregistered without changing
-/// mod scripts. Provider errors are not retried: mutation fallback could duplicate
-/// a partially committed operation.
 pub struct ApiRouter {
     providers: BTreeMap<String, Box<dyn ApiProvider>>,
-    preference: BTreeMap<String, ApiProviderPreference>,
+    preferences: BTreeMap<String, ApiProviderPreference>,
     default_preference: ApiProviderPreference,
 }
 
@@ -103,19 +100,14 @@ impl ApiRouter {
     pub fn new(default_preference: ApiProviderPreference) -> Self {
         Self {
             providers: BTreeMap::new(),
-            preference: BTreeMap::new(),
+            preferences: BTreeMap::new(),
             default_preference,
         }
     }
 
-    /// Registers or hot-replaces a provider by ID. The replacement becomes visible
-    /// immediately to subsequent calls; existing calls are never interrupted.
-    pub fn register_provider(
-        &mut self,
-        provider: Box<dyn ApiProvider>,
-    ) -> Result<(), ApiRouterError> {
+    pub fn register_provider(&mut self, provider: Box<dyn ApiProvider>) -> Result<(), ApiRouterError> {
         let descriptor = provider.descriptor();
-        if !valid_api_name(&descriptor.id) {
+        if !valid_name(&descriptor.id) {
             return Err(ApiRouterError::InvalidProviderId(descriptor.id.clone()));
         }
         self.providers.insert(descriptor.id.clone(), provider);
@@ -135,35 +127,30 @@ impl ApiRouter {
         preference: ApiProviderPreference,
     ) -> Result<(), ApiRouterError> {
         let domain = domain.into();
-        if !valid_api_name(&domain) {
+        if !valid_name(&domain) {
             return Err(ApiRouterError::InvalidOperation {
                 domain,
-                name: "*".to_owned(),
+                name: "preference".to_owned(),
             });
         }
-        self.preference.insert(domain, preference);
+        self.preferences.insert(domain, preference);
         Ok(())
     }
 
     pub fn preference(&self, domain: &str) -> ApiProviderPreference {
-        self.preference
+        self.preferences
             .get(domain)
             .copied()
             .unwrap_or(self.default_preference)
     }
 
     pub fn call(&mut self, request: ApiRequest) -> Result<Value, ApiRouterError> {
-        let key = request.operation.key();
+        let operation_key = request.operation.key();
         let preference = self.preference(&request.operation.domain);
         let mut candidates = self
             .providers
             .iter()
-            .filter(|(_, provider)| {
-                provider
-                    .descriptor()
-                    .operations
-                    .contains(&request.operation)
-            })
+            .filter(|(_, provider)| provider.descriptor().operations.contains(&request.operation))
             .map(|(id, provider)| {
                 let descriptor = provider.descriptor();
                 let preferred = matches!(
@@ -180,27 +167,33 @@ impl ApiRouter {
         });
 
         let Some((provider_id, _, _)) = candidates.first() else {
-            return Err(ApiRouterError::UnsupportedOperation(key));
+            return Err(ApiRouterError::UnsupportedOperation(operation_key));
         };
         let provider_id = provider_id.clone();
-        let provider = self.providers.get_mut(&provider_id).expect("candidate provider exists");
+        let provider = self.providers.get_mut(&provider_id).expect("candidate exists");
         provider.invoke(&request).map_err(|message| ApiRouterError::ProviderFailed {
             provider: provider_id,
-            operation: key,
+            operation: operation_key,
             message,
         })
     }
 
     pub fn providers(&self) -> Vec<ApiProviderDescriptor> {
-        self.providers\n            .values()\n            .map(|p| p.descriptor().clone())\n            .collect()
+        self.providers
+            .values()
+            .map(|provider| provider.descriptor().clone())
+            .collect()
     }
 }
 
-fn valid_api_name(value: &str) -> bool {
+fn valid_name(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 64
-        && value.bytes().all(|b| {
-            b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-'
+        && value.bytes().all(|byte| {
+            byte.is_ascii_lowercase()
+                || byte.is_ascii_digit()
+                || byte == b'_'
+                || byte == b'-'
         })
 }
 
@@ -221,23 +214,23 @@ mod tests {
 
         fn invoke(&mut self, request: &ApiRequest) -> Result<Value, String> {
             if self.fail {
-                return Err("simulated provider failure".into());
+                return Err("simulated provider failure".to_owned());
             }
             Ok(json!({"provider": self.descriptor.id, "input": request.input}))
         }
     }
 
-    fn operation() -> ApiOperation {
+    fn op() -> ApiOperation {
         ApiOperation::new("world", "block_get").unwrap()
     }
 
-    fn fake(id: &str, kind: ApiProviderKind, priority: i32, fail: bool) -> FakeProvider {
+    fn provider(id: &str, kind: ApiProviderKind, priority: i32, fail: bool) -> FakeProvider {
         FakeProvider {
             descriptor: ApiProviderDescriptor {
-                id: id.into(),
+                id: id.to_owned(),
                 kind,
                 priority,
-                operations: [operation()].into(),
+                operations: [op()].into(),
             },
             fail,
         }
@@ -245,60 +238,54 @@ mod tests {
 
     fn request() -> ApiRequest {
         ApiRequest {
-            operation: operation(),
+            operation: op(),
             safety: ApiOperationSafety::ReadOnly,
-            input: json!({"pos":[1,2,3]}),
+            input: json!({"position":[1,2,3]}),
         }
     }
 
     #[test]
-    fn horizon_is_preferred_and_dreammod_is_fallback_when_missing() {
+    fn horizon_first_and_native_fallback_by_supported_operation() {
         let mut router = ApiRouter::default();
-        router\n            .register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false)))\n            .unwrap();
-        let first = router.call(request()).unwrap();
-        assert_eq!(first["provider"], "dreammod");
-
-        router\n            .register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, false)))\n            .unwrap();
-        let second = router.call(request()).unwrap();
-        assert_eq!(second["provider"], "horizon");
+        router.register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
+        assert_eq!(router.call(request()).unwrap()["provider"], "dreammod");
+        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
+        assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
     }
 
     #[test]
-    fn preference_switches_provider_without_reloading_mods() {
+    fn preference_switches_provider_without_mod_reload() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
-        router\n            .register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false)))\n            .unwrap();
-
+        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
+        router.register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
-        router\n            .set_preference("world", ApiProviderPreference::DreamModFirst)\n            .unwrap();
+        router.set_preference("world", ApiProviderPreference::DreamModFirst).unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "dreammod");
     }
 
     #[test]
-    fn provider_failure_does_not_retry_mutations_or_reads_implicitly() {
+    fn provider_failure_is_not_automatically_retried() {
         let mut router = ApiRouter::default();
-        router\n            .register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 5, true)))\n            .unwrap();
-        router.register_provider(Box::new(fake("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
-
-        let error = router.call(request()).unwrap_err();
-        assert!(matches!(error, ApiRouterError::ProviderFailed { provider, .. } if provider == "horizon"));
+        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 5, true))).unwrap();
+        router.register_provider(Box::new(provider("dreammod", ApiProviderKind::DreamMod, 0, false))).unwrap();
+        assert!(matches!(router.call(request()), Err(ApiRouterError::ProviderFailed { provider, .. }) if provider == "horizon"));
     }
 
     #[test]
-    fn hot_replacement_and_removal_are_visible_to_next_call() {
+    fn replacement_and_removal_apply_to_subsequent_calls() {
         let mut router = ApiRouter::default();
-        router.register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
+        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, false))).unwrap();
         assert_eq!(router.call(request()).unwrap()["provider"], "horizon");
-        router\n            .register_provider(Box::new(fake("horizon", ApiProviderKind::Horizon, 0, true)))\n            .unwrap();
+        router.register_provider(Box::new(provider("horizon", ApiProviderKind::Horizon, 0, true))).unwrap();
         assert!(router.call(request()).is_err());
         router.unregister_provider("horizon").unwrap();
         assert!(matches!(router.call(request()), Err(ApiRouterError::UnsupportedOperation(_))));
     }
 
     #[test]
-    fn rejects_invalid_operation_and_provider_ids() {
+    fn invalid_operation_and_provider_ids_are_rejected() {
         assert!(ApiOperation::new("../world", "block_get").is_err());
         let mut router = ApiRouter::default();
-        assert!(router\n            .register_provider(Box::new(fake("../horizon", ApiProviderKind::Horizon, 0, false)))\n            .is_err());
+        assert!(router.register_provider(Box::new(provider("../horizon", ApiProviderKind::Horizon, 0, false))).is_err());
     }
 }
