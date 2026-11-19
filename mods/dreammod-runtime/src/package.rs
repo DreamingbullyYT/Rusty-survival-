@@ -328,9 +328,11 @@ impl ModsDirectoryScanner {
 
             match self.package_loader.load(&path) {
                 Ok(package) => {
-                    let package_bytes = package.files.values().try_fold(0_u64, |sum, file| {
-                        sum.checked_add(file.len() as u64)
-                    }).ok_or(ScanDirectoryError::TotalSizeOverflow)?;
+                    let package_bytes = package
+                        .files
+                        .values()
+                        .try_fold(0_u64, |sum, file| sum.checked_add(file.len() as u64))
+                        .ok_or(ScanDirectoryError::TotalSizeOverflow)?;
                     total_retained_bytes = total_retained_bytes
                         .checked_add(package_bytes)
                         .ok_or(ScanDirectoryError::TotalSizeOverflow)?;
@@ -580,15 +582,31 @@ mod tests {
         let dir = TempDir::new().unwrap();
         create_dmod(dir.path(), "one.dmod", "dreammod.one");
         create_dmod(dir.path(), "two.dmod", "dreammod.two");
-        let count_limited = ModsDirectoryScanner::new(PackageLoader::default(), ModsDirectoryLimits {
-            max_packages: 1, max_total_archive_bytes: 1024, max_total_retained_bytes: 1024,
-        });
-        assert!(matches!(count_limited.scan(dir.path()), Err(ScanDirectoryError::TooManyPackages { .. })));
+        let count_limited = ModsDirectoryScanner::new(
+            PackageLoader::default(),
+            ModsDirectoryLimits {
+                max_packages: 1,
+                max_total_archive_bytes: 1024,
+                max_total_retained_bytes: 1024,
+            },
+        );
+        assert!(matches!(
+            count_limited.scan(dir.path()),
+            Err(ScanDirectoryError::TooManyPackages { .. })
+        ));
 
-        let size_limited = ModsDirectoryScanner::new(PackageLoader::default(), ModsDirectoryLimits {
-            max_packages: 10, max_total_archive_bytes: 1024, max_total_retained_bytes: 1,
-        });
-        assert!(matches!(size_limited.scan(dir.path()), Err(ScanDirectoryError::TotalRetainedBytesExceeded { .. })));
+        let size_limited = ModsDirectoryScanner::new(
+            PackageLoader::default(),
+            ModsDirectoryLimits {
+                max_packages: 10,
+                max_total_archive_bytes: 1024,
+                max_total_retained_bytes: 1,
+            },
+        );
+        assert!(matches!(
+            size_limited.scan(dir.path()),
+            Err(ScanDirectoryError::TotalRetainedBytesExceeded { .. })
+        ));
     }
 
     #[cfg(unix)]
