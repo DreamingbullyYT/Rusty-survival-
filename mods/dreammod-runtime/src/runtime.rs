@@ -9,7 +9,10 @@ use serde_json::Value;
 use thiserror::Error;
 
 use crate::{
-    api_router::{ApiProvider, ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError},
+    api_router::{
+        ApiProvider, ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError,
+        ApiScriptRequest, ApiScriptResult, ApiScriptResultError,
+    },
     manifest::{Capability, ManifestError, ModId, ModManifest, ModSide},
     package::{DmodPackage, ModsDirectoryScanner, ScanDirectoryError, ScanIssue},
     script::{ScriptEngine, ScriptError},
@@ -205,6 +208,7 @@ struct LoadedMod<I> {
     consecutive_failures: u32,
     enabled: bool,
     providers: BTreeMap<String, ProviderRegistration>,
+    pending_api_results: Vec<ApiScriptResult>,
 }
 
 pub struct DreamModRuntime<E: ScriptEngine> {
@@ -314,6 +318,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                     consecutive_failures: 0,
                     enabled: false,
                     providers: BTreeMap::new(),
+                    pending_api_results: Vec::new(),
                 },
             ));
         }
@@ -377,6 +382,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
         let ids = self.load_order.clone();
         let engine = &self.engine;
         let config = &self.config;
+        let api_router = &mut self.api_router;
 
         for id in ids {
             let Some(instance) = self.mods.get_mut(&id) else {
@@ -389,7 +395,8 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                 continue;
             }
 
-            match engine.call(&mut instance.script, &function, &event.payload) {
+            let event_payload = with_api_results(&event.payload, std::mem::take(&mut instance.pending_api_results));
+            match engine.call(&mut instance.script, &function, &event_payload) {
                 Ok(None) => {
                     instance.consecutive_failures = 0;
                 }
@@ -404,7 +411,12 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                         &mut report,
                     );
                     match result {
-                        Ok(()) => instance.consecutive_failures = 0,
+                        Ok(api_requests) => {
+                            instance.pending_api_results = resolve_script_api_requests(
+                                &id, &instance.granted, api_requests, authorizer, config, api_router,
+                            );
+                            instance.consecutive_failures = 0;
+                        },
                         Err(message) => {
                             let failure = record_failure(
                                 &id,
@@ -578,6 +590,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
         if let Some(instance) = self.mods.get_mut(mod_id) {
             instance.enabled = false;
             instance.providers.clear();
+            instance.pending_api_results.clear();
             true
         } else {
             false
@@ -611,7 +624,7 @@ fn collect_response<A: CommandAuthorizer>(
     config: &RuntimeConfig,
     providers: &mut BTreeMap<String, ProviderRegistration>,
     report: &mut DispatchReport,
-) -> Result<(), String> {
+) -> Result<Vec<ApiScriptRequest>, String> {
     let encoded = serde_json::to_vec(&value).map_err(|error| error.to_string())?;
     if encoded.len() > config.max_output_bytes {
         return Err(format!(
@@ -628,6 +641,16 @@ fn collect_response<A: CommandAuthorizer>(
     }
     if response.providers.len() > config.max_providers_per_event {
         return Err("script registered too many subsystem providers".to_owned());
+    }
+    if response.api_requests.len() > config.max_commands_per_event {
+        return Err("script emitted too many API requests".to_owned());
+    }
+    let mut request_ids = BTreeSet::new();
+    for request in &response.api_requests {
+        request.validate().map_err(|error| error.to_string())?;
+        if !request_ids.insert(request.request_id.clone()) {
+            return Err(format!("duplicate API request ID: {}", request.request_id));
+        }
     }
 
     for command in response.commands {
@@ -705,7 +728,83 @@ fn collect_response<A: CommandAuthorizer>(
         });
     }
 
-    Ok(())
+    Ok(response.api_requests)
+}
+
+
+/// Inject completed asynchronous API requests into the next script event.
+fn with_api_results(payload: &Value, results: Vec<ApiScriptResult>) -> Value {
+    let results = serde_json::to_value(results).unwrap_or_else(|_| Value::Array(Vec::new()));
+    match payload {
+        Value::Object(object) => {
+            let mut object = object.clone();
+            object.insert("api_results".to_owned(), results);
+            Value::Object(object)
+        }
+        other => serde_json::json!({ "event_payload": other, "api_results": results }),
+    }
+}
+
+fn resolve_script_api_requests<A: CommandAuthorizer>(
+    mod_id: &ModId,
+    granted: &BTreeSet<Capability>,
+    requests: Vec<ApiScriptRequest>,
+    authorizer: &A,
+    config: &RuntimeConfig,
+    router: &mut ApiRouter,
+) -> Vec<ApiScriptResult> {
+    requests.into_iter().map(|request| {
+        let operation = request.operation.clone();
+        let mut result = ApiScriptResult {
+            request_id: request.request_id,
+            operation: operation.clone(),
+            result: None,
+            error: None,
+        };
+        let payload_size = serde_json::to_vec(&request.input).map_or(usize::MAX, |bytes| bytes.len());
+        if payload_size > config.max_command_payload_bytes {
+            result.error = Some(ApiScriptResultError::PayloadTooLarge);
+            return result;
+        }
+        let command = CommandEnvelope {
+            namespace: operation.domain.clone(),
+            name: operation.name.clone(),
+            payload: request.input.clone(),
+        };
+        let Some(required) = authorizer.required_capability(&command) else {
+            result.error = Some(ApiScriptResultError::UnknownOperation);
+            return result;
+        };
+        if !granted.contains(&required) {
+            result.error = Some(ApiScriptResultError::CapabilityDenied);
+            return result;
+        }
+        let api_request = ApiRequest {
+            operation,
+            safety: request.safety,
+            input: request.input,
+        };
+        match router.call(api_request) {
+            Ok(value) => {
+                let response_size = serde_json::to_vec(&value).map_or(usize::MAX, |bytes| bytes.len());
+                if response_size > config.max_output_bytes {
+                    result.error = Some(ApiScriptResultError::ResponseTooLarge);
+                } else {
+                    result.result = Some(value);
+                }
+            }
+            Err(ApiRouterError::UnsupportedOperation(_)) => {
+                result.error = Some(ApiScriptResultError::ProviderUnavailable);
+            }
+            Err(ApiRouterError::ProviderFailed { .. }) => {
+                result.error = Some(ApiScriptResultError::ProviderFailed);
+            }
+            Err(_) => {
+                result.error = Some(ApiScriptResultError::InvalidRequest);
+            }
+        }
+        result
+    }).collect()
 }
 
 fn record_failure(
@@ -832,6 +931,7 @@ fn resolve_load_order(
 struct ScriptResponse {
     commands: Vec<CommandEnvelope>,
     providers: Vec<ProviderRegistration>,
+    api_requests: Vec<ApiScriptRequest>,
 }
 
 #[derive(Debug, Error)]
