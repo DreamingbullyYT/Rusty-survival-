@@ -23,3 +23,8 @@ Date: 2026-11-19
 - Added a trusted Core atlas registry: per-owner atomic batches, authorization callback, namespace/path validation, duplicate prevention, global 32-entry limit and sorted snapshot.
 - Core now implements Horizon's pinned collect hook and re-submits the snapshot each time the hook runs (initial load/resource reload).
 - Package CI passed for manager integration (62 tests); Core compile and PMCS for this commit are pending. No script runtime populates the registry yet.
+
+## S-2026-11-19-62 — Correct atlas collect event signature
+Date: 2026-11-19
+- Actions failure showed generated hook expects `RegisterTextureAtlasesEvent`, not raw Vec. Updated the Core implementation to use the generated event wrapper and its atlas output field.
+- The new commit triggers Core, overlay and PMCS checks; no pass is claimed yet.

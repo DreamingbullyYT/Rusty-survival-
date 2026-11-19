@@ -13,10 +13,10 @@
 
 ## Not implemented / not verified
 - No interpreted .dmod runtime, sandbox, scheduler or live Horizon hook.
-- Core now publishes the owned atlas snapshot from the pinned collect hook on initial registration and resource reload. No .dmod interpreter is connected to the registry yet.
+- Core implements the collect hook with the generated event signature; its compile is pending after a CI-caught signature correction. No .dmod interpreter is connected to the registry yet.
 - Deep subsystem replacement remains a design goal, not implemented.
 
 ## Next actions
 - Validate package CI and PMCS.
 - Confirm exact pinned Horizon atlas hook signature and registration context.
-- Connect the Core hook to a batch snapshot and resubmit during each resource reload.
+- Verify the corrected Core hook build and confirm the event output field in the generated contract.
