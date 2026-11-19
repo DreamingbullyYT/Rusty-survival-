@@ -34,3 +34,6 @@
 - Runtime scanner-to-loader entrypoint's initial Actions attempt stopped at rustfmt; formatting was corrected. No test or compile failure is established yet; await rerun.
 
 - The second runtime directory-loading CI attempt also failed at rustfmt only (a trailing blank line). Removed; next run pending.
+
+### Scanner-to-runtime CI verified (2026-11-19)
+- Runtime workflow `44544390519` passed formatting, 21 tests and Clippy. The code path is validated as a library API; instance path discovery, mod UI and permission UX remain pending.
