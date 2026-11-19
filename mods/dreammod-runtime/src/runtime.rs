@@ -960,11 +960,11 @@ mod tests {
                 }
 
                 let block = payload["block"].as_str().ok_or("block must be a string")?;
-                if !block.starts_with("minecraft:")
-                    || block.len() <= "minecraft:".len()
-                    || !block
+                let block_name = block.strip_prefix("minecraft:").ok_or("unsupported block namespace")?;
+                if block_name.is_empty()
+                    || !block_name
                         .chars()
-                        .all(|ch| ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '_' || ch == ':' )
+                        .all(|ch| ch.is_ascii_lowercase() || ch.is_ascii_digit() || ch == '_')
                 {
                     return Err("invalid block identifier".to_owned());
                 }
