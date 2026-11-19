@@ -1,47 +1,27 @@
+# Current State — DreamMod
 
-- Added `dreammod-api` registration foundation: command/event/system/content/provider/resource descriptors, required-feature metadata, namespace/owner validation, atomic batches, deterministic snapshots and owner cleanup. This is not a live engine registry or script dispatch yet; CI pending.
-
-
-# Implemented
-
-- Independent DreamMod contract and metadata registry crates exist.
-- Package/runtime foundations, Rhai interpreted runtime, capability filtering, command/provider response validation and package scanning exist.
-- New packages are now loaded disabled; explicit `enable_mod` activates them. Test added for no dispatch while inactive.
-
-# Not implemented / not verified
-
-- Live engine host adapters for world, entity, physics, renderer, input, UI, audio, AI or world generation.
-- End-to-end command execution into native engine systems.
-- CI verification of the latest activation change: rustfmt and PMCS checks failed; Rust test/Clippy stages skipped.
-
-# Next actions
-
-1. Correct formatting and PMCS validator markers.
-2. Re-run Actions and fix compile/test/Clippy failures.
-3. Unify package approval/lifecycle with runtime explicit activation.
-4. Implement mock engine host and end-to-end `.dmod` -> interpreted response -> authorization -> adapter test.
-
+Updated: 2026-11-19
 
 ## Implemented
-- Contract test now explicitly specifies the generic handle type. Root Rust checks passed at commit `1fb4ed6b6272804027aecb14f40f3ae8a3621b45`.
-
-## Not implemented / not verified
-- Latest PMCS validator still needs this memory freshness update for the test-source commit; the runtime-specific workflow remains to be checked separately.
-
-
-## Implemented
-- Fault-threshold disable now clears provider registrations in runtime dispatch/provider invocation; regression test ensures reactivation cannot revive stale provider state. Verification pending.
-
-
-### Runtime fault cleanup formatting correction — 2026-11-19
-- Corrected rustfmt-only layout for the fault-cleanup regression test. Root core workflow passed; runtime-specific formatting will be rechecked.
-
+- Engine-independent DreamMod contract crate and owner-scoped metadata registry.
+- .dmod package validation/scanning and interpreted Rhai runtime foundation.
+- Capability filtering and response validation for commands/providers.
+- Runtime package loading defaults to disabled; explicit activation is required.
+- Fault-disable cleanup removes a mod's provider registrations.
+- Generic EngineCommandHost boundary: dispatch produces authorized commands and submits a non-empty batch to a host; host promises atomic apply. Mock-host tests cover delivery and denied command suppression.
 
 ## Verified
-- DreamMod Runtime CI: 24 tests passed; formatting and Clippy passed at `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
-- Root Rust core format/tests/Clippy and offline engine test workflow passed at the same commit.
-- Default-disabled activation and provider fault cleanup regression tests are verified.
+- Runtime lifecycle/provider cleanup: runtime CI passed 24 tests, formatting and Clippy at 6bae66f43f6e51b9c92301beea34224e9bb03ac6.
+- Root Rust core formatting/tests/Clippy and offline engine test workflow passed at that verified commit.
 
-## Remaining gaps
-- No live engine adapter or real world/entity/physics/rendering systems exist yet; engine-core is still coordinates and primitives only.
-- Runtime package approval and activation are not yet unified with the separate package ModManager lifecycle.
+## Not implemented / pending verification
+- Latest host-boundary commits 6b914d9 and 463abba have not yet been CI-verified.
+- Concrete engine host adapters and world/entity/physics/render/audio/UI/AI/worldgen subsystems.
+- Runtime activation still is not unified with package ModManager approvals.
+- PMSC freshness validator has to be run on the host-boundary change.
+
+## Next
+1. Verify host-boundary formatting, tests and Clippy.
+2. Build a mock engine state adapter that applies typed world/entity mutations with batch validation and rollback.
+3. Unify package approval and runtime activation.
+4. Define persistent mod state, save format/versioning and bounded storage policy (PMCS project continuity is separate from game mod-state persistence).
