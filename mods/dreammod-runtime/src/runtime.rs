@@ -740,7 +740,10 @@ pub enum RuntimeError {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Write;
+
     use serde_json::json;
+    use zip::{ZipWriter, write::SimpleFileOptions};
 
     use crate::{
         manifest::{ModDependency, ModId, ModManifest, ModSide},
@@ -1016,4 +1019,44 @@ mod tests {
         assert_eq!(report.issues.len(), 1);
         assert!(report.issues[0].reason.contains("zip"));
     }
+    #[test]
+    fn directory_loading_activates_valid_dmod_and_keeps_horizon_files_separate() {
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::write(directory.path().join("Horizon.hmod"), b"horizon").unwrap();
+        std::fs::write(directory.path().join("bad.dmod"), b"not a zip").unwrap();
+
+        let valid_path = directory.path().join("valid.dmod");
+        let output = std::fs::File::create(&valid_path).unwrap();
+        let mut writer = ZipWriter::new(output);
+        let options = SimpleFileOptions::default();
+        let manifest = r#"{
+            "schema_version":1,
+            "id":"dreammod.valid",
+            "version":"1.0.0",
+            "display_name":"Valid",
+            "dreammod_api":"^0.1.0",
+            "entry":"scripts/main.dream",
+            "side":"both",
+            "events":["server_tick"]
+        }"#;
+        writer.start_file("manifest.json", options).unwrap();
+        writer.write_all(manifest.as_bytes()).unwrap();
+        writer.start_file("scripts/main.dream", options).unwrap();
+        writer
+            .write_all(b"fn on_server_tick(event) { #{ commands: [] } }")
+            .unwrap();
+        writer.finish().unwrap();
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let report = runtime
+            .load_from_horizon_mods_dir(directory.path(), &DenyAll)
+            .unwrap();
+
+        assert_eq!(report.load.loaded.len(), 1);
+        assert_eq!(report.load.loaded[0].as_str(), "dreammod.valid");
+        assert_eq!(report.ignored_hmod_count, 1);
+        assert_eq!(report.issues.len(), 1);
+        assert!(report.issues[0].path.ends_with("bad.dmod"));
+    }
+
 }
