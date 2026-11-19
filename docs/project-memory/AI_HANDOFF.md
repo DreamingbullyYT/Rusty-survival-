@@ -64,3 +64,5 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 
 
 - Bridge hardening since initial implementation: aggregate queued result bytes capped at `max_output_bytes`, error envelopes are budgeted, provider-fault auto-disable clears pending API results, and a capability-denial regression test was added. Commits `db1189d`, `4fc88f8`, `09222b5`, `39d0166`, `26d955b`; CI remains unverified.
+
+- Scalar event compatibility is covered: payloads are passed through untouched before any API results; if results arrive for a scalar payload, they are injected via `{event_payload, api_results}`. Regression test commit `0e40e51`; CI pending.
