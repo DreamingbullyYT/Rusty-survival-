@@ -42,8 +42,9 @@ This matrix is a plan, not a claim that every Horizon surface currently exists o
 ## Current implementation
 
 - `mods/dreammod-runtime/src/api_router.rs`: generic provider routing contract, preference switching, provider replacement/removal, tests.
-- The router is not yet wired into the script runtime's command/event path.
-- No Horizon adapter is linked or tested end-to-end yet.
+- Router is integrated with host-side runtime calls and the deferred script request bridge: scripts return `api_requests`; results are injected into the requesting mod's next event as `api_results`.
+- Script requests use the same operation-to-capability authorizer, request/result byte limits, and provider router. Results are one-shot and mod-isolated.
+- No concrete Horizon adapter is linked or tested end-to-end yet.
 - The existing command host and world block adapter remain separate until the integration bridge is implemented.
 
 ## Reference
