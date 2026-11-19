@@ -46,3 +46,9 @@ Rusty-survival engine with DreamMod. Reuse Horizon's documented API where compat
 - Read `docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md` before implementation.
 - Safe initial design is event-scoped deferred request/response: scripts emit `api_requests`; runtime routes/authorizes; responses are delivered in the next event under `api_results` and correlated by mod-local IDs.
 - Design only: no bridge code, queue, script schema, or integration tests exist yet. Host-side `call_api` is still the only entry point.
+
+
+## Bridge contract primitives (verification pending)
+- Added typed request/result envelope types in `api_router.rs` and public exports. Tests cover validation and serialization.
+- No request execution pipeline yet. Do not claim scripts can call API; next implement `api_requests` response schema, per-mod result queue, event injection, and same authorization/routing.
+- Commit `f484db8`; Actions/status currently returned no checks/runs, so verification is pending.
