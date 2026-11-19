@@ -180,3 +180,13 @@ Date: 2026-11-19
 Date: 2026-11-19
 - Code review found ApiOperation was not serializable even though the new script request/result envelopes require it. Added Serialize/Deserialize derives and strict unknown-field handling.
 - Commit `1ffd548`. GitHub combined status and workflow-run lookups returned no checks/runs; CI remains unverified.
+
+
+## S-2026-11-19-104 — Script API request bridge implemented
+Date: 2026-11-19
+- Added `api_requests` to script response schema and request-count/duplicate-ID validation.
+- Runtime resolves requests through the existing operation authorizer and mod capability grants before calling ApiRouter; request/result sizes are bounded and errors are returned as typed per-request envelopes.
+- Results are one-shot and injected under `event.api_results` on the next eligible callback of the same mod. Disabling clears pending results.
+- Added an end-to-end Rhai test: script requests `world.block_get`, fake provider returns data, next tick consumes it and emits an authorized command.
+- Commits: `9934644` implementation, `6ee5b26` test; docs/spec and PMCS updated. GitHub checks/run lookups returned empty; CI remains unverified.
+- Limitations: deferred (not synchronous), provider calls happen after script response parsing, and script API request batches are not transactionally coupled to command batches.
