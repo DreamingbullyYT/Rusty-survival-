@@ -67,3 +67,18 @@
 - [ ] Verify valid-package end-to-end directory test with runtime CI.
 
 - [x] Valid-package end-to-end test verified: runtime CI `44544852796` passed 22 tests, formatting and Clippy.
+
+
+## DreamMod independent engine target (accepted 2026-11-19)
+- [x] Supersede Horizon/HNMods as mandatory target; independent API/host for Rusty-survival.
+- [x] Write comprehensive domain/contract architecture in `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md`.
+- [ ] Build contract foundation: IDs, API versioning, capability model, handle/error/diagnostic types.
+- [ ] Create fake host and engine adapter boundary without dependency on Horizon.
+- [ ] Choose source interpreter only after no-bytecode/no-JIT requirement, ARM64, throughput, safety and API binding benchmarks.
+- [ ] Implement production script lifecycle, budget metering, event dispatch and fault isolation.
+- [ ] End-to-end vertical slice: `.dmod` → interpreted callback → host API → engine, plus disable/reload cleanup.
+- [ ] Expand APIs domain-by-domain only as engine support lands.
+- [ ] Physics collision channels and vehicle wheel-only collision proof.
+- [ ] Engine API compatibility/feature negotiation and automated package compatibility tests.
+
+Horizon native Core/.hmod and the shared Horizon mods-folder scanner are historical/optional experiments, not blockers or dependencies for the new engine.
