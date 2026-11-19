@@ -141,3 +141,5 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [ ] Connect adapter to engine-owned world/chunk storage (storage not implemented yet).
 
 - [ ] Verify formatted WorldBlockCommandAdapter runtime workflow.
+
+- [ ] Re-run DreamMod Runtime CI after adapter test import correction (106a1c5).
