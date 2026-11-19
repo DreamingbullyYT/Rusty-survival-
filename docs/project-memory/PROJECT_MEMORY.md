@@ -37,6 +37,13 @@ Current Horizon docs describe .hmod as the package format. Native source is norm
 ## Architecture
 The active architecture is specified in docs/specs/DREAMMOD_ARCHITECTURE.md. The official pinned cargo-horizon-mod check and .hmod source package passed in Actions run 44285877944; the artifact was downloaded and inspected. A CI-only harness is testing the exact signed-SDK Route::Api prebuilt compiler and the real Horizon native host loader (run 44288685182 in progress). Rhai 1.27.0 AST evaluation remains a provisional candidate; tests and per-value limits passed, but a 10k-item script loop was 462.94x slower than Rust on x86_64 CI. No production .dmod loader or sandbox exists yet. The previous engine architecture and Minecraft Java 26.3 parity work are superseded for active development, but remain in Git history and existing records for traceability.
 
+## Runtime implementation status — checked 2026-11-19
+- DreamMod player package: .dmod; package/source/assets validation, lifecycle, dependency ordering, capability gates and bookkeeping exist. No production interpreter/script execution yet.
+- Rhai 1.27 is an isolated AST-walking evaluation prototype (no_optimize, bytecode feature disabled), not integrated into Core and not final language choice.
+- WASM: no DreamMod runtime, format, or Host API adapter implemented. Horizon's existing WASM cold-cache compilation path uses a child process/Wasmtime, conflicting with no player-side compilation, so it is not adopted.
+- Native: DreamMod Core is trusted native Horizon .hmod build-time integration, intended for CI-built prebuilt distribution. Player-installed native .so/DLL mods are not supported.
+- Do not claim dual WASM + native player-mod support. Current status is trusted native Core plus intended interpreted .dmod; other runtimes are future decisions.
+
 ## Continuity system
 PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update project memory with every meaningful implementation or architecture change.
 
