@@ -196,3 +196,5 @@ Runtime scanner-to-loader integration is verified: run `44544390519` passed rust
 A further integration regression test creates a valid `.dmod` ZIP and confirms it loads from a mixed folder while `.hmod` is ignored and malformed sibling is reported. Check latest CI.
 
 Valid-package end-to-end test workflow initially failed only on one trailing blank line; removed in commit `0790dc4`. Verify latest runtime CI.
+
+The scanner-to-runtime end-to-end test is now green: `44544852796` passed rustfmt, 22 tests and Clippy on `0790dc4`. Valid `.dmod` loads; Horizon `.hmod` ignored; malformed package diagnostic retained. Next is launcher-side instance-path and UI integration.
