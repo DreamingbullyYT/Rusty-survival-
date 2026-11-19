@@ -886,6 +886,7 @@ mod tests {
         fn required_capability(&self, command: &CommandEnvelope) -> Option<Capability> {
             match (command.namespace.as_str(), command.name.as_str()) {
                 ("world", "set_block") => Some(Capability::WorldWrite),
+                ("world", "block_get") => Some(Capability::WorldRead),
                 ("entity", "set_health") => Some(Capability::EntityWrite),
                 _ => None,
             }
@@ -979,6 +980,96 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(provider_output["processed"], 12);
+    }
+
+    struct EchoApiProvider {
+        descriptor: crate::api_router::ApiProviderDescriptor,
+    }
+
+    impl crate::api_router::ApiProvider for EchoApiProvider {
+        fn descriptor(&self) -> &crate::api_router::ApiProviderDescriptor {
+            &self.descriptor
+        }
+
+        fn invoke(&mut self, request: &crate::api_router::ApiRequest) -> Result<Value, String> {
+            Ok(json!({"source": self.descriptor.id, "payload": request.input}))
+        }
+    }
+
+    #[test]
+    fn runtime_api_calls_require_enabled_mod_and_granted_capability_then_route() {
+        use crate::api_router::{ApiOperation, ApiOperationSafety, ApiProviderKind, ApiRequest};
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_id = ModId::parse("dreammod.api_test").unwrap();
+        let mod_package = package(
+            "dreammod.api_test",
+            "fn on_server_tick(event) { #{} }",
+            &["server_tick"],
+            &[Capability::WorldRead],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+
+        let operation = ApiOperation::new("world", "block_get").unwrap();
+        runtime.register_api_provider(Box::new(EchoApiProvider {
+            descriptor: crate::api_router::ApiProviderDescriptor {
+                id: "horizon_world".into(),
+                kind: ApiProviderKind::Horizon,
+                priority: 0,
+                operations: [operation.clone()].into(),
+            },
+        })).unwrap();
+
+        let request = ApiRequest {
+            operation,
+            safety: ApiOperationSafety::ReadOnly,
+            input: json!({"x": 3, "y": 4, "z": 5}),
+        };
+        assert!(matches!(runtime.call_api(&mod_id, request.clone(), &TestAuthorizer), Err(ApiCallError::ModDisabled)));
+        runtime.enable_mod(&mod_id);
+        let output = runtime.call_api(&mod_id, request.clone(), &TestAuthorizer).unwrap();
+        assert_eq!(output["source"], "horizon_world");
+        assert_eq!(output["payload"]["x"], 3);
+
+        let no_cap_mod = package(
+            "dreammod.no_access",
+            "fn on_server_tick(event) { #{} }",
+            &["server_tick"],
+            &[],
+            Vec::new(),
+            1,
+        );
+        runtime.load_packages(vec![no_cap_mod], &AllowAllForTests).unwrap_err();
+    }
+
+    #[test]
+    fn runtime_api_call_denies_unknown_operation_and_missing_capability() {
+        use crate::api_router::{ApiOperation, ApiOperationSafety, ApiRequest};
+
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_id = ModId::parse("dreammod.no_cap").unwrap();
+        let mod_package = package(
+            "dreammod.no_cap",
+            "fn on_server_tick(event) { #{} }",
+            &["server_tick"],
+            &[],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &DenyAll).unwrap();
+        runtime.enable_mod(&mod_id);
+
+        let request = ApiRequest {
+            operation: ApiOperation::new("world", "block_get").unwrap(),
+            safety: ApiOperationSafety::ReadOnly,
+            input: json!({}),
+        };
+        assert!(matches!(
+            runtime.call_api(&mod_id, request, &TestAuthorizer),
+            Err(ApiCallError::CapabilityDenied(Capability::WorldRead))
+        ));
     }
 
     #[derive(Default)]
