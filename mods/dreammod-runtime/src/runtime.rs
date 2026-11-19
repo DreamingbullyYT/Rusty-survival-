@@ -171,6 +171,27 @@ pub struct DispatchReport {
     pub failures: Vec<ScriptFailure>,
 }
 
+/// Engine boundary for applying an already-authorized command batch.
+///
+/// Implementations must validate the complete batch before committing mutations;
+/// a failure must not leave a partially-applied batch. Native subsystems remain
+/// responsible for authoritative state validation.
+pub trait EngineCommandHost {
+    type Error;
+
+    fn execute_atomic_batch(
+        &mut self,
+        commands: &[AuthorizedCommand],
+    ) -> Result<(), Self::Error>;
+}
+
+/// Dispatch result plus optional native-host execution result.
+/// The host is not called when dispatch produced no authorized commands.
+pub struct HostDispatchReport<E> {
+    pub dispatch: DispatchReport,
+    pub execution: Option<Result<(), E>>,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct ScriptFailure {
     pub mod_id: ModId,
@@ -313,6 +334,26 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
         authorizer: &A,
     ) -> DispatchReport {
         self.dispatch_event_inner(event, authorizer, false)
+    }
+
+    /// Dispatch an event and pass its authorized commands to the engine host.
+    /// Authorization and response validation happen before the host sees data.
+    pub fn dispatch_event_and_execute<A: CommandAuthorizer, H: EngineCommandHost>(
+        &mut self,
+        event: &RuntimeEvent,
+        authorizer: &A,
+        host: &mut H,
+    ) -> HostDispatchReport<H::Error> {
+        let dispatch = self.dispatch_event(event, authorizer);
+        let execution = if dispatch.commands.is_empty() {
+            None
+        } else {
+            Some(host.execute_atomic_batch(&dispatch.commands))
+        };
+        HostDispatchReport {
+            dispatch,
+            execution,
+        }
     }
 
     /// Lifecycle callbacks such as on_load/on_unload are dispatched regardless
@@ -873,6 +914,94 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(provider_output["processed"], 12);
+    }
+
+    #[derive(Default)]
+    struct RecordingHost {
+        calls: usize,
+        commands: Vec<AuthorizedCommand>,
+    }
+
+    impl EngineCommandHost for RecordingHost {
+        type Error = &'static str;
+
+        fn execute_atomic_batch(
+            &mut self,
+            commands: &[AuthorizedCommand],
+        ) -> Result<(), Self::Error> {
+            self.calls += 1;
+            self.commands.extend_from_slice(commands);
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn event_commands_reach_host_only_after_authorization() {
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_package = package(
+            "dreammod.host_test",
+            r#"
+                fn on_server_tick(event) {
+                    #{ commands: [
+                        #{ namespace: "world", name: "set_block",
+                           payload: #{ x: 4, y: 5, z: 6, block: "stone" } }
+                    ] }
+                }
+            "#,
+            &["server_tick"],
+            &[Capability::WorldWrite],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        let mod_id = ModId::parse("dreammod.host_test").unwrap();
+        runtime.enable_mod(&mod_id);
+        let mut host = RecordingHost::default();
+
+        let result = runtime.dispatch_event_and_execute(
+            &RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({})),
+            &TestAuthorizer,
+            &mut host,
+        );
+
+        assert_eq!(result.dispatch.commands.len(), 1);
+        assert_eq!(result.execution, Some(Ok(())));
+        assert_eq!(host.calls, 1);
+        assert_eq!(host.commands[0].mod_id, mod_id);
+        assert_eq!(host.commands[0].command.payload["block"], "stone");
+    }
+
+    #[test]
+    fn host_is_not_called_for_empty_or_denied_command_batches() {
+        let mut runtime = DreamModRuntime::new(RhaiEngine::default(), RuntimeConfig::default());
+        let mod_package = package(
+            "dreammod.denied_host",
+            r#"
+                fn on_server_tick(event) {
+                    #{ commands: [
+                        #{ namespace: "world", name: "set_block", payload: #{} }
+                    ] }
+                }
+            "#,
+            &["server_tick"],
+            &[],
+            Vec::new(),
+            0,
+        );
+        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime.enable_mod(&ModId::parse("dreammod.denied_host").unwrap());
+        let mut host = RecordingHost::default();
+
+        let result = runtime.dispatch_event_and_execute(
+            &RuntimeEvent::new("server_tick", RuntimeSide::Server, json!({})),
+            &TestAuthorizer,
+            &mut host,
+        );
+
+        assert!(result.dispatch.commands.is_empty());
+        assert_eq!(result.dispatch.denied.len(), 1);
+        assert_eq!(result.execution, None);
+        assert_eq!(host.calls, 0);
     }
 
     #[test]
