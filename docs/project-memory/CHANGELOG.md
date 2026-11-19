@@ -49,3 +49,7 @@
 - Runtime directory-loading entrypoint's first CI attempt stopped at rustfmt; formatting corrections were applied. Runtime test/Clippy verification is pending.
 
 - Runtime entrypoint's second rustfmt check identified only a trailing blank line in the test module; removed it. Verification pending.
+
+### Scanner-to-runtime integration verified — 2026-11-19
+- Runtime Actions `44544390519` passed on `20940cf`: formatting, all 21 tests and Clippy `-D warnings`.
+- The runtime now exposes a direct scan-and-load API for a supplied Horizon mods directory. It returns package load IDs, scanner diagnostics and `.hmod` ignore count. The launcher still needs to pass the actual instance path and render diagnostics.
