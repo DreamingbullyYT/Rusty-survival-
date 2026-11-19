@@ -190,3 +190,5 @@ Scanner integration has advanced: `DreamModRuntime::load_from_horizon_mods_dir` 
 Runtime scanner-to-loader entrypoint CI initially stopped at rustfmt; corrected re-export order, scan-error formatting and test-module whitespace. Verify the rerun before claiming this integration passes.
 
 The second scanner-to-runtime integration CI run still stopped at one rustfmt trailing blank line; removed in commit `20940cf`. Confirm latest runtime run reaches tests and Clippy.
+
+Runtime scanner-to-loader integration is verified: run `44544390519` passed rustfmt, 21 tests and Clippy on `20940cf`. Public `load_from_horizon_mods_dir` scans and loads valid `.dmod` packages and returns issues/ignored-Horizon count. Actual launcher instance path and UI remain the next integration task.
