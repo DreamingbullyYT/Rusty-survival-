@@ -198,3 +198,10 @@ A further integration regression test creates a valid `.dmod` ZIP and confirms i
 Valid-package end-to-end test workflow initially failed only on one trailing blank line; removed in commit `0790dc4`. Verify latest runtime CI.
 
 The scanner-to-runtime end-to-end test is now green: `44544852796` passed rustfmt, 22 tests and Clippy on `0790dc4`. Valid `.dmod` loads; Horizon `.hmod` ignored; malformed package diagnostic retained. Next is launcher-side instance-path and UI integration.
+
+
+## New active target — independent DreamMod API (2026-11-19)
+- User direction: new Rusty-survival engine does not want HNMods. Do not continue treating Horizon/HNMods as the required integration.
+- Read `docs/specs/DREAMMOD_ENGINE_INDEPENDENT_API.md` first. DreamMod is built-in through engine-owned adapters and its own crates; .dmod source interpreted without player-side native/bytecode/JIT compilation.
+- D-014 accepted. Horizon Core, prebuilt .hmod experiments and shared Horizon mods-folder scanner are historical/optional.
+- Contract foundation crate added to workspace. Verify Actions before asserting compilation/tests pass. Next: contract review, API host/fake host, interpreter selection, execution budget, and first end-to-end vertical slice.
