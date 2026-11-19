@@ -82,8 +82,10 @@ class ValidatorRegressionTests(unittest.TestCase):
 
     def test_reusing_a_legacy_session_id_fails(self) -> None:
         path = self.root / "docs/project-memory/SESSION_LOG.md"
+        existing_id = re.search(r"^## (S-[^ ]+)", path.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertIsNotNone(existing_id)
         with path.open("a", encoding="utf-8") as handle:
-            handle.write("\n## S-2026-11-19-58 — Reused legacy ID\nDate: test\n")
+            handle.write(f"\n## {existing_id.group(1)} — Reused legacy ID\nDate: test\n")
         self.commit_all("reuse a legacy session ID")
         result = self.validate("--base", self.base)
         self.assertNotEqual(result.returncode, 0)
