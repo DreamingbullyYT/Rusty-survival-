@@ -54,3 +54,8 @@
 - Added a stateful test-only engine host for `world.set_block`: validates namespace/command, integer coordinates and bounds, block identifier, stages the full batch, then commits.
 - Added a runtime-to-host integration test for two valid block mutations and an invalid second batch entry proving no partial state mutation.
 - Implementation commits: 4067841 and 6d2a232. CI verification pending.
+
+
+### Formatting and PMCS marker correction — 2026-11-19
+- Corrected rustfmt output for the mock host and restored validator-required PMCS headings (Ground rules, Continuity system, Not implemented / not verified, Next actions).
+- Implementation correction commit: c89b038. CI verification pending.
