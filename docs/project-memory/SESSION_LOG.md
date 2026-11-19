@@ -65,3 +65,8 @@ Date: 2026-11-19
 - Runtime Actions run `44543680876` on `4abbd917` passed rustfmt, 20 tests (including the scanner tests), and Clippy with warnings denied.
 - PMCS run `44543782146` passed on the updated docs HEAD.
 - Confirmed the scanner only discovers/validates packages; it is not yet wired into the launcher's instance folder or UI. Continue with path integration and diagnostics UI design.
+
+## S-2026-11-19-69 — Connect scanner to runtime load path
+Date: 2026-11-19
+- Added `load_from_horizon_mods_dir` plus a scanner-configurable variant to DreamModRuntime. Scan diagnostics and `.hmod` count are retained in the report while validated `.dmod` packages go through existing load/dependency/API/permission checks.
+- Added regression test mixing an ignored `.hmod` and a malformed `.dmod`; CI is pending. Caller must still supply the game's instance path; UI integration is not implemented.
