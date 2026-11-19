@@ -56,3 +56,5 @@
 
 ### Valid-package directory load integration test — 2026-11-19
 - Added an end-to-end runtime test that writes a valid `.dmod` ZIP into a mixed directory and confirms runtime loads it, ignores `.hmod`, and reports a malformed sibling package. Runtime CI pending.
+
+- The valid-package integration test's initial CI attempt stopped at a trailing rustfmt blank line; removed. Test/Clippy verification remains pending.
