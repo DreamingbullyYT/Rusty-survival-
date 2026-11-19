@@ -128,3 +128,8 @@ PMCS documents live in docs/project-memory/. Read AI_HANDOFF.md first. Update pr
 - Atlas declarations are stored per mod by `ModManager`; enabled mods can atomically replace their batch and Core-facing code can request one deterministic snapshot.
 - Validation enforces owner namespace, safe atlas IDs/definition paths, duplicates and the 32-atlas active cap. Rejected batch changes roll back; disable/failure cleanup releases declarations.
 - Package run `44468717308` passed: 62 tests, formatting and Clippy. Still no Core/Horizon live atlas registration.
+
+### Core atlas hook bridge — 2026-11-19
+- DreamMod Core now has a bounded owner-scoped atlas registry and the pinned Horizon collect hook re-submits its snapshot at initial registration and every resource reload.
+- Batch replacement accepts an authorization callback, validates namespace/path/duplicates and the 32-entry cap, and is atomic. Snapshot output is deterministic.
+- The bridge is trusted Core infrastructure only; package ModManager and .dmod interpreter do not populate it yet. Compile/PMCS verification is pending.

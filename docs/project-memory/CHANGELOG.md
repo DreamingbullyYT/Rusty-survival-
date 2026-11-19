@@ -9,3 +9,8 @@
 - Enforces declaration namespace ownership and the global 32-atlas cap; rejected replacement restores the previous declaration batch.
 - Disable and failure cascades clean up atlas declaration ownership.
 - This is package-manager bookkeeping, not live Horizon atlas registration.
+
+### Core atlas hook bridge — 2026-11-19
+- Added a bounded owner-scoped Core atlas registry with authorization callback, namespace/path validation, atomic batch replacement, global cap and deterministic snapshot.
+- DreamMod Core now consumes that snapshot in Horizon's pinned `register_texture_atlases` collect hook, re-submitting on each resource reload.
+- The interpreter/mod manager is not connected to the Core registry yet; this is a trusted bridge, not end-to-end .dmod functionality.

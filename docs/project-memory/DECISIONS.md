@@ -100,3 +100,10 @@ Status: ACCEPTED
 Decision: Store atlas declarations by mod in ModManager and expose a deterministic snapshot for enabled owners. Replacement is atomic and checked against the combined active-atlas cap; disable/failure removes owner declarations. Core should consume this batch directly rather than introducing redundant public wrapper layers.
 Reason: Atlas declarations are small, bounded metadata and resource reload needs a complete deterministic collection. This avoids per-declaration bridge calls while preserving ownership and rollback.
 Consequence: This remains package bookkeeping until the pinned Horizon hook is verified and connected; no live registration claim.
+
+## D-011 — Core publishes atlases from one bounded snapshot
+Date: 2026-11-19
+Status: ACCEPTED
+Decision: The Core `register_texture_atlases` collect hook consumes one sorted registry snapshot and resubmits it on initial registration/resource reload. Script adapters must authorize before batch replacement.
+Reason: Horizon requires atlas declarations on every reload; batch snapshot avoids per-resource bridge calls and keeps validation/ownership at Core boundary.
+Consequence: This is not end-to-end .dmod support until the interpreter and ModManager call the registry; no native handles or unrestricted access are exposed.

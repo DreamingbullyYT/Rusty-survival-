@@ -120,3 +120,6 @@ DreamMod currently has no live hook implementation: `mods/dreammod-core/src/lib.
 
 ## ModManager atlas batch ownership
 The package manager now owns per-enabled-mod atlas declaration batches. `replace_atlas_declarations` is atomic: it validates owner/namespace, revalidates IDs and paths, then tests the prospective combined enabled-owner snapshot; on failure it restores the previous batch. `atlas_snapshot` returns one deterministic batch, and declarations are cleaned when a mod is disabled or fails (including dependent failure cascades). This is bookkeeping only: Core does not yet consume the snapshot and Horizon's registration hook is not implemented.
+
+## Core atlas hook bridge
+DreamMod Core owns a bounded registry of per-owner `TextureAtlasRegistration` batches. A caller supplies an authorization callback before batch validation/mutation. Owner namespaces and safe paths are checked, replacement is atomic, duplicate atlas IDs and more than 32 active declarations are rejected, and snapshots are sorted. The Core `register_texture_atlases` collect hook appends the snapshot on each initial registration/resource reload. The script runtime and package ModManager are not connected to this Core registry yet; capability enforcement must be provided by the future script adapter, and no arbitrary native pointers are exposed.

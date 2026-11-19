@@ -17,3 +17,9 @@ Date: 2026-11-19
 - Added atomic per-enabled-mod atlas declaration replacement and one deterministic enabled-mod snapshot.
 - Namespace and atlas-count validation happen before commit; invalid replacement rolls back. Disable and dependency failure remove declarations.
 - Package CI and PMCS validation are pending; no live Horizon atlas publication is claimed.
+
+## S-2026-11-19-61 — Core atlas registration hook bridge
+Date: 2026-11-19
+- Added a trusted Core atlas registry: per-owner atomic batches, authorization callback, namespace/path validation, duplicate prevention, global 32-entry limit and sorted snapshot.
+- Core now implements Horizon's pinned collect hook and re-submits the snapshot each time the hook runs (initial load/resource reload).
+- Package CI passed for manager integration (62 tests); Core compile and PMCS for this commit are pending. No script runtime populates the registry yet.

@@ -13,7 +13,7 @@
 
 ## Not implemented / not verified
 - No interpreted .dmod runtime, sandbox, scheduler or live Horizon hook.
-- Atlas batch is not published into Horizon; resource reload re-submission is not connected.
+- Core now publishes the owned atlas snapshot from the pinned collect hook on initial registration and resource reload. No .dmod interpreter is connected to the registry yet.
 - Deep subsystem replacement remains a design goal, not implemented.
 
 ## Next actions
