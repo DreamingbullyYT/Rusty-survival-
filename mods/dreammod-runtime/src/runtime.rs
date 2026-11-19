@@ -9,6 +9,7 @@ use serde_json::Value;
 use thiserror::Error;
 
 use crate::{
+    api_router::{ApiProvider, ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError},
     manifest::{Capability, ManifestError, ModId, ModManifest, ModSide},
     package::{DmodPackage, ModsDirectoryScanner, ScanDirectoryError, ScanIssue},
     script::{ScriptEngine, ScriptError},
@@ -211,6 +212,7 @@ pub struct DreamModRuntime<E: ScriptEngine> {
     config: RuntimeConfig,
     mods: BTreeMap<ModId, LoadedMod<E::Instance>>,
     load_order: Vec<ModId>,
+    api_router: ApiRouter,
 }
 
 impl<E: ScriptEngine> DreamModRuntime<E> {
@@ -220,6 +222,7 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
             config,
             mods: BTreeMap::new(),
             load_order: Vec::new(),
+            api_router: ApiRouter::default(),
         }
     }
 
@@ -485,6 +488,57 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                 Err(failure)
             }
         }
+    }
+
+    /// Register or hot-replace a shared API provider. Providers advertise supported
+    /// operations; mods are routed without binding to Horizon or engine internals.
+    pub fn register_api_provider(
+        &mut self,
+        provider: Box<dyn ApiProvider>,
+    ) -> Result<(), ApiRouterError> {
+        self.api_router.register_provider(provider)
+    }
+
+    pub fn unregister_api_provider(&mut self, provider_id: &str) -> Result<(), ApiRouterError> {
+        self.api_router.unregister_provider(provider_id)
+    }
+
+    pub fn set_api_provider_preference(
+        &mut self,
+        domain: impl Into<String>,
+        preference: ApiProviderPreference,
+    ) -> Result<(), ApiRouterError> {
+        self.api_router.set_preference(domain, preference)
+    }
+
+    /// Calls the shared API on behalf of a loaded, enabled mod. Every operation
+    /// must be recognized by the authorizer and its capability must be granted.
+    pub fn call_api<A: CommandAuthorizer>(
+        &mut self,
+        mod_id: &ModId,
+        request: ApiRequest,
+        authorizer: &A,
+    ) -> Result<Value, ApiCallError> {
+        let instance = self.mods.get(mod_id).ok_or(ApiCallError::ModNotLoaded)?;
+        if !instance.enabled {
+            return Err(ApiCallError::ModDisabled);
+        }
+        let command = CommandEnvelope {
+            namespace: request.operation.domain.clone(),
+            name: request.operation.name.clone(),
+            payload: request.input.clone(),
+        };
+        let required = authorizer
+            .required_capability(&command)
+            .ok_or(ApiCallError::UnknownOperation)?;
+        if !instance.granted.contains(&required) {
+            return Err(ApiCallError::CapabilityDenied(required));
+        }
+        self.api_router.call(request).map_err(ApiCallError::Router)
+    }
+
+    pub fn api_providers(&self) -> Vec<crate::api_router::ApiProviderDescriptor> {
+        self.api_router.providers()
     }
 
     /// Explicitly activate a mod after package loading and permission approval.
@@ -757,6 +811,20 @@ fn resolve_load_order(
 struct ScriptResponse {
     commands: Vec<CommandEnvelope>,
     providers: Vec<ProviderRegistration>,
+}
+
+#[derive(Debug, Error)]
+pub enum ApiCallError {
+    #[error("mod is not loaded")]
+    ModNotLoaded,
+    #[error("mod is disabled")]
+    ModDisabled,
+    #[error("API operation is unknown or unsupported by the authorization policy")]
+    UnknownOperation,
+    #[error("mod lacks capability {0:?}")]
+    CapabilityDenied(Capability),
+    #[error(transparent)]
+    Router(#[from] ApiRouterError),
 }
 
 #[derive(Debug, Error)]
