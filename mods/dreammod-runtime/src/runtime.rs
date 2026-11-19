@@ -1027,7 +1027,10 @@ mod tests {
             safety: ApiOperationSafety::ReadOnly,
             input: json!({"x": 3, "y": 4, "z": 5}),
         };
-        assert!(matches!(runtime.call_api(&mod_id, request.clone(), &TestAuthorizer), Err(ApiCallError::ModDisabled)));
+        assert!(matches!(
+            runtime.call_api(&mod_id, request.clone(), &TestAuthorizer),
+            Err(ApiCallError::ModDisabled)
+        ));
         runtime.enable_mod(&mod_id);
         let output = runtime.call_api(&mod_id, request.clone(), &TestAuthorizer).unwrap();
         assert_eq!(output["source"], "horizon_world");
