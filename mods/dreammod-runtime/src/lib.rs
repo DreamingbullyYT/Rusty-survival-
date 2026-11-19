@@ -14,7 +14,8 @@ pub mod world_adapter;
 
 pub use api_router::{
     ApiOperation, ApiOperationSafety, ApiProvider, ApiProviderDescriptor, ApiProviderKind,
-    ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError,
+    ApiProviderPreference, ApiRequest, ApiRouter, ApiRouterError, ApiScriptRequest,
+    ApiScriptRequestError, ApiScriptResult, ApiScriptResultError,
 };
 pub use manifest::{Capability, ModDependency, ModId, ModManifest, ModSide};
 pub use package::{
