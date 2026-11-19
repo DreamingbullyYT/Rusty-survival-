@@ -226,3 +226,14 @@ Date: 2026-11-19
 - Added a script-level test with a failing Horizon-priority provider and a DreamMod fallback provider for the same operation.
 - Script receives `provider_failed` on the next callback; the test asserts no command success, the failure path is surfaced, and the mod stays enabled. This checks the runtime bridge does not silently retry a provider mutation/read after an error.
 - Commit `7750687`; CI still unverified.
+
+
+## S-2026-11-19-110 — API request-count bound test
+Date: 2026-11-19
+- Added a regression test that configures one API request per callback and verifies a script's two-request batch is rejected with a controlled failure while the mod remains enabled.
+- Commit `4615d5f`; CI pending.
+
+## S-2026-11-19-111 — Pending result cleanup test
+Date: 2026-11-19
+- Added a regression test: issue a request, disable and re-enable the mod, then verify the stale result is not consumed; a fresh request is made and its response arrives on the following callback.
+- Commit `b3e06b8`, syntax fix `50a2401`; CI pending.
