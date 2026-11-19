@@ -1371,7 +1371,7 @@ mod tests {
         let initial = runtime.dispatch_event(&event, &TestAuthorizer);
         assert!(initial.failures.is_empty());
         assert!(runtime.disable_mod(&mod_id));
-        assert!(runtime.enable_mod(&mod_id);
+        assert!(runtime.enable_mod(&mod_id));
 
         let after_enable = runtime.dispatch_event(&event, &TestAuthorizer);
         assert!(after_enable.failures.is_empty());
