@@ -15,8 +15,8 @@ Updated: 2026-11-19
 - Root offline engine test workflow passed on 4d4731573ae63a64dbf747b90084b265d43a87b6.
 - Explicit activation and fault-disable provider cleanup were previously verified on 6bae66f43f6e51b9c92301beea34224e9bb03ac6.
 
-## In progress / pending verification
-- Stateful test-only mock block-world host now validates and stages block writes before commit. A test covers successful writes and batch rollback behavior on invalid input. Latest implementation commits 4067841 and 6d2a232 await CI.
+## Verified
+- Stateful test-only mock block-world host validates and stages block writes before commit. Tests cover successful writes and batch rollback behavior on invalid input. Runtime CI passed on c89b038: formatting, 27 tests, and Clippy with warnings denied.
 
 ## Not implemented / not verified
 
