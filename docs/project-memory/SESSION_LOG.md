@@ -54,3 +54,11 @@ Date: 2026-11-19
 - Commits: 6b914d9 and 463abba. CI verification pending; no concrete engine adapter or engine mutations yet.
 
 Project continuity log policy: this file is chronological and append-only.
+
+
+## S-2026-11-19-86 — Host boundary formatting correction
+Date: 2026-11-19
+- CI for host-boundary commit 463abba failed at rustfmt before tests or Clippy ran. Applied the formatter's exact layout corrections in runtime exports and the two tests.
+- Commits: 925137f and f349bc6. Awaiting fresh runtime CI.
+
+Project continuity log policy: this file is chronological and append-only.
