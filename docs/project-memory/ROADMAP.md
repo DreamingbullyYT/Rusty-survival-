@@ -143,3 +143,13 @@ Horizon native Core/.hmod and the shared Horizon mods-folder scanner are histori
 - [ ] Verify formatted WorldBlockCommandAdapter runtime workflow.
 
 - [ ] Re-run DreamMod Runtime CI after adapter test import correction (106a1c5).
+
+
+## Hybrid API routing (accepted 2026-11-19)
+- [x] Define provider abstraction and per-operation capability declarations.
+- [x] Default to Horizon-first preference with DreamMod fallback when the Horizon provider does not advertise an operation.
+- [x] Runtime domain preference, provider hot replacement/removal and unit tests added (CI pending).
+- [ ] Connect router to .dmod runtime dispatch and authorization pipeline.
+- [ ] Implement and pin concrete Horizon adapter(s); verify actual operations against current public API.
+- [ ] Provide DreamMod-native implementations for gaps; add operation-specific integration tests.
+- [ ] Define safe migration/snapshot contracts before hot-switching stateful providers.
