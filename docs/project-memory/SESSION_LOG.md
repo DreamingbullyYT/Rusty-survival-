@@ -157,3 +157,11 @@ Date: 2026-11-19
 - Follow-up commits: c146761, f9befbf, 0c663f9, 86b4ed9.
 
 - Follow-up: also bound serialized provider responses by `max_output_bytes`; runtime test uses a reduced limit to check oversized provider results are rejected. Source commits 9aaa889 and 1f10eea.
+
+
+## S-2026-11-19-101 — Script API bridge design
+Date: 2026-11-19
+- Inspected current Rhai interpreter and runtime/router API. API routing is host-callable but no script bindings or result path exist.
+- Added `docs/specs/DREAMMOD_SCRIPT_API_BRIDGE.md` describing a deferred, event-scoped request/response bridge: script emits request envelopes; runtime authorizes and routes; correlated results are injected into the next event and consumed once.
+- Chose deferred flow for the first version to avoid global synchronous callback context, reentrancy, and cross-mod permission-context hazards.
+- Design and PMCS updates only; no implementation or tests claimed. Commit `05fc065` created the design document.
