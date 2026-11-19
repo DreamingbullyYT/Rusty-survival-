@@ -148,3 +148,6 @@ Scanner CI had two formatting-only failures before tests ran. The exact remainin
 
 ### Scanner verification checkpoint — 2026-11-19
 Runtime CI `44543680876` passed scanner code commit `4abbd917`: rustfmt, 20 tests and Clippy. PMCS `44543782146` passed after required docs updates. Instance path and UI integration are still pending.
+
+### Shared mods directory runtime entrypoint — 2026-11-19
+The scanner now has a runtime connection: DreamModRuntime scans a caller-provided Horizon mods directory, passes valid `.dmod` packages into its existing package load path, and returns scan diagnostics/ignored-Horizon count. Launcher path/UI remains outside this crate; runtime CI pending.
