@@ -26,3 +26,8 @@
 - Clarified from source: .dmod validation/manager/lifecycle exist but script execution does not; Rhai is separate prototype only; no DreamMod WASM runtime or player-native loader.
 - Trusted native DreamMod Core is Horizon .hmod build-time integration only. Horizon's cold-cache WASM compilation is not adopted because it conflicts with no player-side compilation.
 - PMCS updated to prevent future claims of dual WASM/native player-mod support.
+
+### Shared `horizon-mods/` discovery — 2026-11-19
+- Added exported `ModsDirectoryScanner` to the player runtime: direct-child `.dmod` discovery, `.hmod` ignored for Horizon, no recursion, per-file diagnostics, duplicate-ID exclusion, and symlink/non-file rejection.
+- Bounded defaults: 256 candidates, 256 MiB aggregate archive input, and 512 MiB retained uncompressed package content.
+- Four scanner regression tests added. Runtime Actions/PMCS are being verified; scanner is not wired to launcher instance path or UI.
