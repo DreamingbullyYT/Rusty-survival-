@@ -74,3 +74,7 @@ Date: 2026-11-19
 ## S-2026-11-19-70 — Runtime entrypoint formatting correction
 Date: 2026-11-19
 - Actions found rustfmt-only diffs in the public re-export ordering, scanner error propagation and test-module trailing whitespace. Corrected these; new runtime workflow is pending.
+
+## S-2026-11-19-71 — Final runtime rustfmt whitespace correction
+Date: 2026-11-19
+- Third runtime CI attempt showed only one trailing blank line before test-module close. Removed it; new CI run pending.
