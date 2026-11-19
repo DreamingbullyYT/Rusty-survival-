@@ -27,3 +27,9 @@
 ### Runtime activation and fault-cleanup verification — 2026-11-19
 - DreamMod Runtime CI passed 24 tests, formatting and Clippy at `6bae66f43f6e51b9c92301beea34224e9bb03ac6`.
 - Root Rust core checks and offline engine test workflow also passed at that commit.
+
+
+### Authorized command host boundary — 2026-11-19
+- Added a generic engine host contract to DreamMod Runtime. The event helper dispatches scripts, then sends only validated/authorized commands as one batch to the host; empty command batches do not call the host.
+- Added mock-host regression tests for authorized command delivery and denied-command suppression.
+- Commits: 6b914d9 (runtime), 463abba (public exports). Status: IMPLEMENTED; CI verification pending.
