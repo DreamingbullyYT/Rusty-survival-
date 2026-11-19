@@ -78,3 +78,9 @@ Date: 2026-11-19
 ## S-2026-11-19-71 — Final runtime rustfmt whitespace correction
 Date: 2026-11-19
 - Third runtime CI attempt showed only one trailing blank line before test-module close. Removed it; new CI run pending.
+
+## S-2026-11-19-72 — Scanner-to-runtime integration verified
+Date: 2026-11-19
+- Runtime Actions run `44544390519` passed rustfmt, 21 tests and Clippy with warnings denied on commit `20940cf`.
+- The new scan-and-load integration test passed. Runtime accepts a caller-provided directory, reports malformed candidates and ignores Horizon `.hmod`; launcher path/UI integration remains pending.
+- PMCS after this result is pending.
