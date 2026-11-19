@@ -92,3 +92,9 @@ Date: 2026-11-19
 ## S-2026-11-19-74 — Final valid-package test formatting correction
 Date: 2026-11-19
 - Runtime CI stopped at a single trailing blank line before the test module close. Removed; next run pending.
+
+## S-2026-11-19-75 — End-to-end shared-folder loading verified
+Date: 2026-11-19
+- Runtime Actions run `44544852796` passed formatting, 22 tests and Clippy with warnings denied on `0790dc4`.
+- New integration test proves a valid `.dmod` ZIP loads from a mixed directory, `.hmod` remains ignored, and malformed `.dmod` is reported.
+- Launcher still needs to pass the actual instance path and present diagnostics. PMCS for this update pending.
