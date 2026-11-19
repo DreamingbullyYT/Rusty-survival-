@@ -115,3 +115,11 @@ Status: ACCEPTED
 Decision: The current player-package path remains intended interpreted-source .dmod. Rhai is only an isolated prototype and not selected. DreamMod does not implement WASM or player-native module execution. DreamMod Core is trusted native Horizon .hmod build-time integration. Do not promise dual WASM/native player-mod support until separate runtimes and security boundaries exist and are verified.
 Reason: Source inspection found no DreamMod WASM runtime or player-native loader. Horizon's existing WASM cold-cache compilation path conflicts with the no-player-compilation rule.
 Consequence: WASM needs a compliant precompiled module/runtime design and Host API adapter; player-native mods remain out of scope pending explicit trust-model approval.
+
+
+## D-013 — DreamMod packages share Horizon's mods directory
+Date: 2026-11-19
+Status: ACCEPTED
+Decision: DreamMod player packages (`.dmod`) are placed directly in Horizon's existing `horizon-mods/` directory. Do not create a separate `dreammod-mods/` directory. Keep the extensions and loaders distinct: Horizon owns `.hmod`; DreamMod owns `.dmod`. DreamMod's scanner must recognize only `.dmod` packages and must not alter, rename, consume, or intercept `.hmod` files. DreamMod Core remains trusted native Horizon `.hmod` build-time integration and is not a player `.dmod`.
+Rationale: One familiar mods folder is simpler for players, while extension-based dispatch preserves clear format identity and compatibility with Horizon's loader.
+Consequences: Implement a bounded, deterministic `.dmod` scanner for the instance's `horizon-mods/` directory, with safe package validation, duplicate-ID handling, diagnostics, and tests for mixed `.hmod`/`.dmod` contents. Scanner must not extract archives or follow unsafe paths. Folder convention is accepted; scanner integration is not yet implemented.
