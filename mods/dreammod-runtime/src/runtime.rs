@@ -877,7 +877,9 @@ mod tests {
             Vec::new(),
             0,
         );
-        runtime.load_packages(vec![mod_package], &AllowAllForTests).unwrap();
+        runtime
+            .load_packages(vec![mod_package], &AllowAllForTests)
+            .unwrap();
         let id = ModId::parse("dreammod.inactive").unwrap();
         assert!(!runtime.is_enabled(&id));
         let report = runtime.dispatch_event(

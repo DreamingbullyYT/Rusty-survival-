@@ -9,9 +9,9 @@ impl ApiFeatureId {
         let valid = parts.clone().count() >= 2
             && parts.all(|part| {
                 !part.is_empty()
-                    && part
-                        .bytes()
-                        .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-')
+                    && part.bytes().all(|b| {
+                        b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_' || b == b'-'
+                    })
             });
         if value.len() > 96 || !valid {
             return Err(FeatureIdError::Invalid);

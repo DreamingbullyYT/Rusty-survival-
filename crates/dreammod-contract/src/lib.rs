@@ -62,8 +62,8 @@ mod tests {
     #[test]
     fn api_ranges_use_inclusive_minimum_exclusive_maximum() {
         let v = ApiVersion::new(1, 4, 2);
-        let range = ApiVersionRange::new(ApiVersion::new(1, 2, 0), ApiVersion::new(2, 0, 0))
-            .unwrap();
+        let range =
+            ApiVersionRange::new(ApiVersion::new(1, 2, 0), ApiVersion::new(2, 0, 0)).unwrap();
         assert!(range.contains(v));
         assert!(!range.contains(ApiVersion::new(2, 0, 0)));
         assert!(!range.contains(ApiVersion::new(1, 1, 9)));
