@@ -38,3 +38,8 @@
 ### Host boundary rustfmt correction — 2026-11-19
 - Fixed rustfmt-only layout in runtime exports and host-boundary tests after the first CI attempt stopped at formatting. Tests and Clippy did not run on that attempt.
 - Corrected commits: 925137f and f349bc6. Verification pending.
+
+
+### Second host-test formatting correction — 2026-11-19
+- Runtime CI caught one remaining unformatted chained load call in the denied-command mock-host test. Corrected it; this attempt again stopped before tests/Clippy.
+- Fix commit: 406b8e5. Awaiting rerun.
