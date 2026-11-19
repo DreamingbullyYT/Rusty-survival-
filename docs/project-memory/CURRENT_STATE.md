@@ -59,3 +59,5 @@
 - The API scans and loads a caller-supplied path. Launcher instance discovery and UI diagnostics remain unimplemented.
 
 - Added a valid generated `.dmod` ZIP end-to-end test for the runtime directory loader, alongside ignored `.hmod` and malformed-package diagnostic assertions. CI pending.
+
+- Valid-package integration test first CI attempt was rustfmt-only; trailing whitespace corrected and rerun pending.
