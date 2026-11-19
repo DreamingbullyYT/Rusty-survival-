@@ -395,7 +395,10 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                 continue;
             }
 
-            let event_payload = with_api_results(&event.payload, std::mem::take(&mut instance.pending_api_results));
+            let event_payload = with_api_results(
+                &event.payload,
+                std::mem::take(&mut instance.pending_api_results),
+            );
             match engine.call(&mut instance.script, &function, &event_payload) {
                 Ok(None) => {
                     instance.consecutive_failures = 0;
@@ -413,7 +416,11 @@ impl<E: ScriptEngine> DreamModRuntime<E> {
                     match result {
                         Ok(api_requests) => {
                             instance.pending_api_results = resolve_script_api_requests(
-                                &instance.granted, api_requests, authorizer, config, api_router,
+                                &instance.granted,
+                                api_requests,
+                                authorizer,
+                                config,
+                                api_router,
                             );
                             instance.consecutive_failures = 0;
                         },
@@ -752,7 +759,10 @@ fn resolve_script_api_requests<A: CommandAuthorizer>(
     config: &RuntimeConfig,
     router: &mut ApiRouter,
 ) -> Vec<ApiScriptResult> {
-    requests.into_iter().map(|request| {
+    let mut results = Vec::with_capacity(requests.len());
+    let mut total_bytes = 0_usize;
+
+    for request in requests {
         let operation = request.operation.clone();
         let mut result = ApiScriptResult {
             request_id: request.request_id,
@@ -760,50 +770,65 @@ fn resolve_script_api_requests<A: CommandAuthorizer>(
             result: None,
             error: None,
         };
-        let payload_size = serde_json::to_vec(&request.input).map_or(usize::MAX, |bytes| bytes.len());
+        let payload_size = serde_json::to_vec(&request.input)
+            .map_or(usize::MAX, |bytes| bytes.len());
         if payload_size > config.max_command_payload_bytes {
             result.error = Some(ApiScriptResultError::PayloadTooLarge);
-            return result;
-        }
-        let command = CommandEnvelope {
-            namespace: operation.domain.clone(),
-            name: operation.name.clone(),
-            payload: request.input.clone(),
-        };
-        let Some(required) = authorizer.required_capability(&command) else {
-            result.error = Some(ApiScriptResultError::UnknownOperation);
-            return result;
-        };
-        if !granted.contains(&required) {
-            result.error = Some(ApiScriptResultError::CapabilityDenied);
-            return result;
-        }
-        let api_request = ApiRequest {
-            operation,
-            safety: request.safety,
-            input: request.input,
-        };
-        match router.call(api_request) {
-            Ok(value) => {
-                let response_size = serde_json::to_vec(&value).map_or(usize::MAX, |bytes| bytes.len());
-                if response_size > config.max_output_bytes {
-                    result.error = Some(ApiScriptResultError::ResponseTooLarge);
-                } else {
-                    result.result = Some(value);
+        } else {
+            let command = CommandEnvelope {
+                namespace: operation.domain.clone(),
+                name: operation.name.clone(),
+                payload: request.input.clone(),
+            };
+            let required = authorizer.required_capability(&command);
+            if required.is_none() {
+                result.error = Some(ApiScriptResultError::UnknownOperation);
+            } else if !granted.contains(&required.expect("capability checked above")) {
+                result.error = Some(ApiScriptResultError::CapabilityDenied);
+            } else {
+                let api_request = ApiRequest {
+                    operation,
+                    safety: request.safety,
+                    input: request.input,
+                };
+                match router.call(api_request) {
+                    Ok(value) => {
+                        let response_size = serde_json::to_vec(&value)
+                            .map_or(usize::MAX, |bytes| bytes.len());
+                        if response_size > config.max_output_bytes {
+                            result.error = Some(ApiScriptResultError::ResponseTooLarge);
+                        } else {
+                            result.result = Some(value);
+                        }
+                    }
+                    Err(ApiRouterError::UnsupportedOperation(_)) => {
+                        result.error = Some(ApiScriptResultError::ProviderUnavailable);
+                    }
+                    Err(ApiRouterError::ProviderFailed { .. }) => {
+                        result.error = Some(ApiScriptResultError::ProviderFailed);
+                    }
+                    Err(_) => {
+                        result.error = Some(ApiScriptResultError::InvalidRequest);
+                    }
                 }
             }
-            Err(ApiRouterError::UnsupportedOperation(_)) => {
-                result.error = Some(ApiScriptResultError::ProviderUnavailable);
-            }
-            Err(ApiRouterError::ProviderFailed { .. }) => {
-                result.error = Some(ApiScriptResultError::ProviderFailed);
-            }
-            Err(_) => {
-                result.error = Some(ApiScriptResultError::InvalidRequest);
-            }
         }
-        result
-    }).collect()
+
+        let mut encoded_size = serde_json::to_vec(&result)
+            .map_or(usize::MAX, |bytes| bytes.len());
+        if total_bytes.saturating_add(encoded_size) > config.max_output_bytes {
+            result.result = None;
+            result.error = Some(ApiScriptResultError::ResponseTooLarge);
+            encoded_size = serde_json::to_vec(&result)
+                .map_or(usize::MAX, |bytes| bytes.len());
+        }
+        if total_bytes.saturating_add(encoded_size) <= config.max_output_bytes {
+            total_bytes += encoded_size;
+            results.push(result);
+        }
+    }
+
+    results
 }
 
 fn record_failure(
