@@ -13,14 +13,16 @@ Rusty-survival independent engine with engine-owned DreamMod. Horizon/HNMods are
 - PMCS is persistent project context. Append session history and refresh current-state snapshots after substantial work.
 - IMPLEMENTED is not VERIFIED: do not claim checks passed without CI evidence.
 
-## Latest implementation
+## Latest implementation and verification
 - Runtime packages load disabled and require explicit enable_mod.
 - Provider registrations are cleared on fault-disable.
-- Runtime now exposes EngineCommandHost and dispatch_event_and_execute. The host receives only capability-authorized commands and must apply the batch atomically. Mock tests cover delivery and denied-operation suppression.
-- Latest host boundary code commits: 6b914d9 and 463abba. CI verification is pending.
+- Runtime exposes EngineCommandHost and dispatch_event_and_execute. Only authorized commands reach a host; it is contractually atomic. Empty batches skip the host.
+- Mock-host tests verify command delivery and denied-command suppression.
+- Verified commit 406b8e5: rustfmt passed, 26 runtime tests passed, Clippy passed with warnings denied. Root offline engine tests passed on 4d47315.
+- This is only a generic host boundary; no concrete engine adapter or actual world/entity/physics mutations exist.
 
 ## Next steps
-1. Check CI on latest code commit and fix format/test/Clippy failures.
-2. Add typed mock-engine state adapter with atomic batch validation/rollback.
-3. Connect package ModManager approval and runtime activation in one coordinator.
-4. Then implement actual world/entity/physics domain adapters, starting with a minimal vertical slice.
+1. Check PMCS validation on latest memory revision.
+2. Add a typed mock engine adapter with state mutation, full batch validation and rollback tests.
+3. Unify package approval and runtime activation in a coordinator.
+4. Start concrete domain adapters: world/block, then entities and physics.
